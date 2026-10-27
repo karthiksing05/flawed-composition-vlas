@@ -57,7 +57,61 @@ flagged as such.
 
 S1c: the read reports first-frame mask quality only, since no S1c rollouts exist.
 
-## S3b. Off-the-shelf relational grounder (offline mask quality)
+## S3a result (read 2026-10-26; ledger s3a_gate tag read; results/bind/s3a.json): the bar passes VACUOUSLY; no useful gate exists
 
-To be pre-registered as ps3b before any score is computed. RoboPoint or RoboRefer, point to mask, scored with S1's hit metric by
-depth and seen / held-out. The setup cap is about 1 A40-h; if neither model is obtainable, S3b is reported and skipped.
+The confidence pass reproduces S2's first-call masks on 120 of 120 dev units.
+
+**Selection** (training cells, 50 units):
+- Only 16 of 133 (score, threshold) pairs keep damage >= -0.02.
+- The chosen gate is `det` >= 0.556 (both roles' detector scores). It turns on for 12% of train units, with damage -0.010
+  [-0.030, 0.000].
+- For every score, damage grows steadily with coverage.
+
+| train coverage | margin | det | joint |
+|---|---|---|---|
+| about 0.24 | -0.065 | -0.045 | -0.045 |
+| about 0.48 | -0.075 | -0.095 | -0.100 |
+| 1.0 (= S2) | -0.18 | -0.18 | -0.18 |
+
+None of the three scores separates harmful masks from harmless ones.
+
+**Offline dev effect.**
+- The gate turns on for 5 of 120 dev units, all in 1 task (coverage 0.04).
+- On those 5 units the object masks are good (all mostly inside the target, IoU 0.64), but the goal masks are entirely outside
+  the target.
+- Recombined dev = zs exactly: success 0.277, binding error 0.229; closure 0.
+
+**Closed loop**: not run. The pre-declared condition failed (dev coverage 0.04 < 0.10).
+
+**Bars**, read offline:
+- B1 damage -0.010 (in-sample): pass.
+- B2 binding error = zs: pass.
+- These are VACUOUS. The gate is almost always off, so the arm is zs.
+
+**S1c first-frame masks** (dev; quality only):
+
+| role | mostly inside the target | one token |
+|---|---|---|
+| object | 0.74 (S1b 0.575) | 0.24 |
+| goal | 0.56 (S1b 0.62) | 0.37 |
+
+S1c has better object masks than S1b but more degenerate masks. It does not reach the gated-on quality the closed loop required.
+
+**Reading**: these binder confidences (candidate margin, detector score, and their product) are not calibrated to mask
+correctness on these scenes. A gate built from them can only buy safety by switching the adapter off.
+
+## S3b. Off-the-shelf relational grounder (offline mask quality; pre-registered as ps3b before any dev prediction)
+
+The probe found every candidate obtainable (RoboPoint-13B, RoboRefer-2B / 8B). RoboPoint is used because it has the simpler
+stack, a LLaVA fork.
+
+- **Model**: wentao-yuan/robopoint-v1-vicuna-v1.5-13b, code github wentaoyuan/RoboPoint @ 206cb1e.
+- **Isolation**: code, venv and weights live in /coc/flash10/ksingara3/s3b_ext (not the repo). The script runs with `python -I`.
+- **Query**: object: "Locate several points on the {phrase}."; goal: "Locate several points {phrase}." (with "on the " prepended when
+  the phrase has no preposition). RoboPoint's own answer-format suffix follows. Decoding is greedy.
+- **Map**: points go onto S1's 16 x 16 tokens. The peak is the token with the most points; the mask is every token with a point;
+  no point is a miss.
+- **Units**: S1's 240 dev units, the frames S1, S1b and S1c scored. The read (experiments/s3b_read.py) uses S1's hit metric
+  and reports RoboPoint vs S1b, S1c and B1a by depth x seen / held-out / held-out body-seen.
+- **No pass bar**: this is a comparison only.
+- **Smoke**: 4 TRAINING units only, so no dev unit is seen before ps3b.
