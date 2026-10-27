@@ -54,6 +54,22 @@ them.
 - Bound (T4): success >= (1 - sum eps) x kappa_adapter x competence.
 - The VLA keeps every ingredient, and the crutch supplies only the invariant part it fails to learn by fine-tuning.
 
+**P6. Hierarchical binding (user, 2026-10-28).**
+- A referring expression is a path in the scene's part-whole tree: body -> object -> part.
+- Binding descends that path. Each level attends only inside its parent's mask, and geometry is read in the parent's frame.
+- This is the hierarchical bias: "top" means top-of-parent, so it transfers across bodies.
+- Consequences:
+  - Depth = path length.
+  - Error at depth d ~ product of per-level errors (P3).
+  - Invariance is required per level (P4).
+  - Search cost grows with depth, not with scene size.
+- Precedents to check:
+  - part-whole and hierarchical slots: GLOM, hierarchical slot attention;
+  - staged grounding: MAttNet, INGRESS;
+  - coarse-to-fine or zoom-in VLAs;
+  - scene grammar (Võ).
+- In BindVLA: flag `hier` (nested masks over L levels), optional `foveate` (finer features at deeper levels).
+
 ## Falsifiable predictions (each a test we can run)
 
 | # | prediction | test | status |
