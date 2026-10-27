@@ -298,12 +298,50 @@ bindvla degrades the most, learned the least.
 |---|---|
 | data cache (CPU), unit tests (CPU) | 0 |
 | smoke: position fit + probes, timing, 300-step runs of bindvla and vanilla_frozen, lambda mini-sweep 3 x 1.5k | <= 1.5 |
-| bindvla main run, 30k x 32 (to be re-estimated from the smoke timing; steps cut if > 12 A40-h) | 8-12 |
+| bindvla main run, 30k x 32 (to be re-estimated from the smoke timing; steps cut if > 12 A40-h); amended to 60k after the smoke (7.1) | 8-12 (measured: about 6.5) |
 | parity: bindvla 760 episodes + smolvla_libero 400 episodes (about 0.26 A40-h per 100 episodes at 2 instances per A40) | about 3 |
 | dev: 2 x 290 episodes | about 1.5 |
 | total | about 14-18 |
 
 Fair comparator (vanilla_frozen) and ablations: about 8-10 A40-h each, recommended, not run.
+
+### 7.1 Smoke results (2026-10-27; TRAINING data only; recorded before the main run)
+
+**Position-free keys** (results/bindvla/posfree.json; 1,200 training frames, 307k agentview tokens, SigLIP 768-d):
+- 32 nullspace iterations removed 64 dims.
+- Linear probe held-out R^2 (row / col): 0.735 / 0.618 before, 0.049 / 0.041 after.
+- **Nonlinear MLP probe: 0.973 / 0.953 before, 0.963 / 0.932 after.** Position is still almost fully decodable nonlinearly.
+  - The binder's appearance logits are LINEAR in the projected features (q . W_k LN(P f)), so selection cannot read the linear
+    position code. A nonlinear reader of the values (the slot MLP) can.
+  - pos_keys therefore removes linear position only. This is reported as a limitation of the key design, not hidden.
+
+**Timing** (1 A40, batch 32):
+- bindvla 0.375 s / step (0.104 A40-h per 1k steps, peak 3.5 GB);
+- vanilla_frozen 0.507 s / step (0.141 A40-h per 1k, 8.3 GB);
+- foveate 0.79 s / step at batch 16, about 4.2x bindvla at batch 32 (the cost of foveation).
+
+**Trainable parameters:** bindvla 109,820,649 (fresh action expert 98,245,840; flow heads incl. state_proj 1,635,152; binder
+9,939,657). vanilla_frozen 99,880,992. 350,165,184 frozen.
+
+**lambda mini-sweep** (1.5k steps each; HT validation flow loss under fixed t / noise):
+
+| lambda | val loss | grad ratio (inv / BC, binder; steps 100-1400) | HT object / goal mask hit |
+|---|---|---|---|
+| 0 | 0.5846 | - | 0.027 / 0.080 |
+| 0.1 | 0.5785 | 0.004-0.070 (barely active) | 0.064 / 0.136 |
+| 1 | 0.5983 | 0.065-0.50 (active) | 0.082 / 0.170 |
+
+- The pre-written rule (lowest val loss; ties within 2% go to the smaller lambda) selects **lambda = 0**: 0.5846 is within 1.1%
+  of 0.5785.
+- **The main run is therefore the ERM arm of the invariance flag.** The penalty is not in it.
+- The mask hit rises with lambda after 1.5k steps. That was not the selection criterion and is not used. It is recorded here as
+  the reason an inv-on run (lambda = 1, active by the gradient log) is the first ablation to run if approved.
+
+**Main-run length amended before it starts:** 60k steps x 32 (1.92M samples, about 4 epochs) instead of 30k.
+- Measured cost is 0.104 A40-h per 1k steps, about 6.5 A40-h with evaluations; the plan's estimate was 0.3.
+- The action expert is randomly initialised (smolvla_base's expert is absent), where smolvla_libero fine-tuned a pretrained one
+  for 25k x 32.
+- Checkpoints at 10k-step multiples are kept. The parity read uses the final checkpoint only.
 
 ## 8. Rules
 
