@@ -72,6 +72,42 @@ A task binds roles i = 1..k. Role i's referring expression is a chain of atoms (
   ingredient, fine-tuning lost the binding, and the crutch restores it from the model's own pretrained backbone.
 - B1 is the compositional core whatever B0 finds: B0 may still fail at sub-regions.
 
+## 3.1 B1 revised (user, 2026-10-27): unsupervised structure, prototypes, few parameters
+
+The binder is a product of experts over atom prototypes. Its structure is discovered without labels.
+
+- **Referents from the demos, not from sim labels.**
+  - On every training demo, the object role's referent is the region under the gripper at the grasp, and the goal role's referent
+    is the region under the gripper at the release (the existing contact-event segmentation).
+  - This is cross-situational word learning (Siskind; Frank, Goodman & Tenenbaum): across tasks, the words that co-occur with a
+    referent are bound to it. It needs no annotation, so it carries to CALVIN and to real data.
+- **Candidate regions without labels.**
+  - Bodies and parts are clusters of the policy's own vision-tower patch features (or DINOv2 as a comparison), split
+    recursively inside each body.
+  - Each region gets two feature channels: appearance (pooled patch features) and geometry (position, height and extent relative
+    to its parent body).
+- **Atoms are prototypes.**
+  - Each word w gets a prototype (mean and diagonal variance) in BOTH channels, fitted from its co-occurring referents.
+  - **Structure discovery by minimum description length:** each word is assigned to the channel where its prototype is
+    tightest.
+    - Appearance-tight words are type and instance words ("ketchup", "black bowl").
+    - Geometry-tight words are relation and part words ("top", "middle", "front").
+    - Words tight in neither are function words, and carry no binding.
+  - The composition order follows the parse's head structure ("A of B": resolve B, then A inside B), checked by likelihood on
+    the training cells.
+- **Binding is a product of experts.**
+  - score(region | phrase) = sum over the phrase's content words of log N(region features in w's channel; prototype_w),
+    evaluated inside the parent the parse gives.
+  - Each expert sees one atom and one channel, so T2's invariance assumption holds by construction. The conformal set (T3) is
+    computed on the same score.
+- **Size:** about two vectors per word and no trained network; a few KB. The vision tower is shared and frozen.
+- **Risks:**
+  - Words that always co-occur in training cannot be separated (a confound). That is exactly where held-out combinations test
+    it, so this is reported per word.
+  - Fine instance discrimination (ketchup vs tomato sauce) may need sharper appearance features than the vision tower gives.
+  - Part clusters may not align with drawers or shelf levels. Report part-proposal recall against sim masks, used for scoring
+    only.
+
 ## 4. Rules (unchanged)
 
 - SLURM only (overcap / tail-lab, explicit -p/-A, exclude list).
