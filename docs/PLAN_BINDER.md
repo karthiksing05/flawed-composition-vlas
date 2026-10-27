@@ -114,3 +114,39 @@ The binder is a product of experts over atom prototypes. Its structure is discov
 - Pre-register before every read. Audits stay at 0 / 0. Never open split_sealed.json.
 - Downloaded code and weights go in their own directory and run with python -I.
 - The confirmatory read, the sealed set, and any budget beyond B0 need the user's approval.
+
+## 5. B0 pre-registration (2026-10-27; ledger m3_prereg tag pb0; written after a smoke on 6 TRAINING units, before any dev unit)
+
+**Units and metric.** S1's 240 dev units (results/bind/s1/labels.json), the frames S1, S1b, S1c and S3b scored. S1's hit
+(s1_read.hit: the peak token lies in the target and is covered by it at least as much as by every competitor), the two-level
+task-cluster bootstrap (d4_read.rate). Code: experiments/b0_vlm.py (predictions, isolated venv in /coc/flash10/ksingara3/b0_ext,
+`python -I`), experiments/b0_read.py (read, chunks env).
+
+**Arms.**
+- **pi05_base backbone** (primary): the PaliGemma weights inside openpi's pi05_base (the init of pi05_l90c), in the HF PaliGemma
+  class. Prompts `detect {phrase}` (primary) and `segment {phrase}`.
+  - The smoke found fluent English captions and yes-answers, and no `<loc>` token, under every prompt. This is recorded as found.
+    No prompt or decoding was changed.
+- **Qwen2.5-VL-7B-Instruct** (primary): `Locate "{phrase}" in the image and output its bbox coordinates in JSON format.` on a 2x
+  upsample (448).
+- **Molmo-7B-D-0924** (primary): `Point to "{phrase}".`
+- **pi05_l90c@5000 backbone** (supplementary, detect only): the fine-tuned policy's own backbone.
+- **Not run: gated, no local weights.** PaliGemma mix (`google/paligemma-3b-mix-224`, not the policy's base) and PaliGemma pt-224
+  (`google/paligemma-3b-pt-224`, the policy's base).
+- **Variants.** {phrase} is the role phrase exactly as S1's parse gives it. Every arm also runs a context variant with the full
+  instruction (PaliGemma: `detect {phrase} (from: {lang})`; Qwen / Molmo: the prefix `The robot is told: "{lang}". `).
+
+**Conversion to S1's format.**
+- A box gives its centre token as the peak, and the tokens covered >= 0.5 as the mask (B1a's rule).
+- Points use S3b's rule.
+- A segment output is decoded by big_vision's VQ-VAE, with its maximum-coverage token as the peak.
+- An unparseable answer is a miss.
+
+**Bars (S1c's, point estimates, per arm x config).**
+- (i) held-out depth-1 hit >= 0.70 (15 units, 3 tasks);
+- (ii) hit on all depth-2 units with a seen body type >= 0.70 (20 units, 4 tasks);
+- (iii) depth-0 hit >= GroundingDINO alone (0.786).
+
+**Verdict.** B0 PASSES iff at least one primary config (phrase variant; detect for the PaliGemma family) passes all three.
+- Secondary configs (segment, context) and the supplementary arm are scored against the same bars and reported.
+- Every arm is reported per depth x {seen, held-out} x role, and the unseen-caddy units are reported separately.
