@@ -1,0 +1,179 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_BINDER B1.2",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4280910",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "cd032069050fb6da53e8cd211e15009ea3e3e2ec",
+  "short": "cd032069"
+ },
+ "keys": {},
+ "metrics": {
+  "also": "caddy; part-proposal recall vs sim masks; MDL channels; confounds; CD slope B1 vs B1b (task bootstrap); T2 atom budget (proposal, role, parent, words); atom invariance permutation test; referent purity",
+  "appearance_code_floats_corrected": {
+   "both": 77888,
+   "dino": 12320,
+   "siglip": 65568
+  },
+  "arms": "primary: siglip (frozen by mean training-unit hit); comparison: dino, both (concat)",
+  "bar": "per arm: held-out depth-1 hit >= 0.70 AND depth-2 seen-body hit >= 0.70 AND depth-0 hit >= GroundingDINO (0.786); B1 PASS iff siglip passes all three",
+  "files_sha256": {
+   "docs/PLAN_BINDER.md": "5c2c069cd1efa51fb23866502fe9211f66a5c52df1ee28eed95b52571d0368e6",
+   "experiments/b1_2_bind.py": "9e543a57aeefb85d9210bbbbf30e8dc8aead6850b9b1c657fa5f9ebafd2d3170",
+   "experiments/b1_2_read.py": "ab33a304b34a44b071309b49ce73798d1311479e38aff5ce195c55f55c9e7845",
+   "experiments/b1_acts.py": "873fea6da2be93a583750ddf450d07ae7d2ebd79846e03701609a152bcb09b1a",
+   "experiments/b1_demos.py": "8ab27d566be29f3e10525e20ccf677e1b4deb8285e8868b0c00595aec1656b55",
+   "experiments/b1_feats.py": "38cb60ce7525e9e3d44302ca0bebf534d5b8e86bb56cb44f34a0be3d5cc53af0",
+   "experiments/b1_render.py": "1d18c1f9ca7c2d1f469c29d9c7efac067e687328c18481c04fee745ecdafbce6",
+   "results/bind/s1/labels.json": "6e6b5d22241960ef6a41c8d93cc7ba492847103922fa478392104e699e05888f"
+  },
+  "frozen": {
+   "both": {
+    "chosen": {
+     "K": 8,
+     "compose": "flat",
+     "delta": 0.0,
+     "floor": 0.05,
+     "ll_heldout": -4.116501001418743,
+     "ll_train": -5.72003702161093
+    },
+    "lexicon_floats": 1104,
+    "n_content": 52,
+    "n_frames": 2164,
+    "n_occ": 4195,
+    "pca_floats": 77888
+   },
+   "dino": {
+    "chosen": {
+     "K": 8,
+     "compose": "flat",
+     "delta": 0.0,
+     "floor": 0.2,
+     "ll_heldout": -3.013941387646955,
+     "ll_train": -4.328025848081146
+    },
+    "lexicon_floats": 1536,
+    "n_content": 53,
+    "n_frames": 2164,
+    "n_occ": 4195,
+    "pca_floats": 8576
+   },
+   "siglip": {
+    "chosen": {
+     "K": 16,
+     "compose": "flat",
+     "delta": 0.0,
+     "floor": 0.05,
+     "ll_heldout": -5.9418155992689075,
+     "ll_train": -6.040951443782164
+    },
+    "lexicon_floats": 1408,
+    "n_content": 48,
+    "n_frames": 2164,
+    "n_occ": 4195,
+    "pca_floats": 10240
+   }
+  },
+  "posfree_probe_r2": {
+   "dino": {
+    "r2_col": 0.0014782841381684175,
+    "r2_row": 0.041302345013921604
+   },
+   "siglip": {
+    "r2_col": 0.0011182228301996888,
+    "r2_row": 0.04328496203676102
+   }
+  },
+  "power": "(i) 3 tasks, 15 units; (ii) 4 tasks, 20 units; CD / invariance descriptive",
+  "smoke_train_units": {
+   "both": {
+    "goal|demo_phrase": {
+     "mean": 0.30313588850174217,
+     "n": 287
+    },
+    "goal|other_phrase": {
+     "mean": 0.1590909090909091,
+     "n": 88
+    },
+    "object|demo_phrase": {
+     "mean": 0.27424749163879597,
+     "n": 299
+    },
+    "object|other_phrase": {
+     "mean": 0.07142857142857142,
+     "n": 126
+    }
+   },
+   "dino": {
+    "goal|demo_phrase": {
+     "mean": 0.2264808362369338,
+     "n": 287
+    },
+    "goal|other_phrase": {
+     "mean": 0.23863636363636365,
+     "n": 88
+    },
+    "object|demo_phrase": {
+     "mean": 0.35785953177257523,
+     "n": 299
+    },
+    "object|other_phrase": {
+     "mean": 0.1984126984126984,
+     "n": 126
+    }
+   },
+   "siglip": {
+    "goal|demo_phrase": {
+     "mean": 0.30313588850174217,
+     "n": 287
+    },
+    "goal|other_phrase": {
+     "mean": 0.0,
+     "n": 88
+    },
+    "object|demo_phrase": {
+     "mean": 0.5752508361204013,
+     "n": 299
+    },
+    "object|other_phrase": {
+     "mean": 0.07142857142857142,
+     "n": 126
+    }
+   }
+  },
+  "status": "PRE-REGISTERED PLAN_BINDER B1.2 (identity-code MDL with joint channels, type-accepted siblings, concat arm)",
+  "variant": "B1.2 as specified (no variant search); position-free codes and role expert from B1.1",
+  "written_before": "any B1.2 dev prediction or score"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__pb1_2__s0__cd032069",
+ "schema": 1,
+ "script": "experiments/prereg/pb1_2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T20:29:07+00:00",
+ "stream": null,
+ "tag": "pb1_2"
+}

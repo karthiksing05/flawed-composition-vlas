@@ -492,7 +492,9 @@ words), invariance test, plus drawer and caddy units separately and the learned 
 
 **Unchanged diagnostics.** Referent purity 0.98 grasp / 0.78 release. Part-proposal recall (IoU >= 0.5): siglip body 0.92,
 part 0.76, table 0.60; dino 0.88 / 0.78 / 0.60. Confounds are the same six compound nouns. Size: 3520 lexicon floats (14.1 KB)
-plus 10240 (siglip) / 8576 (dino) PCA floats, now 40 KB / 34 KB.
+plus the position-free appearance code. CORRECTED in section 11: that code is one composed affine map of 2048 x 32 + 32 =
+65568 floats (262 KB fp32) for siglip and 384 x 32 + 32 = 12320 (49 KB) for dino; the 10240 / 8576 first written here counted only
+the last PCA stage.
 
 **Reading.** B1's appearance channel was doing two jobs: object identity and remembered location. Projecting position out
 removes the location job, and with it the lateral wins. Feature-code MDL still cannot discover that "left / front / middle" are
@@ -510,3 +512,51 @@ is the one new positive.
 - The dino arm's PCA was refitted; its smoke (object 0.36 / goal 0.42) was weak before the read.
 
 **Cost.** B1.1 used CPU only (0 GPU-h). This session in total: 0.125 GPU-h of the 3 A40-h cap.
+
+## 11. B1.2 pre-registration (2026-10-27; ledger m3_prereg tag pb1_2; smokes on TRAINING units only, before any dev unit)
+
+One change targets B1.1's measured weakness: the feature-reconstruction code compared a 32-d code with an 8-d one, so appearance
+always won by dimensionality. Binding is a choice among candidates, so B1.2 codes the referent's IDENTITY.
+Code: experiments/b1_2_bind.py (a copy of b1_1_bind.py), experiments/b1_2_read.py. Everything else is B1.1's: position-free codes,
+role expert, the role referent code as the experts' null, referents, units, metric, bars.
+
+- **Identity MDL with joint channels.** For each word w and code c in {appearance, geometry, both}:
+  - DL(w, c) = sum over w's training referents of -log softmax over that frame's candidates of log N(x^c; prototype_w^c), plus
+    0.5 k_c log n with k_c = 2 x the channel's dims; "both" sums the two log-likelihoods (k_app + k_geo).
+  - DL(w, null) = sum of log(#candidates). The cheapest code wins; null = a function word.
+- **Siblings for the ordinal / set-position features** = the non-overlapping candidates that EVERY appearance (or both) word of the
+  phrase accepts: diagonal Mahalanobis^2 within the chi-square 99% radius of its prototype, at most 8, by the words' evidence.
+  This replaces B1.1's DELTA window; the DELTA grid is gone.
+- **Arms.** siglip (position-free), dino (position-free), and "both": the two 32-d codes concatenated (64-d), whose regions are
+  clustered on the concatenation.
+- **Selection.** K x composition x floor by held-out-cell referent likelihood (training demos). The primary arm is frozen by mean
+  training-unit hit (the B1 / B1.1 rule).
+
+**Training-unit smokes (800 S1 training units; object / goal hit, weighted).** siglip 0.426 / 0.232 (FROZEN primary), dino
+0.311 / 0.229, both 0.214 / 0.269. All three are far below B1.1 (0.647 / 0.592). The held-out-cell referent log-likelihood improved
+(siglip -5.9, dino -3.0, both -4.1 nats, vs B1.1's -13 to -17, and now at or above the uniform code of about -5.5): the identity
+code's prototypes are less overconfident, but the hit fell. Chosen: siglip K 16 flat floor 0.05; dino K 8 flat floor 0.2; both
+K 8 flat floor 0.05. Head composition lost again in every arm.
+
+**MDL, as found before the read.**
+- siglip: geometry 38, appearance 9, both 1 ("milk"), null 7 ("the", "on", "to", "under", "back", "shelf", "tomato").
+  - Lateral / ordinal / part words go to geometry ("left", "right", "middle", "front", "top", "bottom", "drawer"), and function
+    words drop out, as intended.
+  - But most nouns also go to geometry ("black", "plate", "cabinet", "stove", "tray", ...): with position removed from
+    appearance, a 16-parameter geometry code identifies a referent in a familiar layout more cheaply than a 64-parameter
+    appearance code.
+  - Only 9 words keep appearance, so most phrases have no appearance word to define the sibling set; every siglip geometry
+    prototype then sits at set-position / rank 0.5.
+- dino: geometry 42, appearance 10, both 1 ("in"), null 2 ("shelf", "under").
+  - The "left" prototype sits at the image RIGHT of its sibling set (set-position col 0.84, rank col 0.78) and "right" at the
+    left (0.38 / 0.40): the mirrored LIBERO convention, learned from the referents.
+- both: geometry 52, null 3; no appearance word at all.
+- Prediction: depth 0 falls (types are now coded by layout), held-out depth 1 may rise for dino (mirrored lateral prototypes
+  with siblings), and the caddy stays at chance.
+
+**Size bookkeeping corrected.** The position-free code is one composed affine map (PCA, nullspace projection and whitening are
+linear): 2048 x 32 + 32 = 65568 floats for siglip, 384 x 32 + 32 = 12320 for dino, 77888 for both. B1.1 had reported 10240 / 8576.
+The b1_2 siglip / dino select.json still carry the old count (they ran before the fix); the read reports the corrected count.
+
+**Read.** The same bars, tables (+ drawer and caddy units), per-word channels, left / right prototypes, confounds, CD slopes, T2
+budget and invariance test. The atom for a "both" word is an error when its expert's best node misses the target.
