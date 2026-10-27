@@ -39,6 +39,14 @@ class SmolObservation:
 class SmolVLABackbone(PolicyBackbone):
     kind = "smolvla"
 
+    def __new__(cls, checkpoint=None, *a, **k):
+        """A BindVLA checkpoint (results/bindvla/<exp>, docs/PLAN_BINDVLA.md) is served by BindVLABackbone (same interface)."""
+        if cls is SmolVLABackbone and checkpoint:
+            from .backbone_bindvla import BindVLABackbone, is_bindvla
+            if is_bindvla(checkpoint):
+                return object.__new__(BindVLABackbone)
+        return object.__new__(cls)
+
     def __init__(self, checkpoint=None, device="cuda", num_steps=None):
         os.environ.setdefault("HF_HOME", "/coc/flash10/ksingara3/robot/data/hf/home")
         os.environ.setdefault("HF_HUB_OFFLINE", "1")

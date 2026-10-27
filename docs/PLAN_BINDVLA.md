@@ -76,49 +76,65 @@ Binding features:
 - The SigLIP last hidden state, 2 x 2 average-pooled to a 16 x 16 grid (256 tokens, 768-d) per camera.
 - The grid is aligned with the b1 demo token grid (16 x 16 on the 224 policy image), so the diagnostic needs no remapping.
 
-**1. Role slots** (flag `parser`, default `rule`; flag `cross_role`, default off).
+**1. Role slots and the role path** (flags `parser` (default `rule`), `cross_role` (default off), `hier` (default on),
+`levels` (default 3)). Amended 2026-10-27 at the user's request, before any training step: a HIERARCHICAL bias replaces the
+earlier two-hop design. Scene exploration is hierarchical.
 - Parse:
   - Steps come from primitives.steps_of. Each step gives (object phrase, goal phrase) by s1_labels.split_step, and the verb by
-    the b1 VERB rule. These are the same rules S1 / B1 used. "A of B" splits at the first "of" (b1_bind.parse).
-  - Each step gives three roles: verb, object, goal. At most 2 steps, so at most 6 role slots.
-- Each phrase is tokenised by SmolVLA's tokenizer and embedded by the FROZEN SmolVLM2 token embeddings (context-free).
-- Query = a 2-layer transformer (width 384, 4 heads) over that phrase's tokens ONLY, plus learned role, step and sub-phrase
-  (A / B) embeddings, mean-pooled.
-  - With cross_role off, phrases are separate sequences, so no attention crosses roles.
-  - `cross_role=on`: one sequence holds every role's tokens (role-tagged). Each role still pools its own tokens. This is the
-    RoboGround-style setting: queries see the whole instruction.
-- The verb role produces a token but binds nothing. Verb and goal preposition carry the operator identity (P2: operators
-  compose).
+    the b1 VERB rule. These are the same rules S1 / B1 used.
+  - The goal's leading preposition ("in", "on", "on top of", "to the right of", ...) goes to the verb unit. Verb + relation is
+    the operator identity (P2: operators compose), and that unit binds nothing.
+  - Each binding role (object, goal) is parsed into a PATH from coarse to fine, with L levels:
+    - "A of B" -> level 1 = B (body / fixture), level 2 = A's type words, level 3 = A's attribute words.
+      "the top drawer of the cabinet" -> cabinet / drawer / top; "the left compartment of the caddy" -> caddy / compartment / left.
+    - Otherwise -> level 1 = the type words, level 2 = the attribute words (a closed list of lateral, ordinal and colour words).
+      "the black bowl on the left" -> bowl / black left.
+    - Function words are dropped.
+    - L = 2 folds the two finest levels. hier = off (FLAT) puts all the role's words in one query.
+  - Up to 2 steps. Each step has one verb unit and 2 x L binding units, giving 6 output slots: verb, object and goal per step.
+- Each unit's words are tokenised by SmolVLA's tokenizer and embedded by the FROZEN SmolVLM2 token embeddings (context-free).
+- Query = a 2-layer transformer (width 384, 4 heads) over that unit's tokens ONLY, plus learned unit (role x level) and step
+  embeddings, mean-pooled.
+  - With cross_role off, units are separate sequences, so no attention crosses roles or levels.
+  - `cross_role=on`: one sequence holds every unit's tokens, and each unit still pools its own. This is the RoboGround-style
+    setting: queries see the whole instruction.
 - `parser`:
-  - `rule`: the parse above. It is an oracle on LIBERO's templates, so it is disclosed as one.
-  - `noisy`: rule parse with training-time span corruption. With p = 0.3 per phrase, the phrase boundary moves 1-2 words into
-    the neighbouring role, or one word is dropped.
-  - `learned`: a soft tagger. A 2-layer transformer over the whole instruction's frozen embeddings gives p(role | token), and
-    each role query pools tokens weighted by p. It is trained only by the BC loss.
-  - `generic`: K learned slot queries, independent of language (Pelican-style). Language enters through one pooled instruction
-    token.
-  - `token`: one query per content token of the instruction, with no role grouping (OTTER-style per-token selection).
-    Positions enter only in the values (absolute). The per-token slots are pooled into K tokens by K learned attention-pooling
-    queries.
-  - `generic` and `token` use K = 6, the same token budget as BindVLA's 6 role slots.
+  - `rule`: the parse above. It is an oracle on LIBERO's templates, and is disclosed as one.
+  - `noisy`: rule parse plus training-time corruption. With p = 0.3 per unit, 1-2 boundary words move into the neighbouring unit,
+    or one word is dropped.
+  - `learned`: a soft tagger. A 2-layer transformer over the whole instruction's frozen embeddings gives p(unit | token), and
+    each unit query pools tokens weighted by p. It is trained only by the BC loss.
+  - `generic`: K learned slot queries, independent of language (Pelican-style), plus one pooled instruction token.
+  - `token`: one query per instruction token, with no role grouping (OTTER-style per-token cosine selection). Absolute
+    position appears only in the values. The per-token slots are pooled to K tokens by K learned queries.
+  - `generic` and `token` use K = 6, BindVLA's token budget.
+- **Unsupervised:** no hierarchy, mask or referent labels anywhere. The tree is imposed only by the nesting and the parse.
 
-**2. Soft mask + two-hop** (flag `two_hop`, default on).
-- Appearance logits: a_j = <q, W_k k_j> / sqrt(d) x a learned temperature, over the 256 agentview tokens. m1 = softmax(a).
-- Relative geometry:
-  - With p_j the token's (row, col) and (mu, sigma) the m1-weighted mean and spread (the soft "sibling set" of the phrase's
-    appearance match), r_j = (p_j - mu) / max(sigma, sigma_min).
-  - Final logits = a_j + g(q)^T phi(r_j), with phi = (r, r^2, r_row r_col) and g a ZERO-INITIALISED linear map of the query.
-  - So "left" can bind only relative to the phrase's own sibling set. No convention is coded in: LIBERO's mirrored left / right
-    (PLAN_BINDER 6.1) must be learned from the actions.
-  - m = softmax(final logits).
-- "A of B" with two_hop on:
-  - B's slot is resolved first (its own query, sub-phrase embedding B).
-  - A's logits get + beta log(eps + m_B / max m_B) (beta learned, init 1), so B's mask restricts A's attention.
-  - A's relative geometry is computed relative to B's (mu, sigma).
-  - With two_hop off, A and B tokens form one phrase and one hop.
-- Slot feature s = sum_j m_j W_v k_j. With `wrist_slots` (default on) the same query also attends the 256 wrist tokens (raw
-  keys: the wrist frame is egocentric), giving s_w and the wrist mask centroid.
-
+**2. Nested masks** (flag `hier`; `foveate`, default off).
+- Level 1 attends the whole scene by appearance only, with no geometry term (so no absolute layout):
+  m_1 = softmax(<q_1, W_k k_j> / sqrt(d) x tau).
+- Level l > 1:
+  - m_l = m_{l-1} x softmax(<q_l, W_k k_j> / sqrt(d) x tau + g(q_l)^T phi(r_j)), renormalised.
+  - A child can never leave its parent: this is the part-whole constraint, by construction (unit-tested).
+- Geometry in the PARENT's frame:
+  - r_j = (p_j - mu_{l-1}) / max(sigma_{l-1}, sigma_min), with (mu, sigma) the parent mask's mean and spread.
+  - phi = (r, r^2, r_row r_col). g is ZERO-INITIALISED.
+  - So "top" means top-of-parent and "left" means left within the parent's sibling set (e.g. among all bowls). Both can
+    transfer across bodies. No convention is coded in: LIBERO's mirrored left / right (PLAN_BINDER 6.1) must be learned from the
+    actions.
+  - An empty level keeps its parent's mask.
+- FLAT (hier = off): one query, one mask, geometry in the IMAGE frame (r relative to the image centre), so position words can
+  only be absolute.
+- Slot features:
+  - s = sum_j m_final,j W_v k_j and the level-1 feature s_1;
+  - with `wrist_slots` (default on), the role's mean query also attends the 256 wrist tokens (raw keys: the wrist frame is
+    egocentric), giving s_w and its centroid.
+- `foveate=on`: at levels >= 2, each slot re-encodes a square crop of the 224 image with the frozen tower.
+  - The crop is centred on the parent mask's mean, half-size 2.5 sigma, clamped to [0.08, 0.5].
+  - The child attends the crop's 16 x 16 tokens. Its parent mask is resampled at the crop tokens, and its mass is scattered back
+    to the scene grid.
+  - Cost: one extra SigLIP pass per (slot, level >= 2), i.e. 2 x 2 x (L - 1) = 8 per sample at L = 3. That is 5x the base
+    vision cost. Measured in the smoke and reported; foveate stays off in the main run.
 **3. Position-free keys** (flag `pos_keys`, default on).
 - k_j = P f_j. P is a fixed linear projection that removes the position subspace by iterative nullspace projection (B1.1's
   method). It is fitted on agentview tokens of TRAINING frames only, until a fresh ridge probe's held-out R^2 for row and col is
@@ -139,7 +155,7 @@ Binding features:
 - Pose:
   - the mask-weighted (row, col) and its spread: the operator's parameter, which is absolute by necessity (P1: competence is
     pose-parameterised);
-  - relative geometry: the centroid relative to the parent (two-hop) and the sibling rank, i.e. the m1-mass fraction left of /
+  - relative geometry: the final centroid relative to its parent level's mean and spread, and the rank in the parent, i.e. the parent-mass fraction left of /
     above the centroid.
   - **No 3D point:** the dataset stores no depth, so the camera-frame 3D pose of the brief is not available (deviation).
 - `bottleneck=off`: the expert reads SmolVLA's full prefix (64 connector tokens per camera + the 48 instruction tokens + state).
@@ -173,17 +189,19 @@ projections, slot MLP, global-token projection). The count is printed by the mod
 
 ## 3. Named settings (each is a flag setting of one code path)
 
-| setting | binder | parser | cross_role | two_hop | pos_keys | bottleneck | inv | what it tests |
+| setting | binder | parser | cross_role | hier (L) | pos_keys | bottleneck | inv | what it tests |
 |---|---|---|---|---|---|---|---|---|
-| **bindvla** (main) | on | rule | off | on | on | on | lambda* | the full theory |
+| **bindvla** (main) | on | rule | off | on (3) | on | on | lambda* | the full theory |
 | vanilla_frozen (fair comparator) | off | - | - | - | - | off | 0 | the holistic baseline (T1) |
 | -bottleneck | on | rule | off | on | on | **off** | lambda* | T1: a holistic path is available |
 | -pos_keys | on | rule | off | on | **off** | on | lambda* | the B1 lesson inside a VLA |
-| -two_hop | on | rule | off | **off** | on | on | lambda* | depth: parent resolution |
+| flat | on | rule | off | **off** | on | on | lambda* | the hierarchical bias (one query, image-frame geometry) |
+| levels2 | on | rule | off | **on (2)** | on | on | lambda* | depth of the hierarchy |
+| foveate | on | rule | off | on (3) + **foveate** | on | on | lambda* | finer part features |
 | +cross_role | on | rule | **on** | on | on | on | lambda* | T2: atom experts see only their atom |
 | -inv (ERM, same sampler) | on | rule | off | on | on | on | **0** | P4; the DomainBed lesson: beat a tuned ERM |
 | parser=noisy / learned | on | **noisy / learned** | off | on | on | on | lambda* | the oracle-parse objection |
-| roboground | on | rule | **on** | on | on | **off** | 0 | RoboGround 2504.21530 at equal budget |
+| roboground | on | rule (whole-instruction queries) | **on** | off | on | **off** | 0 | RoboGround 2504.21530 at equal budget |
 | pelican | on | **generic (K=6)** | - | - | on | on | 0 | Pelican-VLA 0.5 2607.06655, matched K |
 | otter | on | **token (K=6)** | - | - | **off** (abs. pos in values) | on | 0 | OTTER 2503.03734 |
 
@@ -203,11 +221,27 @@ Splits:
 | vanilla_frozen | equal or higher (more capacity to fit) | LOWER, gap growing with CD bin | its error on DEV rises with CD; bindvla's is flatter | T1 vs T2 |
 | -bottleneck | equal or higher | LOWER on DEV (any bin) | slot-mask referent hit on HT LOWER (slots get less gradient once a holistic path exists) | T1 |
 | -pos_keys | equal | LOWER on LAT and caddy; ~equal on depth-0 DEV | HT mask hit equal or HIGHER (training layouts reward location memory) | B1 / B1.1 lesson, P4 identifiability |
-| -two_hop | ~equal (few depth-2 training tasks) | LOWER on D2 | drawer / compartment masks hit the body, not the part | P3 depth |
+| flat | ~equal | LOWER on D2 and on part words in new bodies (caddy compartments, drawers of an unseen cabinet scene) | part / lateral words bind remembered image locations: their HT hit equal, DEV hit lower | P3, hierarchy (b), (c) |
+| levels2 | ~equal | LOWER on D2 (part and attribute share one level) | | depth of the hierarchy |
+| foveate | ~equal | HIGHER on D2 (finer part features); cost about 5x vision | | resolution at depth |
 | +cross_role | equal | LOWER on recombination bins (0.3 / 0.5) | role-swap errors (object slot on the goal entity) up | T2 invariance |
 | -inv | equal | ~equal (predicted: the term is weak on LIBERO layouts) | if the gradient-ratio log shows the term idle, no difference is expected or claimed | P4, with a known weakness |
 | parser=noisy | slightly lower | ~equal; better on paraphrases | | robustness of the parse |
 | roboground / pelican / otter | equal or higher | LOWER than bindvla on CD 0.3 / 0.5 and part | otter, like -pos_keys, fails on LAT | prior-art contrasts |
+
+**Hierarchy predictions** (user, 2026-10-27; written before training):
+- (a) **Multiplicativity.** Binding error at path depth d is about 1 - prod over levels of (1 - eps_l), with eps_l the per-level
+  error.
+  - Per-level errors are measured with the per-level mask hit vs sim masks on the 61 matched demos (results/bind/b1/demo;
+    scoring only): level 1 vs the named body, the deepest level vs the part.
+  - Closed-loop success is checked against the same product on DEV (T2 / T4).
+- (b) **Transfer of part words.** hier transfers a seen part / attribute word to a new body: "top drawer" in a cabinet scene
+  not seen with that phrase, and the caddy compartments ("left / right / front / back compartment", where caddy is the part atom
+  and the lateral words are seen elsewhere). flat does not.
+- (c) **Location memory.** flat binds part and lateral words to remembered image locations. Its held-out-training-frame hit
+  is equal to or above hier's, and its DEV hit on those words is lower. B1 measured this pattern outside the policy (PLAN_BINDER 8).
+- The flat-vs-hier, L = 2 vs 3 and foveate ablations above are the tests. In this cap only hier L = 3 without foveate (the main
+  run) is trained.
 
 The **paraphrase test** (planned, not run in this cap): for each training and dev instruction, 3 non-templated paraphrases,
 written once by rule-free human-style rewriting (e.g. "grab the ketchup and drop it into the basket"). They are frozen in a
@@ -218,8 +252,8 @@ bindvla degrades the most, learned the least.
 
 - Loss: SmolVLA's flow-matching BC loss. The action chunk is 50; the loss is the MSE of the velocity over the 7 real dims, with
   padded steps masked. Plus the inv penalty. No binding supervision of any kind.
-- Optimiser: AdamW (lr 1e-4, betas 0.9 / 0.95, wd 1e-10; SmolVLA's preset), grad clip 10, 1k warmup, cosine to 2.5e-6, bf16
-  autocast. Normalisation: MEAN_STD for state and action, computed on the training episodes only.
+- Optimiser: AdamW (lr 1e-4, betas 0.9 / 0.95, wd 1e-10; SmolVLA's preset), grad clip 10, 1k warmup, cosine to 2.5e-6; the frozen VLM
+  runs in bf16 and the trainable modules in fp32 with TF32 matmuls (as LeRobot trains SmolVLA). Normalisation: MEAN_STD for state and action, computed on the training episodes only.
 - Batch 32 (4 environments x 8), 30k steps (960k samples, about 2 epochs; smolvla_libero used 25k x 32). Checkpoints every
   1k steps (trainable weights + optimiser + EMA stats + RNG + sampler state). The latest 2 are kept, plus every 10k.
   - The job is `--requeue` on overcap. On start it resumes from the newest complete checkpoint (written to a temp file and
@@ -294,6 +328,6 @@ prereg/pb1_3.py, the layout generator) are not touched.
 - Invariant Slot Attention 2302.04973: slot-relative frames, the precedent for relative geometry.
 - POCR: what / where split, the precedent for separating content from position.
 - IRM in imitation, 2308.09189 / 2311.01489: invariance across environments in IL.
-- INGRESS / MAttNet: two-stage relational grounding, the precedent for two-hop.
+- INGRESS / MAttNet: two-stage relational grounding, the precedent for nested resolution.
 - **Our claim** is the theory-driven assembly plus ablations predicted to fail in stated directions on stated splits. It is not
   any single module.
