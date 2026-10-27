@@ -27,6 +27,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--shard", default="0/1")
     ap.add_argument("--only", default="")
+    ap.add_argument("--smoke", type=int, default=0)      # N random layouts (one per family in turn) -> frames/smoke; backend check only
     a = ap.parse_args()
     from libero.libero.envs import OffScreenRenderEnv
     import f0b_firstframes_seg as F0
@@ -34,8 +35,18 @@ def main():
     import s1_render as SR
     import b1_3_gen as G
     W = SR._where()
-    plan = json.load(open(os.path.join(B13, "plan.json"), encoding="utf-8"))
-    lays = plan["layouts"]
+    if a.smoke:
+        import random
+        rng = random.Random(5)
+        lays = []
+        while len(lays) < a.smoke:
+            L = G.make_layout(rng, list(G.FAMILIES)[len(lays) % 4])
+            if L:
+                L.update(set="smoke", id=f"sm{len(lays):02d}", seed=len(lays))
+                lays.append(L)
+    else:
+        plan = json.load(open(os.path.join(B13, "plan.json"), encoding="utf-8"))
+        lays = plan["layouts"]
     if a.only:
         keep = set(a.only.split(":"))
         lays = [L for L in lays if L["id"] in keep]

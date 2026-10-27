@@ -38,8 +38,8 @@ AD_MAX = 0.02
 ALPHA_A, ALPHA_C = 0.5, 0.1
 BINS = ("0.1", "0.3", "0.5")
 CELL_TARGET = {0: 10, 1: 10, 2: 8}       # depth 2: the pre-agreed fallback minimum (9 failed the search: plan jobs 4289735-4290381)
-ORDER = (("0.5", 2), ("0.1", 2), ("0.3", 2), ("0.1", 1), ("0.1", 0), ("0.3", 1), ("0.3", 0), ("0.5", 1), ("0.5", 0))
-TEST_LAYOUTS, TEST_ATTEMPTS, N_TRAIN_LAYOUTS = 3, 5, 720
+ORDER = (("0.5", 2), ("0.5", 0), ("0.1", 2), ("0.3", 2), ("0.1", 1), ("0.1", 0), ("0.3", 1), ("0.3", 0), ("0.5", 1))   # most constrained cells first
+TEST_LAYOUTS, TEST_ATTEMPTS, N_TRAIN_LAYOUTS, N_TARGETED = 3, 5, 720, 1500
 FAMILIES = {"kitchen": ("LIBERO_Kitchen_Tabletop_Manipulation", "kitchen_table", "kitchen_table"),
             "living": ("LIBERO_Living_Room_Tabletop_Manipulation", "living_room_table", "living_room_table"),
             "study": ("LIBERO_Study_Tabletop_Manipulation", "study_table", "study_table"),
@@ -217,7 +217,10 @@ def plan_split(seed=SEED, tries=150):
     best = None
     for rs in range(tries):
         rng = random.Random(seed * 1000 + rs)
-        H, test = set(), {}
+        # a depth-0 unit has three pairs; u >= 0.4 needs (role, head) or (scene, head) AND one more unseen.  The only generator
+        # shift that yields >= 8 such compounds without deleting atoms is a ROLE x SCENE shift: goal referents are never trained
+        # in two families (pre-held (r:goal, s:F) pairs, drawn per restart); the search then holds (s:F, t) pairs as needed.
+        H, test = {("r:goal", "s:" + F) for F in rng.sample(sorted(FAMILIES), 2)}, {}
         ok = True
         # cell order: depth 2 (the smallest tuple space) bin 0.5 first, then its u == 0 and 0.3 cells; then depths 1 and 0 with
         # their u == 0 cells first (later held-out pairs may not break an accepted test tuple's bin: checked below)
@@ -228,7 +231,7 @@ def plan_split(seed=SEED, tries=150):
                 got = sum(1 for t, bb in test.items() if bb == b and depth(t) == d)
                 roles = collections.Counter(t[0] for t, bb in test.items() if bb == b and depth(t) == d)
                 attempts = 0
-                while got < need and attempts < 600:
+                while got < need and attempts < (1500 if b == "0.5" else 600):
                     attempts += 1
                     cand = [t for t in pool if t not in test]
                     # role balance: prefer the role this cell has fewer of (when that role is feasible at this depth)
@@ -423,6 +426,28 @@ def plan_layouts(split, seed=SEED):
             assert L, tp
             L.update(set="test", id=f"te{i:03d}_{j}", tuple=list(tp), bin=te["bin"], attempt=j)
             out.append(L)
+    # TARGETED training layouts (added after the first unit build: the random layouts realised only 1896 training units and
+    # D_A 0.073).  Each realises one TRAINING tuple, drawn with raking weights that match the test atom distribution.
+    trt = [tuple(t) for t in split["train_tuples"]]
+    q = weighted_dist([tuple(t["tuple"]) for t in split["test"]], [1.0] * len(split["test"]))
+    w = np.ones(len(trt))
+    for _ in range(200):
+        p = weighted_dist(trt, list(w))
+        w = w * np.array([np.prod([(q.get(a, 1e-6) / p[a]) ** (1.0 / len(atoms(t))) for a in atoms(t)]) for t in trt])
+        w = w / w.sum()
+    rng2 = random.Random(seed + 11)
+    n = 0
+    while n < N_TARGETED:
+        tp = rng2.choices(trt, weights=list(w))[0]
+        L = None
+        for _ in range(50):
+            L = make_layout(rng2, tp[1], need=tp)
+            if L:
+                break
+        if L:
+            L.update(set="train", id=f"tt{n:04d}", tuple=list(tp))
+            out.append(L)
+            n += 1
     return out
 
 
