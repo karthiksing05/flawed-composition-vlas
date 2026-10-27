@@ -293,3 +293,109 @@ comparison arm, scored against the same bars.
 **Size.** Lexicon: 55 content words x (32-dim mean + variance) = 3520 floats = 14.1 KB fp32 (the stored count, 3664, also holds the
 two unused role codes); the PCA basis is 67584 floats (2048 x 32 + 2048) = 270 KB fp32 for siglip, 12672 for dino. No trained
 network.
+
+## 8. B1 result (read 2026-10-27; ledger b1_bind tag read; results/bind/b1.json): FAIL (bar ii)
+
+The primary arm passes bars (i) and (iii) and fails (ii). Hit, two-level task-cluster bootstrap:
+
+| bar | B1 siglip (primary) | B1 dino | B1b | S1c | GroundingDINO | Qwen2.5-VL | Molmo |
+|---|---|---|---|---|---|---|---|
+| (i) held-out d1 >= 0.70 (15 units, 3 tasks) | **0.867** [0.53, 1.00] pass | 0.467 | 0.267 | 0.40 | 0.00 | 0.00 | 0.00 |
+| (ii) d2 seen-body >= 0.70 (20, 4) | **0.55** [0.25, 0.85] fail | 0.35 | 0.90 | 0.65 | 0.00 | 0.40 | 0.00 |
+| (iii) d0 >= 0.786 (140, 23) | **0.929** [0.83, 0.99] pass | 0.779 (fail) | 0.707 | 0.879 | 0.786 | 0.879 | 0.779 |
+
+| depth / split | n (tasks) | B1 siglip | B1 dino | B1b | S1c | GroundingDINO | Qwen | Molmo |
+|---|---|---|---|---|---|---|---|---|
+| 0 seen | 90 (14) | 0.933 | 0.756 | 0.967 | 0.867 | 0.722 | 0.867 | 0.711 |
+| 0 held-out | 50 (9) | 0.920 | 0.820 | 0.240 | 0.900 | 0.900 | 0.900 | 0.900 |
+| 1 seen | 25 (5) | 0.360 | 0.360 | 0.800 | 0.680 | 0.200 | 0.280 | 0.400 |
+| 1 held-out | 15 (3) | 0.867 | 0.467 | 0.267 | 0.400 | 0.000 | 0.000 | 0.000 |
+| 2 seen | 15 (3) | 0.600 | 0.467 | 1.000 | 0.867 | 0.000 | 0.533 | 0.000 |
+| 2 held-out | 45 (9) | 0.044 | 0.156 | 0.378 | 0.044 | 0.111 | 0.000 | 0.067 |
+| caddy (unseen body) | 45 (9) | 0.067 | 0.156 | 0.311 | 0.044 | 0.111 | 0.000 | 0.067 |
+
+Qwen / Molmo are B0's primary configs, scored under the pre-registered (LIBERO) left / right convention.
+
+**Per task (siglip).**
+- Held-out depth 1: :60 "black bowl on the left" 1.00, :16's goal "on the black bowl in the middle" 1.00, :38 "right moka pot" 0.60.
+- Seen depth 1: "middle black bowl" 1.00; but "black bowl at the front" 0.20, "ketchup" 0.00, "tomato sauce" 0.20, "alphabet
+  soup" 0.40. The instance-level grocery types (E4 codes them depth 1) are confused with each other.
+- Depth 2: "on the cabinet shelf" 1.00, "in the top drawer of the cabinet" 0.40 (:29, :32), "on top of the top drawer" 0.40;
+  every caddy compartment 0.00.
+- Depth 0: 0.929, the best of every binder run on these units. "ketchup" on :32 is the only zero.
+
+**Why held-out depth 1 passes: the appearance channel carries absolute position** (experiments/b1_posdiag.py, after the read,
+exploratory).
+- A linear map from the 32-d appearance PCA recovers a token's row / col with held-out R^2 0.72 / 0.52 (siglip) and 0.89 / 0.85
+  (DINOv2): both towers add position embeddings to their patches.
+- MDL put all 55 words in the APPEARANCE channel (as the smoke found). "left", "middle", "right" therefore have no geometry
+  expert; they bind a remembered image location, learned in the same scene.
+- :60 and :16 are scenes whose training cells taught "left bowl" / "middle black bowl" in the same layout, so the held-out PHRASE
+  is resolved by a scene-bound location prototype, not by a relation. Where the word must transfer to another body ("left /
+  right / front compartment of the caddy"), it fails (0.00).
+- Bar (i) passes, but not for the reason the design intended.
+
+**Diagnostics.**
+- Referent purity (the 61 simulator-rendered matched demos, sim masks): the grasp token lies on the named object in 0.98 (56)
+  and the release token on the goal in 0.78 (50).
+- Part-proposal recall vs sim masks (siglip / dino): best candidate IoU >= 0.5 for 0.91 / 0.84 of body targets, 0.79 / 0.74 of
+  part regions (drawers, shelf levels, compartments, top sides) and 0.80 / 0.60 of table regions. Some candidate's peak hits the
+  target in every unit, so region proposal is never the failing atom; choosing among the candidates is.
+- MDL channels: all 55 words appearance (siglip and dino), including "the", "on" and "in" ("of" is consumed by the parser): no function
+  word was found.
+- Confounds (content words with identical training contexts): chocolate / pudding, frying / pan, alphabet / soup, cheese / cream,
+  juice / orange, dressing / salad. These are compound nouns, so they are harmless here. No pair reaches Jaccard >= 0.8 otherwise.
+- Size: 3520 floats of lexicon (14.1 KB fp32) plus the PCA basis (67584 floats, 270 KB). No trained network.
+
+**Compound divergence (the 11 recombination dev tasks, split.json CD 0.23-0.65; error = 1 - hit; OLS slope, 2000-draw task
+bootstrap).**
+
+| method | slope [95% CI] | error at CD bin 0.1 / 0.3 / 0.5 |
+|---|---|---|
+| B1 siglip | -0.22 [-1.05, 0.59] | 0.13 / 0.25 / 0.10 |
+| B1 dino | -1.43 [-2.09, -0.59] | 0.57 / 0.40 / 0.08 |
+| B1b | -0.87 [-1.44, -0.11] | 0.33 / 0.18 / 0.03 |
+| S1c | -1.18 [-2.39, -0.01] | 0.43 / 0.40 / 0.05 |
+| GroundingDINO | -0.79 [-1.74, 0.05] | 0.67 / 0.75 / 0.43 |
+
+- The T1 / T2 prediction is half met. B1's slope CI includes 0 (flat). But B1b's error FALLS with CD instead of rising, as do
+  S1c's and the zero-shot pointers'.
+- On these units CD is confounded with the task: the 0.5 bin holds type-level tasks (:36, :40, :59, :61) and the 0.1 bin holds
+  the instance qualifiers (:14, :16, :60). With 11 tasks, the CD test cannot separate holistic from factorised binding here.
+
+**T2 budget (siglip; mean atom errors; union bound = mean over units of min(1, sum of the unit's atom errors)).**
+- Observed error vs union bound: depth 0 0.071 vs 0.129, depth 1 0.45 vs 0.50, depth 2 0.82 vs 0.95. The bound holds on
+  average, but per unit it is violated in 5 / 140, 7 / 40 and 2 / 60 units (dino depth 1: 0.60 vs 0.20, 17 violations). The atom
+  set misses errors, mostly instance choice among same-type objects, which no atom owns when no geometry word exists.
+- Atom errors: proposal 0 at every depth; role assignment 0 / 0.10 / 0.10 (depth 0 / 1 / 2); the depth-2 lateral words "front"
+  1.00, "left" 1.00, "right" 0.93 (all caddy); "top" 0, "drawer" 0.07, "cabinet" 0.
+- No parent-resolution atom exists: head composition lost the training selection, so B1 never resolves a parent.
+
+**Atom invariance (permutation test of the between-context spread of each atom's error).**
+- Rejected (p < 0.05) for "front" (0.00 in "black bowl at the front", 1.00 with the caddy), "left" (0.40 vs 1.00), "right" (0.00
+  with "moka pot", 0.93-1.00 with the caddy), "on", "the" and role assignment (0.40 in "in the right compartment of the caddy",
+  and 0.80 in "black bowl at the front", 0 elsewhere).
+- Not rejected for "black", "bowl", "middle", "top", "drawer", "cabinet", "white", "in".
+- So T2's invariance assumption FAILS exactly for the words B1 learned as scene-bound appearance. An atom's error depends on the
+  body it is composed with, because the atom is not a relation. This is the measured version of the novelty review's objection.
+
+**Reading.**
+- From grasp / release events alone, with no annotation, B1 is the best type-level binder on these units (depth 0 0.929 vs
+  GroundingDINO 0.786, Qwen 0.879).
+- It resolves held-out instance phrases in familiar scenes, by remembered location.
+- It does not learn relations: MDL finds no geometry word, because the appearance features already encode position.
+- It does not reach seen sub-regions (drawers 0.40) or any unseen body.
+- The design's premise, that appearance and geometry are separable channels, fails for position-embedded ViT features. Separating
+  them needs a position-free appearance channel (e.g. features with the position embedding removed, or pooled over a region's
+  interior), which B1 did not have.
+
+**Disclosures.**
+- Variant A was frozen by training-unit smokes among five (section 7); the pre-registered rule was followed.
+- The CD analysis uses the split's instruction-level CD, not a CD over the binder's own atoms.
+- The atom definitions (appearance word = right type; geometry word = right instance within the type) were fixed before the read
+  and are crude for function words.
+- Referents for 13 of 61 cells differ by one event-token between the dataset and the render (section 7).
+- The ledger rows carry dirty = true (other agents' edits in the shared tree).
+
+**Cost.** GPU 0.125 h (A40 0.067 h for features, a 2080 Ti 0.058 h for EGL rendering); everything else CPU. With Part 1's CPU-only
+checks, this session used 0.125 GPU-h of the 3 A40-h cap. B0 itself used 0.99 A40-h (section 6).
