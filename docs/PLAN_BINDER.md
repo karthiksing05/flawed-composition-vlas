@@ -150,3 +150,66 @@ task-cluster bootstrap (d4_read.rate). Code: experiments/b0_vlm.py (predictions,
 **Verdict.** B0 PASSES iff at least one primary config (phrase variant; detect for the PaliGemma family) passes all three.
 - Secondary configs (segment, context) and the supplementary arm are scored against the same bars and reported.
 - Every arm is reported per depth x {seen, held-out} x role, and the unseen-caddy units are reported separately.
+
+## 6. B0 result (read 2026-10-27; ledger b0_vlm tag read; results/bind/b0.json; commit 800ab33d): FAIL
+
+No primary config passes all three bars. Hit, two-level task-cluster bootstrap, point estimates (CIs in b0.json):
+
+| arm / config | (i) held-out d1 (15 units, 3 tasks) | (ii) d2 seen-body (20, 4) | (iii) d0 (140, 23) vs GroundingDINO 0.786 | caddy (45, 9) | parse | pass |
+|---|---|---|---|---|---|---|
+| pi05_base detect (primary) | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no |
+| Qwen2.5-VL-7B bbox (primary) | 0.00 | 0.40 | 0.879 | 0.00 | 1.00 | no |
+| Molmo-7B-D point (primary) | 0.00 | 0.00 | 0.779 | 0.067 | 0.91 | no |
+| Qwen bbox + instruction (secondary) | 0.00 | 0.65 | 0.836 | 0.022 | 1.00 | no |
+| Molmo point + instruction (secondary) | 0.00 | 0.60 | 0.886 | 0.111 | 0.97 | no |
+| pi05_base segment / context variants (secondary) | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no |
+| pi05_l90c@5000 detect (supplementary) | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no |
+| S1c (reference) | 0.40 | 0.65 | 0.879 | 0.05 | - | no |
+
+- **The policy's own backbone emits no grounding output.** pi05_base answers `detect` / `segment` with fluent English captions
+  and never a `<loc>` / `<seg>` token; pi05_l90c@5000 emits byte noise. The crutch framing (the pretrained backbone still binds)
+  cannot be tested with the weights on disk: the PaliGemma pt-224 / mix checkpoints that do emit `<loc>` are gated and absent.
+- **General VLMs bind types, not instances or sub-regions.** Qwen / Molmo match or beat GroundingDINO at depth 0 (0.88 / 0.78;
+  held-out depth 0 0.90 for both), and seen depth 2 reaches 0.53 (Qwen, phrase) vs S1c's 0.87.
+
+### 6.1 Left / right convention (supplementary, not pre-registered; experiments/b0_lr_check.py, b0_mirror.py)
+
+Every VLM scored 0.00 on held-out depth 1. The check reads S1's rendered frames (the policy orientation, agentview[::-1, ::-1])
+and LIBERO's BDDL files.
+
+- **World to image.** Over 3782 body observations, the token-centroid column falls with world y (corr -0.99) and the row rises
+  with world x (corr 0.74). The robot sits at -x facing +x, so the robot's left (+y) is on the IMAGE LEFT and +x (away from the
+  robot) is nearer the image bottom.
+- **LIBERO's words.** The BDDL files place the "left" instance at -y and "front" at +x (e.g. LIVING_ROOM_SCENE4: left bowl
+  y in [-0.175, -0.125], right bowl y in [0.025, 0.075]; KITCHEN_SCENE2: front bowl x in [0.075, 0.125]). In every training frame
+  with a lateral word the named instance is the IMAGE-OPPOSITE one ("left bowl" 16 / 16, "left plate" 32 / 32, "book on the
+  right" 24 / 24, "right bowl" / "right plate" all) and the dev units agree (:60, :38). "front / back" agree with the image
+  (front = lower in the image) in 96 / 96 training frames.
+- **Reading.** LIBERO's left / right is neither the robot's frame (robot left = +y) nor the image the policy sees. It is the frame of
+  a viewer at the agentview camera (at +x, facing the robot), and the policy's [::-1, ::-1] image is that view MIRRORED
+  left-right (our inference: the MuJoCo render is flipped only vertically, so a 180-degree rotation adds a horizontal mirror). The caddy compartments follow the same rule: "left compartment" is the
+  image-right one.
+- **Where the VLMs looked.** On :60 ("black bowl on the left") and :38 ("right moka pot") 38 of the 40 Qwen / Molmo peaks (4 configs x 10 frames) lie on the
+  instance that is on the named side OF THE IMAGE, the other instance; the remaining two (Qwen, :60 frame 4) fall on bare table. On :16's goal ("the black bowl in the
+  middle") every peak lies on the laterally central bowl; LIBERO's "middle" is the middle in depth (x). Mirroring does not change
+  that unit.
+- **Mirrored rescore** (committed predictions, same hit and bootstrap; the target of a left / right instance phrase becomes the
+  instance at that image side; nothing else changes; results/bind/b0_mirror.json):
+
+| config | held-out d1, pre-registered | held-out d1, mirrored | left / right units only (10, 2 tasks) | caddy left / right (25, 5; swap) |
+|---|---|---|---|---|
+| Qwen bbox phrase | 0.00 | 0.60 | 0.90 | 1.00 |
+| Qwen bbox + instruction | 0.00 | 0.60 | 0.90 | 0.80 |
+| Molmo point phrase | 0.00 | 0.667 | 1.00 | 0.64 |
+| Molmo point + instruction | 0.00 | 0.667 | 1.00 | 0.44 |
+
+- Under the mirrored reading bar (i) still fails for every config (0.60-0.667 < 0.70), because :16's "middle" stays 0. The
+  pre-registered verdict (FAIL) stands and is not replaced.
+- **What this changes.** The VLMs' held-out depth-1 zero is a frame-convention mismatch, not a grounding failure: they read
+  left / right correctly in the image they are shown. "middle" is a genuine ambiguity (lateral vs depth). Any binder that is not
+  fitted on LIBERO's own language (zero-shot pointers, RoboPoint, GroundingDINO) is scored against a mirrored convention on lateral
+  words; binders fitted on the training cells (B1b, S1b, S1c, B1) learn the convention from data. The S1 / S3b numbers for
+  zero-shot pointers on lateral words carry the same caveat.
+
+**Cost.** B0 used 0.99 A40-h (sacct: b0smoke 4266776 1 m 35 s, 4266869 3 m 18 s; b0dev 4266999 15 m 57 s, 4267000 38 m 33 s; plus a
+CPU setup job). The convention check and rescore were CPU (under 1 min).
