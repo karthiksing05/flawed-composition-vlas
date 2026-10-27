@@ -115,3 +115,39 @@ stack, a LLaVA fork.
   and reports RoboPoint vs S1b, S1c and B1a by depth x seen / held-out / held-out body-seen.
 - **No pass bar**: this is a comparison only.
 - **Smoke**: 4 TRAINING units only, so no dev unit is seen before ps3b.
+
+## S3b result (read 2026-10-26; ledger s3b_grounder tag read; results/bind/s3b.json): RoboPoint is worse than our binders
+
+S1's hit metric on the same 240 dev units. RoboPoint's hit carries its task-bootstrap CI.
+
+| cell | n (tasks) | RoboPoint-13B | S1b | S1c | GroundingDINO (B1a) |
+|---|---|---|---|---|---|
+| depth 0, all | 140 (23) | 0.743 [0.619, 0.872] | 0.821 | 0.879 | 0.786 |
+| depth 0, held-out | 50 (9) | 0.74 | 0.82 | 0.90 | 0.90 |
+| depth 1, all | 40 (7) | 0.15 [0.00, 0.35] | 0.45 | 0.575 | 0.125 |
+| depth 1, held-out | 15 (3) | 0.00 | 0.27 | 0.40 | 0.00 |
+| depth 2, seen | 15 (3) | 0.00 | 0.67 | 0.87 | 0.00 |
+| depth 2, held-out | 45 (9) | 0.18 [0.00, 0.42] | 0.18 | 0.04 | 0.11 |
+| depth 2, held-out, unseen body (caddy) | 40 (8) | 0.20 | 0.125 | 0.05 | 0.125 |
+
+RoboPoint answered every unit with at least one point. Its point masks have IoU 0.26 at depth 0.
+
+Reading:
+- RoboPoint, an off-the-shelf relational pointer trained for spatial references, is below S1b, S1c and GroundingDINO at depth 0.
+- At depth 1 it fails on held-out cells, and at depth 2 it fails on seen ones.
+- Its only edge is the unseen caddy body (0.20).
+- It does not supply the instance and sub-region binding the adapter needs on these LIBERO frames.
+
+Disclosures:
+- Loading the checkpoint warned that its vision-tower weights were unused. This is LLaVA's builder, which loads CLIP-L/336
+  separately.
+- The smoke used 4 TRAINING units.
+- The code, venv (5 GB) and weights (25 GB) are in /coc/flash10/ksingara3/s3b_ext.
+- The alternative model, RoboRefer, was not tried.
+
+## S3 cost
+
+- S3a confidence pass: 4 jobs, about 0.26 A40-h.
+- S3b RoboPoint: smoke plus dev, about 0.72 A40-h.
+- Setup, probe and reads ran on CPU.
+- About 1.0 A40-h in total. About 4.7 A40-h of the approved 20 remain.

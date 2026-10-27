@@ -1,0 +1,268 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "python experiments/s3a_read.py --record",
+ "config": {
+  "note": "S3a binder confidence gate"
+ },
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4253655",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "s3a_gate",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ab81d71d89aaccda65b58a143a034c4464f8de11",
+  "short": "ab81d71d"
+ },
+ "keys": {},
+ "metrics": {
+  "bar": {
+   "B1_damage": -0.009999999999999998,
+   "B1_pass": true,
+   "B2_binding_minus_zs": 0.0,
+   "B2_pass": true,
+   "source": "offline (B1 in-sample)",
+   "verdict": "PASS"
+  },
+  "closed_loop": null,
+  "closed_loop_condition": false,
+  "conf_matches": {
+   "n": 120,
+   "same": 120
+  },
+  "offline_dev": {
+   "closure": {
+    "binding": -0.0,
+    "motion": 0.0,
+    "success": 0.0
+   },
+   "coverage": 0.041666666666666664,
+   "diffs": {
+    "binding": {
+     "diff": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "tasks": 24
+    },
+    "motion": {
+     "diff": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "tasks": 24
+    },
+    "success": {
+     "diff": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "tasks": 24
+    }
+   },
+   "on_units": 5,
+   "quality_all": {
+    "goal": {
+     "empty": 0.0,
+     "inside": 0.6386337216024717,
+     "iou": 0.3866269783139778,
+     "majority_inside": 0.6166666666666667,
+     "one_token": 0.041666666666666664,
+     "units": 120
+    },
+    "obj": {
+     "empty": 0.0,
+     "inside": 0.5974641754850087,
+     "iou": 0.37160699443866746,
+     "majority_inside": 0.575,
+     "one_token": 0.16666666666666666,
+     "units": 120
+    }
+   },
+   "quality_off": {
+    "goal": {
+     "empty": 0.0,
+     "inside": 0.6664004051504052,
+     "iou": 0.40343684693632464,
+     "majority_inside": 0.6434782608695652,
+     "one_token": 0.043478260869565216,
+     "units": 115
+    },
+    "obj": {
+     "empty": 0.0,
+     "inside": 0.5816534391534393,
+     "iou": 0.3599218072244225,
+     "majority_inside": 0.5565217391304348,
+     "one_token": 0.17391304347826086,
+     "units": 115
+    }
+   },
+   "quality_on": {
+    "goal": {
+     "empty": 0.0,
+     "inside": 0.0,
+     "iou": 0.0,
+     "majority_inside": 0.0,
+     "one_token": 0.0,
+     "units": 5
+    },
+    "obj": {
+     "empty": 0.0,
+     "inside": 0.961111111111111,
+     "iou": 0.6403663003663003,
+     "majority_inside": 1.0,
+     "one_token": 0.0,
+     "units": 5
+    }
+   },
+   "rates": {
+    "gated": {
+     "binding": {
+      "hi": 0.3854166666666667,
+      "lo": 0.09375,
+      "mean": 0.22916666666666666,
+      "n": 480,
+      "tasks": 24
+     },
+     "motion": {
+      "hi": 0.6750520833333327,
+      "lo": 0.31666666666666665,
+      "mean": 0.49375,
+      "n": 480,
+      "tasks": 24
+     },
+     "success": {
+      "hi": 0.4375,
+      "lo": 0.13125,
+      "mean": 0.27708333333333335,
+      "n": 480,
+      "tasks": 24
+     }
+    },
+    "oracle": {
+     "binding": {
+      "hi": 0.1,
+      "lo": 0.014583333333333334,
+      "mean": 0.052083333333333336,
+      "n": 480,
+      "tasks": 24
+     },
+     "motion": {
+      "hi": 0.7354166666666667,
+      "lo": 0.37916666666666665,
+      "mean": 0.5604166666666667,
+      "n": 480,
+      "tasks": 24
+     },
+     "success": {
+      "hi": 0.5708333333333333,
+      "lo": 0.21666666666666667,
+      "mean": 0.3875,
+      "n": 480,
+      "tasks": 24
+     }
+    },
+    "zs": {
+     "binding": {
+      "hi": 0.3854166666666667,
+      "lo": 0.09375,
+      "mean": 0.22916666666666666,
+      "n": 480,
+      "tasks": 24
+     },
+     "motion": {
+      "hi": 0.6750520833333327,
+      "lo": 0.31666666666666665,
+      "mean": 0.49375,
+      "n": 480,
+      "tasks": 24
+     },
+     "success": {
+      "hi": 0.4375,
+      "lo": 0.13125,
+      "mean": 0.27708333333333335,
+      "n": 480,
+      "tasks": 24
+     }
+    }
+   },
+   "tasks_on": 1,
+   "units": 120
+  },
+  "s1c_first_frame": {
+   "dev": {
+    "goal": {
+     "empty": 0.0,
+     "inside": 0.5722222222222222,
+     "iou": 0.378311507936508,
+     "majority_inside": 0.5583333333333333,
+     "one_token": 0.36666666666666664,
+     "units": 120
+    },
+    "obj": {
+     "empty": 0.0,
+     "inside": 0.7246340487762057,
+     "iou": 0.3165999363280855,
+     "majority_inside": 0.7416666666666667,
+     "one_token": 0.24166666666666667,
+     "units": 120
+    }
+   },
+   "train": {
+    "goal": {
+     "empty": 0.0,
+     "inside": 0.9969230769230769,
+     "iou": 0.5124790764790765,
+     "majority_inside": 1.0,
+     "one_token": 0.2,
+     "units": 50
+    },
+    "obj": {
+     "empty": 0.02,
+     "inside": 0.6715575396825397,
+     "iou": 0.3919091226873485,
+     "majority_inside": 0.7,
+     "one_token": 0.32,
+     "units": 50
+    }
+   }
+  },
+  "selection": {
+   "chosen": {
+    "coverage": 0.12,
+    "damage": {
+     "diff": -0.009999999999999998,
+     "hi": 0.0,
+     "lo": -0.029999999999999992,
+     "tasks": 10
+    },
+    "score": "det",
+    "tau": 0.5558085441589355
+   },
+   "train_units": 50
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "s3a_gate__libero_90_c__read__s0__ab81d71d",
+ "schema": 1,
+ "script": "experiments/s3a_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T01:13:09+00:00",
+ "stream": null,
+ "tag": "read"
+}

@@ -1,0 +1,56 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_SOLVE S3a",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4253453",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ab81d71d89aaccda65b58a143a034c4464f8de11",
+  "short": "ab81d71d"
+ },
+ "keys": {},
+ "metrics": {
+  "bar": "B1 train damage >= -0.05; B2 dev binding(gated) <= zs; closed loop if run, else offline (B1 in-sample)",
+  "closed_loop_if": "dev coverage >= 0.10 and gated-on dev obj masks mostly inside in >= 0.80; seeds 4-5",
+  "files_sha256": {
+   "docs/PLAN_S3.md": "806b354551f474562a0db015c03a74b87a189096e0621ab97e3c77bba317baaf",
+   "experiments/s2_sandbox.py": "c5fa152c750a30fca88822ba6ad40847734430945df3a695f3f358a11a3ee451",
+   "experiments/s2_serve.py": "09fc6175ebe23ccd8f6299f7456643d9eaf7d60a2b1d3d0fddd87c4e599d1ad9",
+   "experiments/s3_gate.py": "600b34592aa9c13a86a8136670122187ff18454089af2aa4ed892b9982920957",
+   "experiments/s3a_read.py": "147209a65ec160ff61ea3f3ee52292b1d46dcbf36d98ff685483be67e26ff389"
+  },
+  "selection": "train cells only: scores {margin, det, joint}; admissible damage >= -0.02; max train coverage",
+  "status": "PRE-REGISTERED PLAN_SOLVE S3a (binder confidence gate; exploratory)",
+  "written_before": "the confidence pass and any S3 rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__ps3a__s0__ab81d71d",
+ "schema": 1,
+ "script": "experiments/prereg/ps3a.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T01:02:36+00:00",
+ "stream": null,
+ "tag": "ps3a"
+}

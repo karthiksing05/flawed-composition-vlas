@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_SOLVE S3b",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "gideon.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4253698",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "159700533e9263fe3aad86fd43e3056244b131c4",
+  "short": "15970053"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/PLAN_S3.md": "212bc88ba9ee3cd05bd34335b36a46ac8de15304a1d4651a9bf2872d5abbdbaf",
+   "experiments/s3b_read.py": "aa2962a776797e097f434604d9368665e5467e8d83cc9672842fea7adba715ab",
+   "experiments/s3b_robopoint.py": "c834b411f2457b002a3d3d959a450211a38646825011a030ffe6f5f2c4971dda"
+  },
+  "map": "points -> S1 16x16 tokens; peak = most points; S1 hit metric on S1's 240 dev units",
+  "model": "wentao-yuan/robopoint-v1-vicuna-v1.5-13b, github wentaoyuan/RoboPoint @ 206cb1e, greedy, own answer format",
+  "query": "object: 'Locate several points on the {phrase}.'; goal: 'Locate several points {phrase}.'",
+  "report": "RoboPoint vs S1b / S1c / B1a by depth x seen / held-out / held-out body-seen; no pass bar",
+  "status": "PRE-REGISTERED PLAN_SOLVE S3b (RoboPoint-13B point binder, offline mask quality; comparison only)",
+  "written_before": "any RoboPoint dev prediction (smoke on 4 TRAINING units only)"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__ps3b__s0__15970053",
+ "schema": 1,
+ "script": "experiments/prereg/ps3b.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T01:17:47+00:00",
+ "stream": null,
+ "tag": "ps3b"
+}
