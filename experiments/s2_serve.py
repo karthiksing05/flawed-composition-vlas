@@ -88,7 +88,7 @@ class Binder:
         bx = self.boxes(img, body)
         out = np.zeros(256, np.float32)
         if not bx:
-            return out, dict(body=body, rel=rel, n=0)
+            return out, dict(body=body, rel=rel, n=0, conf=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         cl = np.stack([SB.cells(b) for b in bx])
         K = len(bx)
         fm = tokens.float().T.reshape(1, 2048, 16, 16)
@@ -108,7 +108,10 @@ class Binder:
         else:
             out[SB.tok_of(cl[c][1 / (1 + np.exp(-mm)) >= 0.5])] = 1.0
             out[int(SB.tok_of(cl[c][int(mm.argmax())]))] = 1.0
-        return out, dict(body=body, rel=rel, n=K, cand=c)
+        p = np.sort(torch.softmax(il[0].float(), -1).cpu().numpy())[::-1]           # S3a confidence features (s3_gate.F)
+        conf = [float(p[0] - p[1]) if K > 1 else 1.0, float(p[0]), float(bx[c][4]), float(out.sum()),
+                float(1 / (1 + np.exp(-mm.max()))), float(K)]
+        return out, dict(body=body, rel=rel, n=K, cand=c, conf=conf)
 
 
 class S2Policy(S0S.S0Policy):
@@ -124,21 +127,28 @@ class S2Policy(S0S.S0Policy):
         ods = [{"observation/image": I[q], "observation/wrist_image": np.asarray(obs["b/wrist"])[q],
                 "observation/state": np.asarray(obs["b/state"], np.float32)[q], "prompt": str(obs["prompt"])} for q in range(len(I))]
         m = self.bk.model
-        MO, MG = [], []
+        MO, MG, CF = [], [], []
         for g0 in range(0, len(I), 16):
             with torch.no_grad():
                 images, img_masks, lt, lm, _ = m._preprocess_observation(self.bk.observations(ods[g0:g0 + 16]), train=False)
                 embs, _, _ = m.embed_prefix(images, img_masks, lt, lm)
             for j in range(embs.shape[0]):
                 q = g0 + j
-                mo, _ = self.binder.masks(I[q], embs[j, :256], "object", str(obs["s2/obj_phrase"]))
-                mg, _ = self.binder.masks(I[q], embs[j, :256], "goal", str(obs["s2/goal_phrase"]))
+                mo, io = self.binder.masks(I[q], embs[j, :256], "object", str(obs["s2/obj_phrase"]))
+                mg, ig = self.binder.masks(I[q], embs[j, :256], "goal", str(obs["s2/goal_phrase"]))
+                CF.append([io["conf"], ig["conf"]])
+                if "s3/gate" in obs:                     # S3a gate (opt-in): below threshold -> both masks zero (= zs exactly)
+                    import s3_gate as G
+                    gname, gtau = json.loads(str(obs["s3/gate"]))
+                    if G.score(io["conf"], ig["conf"], gname) < gtau:
+                        mo, mg = np.zeros_like(mo), np.zeros_like(mg)
                 MO.append(mo)
                 MG.append(mg)
-        o2 = {k: v for k, v in obs.items() if not k.startswith("s2/")}
+        o2 = {k: v for k, v in obs.items() if not k.startswith(("s2/", "s3/"))}
         o2["s0/mobj"], o2["s0/mgoal"] = np.stack(MO), np.stack(MG)
         out = super().infer(o2, noise=noise)
         out["s2/mobj"], out["s2/mgoal"] = o2["s0/mobj"], o2["s0/mgoal"]
+        out["s2/conf"] = np.asarray(CF, np.float32)                                # [B, 2 roles, 6]
         return out
 
 

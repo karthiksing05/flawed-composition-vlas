@@ -106,8 +106,11 @@ def make_fresh():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--set", choices=("dev", "train"), default="dev")
-    ap.add_argument("--arm", choices=("binder",), default="binder")
+    ap.add_argument("--arm", choices=("binder", "gated"), default="binder")
+    ap.add_argument("--gate", default="")            # S3a, arm gated: "score_name:tau" (s3_gate)
+    ap.add_argument("--conf-only", default="")       # S3a: TAG -> one first-frame binder call per unit, no rollout
     ap.add_argument("--k", type=int, default=4)
+    ap.add_argument("--k0", type=int, default=0)     # S3a: first seed index (runs k0 .. k0+k-1; S0 ran 0-7)
     ap.add_argument("--shard", default="0/1")
     ap.add_argument("--port", type=int, default=0)
     ap.add_argument("--max-units", type=int, default=0)
@@ -126,7 +129,12 @@ def main():
         units = units[:a.max_units]
     PLAN = json.load(open(os.path.join(ROOT, "results", "bind", "s2", "plan.json")))
     od = os.path.join(OUT, f"{a.set}_{a.arm}")
+    if a.conf_only:
+        od = os.path.join(ROOT, "results", "bind", "s3", "conf", f"{a.set}_{a.conf_only}")
     os.makedirs(od, exist_ok=True)
+    GATE = json.dumps([a.gate.split(":")[0], float(a.gate.split(":")[1])]) if a.arm == "gated" else None
+    if a.arm == "gated":
+        assert a.gate, "arm gated needs --gate"
     client = _wcp.WebsocketClientPolicy("127.0.0.1", a.port)
     by = {}
     for u in units:
@@ -153,10 +161,28 @@ def main():
             else:
                 names = (u["named"], u["own"][0])
             phr = PLAN[u["unit"]]
-            runs = [E.Run(k, SB.start(st, [-1.0] * E.WAIT)) for k in range(a.k)]
+            runs = [E.Run(k, SB.start(st, [-1.0] * E.WAIT)) for k in range(a.k0, a.k0 + a.k)]
             for r in runs:
                 r.labels, r.rel_step = None, None
             p0 = {m: np.asarray(SB.S.pos(m), float) for m in movable}
+            if a.conf_only:                              # S3a: the first call's frame (same for every seed), binder only
+                SB.restore(runs[0].snap)
+                st8, _ = SB.obs8()
+                im, wr = SB.S.render()
+                req = {"b/image": im[None], "b/wrist": wr[None], "b/state": np.asarray(st8, np.float32)[None],
+                       "b/seed": np.array([runs[0].seed0], np.int64), "prompt": u["prompt"],
+                       "s2/obj_phrase": phr["obj_phrase"], "s2/goal_phrase": phr["goal_phrase"]}
+                rsp = client.infer(req)
+                om = mk(names)
+                row = dict(unit=u["unit"], tid=u["tid"], conf=np.asarray(rsp["s2/conf"])[0].tolist())
+                for key, o in (("obj", om[0]), ("goal", om[1])):
+                    bm = np.asarray(rsp[f"s2/m{key}"])[0].reshape(-1) > 0
+                    ov = o.reshape(-1) > 0
+                    row[key] = dict(n=int(bm.sum()), oracle_n=int(ov.sum()), inside=float((bm & ov).sum() / max(bm.sum(), 1)),
+                                    iou=float((bm & ov).sum() / max((bm | ov).sum(), 1)))
+                D5.save_atomic(os.path.join(od, u["unit"] + ".npz"), meta=np.array(json.dumps(row)))
+                print(f"[s3 conf] {a.set} {u['unit']}: conf {row['conf']} obj {row['obj']} goal {row['goal']}", flush=True)
+                continue
             t_srv = 0.0
             diag = None
             while True:
@@ -178,6 +204,8 @@ def main():
                            "b/seed": np.array([x[3] for x in grp], np.int64), "prompt": u["prompt"]}
                     if True:
                         req["s2/obj_phrase"], req["s2/goal_phrase"] = phr["obj_phrase"], phr["goal_phrase"]
+                    if GATE:
+                        req["s3/gate"] = GATE
                     ts = time.time()
                     rsp = client.infer(req)
                     chunks.extend(list(np.asarray(rsp["actions"])))
