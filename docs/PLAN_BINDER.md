@@ -560,3 +560,75 @@ The b1_2 siglip / dino select.json still carry the old count (they ran before th
 
 **Read.** The same bars, tables (+ drawer and caddy units), per-word channels, left / right prototypes, confounds, CD slopes, T2
 budget and invariance test. The atom for a "both" word is an error when its expert's best node misses the target.
+
+## 12. B1.2 result (read 2026-10-27; ledger b1_2_bind tag read; results/bind/b1_2.json): FAIL (every arm fails all three bars)
+
+| bar | B1.2 siglip (primary) | B1.2 dino | B1.2 both | B1.1 siglip | B1.1 dino | B1 siglip | B1b | S1c | GroundingDINO | Qwen | Molmo |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| (i) held-out d1 >= 0.70 | 0.000 [0.00, 0.00] fail | 0.067 [0.00, 0.27] fail | 0.133 [0.00, 0.33] fail | 0.467 | 0.067 | 0.867 | 0.267 | 0.40 | 0.00 | 0.00 | 0.00 |
+| (ii) d2 seen-body >= 0.70 | 0.000 [0.00, 0.00] fail | 0.100 [0.00, 0.30] fail | 0.100 [0.00, 0.30] fail | 0.25 | 0.75 | 0.55 | 0.90 | 0.65 | 0.00 | 0.40 | 0.00 |
+| (iii) d0 >= 0.786 | 0.593 [0.45, 0.73] fail | 0.414 [0.24, 0.60] fail | 0.557 [0.41, 0.70] fail | 0.879 | 0.464 | 0.929 | 0.707 | 0.879 | 0.786 | 0.879 | 0.779 |
+
+| depth / split | n (tasks) | B1.2 siglip | B1.2 dino | B1.2 both | B1.1 siglip | B1.1 dino |
+|---|---|---|---|---|---|---|
+| 0 seen / held-out | 90 (14) / 50 (9) | 0.756 / 0.300 | 0.444 / 0.360 | 0.600 / 0.480 | 0.889 / 0.860 | 0.489 / 0.420 |
+| 1 seen / held-out | 25 (5) / 15 (3) | 0.280 / 0.000 | 0.160 / 0.067 | 0.160 / 0.133 | 0.320 / 0.467 | 0.160 / 0.067 |
+| 2 seen / held-out | 15 (3) / 45 (9) | 0.000 / 0.000 | 0.133 / 0.311 | 0.067 / 0.133 | 0.333 / 0.022 | 1.000 / 0.244 |
+| drawer units (:1, :29, :32) | 15 (3) | 0.000 | 0.133 | 0.067 | 0.000 | 0.667 |
+| caddy units | 45 (9) | 0.000 | 0.311 | 0.111 | 0.022 | 0.244 |
+
+**What the change did.** The identity-code MDL did what it was built to do on the function and relational words, and that
+broke binding.
+- Function words drop out (siglip null: "the", "on", "to", "under", "back", "shelf", "tomato"), and lateral / ordinal / part
+  words go to geometry, as section 11 recorded before the read.
+- Most nouns and colours go to geometry too (siglip 38 geometry / 9 appearance / 1 both / 7 null; dino 42 / 10 / 1 / 2; both
+  52 / 0 / 0 / 3). In a familiar layout a 16-parameter layout code identifies the referent more cheaply than a 64-parameter
+  appearance code. On held-out layouts it does not transfer: held-out depth 0 falls from 0.860 (B1.1) to 0.300 (siglip). The
+  held-out-cell log-likelihood of the chosen codes is -5.9 / -3.0 / -4.1 nats (siglip / dino / both).
+- The MDL criterion scores identification on the training layouts, so it cannot see this. That is a property of the criterion,
+  not a tuning miss: description length on in-distribution referents rewards layout memory once appearance is position-free.
+- Type-defined siblings need appearance type words. siglip and both have too few, so every siglip / both geometry prototype
+  sits at set-position / rank 0.5 (flat). Their "left" / "right" carry only absolute position.
+
+**Mirrored left / right check.** Geometry prototype (set-position row / col, rank row / col):
+- dino "left" 0.39 / 0.84 / 0.39 / 0.78, "right" 0.57 / 0.38 / 0.55 / 0.40. "left" is learned at the image RIGHT of its type
+  siblings and "right" at the left: LIBERO's mirrored convention (section 6), learned from the referents with no convention coded
+  in, now attached to geometry experts.
+- It still does not bind: :60 "black bowl on the left" 0.00, :38 "right moka pot" 0.00 (B1b 0.60), caddy left :79 / :82 1.00
+  but caddy right :75 / :80 / :83 0.00 and front :73 / :78 0.00. Caddy is 0.311 overall, at B1b level (0.311), but only on the
+  left and back compartments.
+- siglip / both: flat (0.5) relational coordinates, absolute col 0.44 ("left") vs 0.31 ("right") for siglip: no mirrored or
+  unmirrored relation is learned.
+
+**Atoms, T2 budget, invariance (siglip unless noted).**
+- Role-assignment error 0.10 / 0.18 / 0.05 at depth 0 / 1 / 2 (dino 0.11 / 0.08 / 0.10). Proposal atom 0 everywhere (oracle
+  part-region recall: body 0.92, part 0.76, table 0.60), so the misses are word experts, not proposals.
+- Word atom error (n >= 10): depth 0 "bowl" 0.95, "stove" 0.40, others 0; depth 1 "black" 0.60, "bowl" 0.65, "middle" 0.80;
+  depth 2 "front" 1.00, "in" 0.66, "top" 0.47, "drawer" 0.40, "right" 0.40, "cabinet" 0.35.
+- T2 (observed error vs mean union bound, per-unit violations): siglip d0 0.407 vs 0.25 (37 / 140), d1 0.825 vs 0.725 (7 / 40),
+  d2 1.00 vs 0.80 (12 / 60); dino 0.586 vs 0.264 (45), 0.875 vs 0.625 (12), 0.733 vs 0.95 (1); both 0.443 vs 0.186 (38), 0.85 vs
+  0.425 (17), 0.883 vs 0.95 (3). The union bound is violated at depth 0 and 1 in every arm: errors are not attributable to
+  separable atoms.
+- Invariance (permutation test across compounds, p < 0.05 rejects): siglip rejects role, "black", "bowl", "in", "front", "left";
+  not "middle", "top", "drawer", "cabinet", "white", "right". dino rejects role, "bowl", "on", "the", "in", "right". both rejects
+  role, "black", "bowl", "on", "the", "in", "top", "drawer", "cabinet", "right". Still not compound-invariant in any arm.
+
+**CD (11 recombination tasks).** siglip slope -0.66 [-1.48, 0.34], dino -0.73 [-2.00, 0.50], both -0.23 [-0.93, 0.52]: all CIs
+include 0 (B1b -0.87 [-1.44, -0.09], S1c -1.18 [-2.36, -0.02], GroundingDINO -0.79 [-1.79, 0.11]). Not shown.
+
+**Unchanged diagnostics.** Referent purity 0.98 grasp / 0.78 release. Part recall dino body 0.88 / part 0.78 / table 0.60.
+Confounds: the same compound nouns (both: five, "chocolate pudding" separated). Lexicon 1408 / 1536 / 1104 floats plus the
+position-free affine code 65568 / 12320 / 77888 floats.
+
+**Deviations (honest).**
+- No variant search after the prereg; the three arms were frozen by training smokes (siglip 0.426 / 0.232, dino 0.311 / 0.229,
+  both 0.214 / 0.269) and siglip was named primary by smoke.
+- The siglip / dino select.json and the mdl block of b1_2.json carry the stale pca_floats (10240 / 8576); the corrected counts
+  are in section 11 and above.
+- Head composition again lost selection, so the parent atom stays empty.
+- Cost: 0 GPU-h for B1.2 (CPU only; features reused from B1 / B1.1).
+
+**Reading.** Three iterations bracket the problem. Appearance with position (B1) binds by layout memory. Position-free
+appearance with appearance-only MDL (B1.1) binds types but not relations. Identity MDL (B1.2) assigns relations to geometry
+but moves types there too and loses transfer. An unsupervised binder needs the channel choice scored on held-out layouts
+(or a code that cannot express absolute layout), not on the training referents' description length.
