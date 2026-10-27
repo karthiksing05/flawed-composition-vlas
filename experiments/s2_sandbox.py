@@ -106,7 +106,8 @@ def make_fresh():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--set", choices=("dev", "train"), default="dev")
-    ap.add_argument("--arm", choices=("binder", "gated"), default="binder")
+    ap.add_argument("--arm", choices=("binder", "gated", "oracle"), default="binder")   # S4: oracle = live sim masks (S0's rule)
+    ap.add_argument("--max-state", type=int, default=-1)   # S4: only units with state <= this (dev subset)
     ap.add_argument("--gate", default="")            # S3a, arm gated: "score_name:tau" (s3_gate)
     ap.add_argument("--conf-only", default="")       # S3a: TAG -> one first-frame binder call per unit, no rollout
     ap.add_argument("--k", type=int, default=4)
@@ -125,6 +126,8 @@ def main():
     units = E.jload(os.path.join(E.OUT, "e2_plan.json"))["units"] if a.set == "dev" else train_units()
     i, n = map(int, a.shard.split("/"))
     units = [u for j, u in enumerate(units) if j % n == i]
+    if a.max_state >= 0:
+        units = [u for u in units if u["state"] <= a.max_state]
     if a.max_units:
         units = units[:a.max_units]
     PLAN = json.load(open(os.path.join(ROOT, "results", "bind", "s2", "plan.json")))
@@ -194,7 +197,7 @@ def main():
                     SB.restore(r.snap)
                     st8, _ = SB.obs8()
                     im, wr = SB.S.render()
-                    mo, mg = np.zeros(256, np.float32), np.zeros(256, np.float32)
+                    mo, mg = mk(names) if a.arm == "oracle" else (np.zeros(256, np.float32), np.zeros(256, np.float32))
                     rows.append((im, wr, st8, r.seed0 + r.q, mo, mg))
                 chunks = []
                 for g0 in range(0, len(rows), E.BATCH):
@@ -202,7 +205,9 @@ def main():
                     req = {"b/image": np.stack([x[0] for x in grp]), "b/wrist": np.stack([x[1] for x in grp]),
                            "b/state": np.stack([x[2] for x in grp]).astype(np.float32),
                            "b/seed": np.array([x[3] for x in grp], np.int64), "prompt": u["prompt"]}
-                    if True:
+                    if a.arm == "oracle":
+                        req["s0/mobj"], req["s0/mgoal"] = np.stack([x[4] for x in grp]), np.stack([x[5] for x in grp])
+                    else:
                         req["s2/obj_phrase"], req["s2/goal_phrase"] = phr["obj_phrase"], phr["goal_phrase"]
                     if GATE:
                         req["s3/gate"] = GATE

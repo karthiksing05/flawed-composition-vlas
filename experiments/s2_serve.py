@@ -165,7 +165,8 @@ def main():
     bk = PolicyBackbone(os.environ.get("BACKBONE_CONFIG") or "pi05_l90c", checkpoint_dir=os.environ.get("BACKBONE_CKPT") or None,
                         device="cuda")
     ad = SA.BindAdapter().to(bk.device)
-    ad.load_state_dict(torch.load(os.path.join(ROOT, "results", "bind", "s0", "adapter.pt"), map_location=bk.device))
+    ad.load_state_dict(torch.load(os.environ.get("S2_ADAPTER") or os.path.join(ROOT, "results", "bind", "s0", "adapter.pt"),   # S4: opt-in
+                                  map_location=bk.device))
     ad.eval()
     pol = S2Policy(bk, ad, Binder(bk, a.binder))
     from openpi.policies import libero_policy
