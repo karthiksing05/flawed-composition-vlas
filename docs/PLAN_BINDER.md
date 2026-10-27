@@ -213,3 +213,83 @@ and LIBERO's BDDL files.
 
 **Cost.** B0 used 0.99 A40-h (sacct: b0smoke 4266776 1 m 35 s, 4266869 3 m 18 s; b0dev 4266999 15 m 57 s, 4267000 38 m 33 s; plus a
 CPU setup job). The convention check and rescore were CPU (under 1 min).
+
+## 7. B1 pre-registration (2026-10-27; ledger m3_prereg tag pb1; written after smokes on TRAINING units only, before any dev unit is predicted)
+
+The unsupervised prototype binder of section 3.1, with the novelty review's correction: factorising the scorer does not make the
+errors independent (the experts share the region proposals and the parent), so region proposal, role assignment and parent
+resolution are atoms of the T2 budget, and atom invariance is TESTED.
+
+**Code.** experiments/b1_acts.py, b1_render.py, b1_demos.py (referents), b1_feats.py (features), b1_bind.py (binder),
+b1_read.py (read). No simulator label is read before the read; sim masks are used only for scoring and diagnostics.
+
+**Referents (no annotation).**
+- 59 training cells with a matched demo (61 minus libero_10:1 / :7, "both X and Y", as S1); every recorded demo of each cell
+  (LeRobot ports on disk, offline): 2650 demos, of which 2164 have a contact event for every step -> 4195 referents.
+- Grasp / release = a closed gripper-command run of >= 10 frames and its end; a release within 5 cm of its grasp is a regrasp and
+  is dropped. The object role's referent is the agentview token under the gripper at the grasp, the goal role's at the release:
+  the proprioceptive eef position, projected into the demo's frame 0 with the task's agentview K / E.
+- Check: on the 61 matched demos the dataset-projected event tokens equal the simulator-rendered ones in 48 cells; in the other 13 one
+  event differs, mostly by one token (a neighbouring column) or one grid row (16 tokens). Referent purity against sim masks is
+  reported by the read as a diagnostic.
+
+**Regions.** PCA (32 dims, whitened; fitted on training frames only) of the patch features; Ward clustering of the 256 tokens under
+grid connectivity -> a merge tree; cut at K clusters = bodies, nodes inside a body = parts; candidates = nodes of 2-128 tokens.
+Appearance channel = node mean feature; geometry channel = centroid / extent relative to the parent (the node's body, or B for
+"A of B" under head composition) + position within the phrase's instance set (non-overlapping candidates within DELTA nats).
+
+**Atoms.** A diagonal-Gaussian prototype per word in both channels (hard EM over which node at the referent token is the referent,
+3 rounds; B words fitted on the resolved B). MDL (as 3.1): the word goes to the channel whose prototype saves the most nats on its
+referents' features against the candidate background, minus d log n; none positive = function word.
+
+**Binding.** Product of experts: the sum over the phrase's content words of the log-likelihood ratio (prototype vs candidate
+background) in the word's channel; "A of B" under head composition resolves B first. Peak = the chosen node's member token nearest
+its centroid. Unknown words carry no evidence; no evidence = no prediction (a miss).
+
+**Selection (training demos only).** K in {8, 16, 32} x composition {head, flat} x variance floor {0, 0.05, 0.2} (x the candidate
+background variance), DELTA = 4: the highest held-out-cell referent log-likelihood (a fixed hash holds out a third of the cells).
+Chosen: siglip K 8 flat floor 0.2; dino K 16 flat floor 0.2. Head composition lost to flat at every (K, floor) for both arms.
+The chosen held-out-cell referent log-likelihood (-17.0 siglip, -12.6 dino nats) is BELOW the uniform code over about 250
+candidates (about -5.5): the prototypes are overconfident on cells they were not fitted on.
+
+**Smokes and design changes before registration (all on TRAINING units; disclosed).**
+- One demo per cell (107 referents) gave training-unit hit 0.53 object / 0.20 goal; all recorded demos were used instead.
+- Five scoring / MDL variants were smoked on 800 sampled S1 training units (siglip; object / goal hit, demo phrases + other phrases):
+  - A, word evidence against the candidate background, no role expert, MDL on the referent's features: 0.711 / 0.499 (CHOSEN, the
+    3.1 design as written);
+  - B, against the role's referent code + a role expert: 0.591 / 0.510;
+  - C, B with MDL on the referent's identity among the frame's candidates: 0.477 / 0.507;
+  - D, A with identity MDL: about 0.1;
+  - conditional MDL sweeps (a word coded given its phrase's other words; product or best-code context): 0.56 / 0.44-0.52.
+  - The freeze rule was the mean training-unit hit. Variant A puts EVERY word in the appearance channel (function words
+    included). This is recorded as found: on LIBERO every word's referents come from few scenes, so appearance always codes them
+    more cheaply than geometry. Geometry words ("left", "top", "middle") therefore have no geometry expert, and the read is
+    expected to fail on held-out depth 1.
+- Role assignment has no expert in variant A; its error is still measured as an atom (below).
+
+**Units, metric, bars, verdict** (S1c's / B0's, unchanged). S1's 240 dev units, s1_read.hit, task-cluster bootstrap.
+(i) held-out depth-1 hit >= 0.70 (15 units, 3 tasks); (ii) depth-2 seen-body hit >= 0.70 (20, 4); (iii) depth-0 hit >= GroundingDINO
+0.786 (140, 23). B1 PASSES iff the PRIMARY arm (siglip: pi05_l90c's own image tokens) passes all three; dino (DINOv2-small) is the
+comparison arm, scored against the same bars.
+
+**Reported with the verdict.**
+- B1 vs B1b (S1), S1c, GroundingDINO, Qwen2.5-VL, Molmo per depth x split x role; the caddy units.
+- Part-proposal recall vs sim masks (best candidate IoU >= 0.5; any candidate whose peak hits) per target kind.
+- The MDL channel and savings of every word; confounds (content words whose training role phrases coincide, and pairs with
+  Jaccard >= 0.8).
+- Error vs compound divergence (split.json's per-task CD; the 11 recombination dev tasks): OLS slope with a 2000-draw
+  task-bootstrap CI for B1 and B1b. T1/T2 prediction: B1's slope CI includes 0, B1b's is positive.
+- T2 budget per depth: atom errors and the union bound vs the observed error. Atoms (scoring only):
+  - region proposal: no candidate's peak hits the target;
+  - role assignment: the peak lies on the other role's target;
+  - parent resolution (head composition only): the resolved B is off the target's reference body;
+  - each content word: an appearance word errs if its expert's best node is off the target's type; a geometry word errs if,
+    among nodes on the target's type, its best node misses the target.
+- Atom invariance: per atom, its error in each co-occurring context (the role phrase minus the atom); permutation test (1000
+  draws) of the between-context variance. Invariance predicts no context effect.
+- Power: (i) 3 tasks, (ii) 4 tasks; the frames within a task are near-duplicates. The invariance and CD tests have few tasks and
+  are descriptive.
+
+**Size.** Lexicon: 55 content words x (32-dim mean + variance) = 3520 floats = 14.1 KB fp32 (the stored count, 3664, also holds the
+two unused role codes); the PCA basis is 67584 floats (2048 x 32 + 2048) = 270 KB fp32 for siglip, 12672 for dino. No trained
+network.

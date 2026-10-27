@@ -1,0 +1,131 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_BINDER B1",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4275637",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "6ce3f3d8af7c58765f00bdfcee67a4986d6e3ba1",
+  "short": "6ce3f3d8"
+ },
+ "keys": {},
+ "metrics": {
+  "also": "caddy; part-proposal recall vs sim masks; MDL channels; confounds; CD slope B1 vs B1b (task bootstrap); T2 atom budget (proposal, role, parent, words); atom invariance permutation test; referent purity",
+  "arms": "primary: siglip (pi05_l90c@5000 image tokens); comparison: dino (DINOv2-small)",
+  "bar": "per arm: held-out depth-1 hit >= 0.70 AND depth-2 seen-body hit >= 0.70 AND depth-0 hit >= GroundingDINO (0.786); B1 PASS iff siglip passes all three",
+  "files_sha256": {
+   "docs/PLAN_BINDER.md": "fe9858f9174d410c23bfb282223c6c0bfb38a08ce1fba8be1162b0ca06f63505",
+   "experiments/b1_acts.py": "873fea6da2be93a583750ddf450d07ae7d2ebd79846e03701609a152bcb09b1a",
+   "experiments/b1_bind.py": "ebe6a337d0a8b595622022e243d8449412b8253739f3f40e394997c99132a5b7",
+   "experiments/b1_demos.py": "8ab27d566be29f3e10525e20ccf677e1b4deb8285e8868b0c00595aec1656b55",
+   "experiments/b1_feats.py": "38cb60ce7525e9e3d44302ca0bebf534d5b8e86bb56cb44f34a0be3d5cc53af0",
+   "experiments/b1_read.py": "195c68d676ac6252ade49dc799b6519855e865fe1d8ea7f0f5a97b80fbeb735c",
+   "experiments/b1_render.py": "1d18c1f9ca7c2d1f469c29d9c7efac067e687328c18481c04fee745ecdafbce6",
+   "results/bind/s1/labels.json": "6e6b5d22241960ef6a41c8d93cc7ba492847103922fa478392104e699e05888f"
+  },
+  "frozen": {
+   "dino": {
+    "chosen": {
+     "K": 16,
+     "compose": "flat",
+     "delta": 4.0,
+     "floor": 0.2,
+     "ll_heldout": -12.583692523032735,
+     "ll_train": -10.066175944207542
+    },
+    "lexicon_floats": 3664,
+    "n_content": 55,
+    "n_frames": 2164,
+    "n_occ": 4195,
+    "pca_floats": 12672
+   },
+   "siglip": {
+    "chosen": {
+     "K": 8,
+     "compose": "flat",
+     "delta": 4.0,
+     "floor": 0.2,
+     "ll_heldout": -17.008593376865864,
+     "ll_train": -14.915778739185408
+    },
+    "lexicon_floats": 3664,
+    "n_content": 55,
+    "n_frames": 2164,
+    "n_occ": 4195,
+    "pca_floats": 67584
+   }
+  },
+  "power": "(i) 3 tasks, 15 units; (ii) 4 tasks, 20 units; CD / invariance descriptive",
+  "smoke_train_units": {
+   "dino": {
+    "goal|demo_phrase": {
+     "mean": 0.42857142857142855,
+     "n": 287
+    },
+    "goal|other_phrase": {
+     "mean": 0.4659090909090909,
+     "n": 88
+    },
+    "object|demo_phrase": {
+     "mean": 0.5585284280936454,
+     "n": 299
+    },
+    "object|other_phrase": {
+     "mean": 0.46825396825396826,
+     "n": 126
+    }
+   },
+   "siglip": {
+    "goal|demo_phrase": {
+     "mean": 0.4808362369337979,
+     "n": 287
+    },
+    "goal|other_phrase": {
+     "mean": 0.5568181818181818,
+     "n": 88
+    },
+    "object|demo_phrase": {
+     "mean": 0.7759197324414716,
+     "n": 299
+    },
+    "object|other_phrase": {
+     "mean": 0.5555555555555556,
+     "n": 126
+    }
+   }
+  },
+  "status": "PRE-REGISTERED PLAN_BINDER B1 (unsupervised prototype binder: contact-event referents, feature-cluster regions, MDL channels, product of experts)",
+  "variant": "A: word evidence vs candidate background, no role expert, MDL on referent features (frozen by mean training-unit hit among 5 smoked variants; PLAN_BINDER 7)",
+  "written_before": "any B1 dev prediction or score"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__pb1__s0__6ce3f3d8",
+ "schema": 1,
+ "script": "experiments/prereg/pb1.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T19:02:04+00:00",
+ "stream": null,
+ "tag": "pb1"
+}
