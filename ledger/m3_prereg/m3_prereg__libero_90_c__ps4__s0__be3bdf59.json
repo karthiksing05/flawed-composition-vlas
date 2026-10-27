@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_SOLVE S4",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4256186",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "be3bdf590a96b040f6b9d7262ad560d1876f61ff",
+  "short": "be3bdf59"
+ },
+ "keys": {},
+ "metrics": {
+  "bar": "B1 train damage (robust+S1c) >= -0.05; B2 dev binding (robust+S1c) < zs; B3 dev binding (robust+oracle) <= 0.10",
+  "closed_loop": "seeds 4-5; dev 72 units (states 0-2): robust+S1c, robust+oracle; train 50: robust+S1c; zs and S0-oracle reused at seeds 4-5",
+  "files_sha256": {
+   "docs/PLAN_S4.md": "41274660041990c5a86ea30d1b61a50c4897bbc9f4b3f4cd10226bca488922b3",
+   "experiments/s2_sandbox.py": "b0155f3339c4ec20303693afe28d663fc2c4600266c8e32875a5328e683d8876",
+   "experiments/s2_serve.py": "46233cfc60eae4aa8dba170d5308d965d71822bb2bc92e46d3f058a99692291a",
+   "experiments/s4_bmask.py": "25927bd75c54d5a4b052d1e3d0188fb21f9ce46941f4c9a943baf451472d8b36",
+   "experiments/s4_phrases.py": "021791918fa80238e735e6fca1851872c899b09672a4cfe1a9266b7fb24f7bc3",
+   "experiments/s4_read.py": "02e41cefc1523cdebd7a7700d19c84a49c8715773d22fe70ce20324309921850",
+   "experiments/s4_train.py": "6b0e8877b774c096645dfdd90e343a8622ae5d52e6edcc473bdb1adb3419d56b"
+  },
+  "status": "PRE-REGISTERED PLAN_SOLVE S4 (noise-robust binding adapter; exploratory)",
+  "training": "S0 recipe; own-prompt masks per role: 0.35 oracle / 0.35 synthetic (one_in, one_out, shift, dilate, sibling, empty) / 0.30 S1b|S1c actual masks; cf keeps oracle",
+  "written_before": "robust adapter training and any S4 rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__ps4__s0__be3bdf59",
+ "schema": 1,
+ "script": "experiments/prereg/ps4.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T03:07:13+00:00",
+ "stream": null,
+ "tag": "ps4"
+}

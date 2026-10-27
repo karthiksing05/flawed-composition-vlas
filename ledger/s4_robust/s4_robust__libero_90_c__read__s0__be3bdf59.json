@@ -1,0 +1,295 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "python experiments/s4_read.py --record",
+ "config": {
+  "note": "S4 noise-robust adapter, seeds 4-5"
+ },
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4257713",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "s4_robust",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "be3bdf590a96b040f6b9d7262ad560d1876f61ff",
+  "short": "be3bdf59"
+ },
+ "keys": {},
+ "metrics": {
+  "bar": {
+   "B1_damage": -0.07,
+   "B1_pass": false,
+   "B2_binding_minus_zs": 0.0069444444444444475,
+   "B2_ci": {
+    "diff": 0.0069444444444444475,
+    "hi": 0.11805555555555555,
+    "lo": -0.125,
+    "tasks": 24
+   },
+   "B2_pass": false,
+   "B3_oracle_binding": 0.11805555555555555,
+   "B3_pass": false,
+   "verdict": "FAIL"
+  },
+  "closure": {
+   "binding": -0.06250000000000003,
+   "success": 1.1111111111111116
+  },
+  "damage": {
+   "diff": -0.07,
+   "hi": -0.019999999999999997,
+   "lo": -0.14,
+   "tasks": 10
+  },
+  "dev": {
+   "robust_oracle": {
+    "binding": {
+     "hi": 0.22916666666666666,
+     "lo": 0.027777777777777776,
+     "mean": 0.11805555555555555,
+     "n": 144,
+     "tasks": 24
+    },
+    "motion": {
+     "hi": 0.7152777777777778,
+     "lo": 0.3541666666666667,
+     "mean": 0.5347222222222222,
+     "n": 144,
+     "tasks": 24
+    },
+    "success": {
+     "hi": 0.5277777777777778,
+     "lo": 0.18055555555555555,
+     "mean": 0.3472222222222222,
+     "n": 144,
+     "tasks": 24
+    }
+   },
+   "robust_s1c": {
+    "binding": {
+     "hi": 0.3819444444444444,
+     "lo": 0.1111111111111111,
+     "mean": 0.2361111111111111,
+     "n": 144,
+     "tasks": 24
+    },
+    "motion": {
+     "hi": 0.5763888888888888,
+     "lo": 0.25,
+     "mean": 0.4097222222222222,
+     "n": 144,
+     "tasks": 24
+    },
+    "success": {
+     "hi": 0.5347222222222222,
+     "lo": 0.1875,
+     "mean": 0.3541666666666667,
+     "n": 144,
+     "tasks": 24
+    }
+   },
+   "s0_oracle": {
+    "binding": {
+     "hi": 0.11805555555555555,
+     "lo": 0.0,
+     "mean": 0.041666666666666664,
+     "n": 144,
+     "tasks": 24
+    },
+    "motion": {
+     "hi": 0.7847222222222222,
+     "lo": 0.4166666666666667,
+     "mean": 0.6041666666666666,
+     "n": 144,
+     "tasks": 24
+    },
+    "success": {
+     "hi": 0.5347222222222222,
+     "lo": 0.18055555555555555,
+     "mean": 0.3541666666666667,
+     "n": 144,
+     "tasks": 24
+    }
+   },
+   "zs": {
+    "binding": {
+     "hi": 0.3958333333333333,
+     "lo": 0.08333333333333333,
+     "mean": 0.22916666666666666,
+     "n": 144,
+     "tasks": 24
+    },
+    "motion": {
+     "hi": 0.6736111111111112,
+     "lo": 0.29843750000000013,
+     "mean": 0.4861111111111111,
+     "n": 144,
+     "tasks": 24
+    },
+    "success": {
+     "hi": 0.4583333333333333,
+     "lo": 0.125,
+     "mean": 0.2847222222222222,
+     "n": 144,
+     "tasks": 24
+    }
+   }
+  },
+  "dev_units": 72,
+  "diffs": {
+   "binding": {
+    "robust_oracle_minus_s0_oracle": {
+     "diff": 0.0763888888888889,
+     "hi": 0.18055555555555555,
+     "lo": -0.006944444444444444,
+     "tasks": 24
+    },
+    "robust_oracle_minus_zs": {
+     "diff": -0.1111111111111111,
+     "hi": 0.034722222222222224,
+     "lo": -0.2569444444444444,
+     "tasks": 24
+    },
+    "robust_s1c_minus_zs": {
+     "diff": 0.0069444444444444475,
+     "hi": 0.11805555555555555,
+     "lo": -0.125,
+     "tasks": 24
+    },
+    "s0_oracle_minus_zs": {
+     "diff": -0.1875,
+     "hi": -0.0625,
+     "lo": -0.3263888888888889,
+     "tasks": 24
+    }
+   },
+   "motion": {
+    "robust_oracle_minus_s0_oracle": {
+     "diff": -0.06944444444444445,
+     "hi": 0.006944444444444443,
+     "lo": -0.1597222222222222,
+     "tasks": 24
+    },
+    "robust_oracle_minus_zs": {
+     "diff": 0.04861111111111111,
+     "hi": 0.17378472222222127,
+     "lo": -0.08333333333333333,
+     "tasks": 24
+    },
+    "robust_s1c_minus_zs": {
+     "diff": -0.0763888888888889,
+     "hi": 0.020833333333333336,
+     "lo": -0.1736111111111111,
+     "tasks": 24
+    },
+    "s0_oracle_minus_zs": {
+     "diff": 0.11805555555555555,
+     "hi": 0.25,
+     "lo": -0.006944444444444444,
+     "tasks": 24
+    }
+   },
+   "success": {
+    "robust_oracle_minus_s0_oracle": {
+     "diff": -0.0069444444444444415,
+     "hi": 0.034722222222222224,
+     "lo": -0.041666666666666664,
+     "tasks": 24
+    },
+    "robust_oracle_minus_zs": {
+     "diff": 0.0625,
+     "hi": 0.1736111111111111,
+     "lo": -0.02083333333333333,
+     "tasks": 24
+    },
+    "robust_s1c_minus_zs": {
+     "diff": 0.06944444444444445,
+     "hi": 0.18055555555555555,
+     "lo": -0.020833333333333332,
+     "tasks": 24
+    },
+    "s0_oracle_minus_zs": {
+     "diff": 0.06944444444444445,
+     "hi": 0.18055555555555555,
+     "lo": -0.020833333333333332,
+     "tasks": 24
+    }
+   }
+  },
+  "train": {
+   "robust_s1c": {
+    "binding": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 100,
+     "tasks": 10
+    },
+    "motion": {
+     "hi": 0.21,
+     "lo": 0.0,
+     "mean": 0.09,
+     "n": 100,
+     "tasks": 10
+    },
+    "success": {
+     "hi": 1.0,
+     "lo": 0.79,
+     "mean": 0.91,
+     "n": 100,
+     "tasks": 10
+    }
+   },
+   "zs": {
+    "binding": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 100,
+     "tasks": 10
+    },
+    "motion": {
+     "hi": 0.08,
+     "lo": 0.0,
+     "mean": 0.02,
+     "n": 100,
+     "tasks": 10
+    },
+    "success": {
+     "hi": 1.0,
+     "lo": 0.92,
+     "mean": 0.98,
+     "n": 100,
+     "tasks": 10
+    }
+   }
+  },
+  "train_units": 50
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "s4_robust__libero_90_c__read__s0__be3bdf59",
+ "schema": 1,
+ "script": "experiments/s4_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T05:35:32+00:00",
+ "stream": null,
+ "tag": "read"
+}

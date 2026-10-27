@@ -73,3 +73,69 @@ Also reported: success and motion failure for every arm, closure vs the robust-o
 | closed loop: dev S1c arm | about 0.9 |
 | closed loop: dev oracle arm | about 0.6 |
 | total | about 3.2 |
+
+## 5. Result (read 2026-10-27; ledger s4_robust tag read; results/bind/s4.json): FAIL (all three bars)
+
+Seeds 4-5. Dev: 72 units (24 tasks, states 0-2). Train: 50 units. Arms are paired on states, seeds and noise.
+
+| dev | success | binding error | motion failure |
+|---|---|---|---|
+| zs | 0.285 [0.125, 0.458] | 0.229 [0.083, 0.396] | 0.486 |
+| robust adapter + S1c masks | 0.354 [0.188, 0.535] | 0.236 [0.111, 0.382] | 0.410 |
+| robust adapter + oracle masks | 0.347 [0.181, 0.528] | 0.118 [0.028, 0.229] | 0.535 |
+| S0 adapter + oracle masks (reference) | 0.354 [0.181, 0.535] | 0.042 [0.000, 0.118] | 0.604 |
+
+**Bars:**
+- **B1 fails.** Training-cell damage with S1c masks is **-0.07 [-0.14, -0.02]** (success 0.98 -> 0.91, all motion).
+- **B2 fails.** Dev binding error with S1c masks is 0.236 vs zs 0.229: **+0.007 [-0.125, +0.118]**.
+- **B3 fails.** Binding error with oracle masks is **0.118**, above 0.10. Robustness halved the oracle gain: -0.111 [-0.257, +0.035] vs zs,
+  against S0's -0.188 [-0.326, -0.063] at the same seeds.
+
+**Other results:**
+- With S1c masks, success is +0.069 [-0.021, +0.181] over zs. The gain comes from fewer motion failures (-0.076 [-0.174, +0.021]),
+  not from binding.
+- Closure vs the robust-oracle arm: binding -0.06.
+- First-call S1c masks: object mostly inside the target in 0.74 of units; goal 0.54; one token 0.24 / 0.33.
+
+**Held-out frames** (flow loss, own prompt; training cells' held-out frames):
+
+| masks | no edit | S0 adapter | robust adapter |
+|---|---|---|---|
+| one wrong token | 0.0201 | 0.0255 | 0.0199 |
+| sibling | 0.0201 | 0.0277 | 0.0204 |
+| S1c | 0.0199 | 0.0175 | 0.0166 |
+| oracle | 0.0201 | 0.0151 | 0.0163 |
+
+So offline the robust adapter learned to ignore wrong masks, at some cost to the oracle gain. Closed loop, that did not carry over
+to undamaged training cells or to a binding gain from S1c masks.
+
+**Reading:**
+1. **Noise training trades the oracle gain for robustness.** It did not separate useful from harmful masks well enough: binding
+   with S1c masks is unchanged, and binding with oracle masks is weaker.
+2. **The damage shrank but did not vanish.** It is -0.07 here vs -0.18 for S0 + S1b in S2. Those used different seeds and binders,
+   so this is not a paired comparison.
+3. **The success gain with S1c masks is a motion effect.** The adapter's edit of the deep image K/V changes motion as well as
+   binding.
+
+**Disclosures:**
+- Dev used 72 of 120 units, states 0-2, to fit the budget (pre-registered).
+- Two cells had no aligned parse, so their binder share used synthetic corruptions.
+- S1c's head was trained on these training cells, so its masks on training frames are in-sample.
+- The binder-mask pass cost 0.72 A40-h, against 0.2 planned.
+- **Port collision**: running 4 instances per job made the last port overlap the next job ID's first port. One dev shard's server
+  failed, and that shard was rerun alone (job 4257505).
+- **Preemption**: overcap preempted and requeued four jobs. Units already written were skipped, but the requeued job and the rerun
+  may both have run dev shard 3's remaining units; saves are atomic.
+- The trainer smoke (3 steps) ran before the prereg row. It wrote no adapter or checkpoint.
+
+**Cost:**
+
+| step | A40-h |
+|---|---|
+| binder masks | 0.72 |
+| smoke | 0.05 |
+| training | 1.30 |
+| closed loop, including preempted segments | 2.67 |
+| **S4 total** | **about 4.74** |
+
+This uses the remaining ~4.7, so the approved 20 A40-h are spent (about 0.05 over, within the rounding of the running estimate).
