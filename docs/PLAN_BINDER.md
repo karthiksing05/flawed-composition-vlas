@@ -443,3 +443,70 @@ composition lost to flat again (best held-out log-likelihood: siglip -15.0 vs -1
 
 **Read** (unchanged from section 7): the same bars, tables, MDL table, confounds, CD curve, T2 budget (proposal, role, parent,
 words), invariance test, plus drawer and caddy units separately and the learned geometry prototypes.
+
+## 10. B1.1 result (read 2026-10-27; ledger b1_1_bind tag read; results/bind/b1_1.json): FAIL (no arm passes all three bars)
+
+| bar | B1.1 siglip (primary) | B1.1 dino | B1 siglip | B1b | S1c | GroundingDINO | Qwen | Molmo |
+|---|---|---|---|---|---|---|---|---|
+| (i) held-out d1 >= 0.70 | 0.467 [0.00, 0.87] fail | 0.067 fail | 0.867 | 0.267 | 0.40 | 0.00 | 0.00 | 0.00 |
+| (ii) d2 seen-body >= 0.70 | 0.25 [0.00, 0.75] fail | **0.75 [0.25, 1.00] pass** | 0.55 | 0.90 | 0.65 | 0.00 | 0.40 | 0.00 |
+| (iii) d0 >= 0.786 | **0.879 [0.76, 0.97] pass** | 0.464 fail | 0.929 | 0.707 | 0.879 | 0.786 | 0.879 | 0.779 |
+
+| depth / split | n (tasks) | B1.1 siglip | B1.1 dino | B1 siglip | B1b | S1c |
+|---|---|---|---|---|---|---|
+| 0 seen / held-out | 90 (14) / 50 (9) | 0.889 / 0.860 | 0.489 / 0.420 | 0.933 / 0.920 | 0.967 / 0.240 | 0.867 / 0.900 |
+| 1 seen / held-out | 25 (5) / 15 (3) | 0.320 / 0.467 | 0.160 / 0.067 | 0.360 / 0.867 | 0.800 / 0.267 | 0.680 / 0.400 |
+| 2 seen / held-out | 15 (3) / 45 (9) | 0.333 / 0.022 | 1.000 / 0.244 | 0.600 / 0.044 | 1.000 / 0.378 | 0.867 / 0.044 |
+| drawer units | 15 (3) | 0.000 | 0.667 | 0.40 (:29, :32) | 0.867 | 0.533 |
+| caddy units | 45 (9) | 0.022 | 0.244 | 0.067 | 0.311 | 0.044 |
+
+**What the change did.**
+- Removing linear position removed B1's location memory, as predicted. :60 "black bowl on the left" fell from 1.00 to 0.00 and
+  held-out depth 1 from 0.867 to 0.467 (:16's "middle" 0.80, :38's "right" 0.60).
+  - B1's bar (i) pass was the location memory, confirmed by ablation.
+- It did NOT make geometry carry the relational words. MDL (feature code) still assigns all 55 words to appearance in both arms;
+  no function word drops out.
+- The ordinal prototypes are flat for siglip. For DINOv2 the learned "left" sits at the image RIGHT of its instance set
+  (set-position col 0.66, rank 0.64) and "right" at the left (0.44 / 0.45): LIBERO's mirrored convention, learned from the
+  referents with no convention coded in. But "left" has no geometry expert, so the prototype is never used to bind.
+- DINOv2, position-free, now resolves the seen sub-regions: "in the top drawer of the cabinet" 1.00 on :29 and :32 and "on the
+  cabinet shelf" 1.00. It passes bar (ii), the first annotation-free binder to do so (B1b, trained on sim labels, scores 0.90).
+  It loses type-level binding (depth 0 0.464).
+- Head composition lost the training selection again (section 9), so no parent is ever resolved and the parent atom is empty.
+
+**Role expert and atoms (siglip).**
+- Role-assignment error 0 / 0.13 / 0.20 at depth 0 / 1 / 2. It is invariance-rejected (p = 0.001): 0.73 in "the right compartment
+  of the caddy", 0.20 in "the black bowl in the middle", 0 elsewhere.
+- The individual word experts are much weaker once position is gone (depth 0: "black" 1.00, "bowl" 0.80, "on" 0.92 atom error),
+  yet depth 0 still hits 0.879. Type binding now comes mostly from the role expert plus the joint product, not from separable
+  word atoms.
+- T2 budget (observed error vs mean union bound): siglip 0.121 vs 0.60, 0.625 vs 0.80, 0.90 vs 1.00 (5 / 5 / 0 per-unit
+  violations); dino 0.536 vs 0.886, 0.875 vs 0.75 (9 violations), 0.567 vs 1.00.
+- Invariance rejected (p < 0.05) for "black", "bowl", "the", "in", "front", "drawer", "cabinet" and role. For example, "cabinet"
+  errs 0 in "on the cabinet shelf" and 1.00 in "the top drawer of the cabinet". Not rejected for "middle", "left", "top",
+  "white", "on", "right" (siglip).
+- So the atoms are still not compound-invariant: T2's assumption fails with or without position.
+
+**CD (11 recombination tasks).** siglip slope -0.76 [-1.65, 0.11], dino -0.57 [-1.59, 0.52]: both CIs include 0. B1b's slope is
+-0.87 [-1.44, -0.11] (falls), as in section 8, so the holistic-vs-factorised contrast is still not shown on these units.
+
+**Unchanged diagnostics.** Referent purity 0.98 grasp / 0.78 release. Part-proposal recall (IoU >= 0.5): siglip body 0.92,
+part 0.76, table 0.60; dino 0.88 / 0.78 / 0.60. Confounds are the same six compound nouns. Size: 3520 lexicon floats (14.1 KB)
+plus 10240 (siglip) / 8576 (dino) PCA floats, now 40 KB / 34 KB.
+
+**Reading.** B1's appearance channel was doing two jobs: object identity and remembered location. Projecting position out
+removes the location job, and with it the lateral wins. Feature-code MDL still cannot discover that "left / front / middle" are
+geometry words, because the instance sets the ordinal feature needs are singletons at the selected width, and the 32-d
+appearance code always saves more nats than an 8-d geometry code. The next principled lever is the MDL criterion itself, not the
+features. Per-dimension or identity coding (V3 moved "front" to geometry) needs to be made to work. The DINOv2 sub-region result
+is the one new positive.
+
+**Deviations (B1.1).**
+- The crop re-encode arm was skipped.
+- DELTA was widened to a grid after a training smoke (it re-selected 4).
+- Only linear position was removed.
+- The variant (V2) was frozen by the B1 rule (mean training-unit hit) among 4 variants smoked on training units; V3's identity MDL,
+  the variant that moved some words to geometry, scored lower on that rule.
+- The dino arm's PCA was refitted; its smoke (object 0.36 / goal 0.42) was weak before the read.
+
+**Cost.** B1.1 used CPU only (0 GPU-h). This session in total: 0.125 GPU-h of the 3 A40-h cap.
