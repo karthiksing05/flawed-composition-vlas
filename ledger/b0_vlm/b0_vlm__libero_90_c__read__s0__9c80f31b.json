@@ -1,0 +1,5216 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "python experiments/b0_read.py --record",
+ "config": {
+  "note": "B0 pretrained VLM backbones as binders (S1 hit metric)"
+ },
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4267512",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "b0_vlm",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9c80f31b94757b554c062313071fb279911849b7",
+  "short": "9c80f31b"
+ },
+ "keys": {},
+ "metrics": {
+  "bars": {
+   "molmo__point_context": {
+    "arm": "molmo",
+    "caddy": {
+     "hi": 0.3333333333333333,
+     "lo": 0.0,
+     "mean": 0.1111111111111111,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "point_context",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 0.95,
+     "lo": 0.2,
+     "mean": 0.6,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.9769230769230769,
+     "lo": 0.7769230769230769,
+     "mean": 0.8857142857142857,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": true,
+    "parse_rate": 0.9666666666666667,
+    "pass": false,
+    "role": "secondary"
+   },
+   "molmo__point_phrase": {
+    "arm": "molmo",
+    "caddy": {
+     "hi": 0.2222222222222222,
+     "lo": 0.0,
+     "mean": 0.06666666666666667,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "point_phrase",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.9,
+     "lo": 0.6387096774193548,
+     "mean": 0.7785714285714286,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": false,
+    "parse_rate": 0.9125,
+    "pass": false,
+    "role": "primary"
+   },
+   "pi05_base__detect_context": {
+    "arm": "pi05_base",
+    "caddy": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "detect_context",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": false,
+    "parse_rate": 0.0,
+    "pass": false,
+    "role": "secondary"
+   },
+   "pi05_base__detect_phrase": {
+    "arm": "pi05_base",
+    "caddy": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "detect_phrase",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": false,
+    "parse_rate": 0.0,
+    "pass": false,
+    "role": "primary"
+   },
+   "pi05_base__segment_context": {
+    "arm": "pi05_base",
+    "caddy": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "segment_context",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": false,
+    "parse_rate": 0.0,
+    "pass": false,
+    "role": "secondary"
+   },
+   "pi05_base__segment_phrase": {
+    "arm": "pi05_base",
+    "caddy": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "segment_phrase",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": false,
+    "parse_rate": 0.0,
+    "pass": false,
+    "role": "secondary"
+   },
+   "pi05_l90c__detect_phrase": {
+    "arm": "pi05_l90c",
+    "caddy": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "detect_phrase",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": false,
+    "parse_rate": 0.0,
+    "pass": false,
+    "role": "supplementary"
+   },
+   "qwen__bbox_context": {
+    "arm": "qwen",
+    "caddy": {
+     "hi": 0.08888888888888889,
+     "lo": 0.0,
+     "mean": 0.022222222222222223,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "bbox_context",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 1.0,
+     "lo": 0.2,
+     "mean": 0.65,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.9407407407407408,
+     "lo": 0.7185185185185186,
+     "mean": 0.8357142857142857,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": true,
+    "parse_rate": 1.0,
+    "pass": false,
+    "role": "secondary"
+   },
+   "qwen__bbox_phrase": {
+    "arm": "qwen",
+    "caddy": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 45,
+     "tasks": 9
+    },
+    "config": "bbox_phrase",
+    "i_depth1_heldout": {
+     "hi": 0.0,
+     "lo": 0.0,
+     "mean": 0.0,
+     "n": 15,
+     "tasks": 3
+    },
+    "i_pass": false,
+    "ii_depth2_body_seen": {
+     "hi": 0.8,
+     "lo": 0.0,
+     "mean": 0.4,
+     "n": 20,
+     "tasks": 4
+    },
+    "ii_pass": false,
+    "iii_depth0": {
+     "hi": 0.9714285714285714,
+     "lo": 0.7642857142857142,
+     "mean": 0.8785714285714286,
+     "n": 140,
+     "tasks": 23
+    },
+    "iii_groundingdino": 0.7857142857142857,
+    "iii_pass": true,
+    "parse_rate": 1.0,
+    "pass": false,
+    "role": "primary"
+   }
+  },
+  "cells": {
+   "caddy_units": {
+    "hit": {
+     "b1a": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.1111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "b1b": {
+      "hi": 0.6222222222222222,
+      "lo": 0.044444444444444446,
+      "mean": 0.3111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_context": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.1111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_phrase": {
+      "hi": 0.2222222222222222,
+      "lo": 0.0,
+      "mean": 0.06666666666666667,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_context": {
+      "hi": 0.08888888888888889,
+      "lo": 0.0,
+      "mean": 0.022222222222222223,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "robopoint": {
+      "hi": 0.4222222222222222,
+      "lo": 0.0,
+      "mean": 0.17777777777777778,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1b": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.1111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1c": {
+      "hi": 0.15555555555555556,
+      "lo": 0.0,
+      "mean": 0.044444444444444446,
+      "n": 45,
+      "tasks": 9
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.018518518518518517,
+     "molmo__point_phrase": 0.03333333333333333,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.057467228139431566,
+     "qwen__bbox_phrase": 0.04116534429123233
+    },
+    "n": 45,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:76",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d0_all": {
+    "hit": {
+     "b1a": {
+      "hi": 0.9142857142857143,
+      "lo": 0.6533333333333333,
+      "mean": 0.7857142857142857,
+      "n": 140,
+      "tasks": 23
+     },
+     "b1b": {
+      "hi": 0.8592592592592593,
+      "lo": 0.53328125,
+      "mean": 0.7071428571428572,
+      "n": 140,
+      "tasks": 23
+     },
+     "molmo__point_context": {
+      "hi": 0.9769230769230769,
+      "lo": 0.7769230769230769,
+      "mean": 0.8857142857142857,
+      "n": 140,
+      "tasks": 23
+     },
+     "molmo__point_phrase": {
+      "hi": 0.9,
+      "lo": 0.6387096774193548,
+      "mean": 0.7785714285714286,
+      "n": 140,
+      "tasks": 23
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 140,
+      "tasks": 23
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 140,
+      "tasks": 23
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 140,
+      "tasks": 23
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 140,
+      "tasks": 23
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 140,
+      "tasks": 23
+     },
+     "qwen__bbox_context": {
+      "hi": 0.9407407407407408,
+      "lo": 0.7185185185185186,
+      "mean": 0.8357142857142857,
+      "n": 140,
+      "tasks": 23
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.9714285714285714,
+      "lo": 0.7642857142857142,
+      "mean": 0.8785714285714286,
+      "n": 140,
+      "tasks": 23
+     },
+     "robopoint": {
+      "hi": 0.872,
+      "lo": 0.6187357954545455,
+      "mean": 0.7428571428571429,
+      "n": 140,
+      "tasks": 23
+     },
+     "s1b": {
+      "hi": 0.9307692307692308,
+      "lo": 0.7,
+      "mean": 0.8214285714285714,
+      "n": 140,
+      "tasks": 23
+     },
+     "s1c": {
+      "hi": 0.976,
+      "lo": 0.7655172413793103,
+      "mean": 0.8785714285714286,
+      "n": 140,
+      "tasks": 23
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.20049645060453333,
+     "molmo__point_phrase": 0.20360180824466537,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.4095923067956694,
+     "qwen__bbox_phrase": 0.43339486772609853
+    },
+    "n": 140,
+    "parsed": {
+     "molmo__point_context": 0.9428571428571428,
+     "molmo__point_phrase": 0.9214285714285714,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:14",
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:36",
+     "libero_90:38",
+     "libero_90:40",
+     "libero_90:45",
+     "libero_90:50",
+     "libero_90:58",
+     "libero_90:59",
+     "libero_90:60",
+     "libero_90:61",
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:76",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83",
+     "libero_90:9"
+    ]
+   },
+   "d0_all_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 1.0,
+      "lo": 0.6363636363636364,
+      "mean": 0.8545454545454545,
+      "n": 55,
+      "tasks": 11
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 0.7272727272727273,
+      "mean": 0.9090909090909091,
+      "n": 55,
+      "tasks": 11
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 0.6727272727272727,
+      "mean": 0.8727272727272727,
+      "n": 55,
+      "tasks": 11
+     },
+     "molmo__point_phrase": {
+      "hi": 0.8181818181818182,
+      "lo": 0.2909090909090909,
+      "mean": 0.5636363636363636,
+      "n": 55,
+      "tasks": 11
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 55,
+      "tasks": 11
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 55,
+      "tasks": 11
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 55,
+      "tasks": 11
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 55,
+      "tasks": 11
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 55,
+      "tasks": 11
+     },
+     "qwen__bbox_context": {
+      "hi": 0.9636363636363636,
+      "lo": 0.4909090909090909,
+      "mean": 0.7454545454545455,
+      "n": 55,
+      "tasks": 11
+     },
+     "qwen__bbox_phrase": {
+      "hi": 1.0,
+      "lo": 0.5454545454545454,
+      "mean": 0.8,
+      "n": 55,
+      "tasks": 11
+     },
+     "robopoint": {
+      "hi": 0.8909090909090909,
+      "lo": 0.38181818181818183,
+      "mean": 0.6545454545454545,
+      "n": 55,
+      "tasks": 11
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.6727272727272727,
+      "mean": 0.8727272727272727,
+      "n": 55,
+      "tasks": 11
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.7272727272727273,
+      "mean": 0.9090909090909091,
+      "n": 55,
+      "tasks": 11
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.10882946001367054,
+     "molmo__point_phrase": 0.10764309764309764,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.4305500316971826,
+     "qwen__bbox_phrase": 0.4484873071103446
+    },
+    "n": 55,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 0.8181818181818182,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:14",
+     "libero_90:36",
+     "libero_90:38",
+     "libero_90:45",
+     "libero_90:50",
+     "libero_90:58",
+     "libero_90:59",
+     "libero_90:60",
+     "libero_90:61",
+     "libero_90:76",
+     "libero_90:9"
+    ]
+   },
+   "d0_all_object": {
+    "hit": {
+     "b1a": {
+      "hi": 0.9411764705882353,
+      "lo": 0.5294117647058824,
+      "mean": 0.7411764705882353,
+      "n": 85,
+      "tasks": 17
+     },
+     "b1b": {
+      "hi": 0.7764705882352941,
+      "lo": 0.3764705882352941,
+      "mean": 0.5764705882352941,
+      "n": 85,
+      "tasks": 17
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 0.7529411764705882,
+      "mean": 0.8941176470588236,
+      "n": 85,
+      "tasks": 17
+     },
+     "molmo__point_phrase": {
+      "hi": 1.0,
+      "lo": 0.8,
+      "mean": 0.9176470588235294,
+      "n": 85,
+      "tasks": 17
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 85,
+      "tasks": 17
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 85,
+      "tasks": 17
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 85,
+      "tasks": 17
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 85,
+      "tasks": 17
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 85,
+      "tasks": 17
+     },
+     "qwen__bbox_context": {
+      "hi": 0.9764705882352941,
+      "lo": 0.7764705882352941,
+      "mean": 0.8941176470588236,
+      "n": 85,
+      "tasks": 17
+     },
+     "qwen__bbox_phrase": {
+      "hi": 1.0,
+      "lo": 0.8235294117647058,
+      "mean": 0.9294117647058824,
+      "n": 85,
+      "tasks": 17
+     },
+     "robopoint": {
+      "hi": 0.9411764705882353,
+      "lo": 0.6352941176470588,
+      "mean": 0.8,
+      "n": 85,
+      "tasks": 17
+     },
+     "s1b": {
+      "hi": 0.9411764705882353,
+      "lo": 0.611764705882353,
+      "mean": 0.788235294117647,
+      "n": 85,
+      "tasks": 17
+     },
+     "s1c": {
+      "hi": 0.9882352941176471,
+      "lo": 0.6941176470588235,
+      "mean": 0.8588235294117647,
+      "n": 85,
+      "tasks": 17
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.2598103856927386,
+     "molmo__point_phrase": 0.2656927386339151,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.3960314259770431,
+     "qwen__bbox_phrase": 0.4236291716539395
+    },
+    "n": 85,
+    "parsed": {
+     "molmo__point_context": 0.9058823529411765,
+     "molmo__point_phrase": 0.9882352941176471,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:36",
+     "libero_90:40",
+     "libero_90:45",
+     "libero_90:61",
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:76",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83",
+     "libero_90:9"
+    ]
+   },
+   "d0_heldout": {
+    "hit": {
+     "b1a": {
+      "hi": 1.0,
+      "lo": 0.7230769230769231,
+      "mean": 0.9,
+      "n": 50,
+      "tasks": 9
+     },
+     "b1b": {
+      "hi": 0.4222222222222222,
+      "lo": 0.06666666666666667,
+      "mean": 0.24,
+      "n": 50,
+      "tasks": 9
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 0.7230769230769231,
+      "mean": 0.9,
+      "n": 50,
+      "tasks": 9
+     },
+     "molmo__point_phrase": {
+      "hi": 1.0,
+      "lo": 0.7230769230769231,
+      "mean": 0.9,
+      "n": 50,
+      "tasks": 9
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 9
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 9
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 9
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 9
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 9
+     },
+     "qwen__bbox_context": {
+      "hi": 1.0,
+      "lo": 0.7,
+      "mean": 0.88,
+      "n": 50,
+      "tasks": 9
+     },
+     "qwen__bbox_phrase": {
+      "hi": 1.0,
+      "lo": 0.7230769230769231,
+      "mean": 0.9,
+      "n": 50,
+      "tasks": 9
+     },
+     "robopoint": {
+      "hi": 0.9333333333333333,
+      "lo": 0.5454545454545454,
+      "mean": 0.74,
+      "n": 50,
+      "tasks": 9
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.6333333333333333,
+      "mean": 0.82,
+      "n": 50,
+      "tasks": 9
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.7230769230769231,
+      "mean": 0.9,
+      "n": 50,
+      "tasks": 9
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.2693333333333333,
+     "molmo__point_phrase": 0.2693333333333333,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.4422377622377622,
+     "qwen__bbox_phrase": 0.43388855588855585
+    },
+    "n": 50,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:76",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d0_heldout_body_seen": {
+    "hit": {
+     "b1a": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "b1b": {
+      "hi": 0.4888888888888889,
+      "lo": 0.06666666666666667,
+      "mean": 0.26666666666666666,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_phrase": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_context": {
+      "hi": 1.0,
+      "lo": 0.9111111111111111,
+      "mean": 0.9777777777777777,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_phrase": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "robopoint": {
+      "hi": 0.9777777777777777,
+      "lo": 0.6222222222222222,
+      "mean": 0.8222222222222222,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.7555555555555555,
+      "mean": 0.9111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.2992592592592592,
+     "molmo__point_phrase": 0.2992592592592592,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.4913752913752914,
+     "qwen__bbox_phrase": 0.4820983954317288
+    },
+    "n": 45,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:76",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d0_heldout_body_seen_object": {
+    "hit": {
+     "b1a": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "b1b": {
+      "hi": 0.4888888888888889,
+      "lo": 0.06666666666666667,
+      "mean": 0.26666666666666666,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_phrase": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_context": {
+      "hi": 1.0,
+      "lo": 0.9111111111111111,
+      "mean": 0.9777777777777777,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_phrase": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "robopoint": {
+      "hi": 0.9777777777777777,
+      "lo": 0.6222222222222222,
+      "mean": 0.8222222222222222,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.7555555555555555,
+      "mean": 0.9111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.2992592592592592,
+     "molmo__point_phrase": 0.2992592592592592,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.4913752913752914,
+     "qwen__bbox_phrase": 0.4820983954317288
+    },
+    "n": 45,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:76",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d0_heldout_body_unseen": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "b1b": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1b": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1c": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 5,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:76"
+    ]
+   },
+   "d0_heldout_body_unseen_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "b1b": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1b": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1c": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 5,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:76"
+    ]
+   },
+   "d0_heldout_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "b1b": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1b": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1c": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 5,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:76"
+    ]
+   },
+   "d0_heldout_object": {
+    "hit": {
+     "b1a": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "b1b": {
+      "hi": 0.4888888888888889,
+      "lo": 0.06666666666666667,
+      "mean": 0.26666666666666666,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_phrase": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_context": {
+      "hi": 1.0,
+      "lo": 0.9111111111111111,
+      "mean": 0.9777777777777777,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_phrase": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "robopoint": {
+      "hi": 0.9777777777777777,
+      "lo": 0.6222222222222222,
+      "mean": 0.8222222222222222,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.7555555555555555,
+      "mean": 0.9111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 45,
+      "tasks": 9
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.2992592592592592,
+     "molmo__point_phrase": 0.2992592592592592,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.4913752913752914,
+     "qwen__bbox_phrase": 0.4820983954317288
+    },
+    "n": 45,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:76",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d0_seen": {
+    "hit": {
+     "b1a": {
+      "hi": 0.8941176470588236,
+      "lo": 0.5368421052631579,
+      "mean": 0.7222222222222222,
+      "n": 90,
+      "tasks": 14
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 0.8941176470588236,
+      "mean": 0.9666666666666667,
+      "n": 90,
+      "tasks": 14
+     },
+     "molmo__point_context": {
+      "hi": 0.9789473684210527,
+      "lo": 0.73,
+      "mean": 0.8777777777777778,
+      "n": 90,
+      "tasks": 14
+     },
+     "molmo__point_phrase": {
+      "hi": 0.8736842105263158,
+      "lo": 0.5111111111111111,
+      "mean": 0.7111111111111111,
+      "n": 90,
+      "tasks": 14
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 90,
+      "tasks": 14
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 90,
+      "tasks": 14
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 90,
+      "tasks": 14
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 90,
+      "tasks": 14
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 90,
+      "tasks": 14
+     },
+     "qwen__bbox_context": {
+      "hi": 0.9411764705882353,
+      "lo": 0.6555555555555556,
+      "mean": 0.8111111111111111,
+      "n": 90,
+      "tasks": 14
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.9777777777777777,
+      "lo": 0.7222222222222222,
+      "mean": 0.8666666666666667,
+      "n": 90,
+      "tasks": 14
+     },
+     "robopoint": {
+      "hi": 0.9125,
+      "lo": 0.5888725490196078,
+      "mean": 0.7444444444444445,
+      "n": 90,
+      "tasks": 14
+     },
+     "s1b": {
+      "hi": 0.9555555555555556,
+      "lo": 0.6625,
+      "mean": 0.8222222222222222,
+      "n": 90,
+      "tasks": 14
+     },
+     "s1c": {
+      "hi": 0.9875,
+      "lo": 0.7222222222222222,
+      "mean": 0.8666666666666667,
+      "n": 90,
+      "tasks": 14
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.16225373797742218,
+     "molmo__point_phrase": 0.16708429430651653,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.3914559426611733,
+     "qwen__bbox_phrase": 0.4331205965247335
+    },
+    "n": 90,
+    "parsed": {
+     "molmo__point_context": 0.9111111111111111,
+     "molmo__point_phrase": 0.8777777777777778,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:14",
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:36",
+     "libero_90:38",
+     "libero_90:40",
+     "libero_90:45",
+     "libero_90:50",
+     "libero_90:58",
+     "libero_90:59",
+     "libero_90:60",
+     "libero_90:61",
+     "libero_90:9"
+    ]
+   },
+   "d0_seen_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 1.0,
+      "lo": 0.8,
+      "mean": 0.94,
+      "n": 50,
+      "tasks": 10
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 50,
+      "tasks": 10
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 0.86,
+      "mean": 0.96,
+      "n": 50,
+      "tasks": 10
+     },
+     "molmo__point_phrase": {
+      "hi": 0.88,
+      "lo": 0.34,
+      "mean": 0.62,
+      "n": 50,
+      "tasks": 10
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 10
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 10
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 10
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 10
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 50,
+      "tasks": 10
+     },
+     "qwen__bbox_context": {
+      "hi": 1.0,
+      "lo": 0.58,
+      "mean": 0.82,
+      "n": 50,
+      "tasks": 10
+     },
+     "qwen__bbox_phrase": {
+      "hi": 1.0,
+      "lo": 0.66,
+      "mean": 0.88,
+      "n": 50,
+      "tasks": 10
+     },
+     "robopoint": {
+      "hi": 0.96,
+      "lo": 0.46,
+      "mean": 0.72,
+      "n": 50,
+      "tasks": 10
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.88,
+      "mean": 0.96,
+      "n": 50,
+      "tasks": 10
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 50,
+      "tasks": 10
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.11971240601503759,
+     "molmo__point_phrase": 0.1184074074074074,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.4736050348669009,
+     "qwen__bbox_phrase": 0.4933360378213791
+    },
+    "n": 50,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 0.8,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:14",
+     "libero_90:36",
+     "libero_90:38",
+     "libero_90:45",
+     "libero_90:50",
+     "libero_90:58",
+     "libero_90:59",
+     "libero_90:60",
+     "libero_90:61",
+     "libero_90:9"
+    ]
+   },
+   "d0_seen_object": {
+    "hit": {
+     "b1a": {
+      "hi": 0.775,
+      "lo": 0.125,
+      "mean": 0.45,
+      "n": 40,
+      "tasks": 8
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 0.775,
+      "mean": 0.925,
+      "n": 40,
+      "tasks": 8
+     },
+     "molmo__point_context": {
+      "hi": 0.975,
+      "lo": 0.5,
+      "mean": 0.775,
+      "n": 40,
+      "tasks": 8
+     },
+     "molmo__point_phrase": {
+      "hi": 1.0,
+      "lo": 0.625,
+      "mean": 0.825,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "qwen__bbox_context": {
+      "hi": 0.975,
+      "lo": 0.6,
+      "mean": 0.8,
+      "n": 40,
+      "tasks": 8
+     },
+     "qwen__bbox_phrase": {
+      "hi": 1.0,
+      "lo": 0.65,
+      "mean": 0.85,
+      "n": 40,
+      "tasks": 8
+     },
+     "robopoint": {
+      "hi": 1.0,
+      "lo": 0.5,
+      "mean": 0.775,
+      "n": 40,
+      "tasks": 8
+     },
+     "s1b": {
+      "hi": 0.925,
+      "lo": 0.35,
+      "mean": 0.65,
+      "n": 40,
+      "tasks": 8
+     },
+     "s1c": {
+      "hi": 0.95,
+      "lo": 0.4,
+      "mean": 0.7,
+      "n": 40,
+      "tasks": 8
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.21543040293040291,
+     "molmo__point_phrase": 0.22793040293040293,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.2887695774040138,
+     "qwen__bbox_phrase": 0.3578512949039265
+    },
+    "n": 40,
+    "parsed": {
+     "molmo__point_context": 0.8,
+     "molmo__point_phrase": 0.975,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:36",
+     "libero_90:40",
+     "libero_90:45",
+     "libero_90:61",
+     "libero_90:9"
+    ]
+   },
+   "d1_all": {
+    "hit": {
+     "b1a": {
+      "hi": 0.42857142857142855,
+      "lo": 0.0,
+      "mean": 0.125,
+      "n": 40,
+      "tasks": 7
+     },
+     "b1b": {
+      "hi": 0.8571428571428571,
+      "lo": 0.34285714285714286,
+      "mean": 0.6,
+      "n": 40,
+      "tasks": 7
+     },
+     "molmo__point_context": {
+      "hi": 0.55,
+      "lo": 0.02857142857142857,
+      "mean": 0.275,
+      "n": 40,
+      "tasks": 7
+     },
+     "molmo__point_phrase": {
+      "hi": 0.525,
+      "lo": 0.0,
+      "mean": 0.25,
+      "n": 40,
+      "tasks": 7
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 7
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 7
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 7
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 7
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 7
+     },
+     "qwen__bbox_context": {
+      "hi": 0.2,
+      "lo": 0.0,
+      "mean": 0.05,
+      "n": 40,
+      "tasks": 7
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.4,
+      "lo": 0.0,
+      "mean": 0.175,
+      "n": 40,
+      "tasks": 7
+     },
+     "robopoint": {
+      "hi": 0.35,
+      "lo": 0.0,
+      "mean": 0.15,
+      "n": 40,
+      "tasks": 7
+     },
+     "s1b": {
+      "hi": 0.75,
+      "lo": 0.2,
+      "mean": 0.45,
+      "n": 40,
+      "tasks": 7
+     },
+     "s1c": {
+      "hi": 0.9428571428571428,
+      "lo": 0.24444444444444444,
+      "mean": 0.575,
+      "n": 40,
+      "tasks": 7
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.08625,
+     "molmo__point_phrase": 0.06749999999999999,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.007142857142857143,
+     "qwen__bbox_phrase": 0.04005952380952381
+    },
+    "n": 40,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:14",
+     "libero_90:16",
+     "libero_90:38",
+     "libero_90:50",
+     "libero_90:58",
+     "libero_90:59",
+     "libero_90:60"
+    ]
+   },
+   "d1_all_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "b1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1b": {
+      "hi": 0.8,
+      "lo": 0.0,
+      "mean": 0.4,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1c": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 5,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:16"
+    ]
+   },
+   "d1_all_object": {
+    "hit": {
+     "b1a": {
+      "hi": 0.42857142857142855,
+      "lo": 0.0,
+      "mean": 0.14285714285714285,
+      "n": 35,
+      "tasks": 7
+     },
+     "b1b": {
+      "hi": 0.9142857142857143,
+      "lo": 0.37142857142857144,
+      "mean": 0.6571428571428571,
+      "n": 35,
+      "tasks": 7
+     },
+     "molmo__point_context": {
+      "hi": 0.6285714285714286,
+      "lo": 0.02857142857142857,
+      "mean": 0.3142857142857143,
+      "n": 35,
+      "tasks": 7
+     },
+     "molmo__point_phrase": {
+      "hi": 0.5714285714285714,
+      "lo": 0.0,
+      "mean": 0.2857142857142857,
+      "n": 35,
+      "tasks": 7
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 35,
+      "tasks": 7
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 35,
+      "tasks": 7
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 35,
+      "tasks": 7
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 35,
+      "tasks": 7
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 35,
+      "tasks": 7
+     },
+     "qwen__bbox_context": {
+      "hi": 0.2,
+      "lo": 0.0,
+      "mean": 0.05714285714285714,
+      "n": 35,
+      "tasks": 7
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.42857142857142855,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 35,
+      "tasks": 7
+     },
+     "robopoint": {
+      "hi": 0.4,
+      "lo": 0.0,
+      "mean": 0.17142857142857143,
+      "n": 35,
+      "tasks": 7
+     },
+     "s1b": {
+      "hi": 0.7714285714285715,
+      "lo": 0.17142857142857143,
+      "mean": 0.45714285714285713,
+      "n": 35,
+      "tasks": 7
+     },
+     "s1c": {
+      "hi": 0.9428571428571428,
+      "lo": 0.34285714285714286,
+      "mean": 0.6571428571428571,
+      "n": 35,
+      "tasks": 7
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.09857142857142855,
+     "molmo__point_phrase": 0.07714285714285715,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.008163265306122448,
+     "qwen__bbox_phrase": 0.045782312925170064
+    },
+    "n": 35,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:14",
+     "libero_90:16",
+     "libero_90:38",
+     "libero_90:50",
+     "libero_90:58",
+     "libero_90:59",
+     "libero_90:60"
+    ]
+   },
+   "d1_heldout": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "b1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.26666666666666666,
+      "n": 15,
+      "tasks": 3
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "s1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.26666666666666666,
+      "n": 15,
+      "tasks": 3
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.0,
+      "mean": 0.4,
+      "n": 15,
+      "tasks": 3
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 15,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:16",
+     "libero_90:38",
+     "libero_90:60"
+    ]
+   },
+   "d1_heldout_body_seen": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "b1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.26666666666666666,
+      "n": 15,
+      "tasks": 3
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "s1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.26666666666666666,
+      "n": 15,
+      "tasks": 3
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.0,
+      "mean": 0.4,
+      "n": 15,
+      "tasks": 3
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 15,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:16",
+     "libero_90:38",
+     "libero_90:60"
+    ]
+   },
+   "d1_heldout_body_seen_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "b1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1b": {
+      "hi": 0.8,
+      "lo": 0.0,
+      "mean": 0.4,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1c": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 5,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:16"
+    ]
+   },
+   "d1_heldout_body_seen_object": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "b1b": {
+      "hi": 0.8,
+      "lo": 0.0,
+      "mean": 0.3,
+      "n": 10,
+      "tasks": 2
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "s1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 10,
+      "tasks": 2
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.1,
+      "mean": 0.6,
+      "n": 10,
+      "tasks": 2
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 10,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:38",
+     "libero_90:60"
+    ]
+   },
+   "d1_heldout_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "b1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1b": {
+      "hi": 0.8,
+      "lo": 0.0,
+      "mean": 0.4,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1c": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 5,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:16"
+    ]
+   },
+   "d1_heldout_object": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "b1b": {
+      "hi": 0.8,
+      "lo": 0.0,
+      "mean": 0.3,
+      "n": 10,
+      "tasks": 2
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 10,
+      "tasks": 2
+     },
+     "s1b": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 10,
+      "tasks": 2
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.1,
+      "mean": 0.6,
+      "n": 10,
+      "tasks": 2
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.0,
+     "qwen__bbox_phrase": 0.0
+    },
+    "n": 10,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:38",
+     "libero_90:60"
+    ]
+   },
+   "d1_seen": {
+    "hit": {
+     "b1a": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 25,
+      "tasks": 5
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 0.56,
+      "mean": 0.8,
+      "n": 25,
+      "tasks": 5
+     },
+     "molmo__point_context": {
+      "hi": 0.8,
+      "lo": 0.08,
+      "mean": 0.44,
+      "n": 25,
+      "tasks": 5
+     },
+     "molmo__point_phrase": {
+      "hi": 0.8,
+      "lo": 0.0,
+      "mean": 0.4,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "qwen__bbox_context": {
+      "hi": 0.28,
+      "lo": 0.0,
+      "mean": 0.08,
+      "n": 25,
+      "tasks": 5
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.56,
+      "lo": 0.04,
+      "mean": 0.28,
+      "n": 25,
+      "tasks": 5
+     },
+     "robopoint": {
+      "hi": 0.52,
+      "lo": 0.0,
+      "mean": 0.24,
+      "n": 25,
+      "tasks": 5
+     },
+     "s1b": {
+      "hi": 0.92,
+      "lo": 0.2,
+      "mean": 0.56,
+      "n": 25,
+      "tasks": 5
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.28,
+      "mean": 0.68,
+      "n": 25,
+      "tasks": 5
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.138,
+     "molmo__point_phrase": 0.10800000000000001,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.011428571428571429,
+     "qwen__bbox_phrase": 0.0640952380952381
+    },
+    "n": 25,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:14",
+     "libero_90:16",
+     "libero_90:50",
+     "libero_90:58",
+     "libero_90:59"
+    ]
+   },
+   "d1_seen_object": {
+    "hit": {
+     "b1a": {
+      "hi": 0.6,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 25,
+      "tasks": 5
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 0.56,
+      "mean": 0.8,
+      "n": 25,
+      "tasks": 5
+     },
+     "molmo__point_context": {
+      "hi": 0.8,
+      "lo": 0.08,
+      "mean": 0.44,
+      "n": 25,
+      "tasks": 5
+     },
+     "molmo__point_phrase": {
+      "hi": 0.8,
+      "lo": 0.0,
+      "mean": 0.4,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 25,
+      "tasks": 5
+     },
+     "qwen__bbox_context": {
+      "hi": 0.28,
+      "lo": 0.0,
+      "mean": 0.08,
+      "n": 25,
+      "tasks": 5
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.56,
+      "lo": 0.04,
+      "mean": 0.28,
+      "n": 25,
+      "tasks": 5
+     },
+     "robopoint": {
+      "hi": 0.52,
+      "lo": 0.0,
+      "mean": 0.24,
+      "n": 25,
+      "tasks": 5
+     },
+     "s1b": {
+      "hi": 0.92,
+      "lo": 0.2,
+      "mean": 0.56,
+      "n": 25,
+      "tasks": 5
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.28,
+      "mean": 0.68,
+      "n": 25,
+      "tasks": 5
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.138,
+     "molmo__point_phrase": 0.10800000000000001,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.011428571428571429,
+     "qwen__bbox_phrase": 0.0640952380952381
+    },
+    "n": 25,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:14",
+     "libero_90:16",
+     "libero_90:50",
+     "libero_90:58",
+     "libero_90:59"
+    ]
+   },
+   "d2_all": {
+    "hit": {
+     "b1a": {
+      "hi": 0.25,
+      "lo": 0.0,
+      "mean": 0.08333333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "b1b": {
+      "hi": 0.8,
+      "lo": 0.25,
+      "mean": 0.5333333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "molmo__point_context": {
+      "hi": 0.5333333333333333,
+      "lo": 0.06666666666666667,
+      "mean": 0.2833333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "molmo__point_phrase": {
+      "hi": 0.16666666666666666,
+      "lo": 0.0,
+      "mean": 0.05,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "qwen__bbox_context": {
+      "hi": 0.4666666666666667,
+      "lo": 0.03333333333333333,
+      "mean": 0.23333333333333334,
+      "n": 60,
+      "tasks": 12
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.13333333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "robopoint": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.13333333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "s1b": {
+      "hi": 0.5666666666666667,
+      "lo": 0.08333333333333333,
+      "mean": 0.3,
+      "n": 60,
+      "tasks": 12
+     },
+     "s1c": {
+      "hi": 0.48333333333333334,
+      "lo": 0.05,
+      "mean": 0.25,
+      "n": 60,
+      "tasks": 12
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.022918397943885203,
+     "molmo__point_phrase": 0.025,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.16731372793868676,
+     "qwen__bbox_phrase": 0.08633314064420652
+    },
+    "n": 60,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 0.8333333333333334,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:40",
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d2_all_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.25,
+      "lo": 0.0,
+      "mean": 0.08333333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "b1b": {
+      "hi": 0.8,
+      "lo": 0.25,
+      "mean": 0.5333333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "molmo__point_context": {
+      "hi": 0.5333333333333333,
+      "lo": 0.06666666666666667,
+      "mean": 0.2833333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "molmo__point_phrase": {
+      "hi": 0.16666666666666666,
+      "lo": 0.0,
+      "mean": 0.05,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 60,
+      "tasks": 12
+     },
+     "qwen__bbox_context": {
+      "hi": 0.4666666666666667,
+      "lo": 0.03333333333333333,
+      "mean": 0.23333333333333334,
+      "n": 60,
+      "tasks": 12
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.13333333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "robopoint": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.13333333333333333,
+      "n": 60,
+      "tasks": 12
+     },
+     "s1b": {
+      "hi": 0.5666666666666667,
+      "lo": 0.08333333333333333,
+      "mean": 0.3,
+      "n": 60,
+      "tasks": 12
+     },
+     "s1c": {
+      "hi": 0.48333333333333334,
+      "lo": 0.05,
+      "mean": 0.25,
+      "n": 60,
+      "tasks": 12
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.022918397943885203,
+     "molmo__point_phrase": 0.025,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.16731372793868676,
+     "qwen__bbox_phrase": 0.08633314064420652
+    },
+    "n": 60,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 0.8333333333333334,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:40",
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d2_body_seen_all": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 20,
+      "tasks": 4
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 0.65,
+      "mean": 0.9,
+      "n": 20,
+      "tasks": 4
+     },
+     "molmo__point_context": {
+      "hi": 0.95,
+      "lo": 0.2,
+      "mean": 0.6,
+      "n": 20,
+      "tasks": 4
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 20,
+      "tasks": 4
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 20,
+      "tasks": 4
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 20,
+      "tasks": 4
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 20,
+      "tasks": 4
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 20,
+      "tasks": 4
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 20,
+      "tasks": 4
+     },
+     "qwen__bbox_context": {
+      "hi": 1.0,
+      "lo": 0.2,
+      "mean": 0.65,
+      "n": 20,
+      "tasks": 4
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.8,
+      "lo": 0.0,
+      "mean": 0.4,
+      "n": 20,
+      "tasks": 4
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 20,
+      "tasks": 4
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.25,
+      "mean": 0.65,
+      "n": 20,
+      "tasks": 4
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.2,
+      "mean": 0.65,
+      "n": 20,
+      "tasks": 4
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.027088527164988933,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.3726399205023393,
+     "qwen__bbox_phrase": 0.16637739727734682
+    },
+    "n": 20,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 0.5,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:40"
+    ]
+   },
+   "d2_heldout": {
+    "hit": {
+     "b1a": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.1111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "b1b": {
+      "hi": 0.6666666666666666,
+      "lo": 0.1111111111111111,
+      "mean": 0.37777777777777777,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_context": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.1111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_phrase": {
+      "hi": 0.2222222222222222,
+      "lo": 0.0,
+      "mean": 0.06666666666666667,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_context": {
+      "hi": 0.08888888888888889,
+      "lo": 0.0,
+      "mean": 0.022222222222222223,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "robopoint": {
+      "hi": 0.4222222222222222,
+      "lo": 0.0,
+      "mean": 0.17777777777777778,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1b": {
+      "hi": 0.4444444444444444,
+      "lo": 0.0,
+      "mean": 0.17777777777777778,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1c": {
+      "hi": 0.15555555555555556,
+      "lo": 0.0,
+      "mean": 0.044444444444444446,
+      "n": 45,
+      "tasks": 9
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.018518518518518517,
+     "molmo__point_phrase": 0.03333333333333333,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.08343126677632882,
+     "qwen__bbox_phrase": 0.046535115356796275
+    },
+    "n": 45,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d2_heldout_body_seen": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 0.2,
+      "mean": 0.6,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.2,
+      "mean": 0.6,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1c": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.2336763477320753,
+     "qwen__bbox_phrase": 0.04832793959007551
+    },
+    "n": 5,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1"
+    ]
+   },
+   "d2_heldout_body_seen_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 0.2,
+      "mean": 0.6,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.2,
+      "mean": 0.6,
+      "n": 5,
+      "tasks": 1
+     },
+     "s1c": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 5,
+      "tasks": 1
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.0,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.2336763477320753,
+     "qwen__bbox_phrase": 0.04832793959007551
+    },
+    "n": 5,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1"
+    ]
+   },
+   "d2_heldout_body_unseen": {
+    "hit": {
+     "b1a": {
+      "hi": 0.375,
+      "lo": 0.0,
+      "mean": 0.125,
+      "n": 40,
+      "tasks": 8
+     },
+     "b1b": {
+      "hi": 0.6756249999999909,
+      "lo": 0.07437500000000057,
+      "mean": 0.35,
+      "n": 40,
+      "tasks": 8
+     },
+     "molmo__point_context": {
+      "hi": 0.375,
+      "lo": 0.0,
+      "mean": 0.125,
+      "n": 40,
+      "tasks": 8
+     },
+     "molmo__point_phrase": {
+      "hi": 0.25,
+      "lo": 0.0,
+      "mean": 0.075,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "qwen__bbox_context": {
+      "hi": 0.1,
+      "lo": 0.0,
+      "mean": 0.025,
+      "n": 40,
+      "tasks": 8
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "robopoint": {
+      "hi": 0.475,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 40,
+      "tasks": 8
+     },
+     "s1b": {
+      "hi": 0.375,
+      "lo": 0.0,
+      "mean": 0.125,
+      "n": 40,
+      "tasks": 8
+     },
+     "s1c": {
+      "hi": 0.175,
+      "lo": 0.0,
+      "mean": 0.05,
+      "n": 40,
+      "tasks": 8
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.020833333333333332,
+     "molmo__point_phrase": 0.0375,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.06465063165686051,
+     "qwen__bbox_phrase": 0.04631101232763637
+    },
+    "n": 40,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d2_heldout_body_unseen_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.375,
+      "lo": 0.0,
+      "mean": 0.125,
+      "n": 40,
+      "tasks": 8
+     },
+     "b1b": {
+      "hi": 0.6756249999999909,
+      "lo": 0.07437500000000057,
+      "mean": 0.35,
+      "n": 40,
+      "tasks": 8
+     },
+     "molmo__point_context": {
+      "hi": 0.375,
+      "lo": 0.0,
+      "mean": 0.125,
+      "n": 40,
+      "tasks": 8
+     },
+     "molmo__point_phrase": {
+      "hi": 0.25,
+      "lo": 0.0,
+      "mean": 0.075,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "qwen__bbox_context": {
+      "hi": 0.1,
+      "lo": 0.0,
+      "mean": 0.025,
+      "n": 40,
+      "tasks": 8
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 40,
+      "tasks": 8
+     },
+     "robopoint": {
+      "hi": 0.475,
+      "lo": 0.0,
+      "mean": 0.2,
+      "n": 40,
+      "tasks": 8
+     },
+     "s1b": {
+      "hi": 0.375,
+      "lo": 0.0,
+      "mean": 0.125,
+      "n": 40,
+      "tasks": 8
+     },
+     "s1c": {
+      "hi": 0.175,
+      "lo": 0.0,
+      "mean": 0.05,
+      "n": 40,
+      "tasks": 8
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.020833333333333332,
+     "molmo__point_phrase": 0.0375,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.06465063165686051,
+     "qwen__bbox_phrase": 0.04631101232763637
+    },
+    "n": 40,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d2_heldout_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.1111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "b1b": {
+      "hi": 0.6666666666666666,
+      "lo": 0.1111111111111111,
+      "mean": 0.37777777777777777,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_context": {
+      "hi": 0.3333333333333333,
+      "lo": 0.0,
+      "mean": 0.1111111111111111,
+      "n": 45,
+      "tasks": 9
+     },
+     "molmo__point_phrase": {
+      "hi": 0.2222222222222222,
+      "lo": 0.0,
+      "mean": 0.06666666666666667,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_context": {
+      "hi": 0.08888888888888889,
+      "lo": 0.0,
+      "mean": 0.022222222222222223,
+      "n": 45,
+      "tasks": 9
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 45,
+      "tasks": 9
+     },
+     "robopoint": {
+      "hi": 0.4222222222222222,
+      "lo": 0.0,
+      "mean": 0.17777777777777778,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1b": {
+      "hi": 0.4444444444444444,
+      "lo": 0.0,
+      "mean": 0.17777777777777778,
+      "n": 45,
+      "tasks": 9
+     },
+     "s1c": {
+      "hi": 0.15555555555555556,
+      "lo": 0.0,
+      "mean": 0.044444444444444446,
+      "n": 45,
+      "tasks": 9
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.018518518518518517,
+     "molmo__point_phrase": 0.03333333333333333,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.08343126677632882,
+     "qwen__bbox_phrase": 0.046535115356796275
+    },
+    "n": 45,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 1.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:1",
+     "libero_90:73",
+     "libero_90:75",
+     "libero_90:77",
+     "libero_90:78",
+     "libero_90:79",
+     "libero_90:80",
+     "libero_90:82",
+     "libero_90:83"
+    ]
+   },
+   "d2_seen": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 0.5333333333333333,
+      "mean": 0.8,
+      "n": 15,
+      "tasks": 3
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "qwen__bbox_context": {
+      "hi": 1.0,
+      "lo": 0.6666666666666666,
+      "mean": 0.8666666666666667,
+      "n": 15,
+      "tasks": 3
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.9333333333333333,
+      "lo": 0.0,
+      "mean": 0.5333333333333333,
+      "n": 15,
+      "tasks": 3
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.0,
+      "mean": 0.6666666666666666,
+      "n": 15,
+      "tasks": 3
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.6666666666666666,
+      "mean": 0.8666666666666667,
+      "n": 15,
+      "tasks": 3
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.036118036219985244,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.41896111142576054,
+     "qwen__bbox_phrase": 0.20572721650643727
+    },
+    "n": 15,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 0.3333333333333333,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:40"
+    ]
+   },
+   "d2_seen_goal": {
+    "hit": {
+     "b1a": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "b1b": {
+      "hi": 1.0,
+      "lo": 1.0,
+      "mean": 1.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "molmo__point_context": {
+      "hi": 1.0,
+      "lo": 0.5333333333333333,
+      "mean": 0.8,
+      "n": 15,
+      "tasks": 3
+     },
+     "molmo__point_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__detect_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__segment_context": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_base__segment_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "pi05_l90c__detect_phrase": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "qwen__bbox_context": {
+      "hi": 1.0,
+      "lo": 0.6666666666666666,
+      "mean": 0.8666666666666667,
+      "n": 15,
+      "tasks": 3
+     },
+     "qwen__bbox_phrase": {
+      "hi": 0.9333333333333333,
+      "lo": 0.0,
+      "mean": 0.5333333333333333,
+      "n": 15,
+      "tasks": 3
+     },
+     "robopoint": {
+      "hi": 0.0,
+      "lo": 0.0,
+      "mean": 0.0,
+      "n": 15,
+      "tasks": 3
+     },
+     "s1b": {
+      "hi": 1.0,
+      "lo": 0.0,
+      "mean": 0.6666666666666666,
+      "n": 15,
+      "tasks": 3
+     },
+     "s1c": {
+      "hi": 1.0,
+      "lo": 0.6666666666666666,
+      "mean": 0.8666666666666667,
+      "n": 15,
+      "tasks": 3
+     }
+    },
+    "iou": {
+     "molmo__point_context": 0.036118036219985244,
+     "molmo__point_phrase": 0.0,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 0.41896111142576054,
+     "qwen__bbox_phrase": 0.20572721650643727
+    },
+    "n": 15,
+    "parsed": {
+     "molmo__point_context": 1.0,
+     "molmo__point_phrase": 0.3333333333333333,
+     "pi05_base__detect_context": 0.0,
+     "pi05_base__detect_phrase": 0.0,
+     "pi05_base__segment_context": 0.0,
+     "pi05_base__segment_phrase": 0.0,
+     "pi05_l90c__detect_phrase": 0.0,
+     "qwen__bbox_context": 1.0,
+     "qwen__bbox_phrase": 1.0
+    },
+    "tasks": [
+     "libero_90:29",
+     "libero_90:32",
+     "libero_90:40"
+    ]
+   }
+  },
+  "not_run": {
+   "pg_mix": "PaliGemma mix (not the policy's base), google/paligemma-3b-mix-224: not run: gated, no local weights",
+   "pg_pt": "PaliGemma pt-224 (the policy's base), google/paligemma-3b-pt-224: not run: gated, no local weights"
+  },
+  "verdict": "FAIL"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "b0_vlm__libero_90_c__read__s0__9c80f31b",
+ "schema": 1,
+ "script": "experiments/b0_read.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T13:34:36+00:00",
+ "stream": null,
+ "tag": "read"
+}
