@@ -1,0 +1,141 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_BINDER B1.1",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4276839",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "dd2249c0126a635b36cc683a27298df435a079df",
+  "short": "dd2249c0"
+ },
+ "keys": {},
+ "metrics": {
+  "also": "caddy; part-proposal recall vs sim masks; MDL channels; confounds; CD slope B1 vs B1b (task bootstrap); T2 atom budget (proposal, role, parent, words); atom invariance permutation test; referent purity",
+  "arms": "primary: siglip (pi05_l90c@5000 image tokens); comparison: dino (DINOv2-small)",
+  "bar": "per arm: held-out depth-1 hit >= 0.70 AND depth-2 seen-body hit >= 0.70 AND depth-0 hit >= GroundingDINO (0.786); B1 PASS iff siglip passes all three",
+  "files_sha256": {
+   "docs/PLAN_BINDER.md": "66d6177ba404e4a350989a143a4f295c35e674ee574fccc67035ce97f6906cc2",
+   "experiments/b1_1_bind.py": "f8465d07a64f590fc103a26b7ca7a4d3171384dab42313b24bd5376cb6be546f",
+   "experiments/b1_1_read.py": "2da83987817bba4a5c804ef47ccb911a33cfc94cbf1c47c46180d5a7c45b1ebb",
+   "experiments/b1_acts.py": "873fea6da2be93a583750ddf450d07ae7d2ebd79846e03701609a152bcb09b1a",
+   "experiments/b1_demos.py": "8ab27d566be29f3e10525e20ccf677e1b4deb8285e8868b0c00595aec1656b55",
+   "experiments/b1_feats.py": "38cb60ce7525e9e3d44302ca0bebf534d5b8e86bb56cb44f34a0be3d5cc53af0",
+   "experiments/b1_render.py": "1d18c1f9ca7c2d1f469c29d9c7efac067e687328c18481c04fee745ecdafbce6",
+   "results/bind/s1/labels.json": "6e6b5d22241960ef6a41c8d93cc7ba492847103922fa478392104e699e05888f"
+  },
+  "frozen": {
+   "dino": {
+    "chosen": {
+     "K": 8,
+     "compose": "flat",
+     "delta": 4.0,
+     "floor": 0.2,
+     "ll_heldout": -9.176304359138628,
+     "ll_train": -5.120956278682775
+    },
+    "lexicon_floats": 3664,
+    "n_content": 55,
+    "n_frames": 2164,
+    "n_occ": 4195,
+    "pca_floats": 8576
+   },
+   "siglip": {
+    "chosen": {
+     "K": 8,
+     "compose": "flat",
+     "delta": 4.0,
+     "floor": 0.2,
+     "ll_heldout": -13.33432396064282,
+     "ll_train": -6.960297516211192
+    },
+    "lexicon_floats": 3664,
+    "n_content": 55,
+    "n_frames": 2164,
+    "n_occ": 4195,
+    "pca_floats": 10240
+   }
+  },
+  "posfree_probe_r2": {
+   "dino": {
+    "r2_col": 0.0014782841381684175,
+    "r2_row": 0.041302345013921604
+   },
+   "siglip": {
+    "r2_col": 0.0011182228301996888,
+    "r2_row": 0.04328496203676102
+   }
+  },
+  "power": "(i) 3 tasks, 15 units; (ii) 4 tasks, 20 units; CD / invariance descriptive",
+  "smoke_train_units": {
+   "dino": {
+    "goal|demo_phrase": {
+     "mean": 0.4564459930313589,
+     "n": 287
+    },
+    "goal|other_phrase": {
+     "mean": 0.2727272727272727,
+     "n": 88
+    },
+    "object|demo_phrase": {
+     "mean": 0.3712374581939799,
+     "n": 299
+    },
+    "object|other_phrase": {
+     "mean": 0.3333333333333333,
+     "n": 126
+    }
+   },
+   "siglip": {
+    "goal|demo_phrase": {
+     "mean": 0.5818815331010453,
+     "n": 287
+    },
+    "goal|other_phrase": {
+     "mean": 0.625,
+     "n": 88
+    },
+    "object|demo_phrase": {
+     "mean": 0.7157190635451505,
+     "n": 299
+    },
+    "object|other_phrase": {
+     "mean": 0.48412698412698413,
+     "n": 126
+    }
+   }
+  },
+  "status": "PRE-REGISTERED PLAN_BINDER B1.1 (position-free appearance by iterative nullspace projection, ordinal geometry, role expert, head composition retried)",
+  "variant": "V2: word evidence vs the role referent code, role expert ON, MDL on referent features (frozen by mean training-unit hit among 4 smoked variants; PLAN_BINDER 9)",
+  "written_before": "any B1.1 dev prediction or score"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__pb1_1__s0__dd2249c0",
+ "schema": 1,
+ "script": "experiments/prereg/pb1_1.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-27T19:55:06+00:00",
+ "stream": null,
+ "tag": "pb1_1"
+}

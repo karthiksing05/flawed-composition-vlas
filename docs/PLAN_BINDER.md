@@ -399,3 +399,47 @@ bootstrap).**
 
 **Cost.** GPU 0.125 h (A40 0.067 h for features, a 2080 Ti 0.058 h for EGL rendering); everything else CPU. With Part 1's CPU-only
 checks, this session used 0.125 GPU-h of the 3 A40-h cap. B0 itself used 0.99 A40-h (section 6).
+
+## 9. B1.1 pre-registration (2026-10-27; ledger m3_prereg tag pb1_1; smokes on TRAINING units only, before any dev unit)
+
+One change targets B1's measured weakness: its appearance features encoded absolute position, so MDL sent every word to appearance
+and lateral words bound remembered layouts. Code: experiments/b1_1_bind.py, a copy of b1_bind.py with four edits; read:
+experiments/b1_1_read.py, a copy of b1_read.py. Referents, regions, units, metric and bars are B1's (section 7).
+
+1. **Position-free appearance** (PosFreePCA, training frames only: S1 training frames [::4] + training demos [::8], 123k tokens).
+   - PCA to 256 dims, then iterative nullspace projection: fit the linear (row, col) probe on even frames and remove its 2-d
+     column space; repeat until a FRESH probe's held-out R^2 (odd frames) is < 0.05 for both; then a whitened PCA to 32 dims.
+   - siglip: 45 iterations, 90 dims removed; fresh-probe held-out R^2 of the final 32-d code: row 0.043, col 0.001 (B1: 0.72 / 0.52).
+   - dino: 30 iterations, 60 dims removed; R^2 row 0.041, col 0.001 (B1: 0.89 / 0.85).
+   - Only LINEAR position is removed; non-linear position and scene context may remain.
+   - The crop re-encode arm was skipped: about 250 candidates x 2800 frames is too many re-encodes for its value.
+2. **Ordinal geometry.** Each node's rank among the phrase's instance set along image y and x is added to the geometry channel
+   (8-d). No convention is coded in: left / right are whatever the referents teach.
+3. **Role expert ON.** A diagonal Gaussian over the role's referents (the role is the parse position: the goal phrase after the goal
+   preposition, as S1 splits it). Words are scored against the role's referent code. Role assignment is an explicit expert and
+   an atom.
+4. **Head composition retried** in the selection grid; the instance-set width DELTA is now selected from {4, 16, 64}.
+   - This was added after a training smoke at DELTA 4 showed flat ordinal prototypes (instance sets of one region).
+
+**Variant freeze (siglip, 800 training units; object / goal hit, weighted).**
+- V1 candidate null + role expert, feature MDL: 0.715 / 0.472.
+- **V2 role null + role expert, feature MDL: 0.647 / 0.592 (mean 0.621, FROZEN; same rule as B1: mean training-unit hit).**
+- V3 V2 + identity MDL: 0.423 / 0.640.
+- V4 candidate null + identity MDL: 0.322 / 0.323.
+
+**Selected (held-out-cell referent likelihood).** siglip K 8 flat DELTA 4 floor 0.2; dino K 8 flat DELTA 4 floor 0.2. Head
+composition lost to flat again (best held-out log-likelihood: siglip -15.0 vs -13.3; dino -9.5 vs -9.2).
+
+**MDL, as found before the read.**
+- V2 still puts all 55 words in appearance for both arms. Position-free appearance did not move lateral, ordinal or part words to
+  geometry under the feature code.
+  - Only the identity code (V3, not frozen) moves "front", "at", "in", "on", "the" and some nouns to geometry.
+- Learned geometry prototypes (set-position col / rank col) for left / right:
+  - siglip: 0.52 / 0.49 vs 0.50 / 0.51 (flat);
+  - dino: 0.66 / 0.64 vs 0.44 / 0.45, i.e. LIBERO's "left" is learned on the IMAGE RIGHT, the mirrored convention of section
+    6.1, recovered from the referents alone.
+  - front / back / middle: 0.50 everywhere (singleton instance sets).
+- Prediction: held-out depth 1 falls from B1's 0.867 (location memory removed); bar (ii) stays below 0.70.
+
+**Read** (unchanged from section 7): the same bars, tables, MDL table, confounds, CD curve, T2 budget (proposal, role, parent,
+words), invariance test, plus drawer and caddy units separately and the learned geometry prototypes.
