@@ -632,3 +632,91 @@ position-free affine code 65568 / 12320 / 77888 floats.
 appearance with appearance-only MDL (B1.1) binds types but not relations. Identity MDL (B1.2) assigns relations to geometry
 but moves types there too and loses transfer. An unsupervised binder needs the channel choice scored on held-out layouts
 (or a code that cannot express absolute layout), not on the training referents' description length.
+
+## 13. B1.3 design and pre-registration (2026-10-27; ledger m3_prereg tag pb1_3; smokes on generated TRAINING layouts only, before any test or dev unit)
+
+**Diagnosis carried in.** B1 memorised layouts, B1.1 bound types but not relations, B1.2 moved relations to geometry and nouns
+too: every channel criterion so far scored fit on the training layouts, so a layout shortcut always won. Four reads on the same 11
+dev tasks are a forking-paths risk, and CD there is confounded with task type, so T1 / T2 was never properly tested. B1.3 makes two
+principled changes and moves the primary test to a new, generated unit set with a controlled MCD split.
+
+**Change 1: prequential channel assignment** (experiments/b1_3_bind.py). Folds = generated training LAYOUTS (5, by hash).
+DL(w, c) = sum over w's referents of -log P(referent token's chain | candidates) under softmax(role expert + w's expert in c), both
+fitted only on the other folds; c in {app, geo, both}; DL(w, null) = the role expert alone (uniform for a B word of "A of B"). The
+cheapest code wins; no separate parameter penalty. A channel wins only if it transfers to unseen layouts.
+
+**Change 2: relative-only geometry.** No absolute image coordinate enters any expert: geometry = parent-relative centroid and log size
+(the "A of B" parent, else the node's body; a node with no body and an unresolved B uses its own box, i.e. no position) + position,
+ordinal rank and log size within the sibling set (non-overlapping candidates every appearance word accepts, inside the parent when one
+is resolved). Appearance = B1.1's position-free code (siglip and dino arms). Everything else is B1.2's.
+
+**New unit set** (experiments/b1_3_gen.py, b1_3_plan.py, b1_3_render.py, b1_3_units.py; generator seed 20261027).
+- Procedural LIBERO layouts from LIBERO-90's assets (21 movable types, 7 fixture types) in the four tabletop problem classes
+  (kitchen, living room, study, plain tabletop), fixtures at LIBERO's own slots and yaws; rendered by the LIBERO env (EGL on 2080 Ti
+  nodes: the CPU nodes have neither osmesa nor a software EGL; not A40 time), settled 10 steps, S1's frame format.
+- Atoms of a referring unit: role r, family s, head type t, qualifier q (left / right / front / back / middle; top / middle / bottom;
+  compartment sides), part p (drawer, level, side, compartment). Depth 0 = {r, s, t}, depth 1 = + q, depth 2 = + q + p. Compounds =
+  all atom pairs. Phrases are built from these atoms ("left black bowl" / "black bowl on the left", "on the plate on the right", "in
+  the top drawer of the white cabinet", "on the bottom level of the shelf", "in the left compartment of the caddy", "top drawer of the
+  wooden cabinet", ...). Lateral words follow LIBERO's MIRRORED convention (section 6.1): left = smallest world y; front = largest x;
+  middle = depth median; parts = LIBERO's site names.
+- MCD split (seeded greedy search with restarts over held-out pairs): every test compound is a held-out tuple; its bin is graded by
+  the fraction u of its pairs absent from training (c_split's rule: 0 -> "0.1", < 0.4 -> "0.3", >= 0.4 -> "0.5"); every test atom in
+  >= 3 training tuples. Depth-0 units have only three pairs, so bin 0.5 at depth 0 needs a role x scene shift: in the frozen split
+  goal referents are never trained in two families (pre-held (r:goal, s:F) pairs). Found: restart 90, 53 held-out pairs, 84 test
+  compounds (10 / 10 / 10 at depths 0 and 1, 8 / 8 / 8 at depth 2: the agreed fallback; 9 failed the search), 178 training tuples of
+  464 feasible. Plan-level depth-matched D_A 0.054; the unit step thins the training pool to D_A <= 0.02 (below).
+- Referents for the prototype fit: no generated layout has a demo, so every training referent is a SCRIPTED replay-free grasp /
+  release point (object body + 2 cm; goal on a body + 5 cm; a region goal or a drawer: the region site's centre) projected to its
+  agentview token, the token form of the demo contact events. Sim labels are used for scoring, for the holistic comparator's training
+  targets, and for that scripted point only. DEVIATION from demo referents, by necessity.
+- Held-out LIBERO protection: every LIBERO task that is not an l90c training cell (all five suites, 82 BDDL files, read from the BDDL
+  files and S1's training list; split_sealed.json never opened) is excluded scene + phrase: a generated training unit is dropped when
+  its family matches the task's scene, the task scene's types are all present, and the role phrase is identical.
+- The caddy and its compartments are in the generated training pool. On S1's dev units (secondary read) the caddy is therefore NOT an
+  unseen body for B1.3 (it was for B1-B1.2).
+
+**Arms on the new set.** B1.3 siglip and dino (primary frozen by the higher held-out-training-layout smoke hit); the holistic T1
+comparator = S1's B1b recipe RETRAINED on the generated pool (supervision asymmetry: B1b-gen trains on SIM TARGET MASKS, B1.3 on
+scripted referent tokens with no masks); S1c as trained in S1; GroundingDINO (B1a); Qwen2.5-VL-7B and Molmo-7B-D with B0's phrase
+prompts, scored under the mirrored LIBERO convention (labels) and the literal image-side one.
+
+**Primary test (pre-registered).** OLS slope of unit binding error (1 - S1 hit) on the realised CD bin (0.1 / 0.3 / 0.5) for the
+factorised primary arm and for B1b-gen; 2000-draw compound-cluster bootstrap stratified by depth x bin, the same draws for both.
+CONFIRMED iff the 95% CI of slope(holistic) - slope(factorised) lies above 0. Reported with it: both slopes' CIs (T2: factorised
+includes 0; T1: holistic above 0), per depth, and with x = the unit's own CD.
+
+**New-set bars.** Depth-1 hit >= 0.70, depth-2 hit >= 0.70, depth-0 hit >= GroundingDINO's on the same units; B1.3 passes iff the
+primary arm passes all three (compound-cluster two-level bootstrap CIs).
+
+**Secondary.** S1's 240 dev units with the B1 bars and the 11-task CD slope (a secondary read only); per-word channels; mirrored
+left / right prototypes; atom invariance; T2 budget per depth and bin; drawer / caddy units; parameter count.
+
+**What happened before registration (all on generated TRAINING layouts or the plan; disclosed).**
+- MCD search: four failed searches before the frozen one (cells that could not be filled: depth-2 bin 0.1, then depth-2 bin 0.5, then
+  depth-0 bin 0.5). Fixes, in order: fill u == 0 cells first, then the most constrained cells first; add held-out pairs one at a
+  time until u >= 0.4; the agreed depth-2 fallback of 8 compounds per cell; the role x scene pre-held pairs for depth-0 bin 0.5.
+- Rendering: the CPU nodes have neither osmesa nor a software EGL (smoke jobs 4293137 / 4293138), so all 2640 layouts were
+  rendered with EGL on overcap 2080 Ti nodes (not A40 time; about 2.5 GPU-h of 2080 Ti in 13 jobs).
+- Training pool: the 720 random training layouts gave 1896 training units at D_A 0.073 (thinning could only reach 0.024). 1500
+  TARGETED training layouts were added (each realises one training tuple, drawn with raking weights that match the test atom
+  distribution; split and earlier layouts byte-identical, checked). Final unit set: 5518 training units on 2068 layouts (99.8% of
+  scripted referent tokens on their target), 252 test units = 84 compounds x 3 layouts (cells 10 / 10 / 10, 10 / 10 / 10, 8 / 8 / 8;
+  no compound re-binned), D_A(train || test) 0.018 after thinning (0.045 before), every test atom >= 103 times in the pool, bin CD
+  (D_C, alpha 0.1) 0.070 / 0.296 / 0.559. Roles per cell are uneven where the split forced it (depth-1 bin 0.1 is all object role;
+  depth-0 bins 0.1 / 0.3 are 8 / 9 object of 10). Held-out LIBERO scene + phrase units excluded: 11 (in pool: 0). Phrase-only
+  overlap with held-out LIBERO tasks remains (e.g. "in the left compartment of the caddy" x 28) and is allowed by the rule.
+- A geometry bug was found in the first smoke and fixed before registration: geometry dims that are near-constant on training
+  referents got variance ~1e-6, so every held-out geometry code cost ~1e9 nats and geometry could never win. Every geometry Gaussian
+  now has an absolute variance floor of one token at the 16 x 16 grid, (1/16)^2. The buggy smoke is archived
+  (results/bind/b1_3/smoke_v1_geobug).
+- Selection (held-out-layout referent likelihood): siglip K 16 flat floor 0; dino K 32 flat floor 0. Head composition lost again.
+- B1.1's position-free code on the generated training frames: fresh linear probe R^2 row 0.18 / col 0.07 (siglip), 0.33 / 0.07 (dino);
+  i.e. some row position leaks on this distribution (it was < 0.05 on LIBERO frames). Geometry experts carry no absolute position.
+- Channels found (prequential DL, siglip): left / right / front -> both, back -> geo, "in" -> null; type and part nouns ("black",
+  "bowl", "cabinet", "drawer", "level", "top", "bottom", "middle") -> app; "caddy" / "compartment" -> geo, "plate" -> geo, "the" ->
+  both. Content words 43 of 45 (siglip), 39 of 45 (dino).
+- Smoke (held-out training layouts, model fitted on the other 2/3; 800 units): siglip 0.635 (d0 object 0.820, d1 goal 0.463, d1
+  object 0.298, d2 goal 0.538, d2 object 0.618); dino 0.640 (0.764 / 0.388 / 0.442 / 0.543 / 0.764). PRIMARY = dino by the
+  frozen rule (higher mean smoke hit). B1b-gen smoke (2 epochs) within-training val hit 0.38 object / 0.65 goal; Qwen / Molmo smokes
+  parse (6 training units each).

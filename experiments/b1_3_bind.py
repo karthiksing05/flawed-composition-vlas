@@ -45,6 +45,12 @@ COMPOSE = ("head", "flat")
 FLOORS = (0.0, 0.05, 0.2)
 N_FOLD = 5
 D_GEO = 10
+GEO_FLOOR = (1.0 / 16) ** 2      # absolute variance floor of every geometry Gaussian: one token at the 16 x 16 grid (fixed before
+                                  # registration: without it near-constant training dims gave held-out geometry codes ~1e9 nats)
+
+
+def gfl(g):
+    return g[0], np.maximum(g[1], GEO_FLOOR), g[2]
 
 
 def lsm(x):
@@ -126,9 +132,9 @@ class Lexicon:
 
     def _role_params(self, R, G_rows):
         out = {"app": fit_gauss([o[2] for o in R], self.bg["app"][1], self.floor),
-               "gbody": fit_gauss([o[4] for o in R], self.bg["gbody"][1], self.floor)}
+               "gbody": gfl(fit_gauss([o[4] for o in R], self.bg["gbody"][1], self.floor))}
         G = np.stack(G_rows)
-        null = {"app": out["app"][:2], "geo": (G.mean(0), np.maximum(G.var(0) + 1e-6, self.floor * self.bg["geo"][1]))}
+        null = {"app": out["app"][:2], "geo": (G.mean(0), np.maximum(np.maximum(G.var(0) + 1e-6, self.floor * self.bg["geo"][1]), GEO_FLOOR))}
         return out, null
 
     def _role_score(self, rp, app, gbody):
@@ -150,7 +156,7 @@ class Lexicon:
 
     def fit(self, rows, cand_bg):
         """rows: (word or None, ctx, app x, geo x, gbody x, group, frame, G [n, D_GEO] or None, referent node, layout, chain)."""
-        self.bg = {k: (X.mean(0), X.var(0) + 1e-6) for k, X in cand_bg.items()}
+        self.bg = {k: (X.mean(0), X.var(0) + 1e-6 if k == "app" else np.maximum(X.var(0), GEO_FLOOR)) for k, X in cand_bg.items()}
         self.null = {"cand": {"app": self.bg["app"], "geo": self.bg["geo"]}}
         self.role = {}
         roleR = {r: [o for o in rows if o[0] is None and o[1] == r] for r in ("object", "goal")}
@@ -166,7 +172,7 @@ class Lexicon:
             for k, j in (("app", 2), ("geo", 3)):
                 rr = [o for o in os_ if o[j] is not None]
                 if rr:
-                    self.p[w][k] = fit_gauss(np.stack([o[j] for o in rr]), self.null["cand"][k][1], self.floor)
+                    self.p[w][k] = fit_gauss(np.stack([o[j] for o in rr]), self.null["cand"][k][1], self.floor) if k == "app" else gfl(fit_gauss(np.stack([o[j] for o in rr]), self.null["cand"][k][1], self.floor))
         # ── prequential (leave-one-fold-of-layouts-out) description length of the referent, per word and code ──
         fold_role, fold_null = {}, {}
         for f in range(N_FOLD):
@@ -193,7 +199,7 @@ class Lexicon:
                 rest = [o for o in by[w] if fold_of(o[9]) != f]
                 pa = fit_gauss(np.stack([o[2] for o in rest]), self.null["cand"]["app"][1], self.floor) if rest else None
                 rg = [o for o in rest if o[3] is not None]
-                pg = fit_gauss(np.stack([o[3] for o in rg]), self.null["cand"]["geo"][1], self.floor) if rg else None
+                pg = gfl(fit_gauss(np.stack([o[3] for o in rg]), self.null["cand"]["geo"][1], self.floor)) if rg else None
                 for o in held:
                     ctx, fr, G, chain = o[1], o[6], o[7], o[10]
                     nl = (fold_null[(f, ctx)] if ctx != "cand" else self.null["cand"])

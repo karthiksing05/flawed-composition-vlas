@@ -1,0 +1,665 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_BINDER B1.3",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.12.13",
+  "slurm_job": "4301064",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "9314ecf0152ffd4e4631e79a8c1ed1f88c062100",
+  "short": "9314ecf0"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "factorised: B1.3 siglip and dino (primary frozen by the held-out-training-layout smoke: dino); holistic T1 comparator: B1b retrained on the generated pool (S1's recipe); S1c as trained in S1; GroundingDINO (B1a); Qwen2.5-VL-7B bbox and Molmo-7B-D point (B0's phrase prompts), scored under LIBERO's mirrored convention (labels) and the literal image-side one",
+  "files_sha256": {
+   "docs/PLAN_BINDER.md": "75511c04d89729183f748cf3614f07663bb13b04e50b309f16440dfb0f48baf7",
+   "experiments/b1_3_baselines.py": "b90c0c4d81dc390dc8712279a60d65dca7604ef53f4dd047899e010b080f230a",
+   "experiments/b1_3_bind.py": "eb2f9bbb50d045f30be8e2e6ea69daf72d06b09334aa9a8227d654ce0eb28de5",
+   "experiments/b1_3_gen.py": "153270e187dc85f486b1a5e1bc8fb791dfcb3208b19e2129c44113e15630bcae",
+   "experiments/b1_3_plan.py": "422f53b0624278def262285836b90759b6cff28ed1ffe31646b9970d5cc31cd4",
+   "experiments/b1_3_read.py": "a1b1ba5c7fe8175746c29f8d7d53ac25705dbdc3a188a478a03c1afcf97372e5",
+   "experiments/b1_3_render.py": "e65e5a0c99dbe1c8f278c1f58ba25d33ddf8f343dc6d5257619b2f000361de99",
+   "experiments/b1_3_units.py": "4626080001b984ff9068cf9ccd3cf091e797b7ba49632fd0d8cb6795a01f6a46",
+   "experiments/b1_3_vlm.py": "3fb07832d9e5028099bba54130dc09120b958e6930baa52cd86dc4f239d55e0d",
+   "results/bind/b1_3/plan.json": "20024402b99d6b4fdc0c5e24d22b50ed20868f5dbd4340ee84991f4d51f5412c",
+   "results/bind/b1_3/units.json": "8feda402d92718071bcd496961f386202c224f747ff25489a84b46d1ef8e9504"
+  },
+  "frozen": {
+   "dino": {
+    "channels": {
+     "alphabet": "app",
+     "at": "geo",
+     "back": "geo",
+     "black": "app",
+     "book": "app",
+     "bottle": null,
+     "bottom": "both",
+     "bowl": "both",
+     "box": "app",
+     "butter": "both",
+     "cabinet": "app",
+     "caddy": null,
+     "cheese": "app",
+     "chocolate": "app",
+     "compartment": null,
+     "cream": "app",
+     "drawer": "both",
+     "front": "geo",
+     "frying": "app",
+     "in": null,
+     "juice": "app",
+     "ketchup": "app",
+     "left": "geo",
+     "level": "app",
+     "middle": "both",
+     "milk": "both",
+     "moka": "app",
+     "mug": "geo",
+     "on": "app",
+     "orange": "app",
+     "pan": "app",
+     "plate": null,
+     "pot": "app",
+     "pudding": "app",
+     "red": "geo",
+     "right": "geo",
+     "sauce": "app",
+     "shelf": "app",
+     "soup": "app",
+     "the": "both",
+     "tomato": "app",
+     "top": "app",
+     "white": "both",
+     "wine": null,
+     "wooden": "both"
+    },
+    "chosen": {
+     "K": 32,
+     "compose": "flat",
+     "floor": 0.0,
+     "ll_heldout": -1.5439459737640955,
+     "ll_train": -1.5239689035226547
+    },
+    "lexicon_floats": 2512,
+    "n_layouts": 2068,
+    "n_occ": 5518,
+    "pca_floats": 12320
+   },
+   "siglip": {
+    "channels": {
+     "alphabet": "app",
+     "at": "app",
+     "back": "geo",
+     "black": "app",
+     "book": "both",
+     "bottle": "both",
+     "bottom": "app",
+     "bowl": "app",
+     "box": "app",
+     "butter": "app",
+     "cabinet": "app",
+     "caddy": "geo",
+     "cheese": "app",
+     "chocolate": "app",
+     "compartment": "geo",
+     "cream": "app",
+     "drawer": "app",
+     "front": "both",
+     "frying": "both",
+     "in": null,
+     "juice": "app",
+     "ketchup": null,
+     "left": "both",
+     "level": "app",
+     "middle": "app",
+     "milk": "app",
+     "moka": "app",
+     "mug": "both",
+     "on": "app",
+     "orange": "app",
+     "pan": "both",
+     "plate": "geo",
+     "pot": "app",
+     "pudding": "app",
+     "red": "geo",
+     "right": "both",
+     "sauce": "app",
+     "shelf": "app",
+     "soup": "app",
+     "the": "both",
+     "tomato": "app",
+     "top": "app",
+     "white": "app",
+     "wine": "both",
+     "wooden": "app"
+    },
+    "chosen": {
+     "K": 16,
+     "compose": "flat",
+     "floor": 0.0,
+     "ll_heldout": -2.8890066224912276,
+     "ll_train": -2.5867806239438784
+    },
+    "lexicon_floats": 2876,
+    "n_layouts": 2068,
+    "n_occ": 5518,
+    "pca_floats": 65568
+   }
+  },
+  "generator": {
+   "held_pairs": [
+    [
+     "p:compartment",
+     "s:study"
+    ],
+    [
+     "p:drawer",
+     "q:top"
+    ],
+    [
+     "p:drawer",
+     "s:living"
+    ],
+    [
+     "p:level",
+     "s:living"
+    ],
+    [
+     "p:side",
+     "s:living"
+    ],
+    [
+     "q:back",
+     "s:living"
+    ],
+    [
+     "q:back",
+     "t:alphabet soup"
+    ],
+    [
+     "q:back",
+     "t:butter"
+    ],
+    [
+     "q:back",
+     "t:moka pot"
+    ],
+    [
+     "q:back",
+     "t:white bowl"
+    ],
+    [
+     "q:bottom",
+     "s:living"
+    ],
+    [
+     "q:front",
+     "t:white mug"
+    ],
+    [
+     "q:left",
+     "t:black bowl"
+    ],
+    [
+     "q:middle",
+     "t:black bowl"
+    ],
+    [
+     "q:right",
+     "t:plate"
+    ],
+    [
+     "q:right",
+     "t:white bowl"
+    ],
+    [
+     "q:top",
+     "r:object"
+    ],
+    [
+     "q:top",
+     "s:living"
+    ],
+    [
+     "q:top",
+     "s:study"
+    ],
+    [
+     "q:top",
+     "s:tabletop"
+    ],
+    [
+     "q:top",
+     "t:wooden cabinet"
+    ],
+    [
+     "r:goal",
+     "s:living"
+    ],
+    [
+     "r:goal",
+     "s:study"
+    ],
+    [
+     "r:goal",
+     "t:black bowl"
+    ],
+    [
+     "r:goal",
+     "t:wooden cabinet"
+    ],
+    [
+     "r:object",
+     "t:plate"
+    ],
+    [
+     "r:object",
+     "t:white bowl"
+    ],
+    [
+     "s:kitchen",
+     "t:black bowl"
+    ],
+    [
+     "s:kitchen",
+     "t:book"
+    ],
+    [
+     "s:kitchen",
+     "t:chocolate pudding"
+    ],
+    [
+     "s:kitchen",
+     "t:frying pan"
+    ],
+    [
+     "s:kitchen",
+     "t:plate"
+    ],
+    [
+     "s:kitchen",
+     "t:white bowl"
+    ],
+    [
+     "s:living",
+     "t:alphabet soup"
+    ],
+    [
+     "s:living",
+     "t:book"
+    ],
+    [
+     "s:living",
+     "t:butter"
+    ],
+    [
+     "s:living",
+     "t:orange juice"
+    ],
+    [
+     "s:living",
+     "t:plate"
+    ],
+    [
+     "s:living",
+     "t:white bowl"
+    ],
+    [
+     "s:living",
+     "t:white cabinet"
+    ],
+    [
+     "s:living",
+     "t:wooden cabinet"
+    ],
+    [
+     "s:study",
+     "t:alphabet soup"
+    ],
+    [
+     "s:study",
+     "t:black bowl"
+    ],
+    [
+     "s:study",
+     "t:caddy"
+    ],
+    [
+     "s:study",
+     "t:plate"
+    ],
+    [
+     "s:study",
+     "t:red mug"
+    ],
+    [
+     "s:study",
+     "t:white bowl"
+    ],
+    [
+     "s:study",
+     "t:wooden cabinet"
+    ],
+    [
+     "s:tabletop",
+     "t:black bowl"
+    ],
+    [
+     "s:tabletop",
+     "t:cream cheese box"
+    ],
+    [
+     "s:tabletop",
+     "t:ketchup"
+    ],
+    [
+     "s:tabletop",
+     "t:milk"
+    ],
+    [
+     "s:tabletop",
+     "t:wine bottle"
+    ]
+   ],
+   "layout_seeds": "9400000 + layout index",
+   "n_layouts": 2640,
+   "restart": 90,
+   "seed": 20261027
+  },
+  "new_set_bars": "per arm: depth-1 hit >= 0.70 AND depth-2 hit >= 0.70 AND depth-0 hit >= GroundingDINO's on the same units; B1.3 passes iff the primary arm passes all three (compound-cluster two-level bootstrap CIs)",
+  "primary": "dino",
+  "primary_test": "OLS slope of unit binding error (1 - S1 hit) on the realised CD bin (0.1 / 0.3 / 0.5), factorised (primary arm) vs holistic (B1b-gen); 2000-draw compound-cluster bootstrap stratified by depth x bin, same draws for both; CONFIRMED iff the 95% CI of slope(holistic) - slope(factorised) lies above 0. Reported with it: both slopes' CIs, per depth, and x = unit CD",
+  "secondary": "S1's 240 dev units, the B1 bars (held-out d1 >= 0.70, d2 seen-body >= 0.70, d0 >= GroundingDINO 0.786), CD slope on the 11 recombination tasks; per-word channels; mirrored left / right prototypes; atom invariance; T2 budget; drawer / caddy units; parameter count",
+  "smoke_heldout_training_layouts": {
+   "dino": {
+    "cells": {
+     "d0|object": {
+      "mean": 0.7640449438202247,
+      "n": 356
+     },
+     "d1|goal": {
+      "mean": 0.3880597014925373,
+      "n": 67
+     },
+     "d1|object": {
+      "mean": 0.4423076923076923,
+      "n": 104
+     },
+     "d2|goal": {
+      "mean": 0.5434782608695652,
+      "n": 184
+     },
+     "d2|object": {
+      "mean": 0.7640449438202247,
+      "n": 89
+     }
+    },
+    "mean": 0.6399999999999999,
+    "n": 800
+   },
+   "siglip": {
+    "cells": {
+     "d0|object": {
+      "mean": 0.8202247191011236,
+      "n": 356
+     },
+     "d1|goal": {
+      "mean": 0.4626865671641791,
+      "n": 67
+     },
+     "d1|object": {
+      "mean": 0.2980769230769231,
+      "n": 104
+     },
+     "d2|goal": {
+      "mean": 0.5380434782608695,
+      "n": 184
+     },
+     "d2|object": {
+      "mean": 0.6179775280898876,
+      "n": 89
+     }
+    },
+    "mean": 0.6349999999999999,
+    "n": 800
+   }
+  },
+  "split": {
+   "stats": {
+    "bin_cd": {
+     "0.1": 0.06983425061378923,
+     "0.3": 0.29648904431179857,
+     "0.5": 0.5588738299400473
+    },
+    "cells_compounds": {
+     "d0_0.1": 10,
+     "d0_0.3": 10,
+     "d0_0.5": 10,
+     "d1_0.1": 10,
+     "d1_0.3": 10,
+     "d1_0.5": 10,
+     "d2_0.1": 8,
+     "d2_0.3": 8,
+     "d2_0.5": 8
+    },
+    "cells_compounds_by_role": {
+     "d0_0.1_goal": 2,
+     "d0_0.1_object": 8,
+     "d0_0.3_goal": 1,
+     "d0_0.3_object": 9,
+     "d0_0.5_goal": 5,
+     "d0_0.5_object": 5,
+     "d1_0.1_goal": 0,
+     "d1_0.1_object": 10,
+     "d1_0.3_goal": 4,
+     "d1_0.3_object": 6,
+     "d1_0.5_goal": 5,
+     "d1_0.5_object": 5,
+     "d2_0.1_goal": 4,
+     "d2_0.1_object": 4,
+     "d2_0.3_goal": 4,
+     "d2_0.3_object": 4,
+     "d2_0.5_goal": 4,
+     "d2_0.5_object": 4
+    },
+    "cells_units": {
+     "d0_0.1": 30,
+     "d0_0.3": 30,
+     "d0_0.5": 30,
+     "d1_0.1": 30,
+     "d1_0.3": 30,
+     "d1_0.5": 30,
+     "d2_0.1": 24,
+     "d2_0.3": 24,
+     "d2_0.5": 24
+    },
+    "d_atom": 0.017739199432331154,
+    "d_atom_before_thin": 0.04548947064870379,
+    "dropped": {
+     "heldout_libero_scene_phrase": 11,
+     "invalid_test": 40,
+     "invalid_train": 228,
+     "not_training_tuple": 9130
+    },
+    "frames": {
+     "test": 420,
+     "train": 2220
+    },
+    "heldout_libero_scene_phrase_excluded": {
+     "book": 3,
+     "on the stove": 5,
+     "yellow and white mug": 3
+    },
+    "heldout_libero_scene_phrase_in_pool": 0,
+    "heldout_phrase_only_in_pool": {
+     "alphabet soup": 76,
+     "black bowl": 211,
+     "black bowl at the front": 2,
+     "book": 163,
+     "book on the left": 6,
+     "butter": 221,
+     "chocolate pudding": 253,
+     "frying pan": 192,
+     "in the back compartment of the caddy": 200,
+     "in the basket": 119,
+     "in the front compartment of the caddy": 152,
+     "in the left compartment of the caddy": 152,
+     "in the right compartment of the caddy": 152,
+     "in the tray": 107,
+     "ketchup": 274,
+     "milk": 253,
+     "moka pot": 205,
+     "on the stove": 84,
+     "on top of the shelf": 69,
+     "orange juice": 242,
+     "red mug": 76,
+     "right moka pot": 9,
+     "salad dressing": 300,
+     "tomato sauce": 173,
+     "white mug": 133,
+     "wine bottle": 273,
+     "yellow and white mug": 288
+    },
+    "min_test_atom_count": 103,
+    "missing_test_compounds": [],
+    "n_test_compounds": 84,
+    "n_test_units": 252,
+    "n_train_layouts": 2068,
+    "n_train_phrases": 117,
+    "n_train_units": 5518,
+    "n_train_units_before_thin": 7223,
+    "rebinned_compounds": [],
+    "referent_purity": 0.997646407309982,
+    "test_atoms_below_2": {},
+    "thinned": 1705,
+    "train_depth": {
+     "0": 2453,
+     "1": 1256,
+     "2": 1809
+    },
+    "train_role": {
+     "goal": 1673,
+     "object": 3845
+    }
+   },
+   "test_compounds": [
+    "goal|kitchen|akita_black_bowl|None|None",
+    "goal|kitchen|akita_black_bowl|back|None",
+    "goal|kitchen|akita_black_bowl|middle|None",
+    "goal|kitchen|akita_black_bowl|right|None",
+    "goal|kitchen|plate|None|None",
+    "goal|kitchen|plate|right|None",
+    "goal|living|plate|left|None",
+    "goal|living|white_bowl|None|None",
+    "goal|living|wooden_cabinet|bottom|drawer",
+    "goal|living|wooden_cabinet|top|side",
+    "goal|living|wooden_two_layer_shelf|bottom|level",
+    "goal|study|akita_black_bowl|None|None",
+    "goal|study|desk_caddy|back|compartment",
+    "goal|study|desk_caddy|left|compartment",
+    "goal|study|desk_caddy|right|compartment",
+    "goal|study|plate|right|None",
+    "goal|study|white_bowl|None|None",
+    "goal|study|wooden_cabinet|top|drawer",
+    "goal|tabletop|akita_black_bowl|None|None",
+    "goal|tabletop|akita_black_bowl|left|None",
+    "goal|tabletop|akita_black_bowl|middle|None",
+    "goal|tabletop|desk_caddy|front|compartment",
+    "goal|tabletop|desk_caddy|left|compartment",
+    "goal|tabletop|desk_caddy|right|compartment",
+    "goal|tabletop|plate|None|None",
+    "goal|tabletop|white_bowl|None|None",
+    "goal|tabletop|white_bowl|right|None",
+    "goal|tabletop|white_cabinet|middle|drawer",
+    "goal|tabletop|white_cabinet|top|drawer",
+    "object|kitchen|alphabet_soup|None|None",
+    "object|kitchen|black_book|None|None",
+    "object|kitchen|chefmate_8_frypan|None|None",
+    "object|kitchen|chocolate_pudding|None|None",
+    "object|kitchen|moka_pot|None|None",
+    "object|kitchen|moka_pot|left|None",
+    "object|kitchen|plate|None|None",
+    "object|kitchen|plate|right|None",
+    "object|kitchen|red_coffee_mug|back|None",
+    "object|kitchen|red_coffee_mug|right|None",
+    "object|kitchen|white_bowl|None|None",
+    "object|kitchen|white_cabinet|bottom|drawer",
+    "object|kitchen|white_cabinet|top|drawer",
+    "object|kitchen|wooden_cabinet|middle|drawer",
+    "object|living|alphabet_soup|back|None",
+    "object|living|black_book|back|None",
+    "object|living|butter|back|None",
+    "object|living|ketchup|middle|None",
+    "object|living|orange_juice|None|None",
+    "object|living|plate|None|None",
+    "object|living|plate|right|None",
+    "object|living|porcelain_mug|None|None",
+    "object|living|red_coffee_mug|None|None",
+    "object|living|tomato_sauce|None|None",
+    "object|living|white_cabinet|bottom|drawer",
+    "object|living|white_cabinet|top|drawer",
+    "object|living|wooden_cabinet|bottom|drawer",
+    "object|living|wooden_cabinet|middle|drawer",
+    "object|living|wooden_cabinet|top|drawer",
+    "object|study|alphabet_soup|None|None",
+    "object|study|butter|front|None",
+    "object|study|ketchup|middle|None",
+    "object|study|ketchup|right|None",
+    "object|study|moka_pot|back|None",
+    "object|study|moka_pot|front|None",
+    "object|study|plate|None|None",
+    "object|study|porcelain_mug|None|None",
+    "object|study|porcelain_mug|front|None",
+    "object|study|red_coffee_mug|left|None",
+    "object|study|tomato_sauce|left|None",
+    "object|study|white_bowl|None|None",
+    "object|study|white_bowl|back|None",
+    "object|study|white_cabinet|middle|drawer",
+    "object|study|wooden_cabinet|top|drawer",
+    "object|tabletop|akita_black_bowl|None|None",
+    "object|tabletop|black_book|left|None",
+    "object|tabletop|cream_cheese|None|None",
+    "object|tabletop|ketchup|back|None",
+    "object|tabletop|milk|None|None",
+    "object|tabletop|red_coffee_mug|None|None",
+    "object|tabletop|tomato_sauce|None|None",
+    "object|tabletop|white_bowl|right|None",
+    "object|tabletop|white_cabinet|bottom|drawer",
+    "object|tabletop|wine_bottle|None|None",
+    "object|tabletop|wooden_cabinet|top|drawer"
+   ]
+  },
+  "status": "PRE-REGISTERED PLAN_BINDER B1.3 (prequential channel MDL + relative-only geometry; generated MCD unit set)",
+  "written_before": "any B1.3 test or dev prediction or score"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__pb1_3__s0__9314ecf0",
+ "schema": 1,
+ "script": "experiments/prereg/pb1_3.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-28T02:00:07+00:00",
+ "stream": null,
+ "tag": "pb1_3"
+}

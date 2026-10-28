@@ -50,7 +50,7 @@ print(ledger.record("m3_prereg", bench="libero_90_c", tag="pb1_3", seed=0, comma
                              "secondary": "S1's 240 dev units, the B1 bars (held-out d1 >= 0.70, d2 seen-body >= 0.70, d0 >= GroundingDINO 0.786), "
                                           "CD slope on the 11 recombination tasks; per-word channels; mirrored left / right prototypes; atom "
                                           "invariance; T2 budget; drawer / caddy units; parameter count",
-                             "files_sha256": sha(["experiments/b1_3_gen.py", "experiments/b1_3_plan.py", "experiments/b1_3_render.py",
+                             "files_sha256": sha(["docs/PLAN_BINDER.md", "experiments/b1_3_gen.py", "experiments/b1_3_plan.py", "experiments/b1_3_render.py",
                                                   "experiments/b1_3_units.py", "experiments/b1_3_bind.py", "experiments/b1_3_baselines.py",
                                                   "experiments/b1_3_vlm.py", "experiments/b1_3_read.py", "results/bind/b1_3/units.json",
                                                   "results/bind/b1_3/plan.json"]),
