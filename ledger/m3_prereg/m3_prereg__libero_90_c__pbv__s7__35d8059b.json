@@ -1,0 +1,169 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_BINDVLA dev read",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4310494",
+  "torch": "2.10.0+cu128"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "35d8059b20ad796d8bf640cac908140555e4a08a",
+  "short": "35d8059b"
+ },
+ "keys": {},
+ "metrics": {
+  "dev_set": "the split's 29 dev tasks (CD bins 0.1 / 0.3 / 0.5: 5 each; part: 14), 10 episodes (init 0-9), MODE=ours",
+  "files_sha256": {
+   "docs/PLAN_BINDVLA.md": "d660268f8d687c1fda63796772631d67c04e1f0144fc88052e6bba7db88f42a5",
+   "experiments/bv_data.py": "a6d1aa36274f72a25c9e923bb290f0e14cd7d64a0047886545e607ed72eda2f9",
+   "experiments/bv_eval.py": "bed5b93b2f71936b028a3d4c5d93fc5f78b2c63cb1aa6fbceeb8e98720c06fa9",
+   "experiments/bv_train.py": "947946b9701927243cb77c7968be0a1cf75451e0a3e795e8e38eb55973099092",
+   "lifelong_ood/policy/backbone_bindvla.py": "e4d3b488e4305435b336502e5dac66a9242afe592c5ddfc6a0cd2938a35acf9f",
+   "lifelong_ood/policy/bindvla.py": "164785618016adacbc3251c599900889829c7151c930afb8778256a9caf34671"
+  },
+  "model": {
+   "cfg": {
+    "binder": true,
+    "bottleneck": true,
+    "chunk": 50,
+    "cross_role": false,
+    "d": 384,
+    "foveate": false,
+    "hier": true,
+    "inv": 0.0,
+    "k_generic": 6,
+    "levels": 3,
+    "max_action_dim": 32,
+    "max_state_dim": 32,
+    "n_layers": 2,
+    "n_steps": 2,
+    "noisy_p": 0.3,
+    "parser": "rule",
+    "phrase_len": 12,
+    "pos_keys": true,
+    "sigma_min": 0.05,
+    "tok_len": 48,
+    "wrist_slots": true
+   },
+   "ckpt": "results/bindvla/main/ckpt/step_060000.pt",
+   "ckpt_sha256": "8da4a89d87c45e16cca6016977bf1826814187ec2366ab847ff96346bb698873",
+   "params": {
+    "binder": 9939657,
+    "expert": 98245840,
+    "frozen": 350165184,
+    "heads": 1635152,
+    "total_trainable": 109820649
+   },
+   "setting": "bindvla"
+  },
+  "models": "BindVLA (this checkpoint) and lerobot/smolvla_libero (public reference, CONTAMINATED: trained on libero_object ketchup, libero_goal 3 / 7, LIBERO-10 two-step tests); vanilla_frozen and the ablations are NOT run (need approval)",
+  "parity_training_tasks": {
+   "bindvla_main@60000": {
+    "bar_0.8x_ref": 0.65,
+    "by_suite": {
+     "libero_10": 0.4,
+     "libero_90": 0.6659090909090909,
+     "libero_goal": 0.7250000000000001,
+     "libero_object": 0.922222222222222,
+     "libero_spatial": 0.72
+    },
+    "ci95": [
+     0.6368421052631579,
+     0.7447697368421049
+    ],
+    "episodes": 760,
+    "mean": 0.6921052631578949,
+    "reached": true,
+    "tasks": 76
+   },
+   "smolvla_libero": {
+    "by_suite": {
+     "libero_10": 0.62,
+     "libero_goal": 0.8200000000000001,
+     "libero_object": 0.9,
+     "libero_spatial": 0.9099999999999999
+    },
+    "ci95": [
+     0.7425,
+     0.8775000000000001
+    ],
+    "episodes": 400,
+    "mean": 0.8125,
+    "tasks": 40
+   }
+  },
+  "posfree": {
+   "linear_r2_after": [
+    0.04945879039194556,
+    0.040946837740652664
+   ],
+   "linear_r2_before": [
+    0.7354627387362641,
+    0.6177748166605441
+   ],
+   "mlp_r2_after": [
+    0.9626106023788452,
+    0.9322571754455566
+   ],
+   "mlp_r2_before": [
+    0.9727296233177185,
+    0.9528898596763611
+   ],
+   "removed_dims": 64
+  },
+  "predictions": "PLAN_BINDVLA section 4 (directions per ablation) and the hierarchy predictions (a)-(c); in this read only the bindvla row and the contaminated reference exist, so the read is DESCRIPTIVE: success per CD bin and per part role with task-bootstrap CIs; no comparator claim",
+  "status": "PRE-REGISTERED the BindVLA dev read (PLAN_BINDVLA section 6)",
+  "training_evidence": {
+   "last_eval": {
+    "diag": {
+     "goal": {
+      "chance_mass": 0.03515625,
+      "hit": 0.13636363636363635,
+      "hit_level1": 0.13636363636363635,
+      "mass3x3": 0.1383105974147673,
+      "n": 88
+     },
+     "object": {
+      "chance_mass": 0.03515625,
+      "hit": 0.15454545454545454,
+      "hit_level1": 0.10909090909090909,
+      "mass3x3": 0.11912060306134332,
+      "n": 110
+     }
+    },
+    "step": 60000,
+    "val_loss": 0.4569585621356964
+   },
+   "n_evals": 30
+  },
+  "written_before": "any BindVLA dev episode"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__pbv__s7__35d8059b",
+ "schema": 1,
+ "script": "experiments/prereg/pbv.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-28T05:42:44+00:00",
+ "stream": null,
+ "tag": "pbv"
+}
