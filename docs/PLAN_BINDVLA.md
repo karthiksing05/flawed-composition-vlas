@@ -508,3 +508,28 @@ signal; up to 60 more A40-h. One principled change per iteration, each recorded 
 
 **Iteration 2, full run (`main2`):** P1's setting for 60k x 32 (base init, aux 1, lambda 0, hier L = 3), then parity, then the
 dev read. The matched comparator `vanilla` (vanilla_frozen, base init, same sampler / steps / recipe) runs in parallel.
+
+**Leakage check** (experiments/bv_leakcheck.py -> results/bindvla/leakcheck.json; task ids recorded; PASS):
+- The cache and every contact-event referent frame come from the 76 training tasks only: 2,164 episodes, 254,876 referent
+  frames, 0 dev / part / two-step-test tasks. The referent source files are training cells only.
+- The trainer never samples the 150 held-out training episodes (11,771 referent frames, used only by the diagnostic).
+- Every run's config records the cache's 472,824 non-held-out frames.
+- No dev instruction is identical to a training instruction in the SAME scene. Two are identical in another scene: :0 vs :28,
+  and :50 vs :46 / libero_object:0.
+- 15 / 29 dev tasks share a role phrase with a training task of the same scene. This is by split design (atoms seen,
+  compounds held out) and is listed in the json.
+- The check is re-run with main2's config before the dev read.
+
+**Offline dev slot-hit diagnostic** (pre-registered with the phase-2 dev read, m3_prereg tag pbv2):
+- Data: experiments/bv_devrefs.py builds contact-event referents of the 29 dev tasks' own demos (10 per task, 290 demos), with
+  the same rule as the training referents. The demos are scored only: never trained on, never executed.
+  - The camera K / E is borrowed from a rendered training cell of the same scene (15 tasks) or the same arena family (14 tasks).
+  - K / E are identical within each of the KITCHEN, LIVING_ROOM and STUDY families (checked).
+  - Every dev tid passes l90c.check_task.
+- Scoring: experiments/bv_devdiag.py, final-level hit (argmax within Chebyshev 1; chance 0.035), by CD bin, role and path
+  depth, with task-cluster bootstrap CIs. Scored for main2 and for phase-1 main (BindVLA without the signal).
+  - vanilla_frozen has no role-indexed attention, so it has no slot-hit equivalent and is not scored.
+- **What it separates.** If main2's dev hit is near its held-out-training hit (0.9+) while the closed-loop dev success stays
+  low, binding transfers and the motor policy fails on the new compounds. If the dev hit collapses, the 0.98 held-out hit was
+  a layout shortcut. That is a live possibility given the nonlinear position leak (MLP R^2 0.96 / 0.93).
+- No bar; descriptive.
