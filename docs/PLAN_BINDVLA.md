@@ -446,3 +446,49 @@ Chebyshev 1; chance for the 3 x 3 window is 0.035):
 | **total** | **about 11.2 of the 30 cap** |
 
 Data cache, unit tests and audits ran on CPU.
+
+## 11. Phase 2: iterate until BindVLA binds (user approval 2026-10-28: "keep iterating til bind VLA is successful")
+
+Approved: the anonymous download of lerobot/smolvla_base; the matched vanilla_frozen comparator; a label-free slot-binding
+signal; up to 60 more A40-h. One principled change per iteration, each recorded here BEFORE it runs. Cheap 6k-step probes
+(about 0.7 A40-h) are read on the held-out-training-episode slot diagnostic before any 60k run.
+
+**Success bars (pre-registered here, before any phase-2 dev read).**
+- (S1) Final-level slot hit on held-out training episodes >= 0.6 for BOTH the object and the goal role.
+  - Depth-2 and depth-3 slots must be "clearly above chance": the lower 95% bootstrap bound of their hit exceeds 2 x chance
+    (0.070).
+- (S2) Parity on the 76 training tasks >= 0.65.
+- (S3) Dev closed-loop success (29 dev tasks x 10 episodes) clearly above vanilla_frozen:
+  - the paired task-cluster bootstrap CI of (BindVLA - vanilla_frozen) excludes 0;
+  - absolute dev success >= 0.30.
+- Stop rule: three consecutive iterations without a slot-hit gain.
+
+**11.0 smolvla_base** (job 4313400, anonymous, token=False, fresh HF_HOME, no credential read):
+- Downloaded to /coc/flash10/ksingara3/robot/data/smolvla_base.
+- Its config: train_expert_only = freeze_vision_encoder = True, 16 VLM layers, width 0.75, cross_attn, self-attn every 2.
+- All 345 of its VLM tensors equal the on-disk SmolVLM2-500M exactly (max abs diff 0). So phase 1's frozen VLM WAS smolvla_base's
+  VLM, and only the expert was missing.
+- From here on, every run initialises the action expert and the flow heads (action / time projections, state_proj; 155 tensors)
+  from smolvla_base (`--init-base`).
+
+**Iteration 1 (probe P0): smolvla_base expert init, nothing else changed.**
+- Question: does a pretrained expert alone change binding? Phase 1 at 6k steps had object / goal hit 0.127 / 0.159.
+- 6k steps, lambda = 0.
+
+**Iteration 2 (probe P1): + a contact-event referent signal on the final slot masks** (`--aux 1`; experiments/bv_refs.py).
+- **The signal is label-free.** It is the demo's own gripper command and proprioception, projected with the cell's fixed camera
+  (K / E). This is the referent B1 / B1.3 are fitted to (PLAN_BINDER 3.1). No simulator mask and no annotation is read.
+- Per training frame:
+  - the object slot of step j targets the grasp token of transport j, on frames before that grasp (the object has not moved);
+  - the goal slot targets the release token, on frames up to the release.
+- Coverage: 2,164 training episodes of 59 cells. 132,609 frames carry object referents and 231,660 goal referents. In every
+  checked episode the cache's gripper closes within 2 frames of the referent grasp frame (check 1.00).
+- Loss = -log(final-mask mass in the 3 x 3 window around the referent), averaged over valid (frame, step, role) and added with
+  weight 1.
+- **Why this and not distilling B1.3:**
+  - B1.3's dino predictions exist only for dev / test units, so training on them would leak dev.
+  - B1.3 was fitted to scripted generated-layout referents, and its LIBERO dev hit is about 0.6.
+  - The demo contact events are its upstream label-free source and cover every training frame before contact.
+- **Caveat:** S1 is scored against the same kind of referent, on held-out episodes. So S1 measures held-out-episode
+  generalisation of this signal, and only S3 (dev closed loop) measures transfer.
+- Same 6k-step probe as P0.

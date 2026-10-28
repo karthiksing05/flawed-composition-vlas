@@ -31,6 +31,9 @@ sys.path[:0] = [ROOT, os.path.join(ROOT, "experiments")]
 CACHE = "/coc/flash10/ksingara3/robot/data/bindvla_cache"
 OUT = os.path.join(ROOT, "results", "bindvla")
 NT = 8                                       # t strata per environment
+BASE = "/coc/flash10/ksingara3/robot/data/smolvla_base"   # the public lerobot/smolvla_base (anonymous download, PLAN_BINDVLA 11)
+_rc = np.divmod(np.arange(256), 16)
+WIN = torch.from_numpy((np.maximum(np.abs(_rc[0][:, None] - _rc[0][None]), np.abs(_rc[1][:, None] - _rc[1][None])) <= 1).astype(np.float32))
 
 
 # ── data ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -60,6 +63,8 @@ class Store:
         env_of = np.array([self.eps[int(x)]["env"] for x in self.ep])
         self.envs = sorted(set(env_of[self.train_idx]))
         self.by_env = {v: self.train_idx[env_of[self.train_idx] == v] for v in self.envs}
+        rf = os.path.join(CACHE, "refs.npz")                  # contact-event referents (bv_refs.py); -1 = none
+        self.ref = np.load(rf)["ref"] if os.path.exists(rf) else np.full((n, 2, 2), -1, np.int16)
 
     def _img(self, which, i):
         if which == "a":
@@ -80,7 +85,8 @@ class Store:
         a = (self.actions[j] - self.a_mu) / (self.a_sd + 1e-8)
         s = (self.state[i] - self.s_mu) / (self.s_sd + 1e-8)
         return dict(img=self._img("a", i), wrist=self._img("w", i), state=s.astype(np.float32), actions=a.astype(np.float32),
-                    pad=pad, text=self.eps[int(self.ep[i])]["text"], env=self.eps[int(self.ep[i])]["env"])
+                    pad=pad, text=self.eps[int(self.ep[i])]["text"], env=self.eps[int(self.ep[i])]["env"],
+                    ref=self.ref[i].astype(np.int64))
 
 
 def collate(items, cond, cfg, rng=None):
@@ -92,7 +98,7 @@ def collate(items, cond, cfg, rng=None):
     act = torch.zeros(len(items), cfg.chunk, cfg.max_action_dim)
     act[:, :, :7] = T("actions")
     cs = [cond(it["text"], rng) for it in items]
-    return dict(img=img, wrist=wr, state=st, actions=act, pad=T("pad"),
+    return dict(img=img, wrist=wr, state=st, actions=act, pad=T("pad"), ref=T("ref"),
                 lang_tokens=torch.from_numpy(np.stack([c[0] for c in cs])), lang_masks=torch.from_numpy(np.stack([c[1] for c in cs])),
                 unit_tokens=torch.from_numpy(np.stack([c[2] for c in cs])), unit_masks=torch.from_numpy(np.stack([c[3] for c in cs])))
 
@@ -134,10 +140,22 @@ def per_sample(loss, pad, cfg):
 
 
 # ── the model ────────────────────────────────────────────────────────────────────────────────────────────────────────
-def build(setting, dev, **kw):
+def build(setting, dev, init_base=False, **kw):
     from lifelong_ood.policy import bindvla as BV
     cfg = BV.make_config(setting, **kw)
     model = BV.BindVLA(cfg, device=dev).to(dev)
+    if init_base:                                            # the public smolvla_base action expert + flow heads (PLAN_BINDVLA 11)
+        from safetensors.torch import load_file
+        sb = load_file(os.path.join(BASE, "model.safetensors"))
+        sd = {k[len("model."):]: v for k, v in sb.items() if k.startswith("model.") and ".vlm_with_expert.vlm." not in "." + k[len("model."):]
+              and not k[len("model."):].startswith("vlm_with_expert.vlm.")}
+        own = model.flow.state_dict()
+        bad = [k for k in sd if k not in own or own[k].shape != sd[k].shape]
+        assert not bad, bad[:5]
+        miss = [k for k in own if not k.startswith("vlm_with_expert.vlm.") and k not in sd]
+        assert not miss, miss[:5]
+        model.flow.load_state_dict({k: v.to(own[k].dtype) for k, v in sd.items()}, strict=False)
+        print(f"[bv] initialised {len(sd)} expert / head tensors from {BASE}", flush=True)
     if model.binder is not None and cfg.pos_keys:
         f = os.path.join(CACHE, "posfree.npz")
         assert os.path.exists(f), "run --posfit first"
@@ -200,11 +218,11 @@ def diag_frames(store):
 
 @torch.no_grad()
 def run_diag(model, cond, cfg, store, frames, dev, bs=16):
+    """slot-mask referent hits on held-out episodes' frame 0 (contact-event referents): per role and per path depth (number of
+    non-empty levels), final-level argmax within Chebyshev 1 of the referent token; chance 9 / 256."""
     if model.binder is None or cfg.parser in ("generic", "token"):
         return {}
-    hits = {"object": [], "goal": []}
-    hit1 = {"object": [], "goal": []}
-    mass = {"object": [], "goal": []}
+    rec = []
     model.eval()
     for k in range(0, len(frames), bs):
         chunk = frames[k:k + bs]
@@ -212,6 +230,7 @@ def run_diag(model, cond, cfg, store, frames, dev, bs=16):
         _, _, _, dg = model.build_prefix(b)
         M = dg["mask"].float().cpu().numpy()                    # [B, S, 2, 256]
         LV = dg["levels"].float().cpu().numpy()                 # [B, S, 2, L, 256]
+        VV = dg["level_valid"].cpu().numpy()                    # [B, S, 2, L]
         for j, (_, rows) in enumerate(chunk):
             for step, role, tok, _ in rows:
                 if step >= cfg.n_steps:
@@ -221,19 +240,28 @@ def run_diag(model, cond, cfg, store, frames, dev, bs=16):
                 win = [(rr * 16 + cc) for rr in range(max(0, tr - 1), min(16, tr + 2)) for cc in range(max(0, tc - 1), min(16, tc + 2))]
                 m = M[j, step, r]
                 pr, pc = divmod(int(m.argmax()), 16)
-                hits[role].append(float(max(abs(pr - tr), abs(pc - tc)) <= 1))
                 m1 = LV[j, step, r, 0]
-                pr, pc = divmod(int(m1.argmax()), 16)
-                hit1[role].append(float(max(abs(pr - tr), abs(pc - tc)) <= 1))
-                mass[role].append(float(m[win].sum()))
+                p1r, p1c = divmod(int(m1.argmax()), 16)
+                rec.append(dict(role=role, depth=int(VV[j, step, r].sum()), hit=float(max(abs(pr - tr), abs(pc - tc)) <= 1),
+                                hit1=float(max(abs(p1r - tr), abs(p1c - tc)) <= 1), mass=float(m[win].sum())))
     model.train()
     out = {}
-    for role in hits:
-        if hits[role]:
-            out[role] = dict(n=len(hits[role]), hit=float(np.mean(hits[role])), hit_level1=float(np.mean(hit1[role])),
-                             mass3x3=float(np.mean(mass[role])), chance_mass=9 / 256)
-    return out
 
+    def summ(rs):
+        h = np.array([x["hit"] for x in rs])
+        rng = np.random.default_rng(0)
+        bt = [rng.choice(h, len(h)).mean() for _ in range(1000)]
+        return dict(n=len(rs), hit=float(h.mean()), hit_ci95=[float(np.percentile(bt, 2.5)), float(np.percentile(bt, 97.5))],
+                    hit_level1=float(np.mean([x["hit1"] for x in rs])), mass3x3=float(np.mean([x["mass"] for x in rs])), chance=9 / 256)
+    for role in ("object", "goal"):
+        rs = [x for x in rec if x["role"] == role]
+        if rs:
+            out[role] = summ(rs)
+    for d in (1, 2, 3):
+        rs = [x for x in rec if x["depth"] == d]
+        if rs:
+            out[f"depth{d}"] = summ(rs)
+    return out
 
 @torch.no_grad()
 def validation(model, cond, cfg, store, dev, n=256, bs=32, seed=12345):
@@ -318,7 +346,7 @@ def train(a):
     if a.levels:
         kw["levels"] = a.levels
     store = Store()
-    cfg, model, cond = build(a.setting, dev, **kw)
+    cfg, model, cond = build(a.setting, dev, init_base=a.init_base and not latest(os.path.join(OUT, a.exp, "ckpt")), **kw)
     d = os.path.join(OUT, a.exp)
     ckd = os.path.join(d, "ckpt")
     os.makedirs(d, exist_ok=True)
@@ -356,7 +384,7 @@ def train(a):
         for g_ in opt.param_groups:
             g_["lr"] = lr_at(step, a)
         t = t_of(b["u"])
-        loss, _ = model(b, b["noise"], t)
+        loss, dgm = model(b, b["noise"], t)
         ls = per_sample(loss, b["pad"], cfg)                                   # [B]
         bins = (b["u"] * NT).long().clamp(0, NT - 1)
         with torch.no_grad():
@@ -367,7 +395,14 @@ def train(a):
         Rraw = torch.zeros(a.envs, device=dev).scatter_add(0, b["env"], ls.detach()) / per_env
         pen = R.var(unbiased=False)
         bc = ls.mean()
-        total = bc + cfg.inv * pen
+        aux = torch.zeros((), device=dev)
+        if a.aux > 0 and dgm and "mask" in dgm:                               # contact-event referent signal (PLAN_BINDVLA 11)
+            ref = b["ref"][:, : cfg.n_steps]                                   # [B, S, 2]
+            ok = ref >= 0
+            if ok.any():
+                mass = (dgm["mask"].float() * WIN.to(dev)[ref.clamp(min=0)]).sum(-1)   # [B, S, 2]
+                aux = -(torch.log(mass + 1e-4) * ok).sum() / ok.sum()
+        total = bc + cfg.inv * pen + a.aux * aux
         log_now = (step % 100 == 0)
         gr = None
         if log_now and binder_params and cfg.inv > 0:
@@ -383,11 +418,12 @@ def train(a):
         torch.cuda.synchronize()
         tstep.append(time.time() - ts)
         acc["loss"] += float(bc)
+        acc["aux"] = acc.get("aux", 0.0) + float(aux)
         acc["pen"] += float(pen)
         acc["spread"] += float(Rraw.max() - Rraw.min())
         acc["n"] += 1
         if log_now:
-            row = dict(step=step, loss=acc["loss"] / acc["n"], pen=acc["pen"] / acc["n"], env_spread=acc["spread"] / acc["n"],
+            row = dict(step=step, loss=acc["loss"] / acc["n"], aux=acc.get("aux", 0.0) / acc["n"], pen=acc["pen"] / acc["n"], env_spread=acc["spread"] / acc["n"],
                        grad_ratio=gr, gnorm=float(gn), lr=lr_at(step, a), secs_step=float(np.mean(tstep[-100:])),
                        wall=time.time() - t0, peak_gb=torch.cuda.max_memory_allocated() / 1e9)
             if model.binder is not None:
@@ -430,6 +466,8 @@ def main():
     ap.add_argument("--envs", type=int, default=4)
     ap.add_argument("--inv", type=float, default=None)
     ap.add_argument("--levels", type=int, default=0)
+    ap.add_argument("--init-base", action="store_true", help="initialise the expert + heads from lerobot/smolvla_base")
+    ap.add_argument("--aux", type=float, default=0.0, help="weight of the contact-event referent loss on the final slot masks")
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--lr-min", type=float, default=2.5e-6)
     ap.add_argument("--warmup", type=int, default=1000)
