@@ -65,6 +65,15 @@ class Store:
         self.by_env = {v: self.train_idx[env_of[self.train_idx] == v] for v in self.envs}
         rf = os.path.join(CACHE, "refs.npz")                  # contact-event referents (bv_refs.py); -1 = none
         self.ref = np.load(rf)["ref"] if os.path.exists(rf) else np.full((n, 2, 2), -1, np.int16)
+        self.ho_envs = []
+
+    def hold(self, envs):
+        """BindVLA-C leave-layout-out: drop these environments from training (their frames score the selection criterion)."""
+        self.ho_envs = list(envs)
+        keep = ~np.isin(np.array([self.eps[int(x)]["env"] for x in self.ep[self.train_idx]]), self.ho_envs)
+        self.train_idx = self.train_idx[keep]
+        self.envs = [v for v in self.envs if v not in self.ho_envs]
+        self.by_env = {v: self.by_env[v] for v in self.envs}
 
     def _img(self, which, i):
         if which == "a":
@@ -108,6 +117,7 @@ class Batches(torch.utils.data.Dataset):
 
     def __init__(self, store, cond, cfg, n_env, per_env, seed):
         self.s, self.cond, self.cfg, self.n_env, self.per_env, self.seed = store, cond, cfg, n_env, per_env, seed
+        self.emap, self.l1 = None, False                      # BindVLA-C (bv_c.py): swap-contrast entity map, prototype ids
 
     def __len__(self):
         return 10 ** 9
@@ -121,6 +131,12 @@ class Batches(torch.utils.data.Dataset):
         b["u"] = torch.from_numpy(np.tile((np.arange(self.per_env) + rng.random(self.per_env)) / self.per_env, self.n_env)).float()
         b["noise"] = torch.from_numpy(np.tile(rng.standard_normal((self.per_env, self.cfg.chunk, self.cfg.max_action_dim)),
                                               (self.n_env, 1, 1))).float()
+        if self.emap is not None:
+            import bv_c
+            u, m, t = bv_c.swap_items(self.s, self.emap, idx, self.cond, np.random.default_rng([self.seed, int(step), 7]))
+            b["swap_units"], b["swap_masks"], b["swap_tok"] = torch.from_numpy(u), torch.from_numpy(m), torch.from_numpy(t)
+        if self.l1:
+            b["l1"] = torch.from_numpy(np.stack([self.cond.level1_ids(self.s.eps[int(self.s.ep[i])]["text"]) for i in idx]))
         b["step"] = int(step)
         return b
 
@@ -345,13 +361,25 @@ def train(a):
         kw["inv"] = a.inv
     if a.levels:
         kw["levels"] = a.levels
+    if a.motor != "full":
+        kw["motor"] = a.motor
+    if a.no_glob:
+        kw["glob"] = False
     store = Store()
+    cflag = a.hold_layouts or a.swap > 0 or a.proto > 0 or a.adv > 0
+    if cflag:
+        import bv_c
+    if a.hold_layouts:
+        store.hold(bv_c.heldout_layouts(store, a.hold_layouts))
+        print(f"[bv] held-out layouts {store.ho_envs}", flush=True)
     cfg, model, cond = build(a.setting, dev, init_base=a.init_base and not latest(os.path.join(OUT, a.exp, "ckpt")), **kw)
     d = os.path.join(OUT, a.exp)
     ckd = os.path.join(d, "ckpt")
     os.makedirs(d, exist_ok=True)
     params = [p for p in model.parameters() if p.requires_grad]
-    opt = torch.optim.AdamW(params, lr=a.lr, betas=(0.9, 0.95), eps=1e-8, weight_decay=1e-10)
+    extras = bv_c.Extras(model, a, dev) if cflag else None
+    xparams = extras.params() if extras is not None else []
+    opt = torch.optim.AdamW(params + xparams, lr=a.lr, betas=(0.9, 0.95), eps=1e-8, weight_decay=1e-10)
     start, ema = 0, None
     f = latest(ckd)
     if f and not a.timing:
@@ -360,11 +388,19 @@ def train(a):
         print(f"[bv] resumed {f} at step {start}", flush=True)
     ntr = model.n_trainable()
     print(f"[bv] {a.setting} {dataclasses.asdict(cfg)}\n[bv] trainable {ntr}", flush=True)
-    json.dump(dict(setting=a.setting, cfg=dataclasses.asdict(cfg), params=ntr, args=vars(a), envs=store.envs,
-                   n_train_frames=int(len(store.train_idx)), n_held_frames=int(len(store.held_idx))),
-              open(os.path.join(d, "config.json"), "w", encoding="utf-8"), indent=1)
     per_env = a.batch // a.envs
     ds = Batches(store, cond, cfg, a.envs, per_env, seed=a.seed)
+    xinfo = {}
+    if cflag:
+        if a.swap > 0:
+            ds.emap = bv_c.entity_map(store)
+            xinfo["entity_map"] = ds.emap
+        ds.l1 = a.proto > 0
+        xinfo["ho_envs"] = store.ho_envs
+    json.dump(dict(setting=a.setting, cfg=dataclasses.asdict(cfg), params=ntr, args=vars(a), envs=store.envs,
+                   n_train_frames=int(len(store.train_idx)), n_held_frames=int(len(store.held_idx)), **xinfo),
+              open(os.path.join(d, "config.json"), "w", encoding="utf-8"), indent=1)
+    lol_frames = bv_c.layout_frames(store, store.ho_envs) if cflag and store.ho_envs else []
     steps = a.timing or a.steps
     sampler = list(range(start, steps))
     dl = torch.utils.data.DataLoader(ds, batch_size=None, sampler=sampler, num_workers=a.workers, prefetch_factor=4,
@@ -403,6 +439,14 @@ def train(a):
                 mass = (dgm["mask"].float() * WIN.to(dev)[ref.clamp(min=0)]).sum(-1)   # [B, S, 2]
                 aux = -(torch.log(mass + 1e-4) * ok).sum() / ok.sum()
         total = bc + cfg.inv * pen + a.aux * aux
+        if extras is not None:
+            xl, xlog = extras(model, b, dgm or {}, WIN.to(dev))
+            for k_, w_ in (("swap", a.swap), ("proto", a.proto), ("adv", a.adv)):
+                if k_ in xl:
+                    total = total + w_ * xl[k_]
+                    acc["x_" + k_] = acc.get("x_" + k_, 0.0) + float(xl[k_].detach())
+            for k_, v_ in xlog.items():
+                acc["x_" + k_] = acc.get("x_" + k_, 0.0) + v_
         log_now = (step % 100 == 0)
         gr = None
         if log_now and binder_params and cfg.inv > 0:
@@ -426,6 +470,7 @@ def train(a):
             row = dict(step=step, loss=acc["loss"] / acc["n"], aux=acc.get("aux", 0.0) / acc["n"], pen=acc["pen"] / acc["n"], env_spread=acc["spread"] / acc["n"],
                        grad_ratio=gr, gnorm=float(gn), lr=lr_at(step, a), secs_step=float(np.mean(tstep[-100:])),
                        wall=time.time() - t0, peak_gb=torch.cuda.max_memory_allocated() / 1e9)
+            row.update({k_: v_ / acc["n"] for k_, v_ in acc.items() if k_.startswith("x_")})
             if model.binder is not None:
                 bd = model.binder
                 row.update(tau=float(bd.log_tau.exp()), geo_w=float(bd.geo.weight.norm()), out_scale=float(bd.out_norm.log_s.exp()))
@@ -438,6 +483,10 @@ def train(a):
             continue
         if done % a.eval_every == 0 or done == a.steps:
             row = dict(step=done, val_loss=validation(model, cond, cfg, store, dev), diag=run_diag(model, cond, cfg, store, frames, dev))
+            if lol_frames:
+                row["lol"] = bv_c.lol_diag(model, cond, cfg, store, lol_frames, dev, collate, to_dev)
+            if cflag and done == a.steps:
+                row["key_probe"] = bv_c.key_probe(model, store, dev)
             print(json.dumps(row), flush=True)
             logf.write(json.dumps(row) + "\n")
             logf.flush()
@@ -468,6 +517,12 @@ def main():
     ap.add_argument("--levels", type=int, default=0)
     ap.add_argument("--init-base", action="store_true", help="initialise the expert + heads from lerobot/smolvla_base")
     ap.add_argument("--aux", type=float, default=0.0, help="weight of the contact-event referent loss on the final slot masks")
+    ap.add_argument("--hold-layouts", type=int, default=0, help="BindVLA-C: hold out N training layouts (envs) for the selection hit")
+    ap.add_argument("--swap", type=float, default=0.0, help="BindVLA-C: weight of the swap contrast")
+    ap.add_argument("--proto", type=float, default=0.0, help="BindVLA-C: weight of cross-layout prototype consistency")
+    ap.add_argument("--adv", type=float, default=0.0, help="BindVLA-C: weight of the gradient-reversed position probe")
+    ap.add_argument("--motor", default="full", choices=["full", "pose"], help="BindVLA-C: motor interface")
+    ap.add_argument("--no-glob", action="store_true", help="BindVLA-C: drop the global token g from the prefix")
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--lr-min", type=float, default=2.5e-6)
     ap.add_argument("--warmup", type=int, default=1000)

@@ -134,6 +134,48 @@ def test_shapes_and_grad():
         assert b.inp.weight.grad is not None and torch.isfinite(b.inp.weight.grad).all(), setting
 
 
+def test_pose_motor_and_final_masks():
+    """BindVLA-C: motor=pose feeds the slot token only pose/geometry/role/step + a 16-d shape code (slot_mlp unused);
+    final_masks reproduces the forward pass's final masks; the GRL probe sees the keys."""
+    cfg, b = _binder(motor="pose")
+    f, w, c, tok, m, fe, fm = _inputs(cfg)
+    toks, valid, g, d = b(f, w, c, tok, m, fe, fm)
+    assert toks.shape == (2, cfg.n_slots, 32)
+    toks.sum().backward()
+    assert b.pose_mlp[0].weight.grad is not None and float(b.pose_mlp[0].weight.grad.abs().sum()) > 0
+    assert b.shape.weight.grad is not None and b.slot_mlp[0].weight.grad is None
+    fmask = b.final_masks(f, tok, m)
+    assert torch.allclose(fmask, d["mask"], atol=1e-5), float((fmask - d["mask"]).abs().max())
+    assert d["s1"].shape[:3] == (2, cfg.n_steps, 2) and d["keys"].shape[:2] == (2, 256)
+    import bv_c
+    k = d["keys"].detach().requires_grad_(True)
+    y = bv_c._GRL.apply(k)
+    y.sum().backward()
+    assert torch.allclose(k.grad, -torch.ones_like(k))
+
+
+def test_conditioner_c_helpers():
+    class Tok:
+        def __call__(self, t, max_length=None, add_special_tokens=True, **kw):
+            w = [1 + (sum(map(ord, x)) % 1000) for x in t.split()]
+            if max_length is None:                                  # encode_units: a plain list per phrase
+                return dict(input_ids=w)
+            ids = np.zeros(max_length, np.int64)
+            ids[: min(len(w), max_length)] = w[:max_length]
+            return dict(input_ids=ids[None], attention_mask=(ids > 0)[None])
+    cfg = BV.make_config("bindvla")
+    cond = BV.Conditioner(Tok(), cfg)
+    t = "put the black bowl in the top drawer of the cabinet"
+    u0, m0 = cond(t)[2:]
+    u1, m1 = cond.with_object(t, "ketchup")
+    assert u0.shape == u1.shape and not np.array_equal(u0, u1)
+    ids = cond.level1_ids(t)
+    assert ids.shape == (cfg.n_steps, 2) and ids[0, 0] >= 0 and ids[0, 1] >= 0 and (ids[1] == -1).all()
+    import bv_c
+    o, g = bv_c.role_phrases(t)[0]
+    assert o == "black bowl" and g.startswith("top drawer") and not g.startswith("the"), (o, g)
+
+
 def test_nullspace():
     rng = np.random.default_rng(0)
     pos = BV.grid_pos("cpu").numpy()
@@ -176,6 +218,13 @@ def test_full_model():
         x = model.sample(batch, torch.randn(B, cfg.chunk, 32), num_steps=2)
         assert x.shape == (B, cfg.chunk, 32) and torch.isfinite(x).all()
         print(setting, "params", model.n_trainable())
+    cfg = BV.make_config("bindvla", foveate=False, motor="pose", glob=False)
+    model = BV.BindVLA(cfg, device="cpu")
+    pe, pp, pa, d = model.build_prefix(batch)
+    assert pe.shape[1] == cfg.n_slots + 1, pe.shape                  # no global token
+    fm = model.binder.final_masks(d["gA"], model.embed_tokens(batch["unit_tokens"]), batch["unit_masks"].bool())
+    assert torch.allclose(fm, d["mask"], atol=1e-4)
+    print("pose/no-glob params", model.n_trainable())
 
 
 if __name__ == "__main__":

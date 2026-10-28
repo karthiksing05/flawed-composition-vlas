@@ -65,6 +65,9 @@ class BVConfig:
     max_state_dim: int = 32
     max_action_dim: int = 32
     tok_len: int = 48
+    motor: str = "full"             # full: slot tokens carry the slot features; pose: pose + geometry + a small shape code only (BindVLA-C)
+    glob: bool = True               # the global context token in the bottleneck prefix
+    shape_dim: int = 16             # motor=pose: the shape code width
 
     @property
     def units(self):
@@ -305,6 +308,9 @@ class Binder(nn.Module):
         nn.init.zeros_(self.geo.weight), nn.init.zeros_(self.geo.bias)
         n_pose = 2 + 2 + 2 + 2 + 2 + (2 if cfg.parser == "token" else 0)   # mu, sigma, rank in parent, centroid rel. parent, wrist mu (+abs)
         self.slot_mlp = nn.Sequential(nn.Linear(4 * d + n_pose + len(SLOT_ROLES) + cfg.n_steps, 2 * d), nn.GELU(), nn.Linear(2 * d, d_tok))
+        if cfg.motor == "pose":                                             # BindVLA-C: compositional motor interface
+            self.shape = nn.Linear(d, cfg.shape_dim)
+            self.pose_mlp = nn.Sequential(nn.Linear(n_pose + cfg.shape_dim + len(SLOT_ROLES) + cfg.n_steps, 2 * d), nn.GELU(), nn.Linear(2 * d, d_tok))
         self.verb_mlp = nn.Sequential(nn.Linear(d, 2 * d), nn.GELU(), nn.Linear(2 * d, d_tok))
         self.out_norm = RMSScale(emb_scale)
         self.glob = nn.Linear(2 * d_tok, d_tok)
@@ -459,14 +465,35 @@ class Binder(nn.Module):
         for s in range(S):
             step_oh[:, 2 * s:2 * s + 2, s] = 1
         z = torch.cat([s_fin, s1, sw, qmean, mu_f, sig_f, rank, relp, muw, role_oh, step_oh], -1)
-        bind_tok = self.out_norm(self.slot_mlp(z))                                              # [B, 2S, 960]
+        if cfg.motor == "pose":
+            z = torch.cat([mu_f, sig_f, rank, relp, muw, self.shape(s_fin), role_oh, step_oh], -1)
+            bind_tok = self.out_norm(self.pose_mlp(z))
+        else:
+            bind_tok = self.out_norm(self.slot_mlp(z))                                          # [B, 2S, 960]
         verb_tok = self.out_norm(self.verb_mlp(q[:, :, 0]))                                      # [B, S, 960]
         toks = torch.stack([verb_tok, bind_tok[:, 0::2], bind_tok[:, 1::2]], 2).reshape(B, 3 * S, -1)
         rv = vr.any(-1)
         slot_valid = torch.stack([valid[:, :, 0], rv[:, 0::2], rv[:, 1::2]], 2).reshape(B, 3 * S)
-        diag = dict(levels=masks.reshape(B, S, 2, L, -1), mask=final.reshape(B, S, 2, -1), level_valid=vr.reshape(B, S, 2, L),
+        diag = dict(levels=masks.reshape(B, S, 2, L, -1), mask=final.reshape(B, S, 2, -1), level_valid=vr.reshape(B, S, 2, L), s1=s1.reshape(B, S, 2, -1), keys=k,
                     valid=rv.reshape(B, S, 2))
         return toks, slot_valid, g, diag
+
+    def final_masks(self, feats, tok_emb, tmask):
+        """the final-level masks [B, S, 2, T] of the role slots for given unit embeddings (the swap contrast's second pass)."""
+        cfg = self.cfg
+        B = feats.shape[0]
+        k, v = self.keys(feats)
+        q, valid = self.queries(tok_emb, tmask)
+        nu, S, L = len(cfg.units), cfg.n_steps, cfg.levels
+        q = q.reshape(B, S, nu, -1)
+        valid = valid.reshape(B, S, nu)
+        qr = torch.stack([q[:, :, 1:1 + L], q[:, :, 1 + L:1 + 2 * L]], 2).reshape(B, 2 * S, L, -1)
+        vr = torch.stack([valid[:, :, 1:1 + L], valid[:, :, 1 + L:1 + 2 * L]], 2).reshape(B, 2 * S, L)
+        if not cfg.hier:
+            vr = vr.clone()
+            vr[:, :, 1:] = False
+        _, final, *_ = self.hierarchy(qr, vr, k, v, grid_pos(feats.device))
+        return final.reshape(B, S, 2, -1)
 
     def _generic(self, full_emb, full_mask, k, v, kw, vw, pos, g, B):
         """parser generic (Pelican-style K learned slots) / token (OTTER-style per-token selection pooled to K)."""
@@ -615,7 +642,8 @@ class BindVLA(nn.Module):
                                                fov=fov)
             parts += [toks]
             pads += [valid]
-            if cfg.bottleneck:
+            diag["gA"] = gA
+            if cfg.bottleneck and cfg.glob:
                 parts += [g]
                 pads += [one(1)]
         parts += [st]
@@ -696,3 +724,29 @@ class Conditioner:
         if not noisy:
             self.cache[text] = out
         return out
+
+    # ── BindVLA-C helpers (opt-in; the defaults above are unchanged) ───────────────────────────────────────────────
+    def with_object(self, text, phrase):
+        """unit tokens / masks of `text` with step 0's OBJECT path replaced by `phrase`'s path (the swap contrast)."""
+        key = ("swap", text, phrase)
+        if key not in self.cache:
+            u = [dict(st) for st in role_parse(text, self.cfg)]
+            L = self.cfg.levels if self.cfg.hier else 1
+            path = role_path(phrase, L)
+            for l in range(self.cfg.levels):
+                u[0][f"obj{l}"] = path[l] if l < len(path) else ""
+            self.cache[key] = encode_units(self.tok, u, self.cfg)
+        return self.cache[key]
+
+    def level1_ids(self, text, n=4096):
+        """[S, 2] hashed ids of each role's level-1 phrase (-1 when empty): the prototype keys of the consistency term."""
+        import zlib
+        key = ("l1", text)
+        if key not in self.cache:
+            ids = np.full((self.cfg.n_steps, 2), -1, np.int64)
+            for s, st in enumerate(role_parse(text, self.cfg)[: self.cfg.n_steps]):
+                for r, k in enumerate(("obj0", "goal0")):
+                    if st.get(k):
+                        ids[s, r] = zlib.crc32(st[k].encode()) % n
+            self.cache[key] = ids
+        return self.cache[key]

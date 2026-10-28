@@ -533,3 +533,75 @@ dev read. The matched comparator `vanilla` (vanilla_frozen, base init, same samp
   low, binding transfers and the motor policy fails on the new compounds. If the dev hit collapses, the 0.98 held-out hit was
   a layout shortcut. That is a live possibility given the nonlinear position leak (MLP R^2 0.96 / 0.93).
 - No bar; descriptive.
+
+## 12. BindVLA-C: bind by contact, not by layout (design recorded 2026-10-28 before any C run)
+
+**Why.** main2's 0.98 / 0.89 held-out hit comes from held-out EPISODES of training layouts. A nonlinear probe still reads
+token position from the position-free keys (MLP R^2 0.96 / 0.93). So the slot may be indexing "where this phrase's object
+sits in this layout" and not binding the phrase to the object. BindVLA-C closes that route with four opt-in changes and selects
+its weights on layouts the model never trained on. Every change is a flag; defaults leave main2 / vanilla unchanged.
+
+**Components** (lifelong_ood/policy/bindvla.py, experiments/bv_c.py, experiments/bv_train.py):
+
+| # | flag | change | what it removes |
+|---|---|---|---|
+| 1 | `--motor pose` | slot token = MLP(pose mu, sigma, rank, parent-frame geometry, wrist pose, 16-d shape code of the final slot feature, role / step one-hots); qmean, s_fin, s1 and sw are dropped. Verb tokens and the state are unchanged | the motor policy reading object identity / layout from slot content |
+| 1g | `--no-glob` | drops the global token g from the prefix (prefix = 6 role tokens + state). Reported with and without | a layout summary reaching the expert outside the slots |
+| 2a | `--swap W` | swap contrast: on a pre-grasp training frame (step-0 object referent exists), step 0's object phrase is replaced by another entity of the SAME environment (named by any training task there, Chebyshev >= 2 tokens from the true object). The slot must move to that entity's modal contact-event token (same -log mass loss). Training-cell demos only; the entity map with its source task ids is written to config.json | binding a phrase to a fixed layout position |
+| 2b | `--proto W` | each level-1 phrase keeps one EMA prototype (crc32 bucket of 4096) of its level-1 slot feature, shared across layouts; the slot is pulled to it by cosine | per-layout slot codes |
+| 2c | `--adv W` | an MLP predicts each agentview token's (row, col) from the binder keys through gradient reversal. A FRESH MLP probe (2 hidden layers, 100 / 100 training frames, `bv_c.key_probe`) is fitted at the end of every C probe: R^2 before (C0) and after (C4) | the nonlinear position leak |
+| 3 | `--hold-layouts 4` | 4 training environments leave training; frame 0 of their episodes scores the leave-layout-out (LOL) slot hit | selection on seen layouts |
+
+**Held-out layouts (fixed before any C run).** `bv_c.heldout_layouts(store, 4)`: of the environments with >= 20 referent
+episodes and <= 3 training tasks (no whole suite leaves training), the 4 with the smallest sha256("bindvla-layout" + env).
+- The 4 environments: `libero_spatial:9`, `libero_spatial:8`,
+  `libero_object:basket+bbq_sauce+butter+chocolate_pudding+ketchup+orange_juice+salad_dressing`, `KITCHEN_SCENE7`.
+- Training tasks lost: libero_90:37, libero_object:9, libero_spatial:8, libero_spatial:9. Training frames go from 472,824 to
+  443,164; 33 environments remain.
+- The LOL set has 182 episodes and 343 role records. It spans only 4 tasks, so the LOL hit is noisy at the task level. This is
+  noted; the bar of +0.05 is kept.
+- The entity map has 85 entities over 32 environments; 31 environments have >= 2 entities, so they can be swapped. The mean
+  exact-token purity is 0.57.
+- A first draw without the <= 3 task cap picked the whole libero_goal environment (17% of the training frames). The cap
+  was added before any run.
+
+**Selection rule (pre-registered).** The criterion is the LOL hit = mean of the object and goal final-level hits
+(Chebyshev 1, chance 0.035) on the held-out layouts. Dev data is never used for selection.
+- Probes: 6k steps x 32, main2's setting (base init, aux 1, lambda 0, hier L = 3) + `--hold-layouts 4`, seed 0.
+- C0 = that setting alone. Each change is added to C0 ONE at a time:
+  C1 = pose + no-glob, C1g = pose (glob kept), C2 = swap 1.0, C3 = proto 0.1, C4 = adv 0.1, C5 = lambda (inv) 1.0.
+- A change is KEPT when its LOL hit at 6k exceeds C0's by >= 0.05 and its val loss is at most C0's + 0.01. If C1 and C1g are
+  both kept, the one with the higher LOL hit goes in.
+- Kept changes are combined in one 6k probe (Ck). If Ck's LOL hit is below the best single kept change, the best single
+  change alone goes forward.
+- Weights: only the default weights above are probed (budget). A second weight (x0.3, x3) is probed only for a kept change
+  whose LOL gain is within 0.05 of the bar.
+- The 60k C run saves every 1k and evaluates every 2k. The checkpoint for parity and dev is the evaluated step with the
+  highest LOL hit (ties -> later step).
+- If no change is kept, C = C0 (main2 + held-out layouts) and the write-up says the C pieces did not help.
+
+**Order.** The probes run now (training data only). The 60k C run waits for main2's closed-loop parity and dev reads and the
+offline dev slot-hit diagnostic.
+
+**C dev read (pre-registered with the C dev read, before it).**
+- Dev success (29 tasks x 10 init states) and offline dev slot hit (by CD bin, role and depth) for C, main2 and vanilla;
+  paired task-cluster bootstrap CIs.
+- CD slope. Failure rate is regressed on the dev task's CD bin (task-level OLS, task-cluster bootstrap CI). Prediction:
+  vanilla's slope is positive with CI excluding 0; C's slope CI includes 0 and lies below vanilla's (paired difference CI
+  excludes 0).
+- Predicted vs observed success. Per dev task: pred = hit_obj x hit_goal x competence, where hit_* is the task's offline dev
+  slot hit and competence is the model's mean closed-loop parity success over training tasks with the same verb (all training
+  tasks when no verb matches). Reported: Pearson r and mean |pred - obs| across tasks, for C and main2. Prediction: r > 0 with
+  CI excluding 0 for C.
+- Success bars S1-S3 (section 11) apply to C unchanged, with S1 read on the LOL hit as well as the held-out-episode hit.
+
+**Budget.** About 0.8 A40-h per 6k probe (8 probes ~ 6.5 A40-h), the 60k C run ~ 8 A40-h, parity + dev rollouts as before;
+within the phase-2 60 A40-h.
+
+**Build checks (2026-10-28, before the probes).**
+- CPU unit tests: 10 / 10 pass (tests/test_bindvla.py --full). The new tests cover: the pose motor (gradient reaches pose_mlp
+  and shape, not slot_mlp); final_masks equals the forward masks; GRL negates the gradient; the swap / level-1 conditioner
+  helpers; the no-glob prefix (n_slots + 1).
+- GPU smoke (60 steps, every C flag on): every loss fires; LOL diag, key probe, entity map and ho_envs are logged.
+- Trainable parameters with pose + no-glob: 110,589,625 (binder 10,708,633).
+- The fresh key probe already reads position from the keys of the base-initialised binder at 60 steps (MLP R^2 0.89 / 0.81).
