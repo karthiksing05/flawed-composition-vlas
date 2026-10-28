@@ -369,3 +369,80 @@ prereg/pb1_3.py, the layout generator) are not touched.
 - INGRESS / MAttNet: two-stage relational grounding, the precedent for nested resolution.
 - **Our claim** is the theory-driven assembly plus ablations predicted to fail in stated directions on stated splits. It is not
   any single module.
+
+## 10. Results (2026-10-28; main run results/bindvla/main, step 60k; ledger bv_parity, bv_dev, m3_prereg tag pbv)
+
+**Main run.**
+- Setting: bindvla, hier L = 3, lambda = 0 (selected by the pre-written rule, section 7.1), 60k x 32.
+- It resumed cleanly across one time-limit and two preemptions (40k, 57k).
+- HT validation flow loss (fixed t / noise): 0.576 (2k), 0.460 (10k), lowest 0.432 (24k), 0.457 (60k). It rises mildly after
+  24k: overfitting on the held-out episodes.
+- Training BC loss went from 2.20 to about 0.2 (train_log.jsonl).
+
+**Slot-mask referent diagnostic** (held-out training episodes, frame 0; contact-event referent tokens; argmax within
+Chebyshev 1; chance for the 3 x 3 window is 0.035):
+
+| step | object hit | goal hit | object / goal mask mass in the window |
+|---|---|---|---|
+| 2k | 0.091 | 0.114 | 0.077 / 0.110 |
+| 10k | 0.091 | 0.148 | 0.098 / 0.122 |
+| 30k | 0.109 | 0.136 | 0.112 / 0.137 |
+| 60k | 0.155 | 0.136 | 0.119 / 0.138 |
+
+- The masks put 3-4x chance mass on the referent, but the argmax hits it only 14-16% of the time. Behaviour cloning alone did
+  not make the slots bind.
+
+**Per-level hits vs sim masks** (61 matched TRAINING demos, 64 role instances; results/bindvla/levels.json):
+- level-1 argmax inside the referent body 0.109 (body-area chance 0.043);
+- final argmax within the 3 x 3 window 0.094 (chance 0.034).
+- By path depth: depth 1 (n = 47) 0.149 / 0.106; depth 2 (n = 12) 0.00 / 0.083; depth 3 (n = 5) 0.00 / 0.00.
+- Prediction (a), multiplicativity, cannot be tested: every level sits near chance, so the product is uninformative.
+
+**Parity, training tasks** (closed loop, 10 episodes per task, init 0-9):
+
+| model | tasks | mean [95% task-bootstrap CI] | LIBERO-90 cells | Spatial | Object | Goal | LIBERO-10 |
+|---|---|---|---|---|---|---|---|
+| BindVLA (hier, bottleneck) | 76 (760 ep) | 0.692 [0.637, 0.745] | 0.666 (44) | 0.720 | 0.922 | 0.725 | 0.400 (5) |
+| smolvla_libero (public, its own 40) | 40 (400 ep) | 0.8125 [0.743, 0.878] | - | 0.910 | 0.900 | 0.820 | 0.620 (10) |
+
+- The descriptive bar (>= 0.8 x 0.8125 = 0.65) is reached.
+- On the 32 suite tasks both models trained on, BindVLA scores 0.728 and smolvla_libero 0.844. The reference had a pretrained
+  expert and a fine-tuned VLM.
+
+**Dev read** (pre-registered as descriptive, m3_prereg pbv; 29 dev tasks x 10 episodes):
+
+| model | CD 0.1 | CD 0.3 | CD 0.5 | part | total successes |
+|---|---|---|---|---|---|
+| BindVLA | 0.04 [0.00, 0.08] (:0 0.1, :60 0.1) | 0.02 [0.00, 0.06] (:29 0.1) | 0.00 | 0.00 | 3 / 290 |
+| smolvla_libero (contaminated reference) | 0.00 | 0.00 | 0.00 | 0.00 | 0 / 290 |
+
+- Neither model solves held-out LIBERO-90-C tasks closed loop. BindVLA's 3 successes are at the floor.
+- The bottleneck did not produce compositional transfer at this scale. The diagnostics point to the reason: the slots do not
+  bind (above), so the factorised path that T2 relies on does not exist in the trained model.
+- Predictions (b) and (c), and the ablation directions, cannot be read: they need a binder that binds on training layouts first.
+
+**Reading.**
+- An end-to-end BC-trained bottleneck learns to act through its slots: training-task parity is 0.69 with only 8 prefix tokens.
+- It does not learn to make those slots refer: mask hit is 0.09-0.16, against 0.98 for B1's grasp-token purity on the same
+  referents.
+- Behaviour cloning gives the binder no pressure to localise the named entity, as long as the expert can act from a diffuse
+  slot plus the global token and proprioception. This is P4's identifiability problem in another form: fit on the training
+  cells does not select binding.
+- The next principled lever would be a transfer-scored or contrastive signal on the slots (e.g. the role-swap / counterfactual
+  instruction contrast, which needs no labels). The ablation runs would not help until the main arm binds.
+
+**Cost** (A40-h, sacct):
+
+| item | A40-h |
+|---|---|
+| smoke | 0.10 |
+| lambda sweep | 0.50 |
+| main | 6.1 (4.0 + 1.75 + 0.34 + restarts) |
+| serve check | 0.03 |
+| level diagnostic | 0.01 |
+| reference parity | 0.83 |
+| BindVLA parity | 1.65 |
+| dev (both models) | 1.97 |
+| **total** | **about 11.2 of the 30 cap** |
+
+Data cache, unit tests and audits ran on CPU.
