@@ -720,3 +720,98 @@ left / right prototypes; atom invariance; T2 budget per depth and bin; drawer / 
   object 0.298, d2 goal 0.538, d2 object 0.618); dino 0.640 (0.764 / 0.388 / 0.442 / 0.543 / 0.764). PRIMARY = dino by the
   frozen rule (higher mean smoke hit). B1b-gen smoke (2 epochs) within-training val hit 0.38 object / 0.65 goal; Qwen / Molmo smokes
   parse (6 training units each).
+
+## 14. B1.3 result (read 2026-10-27; ledger b1_3_bind tag read; results/bind/b1_3.json)
+
+**Primary test: CONFIRMED as pre-registered, but at a high error level for the factorised binder.** Error (1 - S1 hit) vs the
+realised CD bin, 252 generated test units, 84 compounds, 2000-draw compound-cluster bootstrap stratified by depth x bin:
+
+| method | slope vs CD bin [95% CI] | slope vs unit CD [95% CI] | error at bin 0.1 / 0.3 / 0.5 (d0; d1; d2) |
+|---|---|---|---|
+| B1.3 dino (factorised, primary) | 0.21 [-0.24, 0.66] | 0.13 [-0.32, 0.64] | 0.27 / 0.23 / 0.47; 0.50 / 0.77 / 0.63; 0.50 / 0.42 / 0.38 |
+| B1b-gen (holistic, T1 comparator) | **1.07 [0.65, 1.46]** | 0.96 [0.57, 1.37] | 0.13 / 0.10 / 0.73; 0.13 / 0.37 / 0.43; 0.13 / 0.17 / 0.50 |
+| interaction (holistic - factorised) | **0.86 [0.33, 1.37]** | 0.83 [0.32, 1.36] | |
+| B1.3 siglip | -0.09 [-0.57, 0.42] | -0.23 [-0.67, 0.26] | 0.30 / 0.13 / 0.43; 0.57 / 0.93 / 0.53; 0.63 / 0.54 / 0.38 |
+| S1c (as trained in S1) | 0.15 [-0.24, 0.54] | -0.28 [-0.62, 0.14] | 0.13 / 0.20 / 0.40; 0.70 / 0.53 / 0.73; 0.88 / 0.88 / 0.71 |
+| GroundingDINO | 0.15 [-0.24, 0.57] | 0.06 [-0.35, 0.48] | |
+| Qwen2.5-VL (LIBERO labels) | -0.15 [-0.57, 0.30] | -0.26 [-0.64, 0.12] | |
+| Molmo (LIBERO labels) | 0.06 [-0.39, 0.51] | -0.10 [-0.53, 0.31] | |
+
+- Per depth (interaction CI): depth 0 1.00 [0.08, 1.92]; depth 1 0.42 [-0.42, 1.17]; depth 2 1.25 [0.00, 2.29]. The holistic slope is
+  positive at every depth (CIs above 0); the factorised slope's CI includes 0 at every depth.
+- **T1 holds on a controlled split:** the holistic binder's error rises with compound divergence at every depth, from 0.13 at bin 0.1
+  to 0.43-0.73 at bin 0.5. On the 11 dev tasks this was never visible (its slope was negative there, section 8).
+- **T2's flatness holds, but not its promise.** The factorised binder is flat because it is poor everywhere (error 0.42 / 0.48 / 0.50
+  by bin). It beats the holistic binder only in two bin-0.5 cells (depth 0: 0.47 vs 0.73, the role x scene shift; depth 2: 0.38 vs
+  0.50) and loses every other cell. The interaction is real; a factorised binder that is accurate is not shown.
+
+**New-set bars (FAIL for every arm).**
+
+| arm | (i) depth 1 >= 0.70 | (ii) depth 2 >= 0.70 | (iii) depth 0 >= GroundingDINO (0.611) | lateral units (19 cpds) | drawers (16) | caddy (6) |
+|---|---|---|---|---|---|---|
+| B1.3 dino (primary) | 0.367 | 0.569 | 0.678 pass | 0.298 | 0.729 | 0.167 |
+| B1.3 siglip | 0.322 | 0.486 | 0.711 pass | 0.263 | 0.625 | 0.167 |
+| B1b-gen | 0.689 | **0.736** pass | 0.678 pass | 0.702 | 0.646 | 0.944 |
+| S1c | 0.344 | 0.181 | 0.756 pass | 0.263 | 0.208 | 0.056 |
+| GroundingDINO | 0.122 | 0.389 | 0.611 | 0.053 | 0.479 | 0.111 |
+| Qwen2.5-VL (labels / literal) | 0.311 | 0.458 | 0.700 | 0.018 / 0.807 | 0.562 | 0.167 / 0.722 |
+| Molmo (labels / literal) | 0.422 | 0.431 | 0.822 | 0.018 / 0.912 | 0.542 | 0.167 / 0.833 |
+
+- The VLMs' lateral misses are the mirrored convention again: rescored on the image-side referent they reach 0.81 (Qwen) and 0.91
+  (Molmo) on lateral units, above every fitted binder. Under the literal convention their depth-1 hit is 0.63-0.90 by cell.
+- B1b-gen passes bar (ii) on the generated set (seen part types, new compounds), and is the best arm in-distribution.
+
+**Channels (prequential DL; dino, primary).** geo 7: "left", "right", "front", "back", "at", "mug", "red"; both 9 ("bottom", "bowl",
+"butter", "drawer", "middle", "milk", "white", "wooden", "the"); null 6 ("in", "caddy", "compartment", "plate", "bottle", "wine");
+app 23 (type nouns, "top", "level", "shelf", "cabinet", "on"). siglip: geo 5, both 10 (incl. "left", "right", "front"), null 2, app 28.
+- The criterion now does what it should for the lateral words: they code their referents better in (relative) geometry on held-out
+  layouts. It still keeps "top" / "level" / "cabinet" in appearance (the part regions differ in appearance), and it marks some
+  content words null ("plate", "caddy", "compartment" for dino) because their prototypes do not transfer across layouts.
+- **Mirrored left / right check.** dino "left": sibling set-position col 0.59, rank col 0.59; "right": 0.45 / 0.46. "left" is on the
+  IMAGE RIGHT of its siblings: LIBERO's mirrored convention, learned from scripted referents with no convention coded in, and now
+  bound through geometry experts. siglip: 0.57 / 0.55 vs 0.49 / 0.49 (same direction, weaker). It still binds only 0.30 of lateral
+  units: the sibling set (regions every appearance word accepts) is often wrong, so the rank is computed over the wrong instances.
+
+**T2 budget (dino; observed error vs mean union bound; per-unit violations).** depth 0 0.322 vs 0.433 (16 / 90), depth 1 0.633 vs
+0.944 (2 / 90), depth 2 0.431 vs 0.861 (1 / 72); by bin 0.417 / 0.476 / 0.500 vs 0.667 / 0.655 / 0.893. The bound holds on average
+everywhere but is loose at depths 1-2 and is violated per unit mostly at depth 0 (errors no word atom owns). Proposal atom error 0.
+
+**Atom invariance (permutation test, p < 0.05 rejects).** dino rejects "white", "drawer", "wooden", "middle", "mug", "red"; does not
+reject "left", "right", "front", "back", "the", "bowl", "cabinet", "top", "on" (p 0.06). siglip rejects "on", "middle", "right",
+"left", "white", "compartment", "caddy", "red". Still not compound-invariant overall, but the lateral words are invariant for dino.
+
+**Secondary: S1's 240 dev units (one more read on the same 11 tasks; not a test of T1 / T2; the caddy is now a SEEN body for B1.3 and
+B1b-gen, since the generated pool contains it).**
+
+| arm | (i) held-out d1 (15) | (ii) d2 seen-body (20) | (iii) d0 (140) vs 0.786 | drawers (15) | caddy (45) | CD slope (11 tasks) |
+|---|---|---|---|---|---|---|
+| B1.3 dino | 0.600 | 0.600 | **0.793** pass | 0.467 | 0.200 | -0.99 [-1.87, 0.26] |
+| B1.3 siglip | 0.067 | 0.250 | 0.636 | 0.000 | 0.111 | -0.73 [-1.85, 0.50] |
+| B1b-gen | 0.667 | 0.250 | 0.707 | 0.000 | 0.756 | -0.58 [-1.30, 0.18] |
+| B1b (S1) | 0.267 | 0.900 | 0.707 | 0.867 | 0.311 | -0.87 [-1.44, -0.09] |
+
+- B1.3 dino is the most balanced annotation-free binder on the dev units so far (B1.1 dino 0.067 / 0.75 / 0.464; B1.2 dino 0.067 /
+  0.10 / 0.414) and passes bar (iii), but fails (i) and (ii). The dev CD slopes remain uninformative, as sections 8-12 found.
+
+**Size.** dino lexicon 2512 floats (10 KB fp32) + the position-free affine code 12320 floats; siglip 2876 + 65568. No trained network.
+
+**Cost.** A40: 0.52 h (features 2 min, smokes 4 min, B1b-gen + GroundingDINO + S1c 5 min, Molmo 13 min, Qwen 7 min + a 25 s OOM on a
+shared GPU). 2080 Ti: 2.6 h for EGL rendering (the CPU nodes cannot render). Everything else CPU.
+
+**Deviations (honest).**
+- Referents are SCRIPTED sim grasp / release points (no generated layout has a demo); B1b-gen trains on SIM MASKS (supervision
+  asymmetry in the holistic arm's favour).
+- The split needed four search revisions, the depth-2 fallback (8 per cell) and a role x scene pre-hold for depth-0 bin 0.5; role
+  balance is uneven where forced (depth-1 bin 0.1 is all object role). The depth-0 bin-0.5 cell is a goal-role-in-unseen-family
+  shift, which drives much of the holistic depth-0 slope.
+- 1500 targeted training layouts were added after the first unit build (split unchanged); training units were thinned to D_A 0.018.
+- The geometry variance floor was added after the first smoke (a bug: geometry could never win); disclosed in section 13.
+- B1.1's position-free code leaks some row position on generated frames (probe R^2 0.18-0.33 row).
+- The ledger rows carry dirty = true (other agents' edits in the shared tree).
+
+**Reading.** On a controlled MCD split the T1 / T2 contrast appears for the first time: the holistic binder's error rises with
+compound divergence at every depth and the factorised binder's does not (interaction 0.86 [0.33, 1.37]). Prequential coding fixes
+the channel criterion's failure: relational words now go to relative geometry and carry LIBERO's mirrored convention. But the
+factorised binder is flat at a high error (about 0.45), loses to the holistic binder everywhere except the most divergent cells, and
+passes no new-set bar. Its weak points are named by the atoms: the sibling set (appearance acceptance) and type words whose
+prototypes do not transfer ("plate", "caddy" null). Zero-shot VLMs read lateral words correctly in the image frame (0.81-0.91 literal).
