@@ -492,3 +492,19 @@ signal; up to 60 more A40-h. One principled change per iteration, each recorded 
 - **Caveat:** S1 is scored against the same kind of referent, on held-out episodes. So S1 measures held-out-episode
   generalisation of this signal, and only S3 (dev closed loop) measures transfer.
 - Same 6k-step probe as P0.
+
+**Probe results** (6k steps each; held-out-training-episode final-level slot hit; chance 0.035):
+
+| probe | val loss | object hit | goal hit | depth 1 (n=134) | depth 2 (n=56) [95% CI] | depth 3 (n=8) |
+|---|---|---|---|---|---|---|
+| phase 1 at 6k (random expert) | 0.483 | 0.127 | 0.159 | - | - | - |
+| P0 base init | 0.454 | 0.164 | 0.261 | 0.291 | 0.036 [0.00, 0.09] | 0.00 |
+| P1 base init + contact referents | 0.449 | **0.982** | **0.886** | 0.955 | **1.00** [1.00, 1.00] | 0.25 |
+
+- The pretrained expert alone barely moves binding (iteration 1: a small gain).
+- The contact-event signal makes the slots bind on held-out episodes (iteration 2), and the flow loss does not get worse
+  (0.449 vs 0.454).
+- Depth 3 has only 8 held-out records. Its 0.25 cannot clear S1's lower-bound test at this n, which is noted, not changed.
+
+**Iteration 2, full run (`main2`):** P1's setting for 60k x 32 (base init, aux 1, lambda 0, hier L = 3), then parity, then the
+dev read. The matched comparator `vanilla` (vanilla_frozen, base init, same sampler / steps / recipe) runs in parallel.
