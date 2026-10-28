@@ -644,3 +644,32 @@ section 11 held-out-episode hit on training layouts. Key R^2 = the fresh MLP pro
   cross-layout number.
 
 Spend: 7 probes, 4.4 A40-h (36-41 min each on A40).
+
+### 12.2 Seed check of C5 (pre-registered 2026-10-28, after the 12.1 results and before any of these runs or any dev read)
+
+This is an amendment to section 12, made AFTER the C-probe results (coordinator direction). C5 was the closest miss.
+
+**Runs.**
+- Two more seeds each of C0 and C5 at 6k (`--seed 1`, `--seed 2`), with everything else as in 12.1. The 12.1 runs are seed 0.
+- `--seed` sets the batch order. The binder's fresh initialisation is not seeded, so it also differs between runs.
+
+**Read.**
+- Per seed: the LOL hit at 6k and the paired difference C5 - C0, paired by seed.
+- Reported: the mean difference with a 95% t-interval over the 3 pairs (df 2), plus the per-seed signs.
+- Val cost = mean C5 val loss minus the mean of the 3 C0 seeds. The multi-seed C0 mean is the baseline, so evaluation noise
+  is not read as a val cost.
+
+**Adopt rule.** lambda = 1.0 is ADOPTED only if all three hold:
+- C5 beats C0 on LOL in at least 2 of 3 seeds;
+- the mean paired difference is > 0;
+- the mean val cost is <= 0.015.
+
+If adopted, it is recorded as a seed-checked amendment and becomes the inv setting of the next 60k run. Otherwise it is
+dropped. With n = 3 the CI is reported but is not part of the rule (a t-interval at df 2 is very wide).
+
+**C1 (pose motor) is not rejected by 12.1.** It targets motor transfer, which the LOL slot hit does not measure. It is
+decided after main2's dev read:
+- If main2's offline dev slot hit (mean of object and goal) is >= 0.5 and its closed-loop dev success stays below the S3
+  absolute 0.30, the motor side is the bottleneck. The next 60k run is then C1 (pose + no-glob, plus lambda 1.0 if adopted),
+  read on dev like main2.
+- If the dev slot hit is < 0.5, binding is still the bottleneck and C1 waits.
