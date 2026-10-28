@@ -62,7 +62,8 @@ def tag_of(a):
 def launch(a):
     if a.set == "dev":
         from lifelong_ood import ledger
-        assert any(r.get("tag") == "pbv" for r in ledger.load("m3_prereg")), "dev read needs the pre-registration row (m3_prereg tag pbv)"
+        need = "pbv2" if any(x in a.ckpt for x in ("main2", "vanilla")) else "pbv"
+        assert any(r.get("tag") == need for r in ledger.load("m3_prereg")), f"dev read needs the pre-registration row (m3_prereg tag {need})"
     tag = tag_of(a)
     os.makedirs(os.path.join(R, "packs"), exist_ok=True)
     specs = []
