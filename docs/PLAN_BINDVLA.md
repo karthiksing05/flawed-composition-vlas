@@ -673,3 +673,19 @@ decided after main2's dev read:
   absolute 0.30, the motor side is the bottleneck. The next 60k run is then C1 (pose + no-glob, plus lambda 1.0 if adopted),
   read on dev like main2.
 - If the dev slot hit is < 0.5, binding is still the bottleneck and C1 waits.
+
+**12.2 result (2026-10-28): lambda = 1.0 is DROPPED.**
+
+| seed | C0 LOL | C5 LOL | C5 - C0 | C0 val | C5 val |
+|---|---|---|---|---|---|
+| 0 | 0.730 | 0.795 | +0.065 | 0.4776 | 0.4908 |
+| 1 | 0.737 | 0.652 | -0.086 | 0.4786 | 0.4990 |
+| 2 | 0.679 | 0.669 | -0.010 | 0.4811 | 0.4912 |
+| mean | 0.716 | 0.705 | **-0.010** [95% t, df 2: -0.198, +0.177] | 0.4791 | 0.4937 |
+
+- C5 wins on LOL in only 1 of 3 seeds, and the mean paired difference is negative.
+- The val cost against the 3-seed C0 mean is +0.0146. That is just inside 0.015, but it does not matter, because the LOL
+  conditions fail.
+- Seed 0's +0.065 was noise. Between seeds, C0's own LOL spreads over 0.68-0.74 and its LOL object hit over 0.54-0.69.
+- No C piece survives on the slot-hit criterion. C1 (pose motor) waits for main2's dev read under the 12.2 rule.
+- Spend: 4 runs, 2.5 A40-h (C probes total 6.9 A40-h).
