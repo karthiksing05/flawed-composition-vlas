@@ -1,0 +1,124 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/vla-operator-binding/results/bindvla/eval/parity_smolvla_libero_libero_object_0-4.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_object",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ours SUITE=libero_object TASKS=0,1,2,3,4 TRIALS=10 (job 4292731)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/vla-operator-binding/results/bindvla/eval/parity_smolvla_libero_libero_object_0-4.json",
+   "port": 9455,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_object",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "0,1,2,3,4",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4292731",
+  "mode": "ours"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "perseverance.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4292731",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "bv_parity",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "77e9a463279043c85e8015fa8d92887b378192cf",
+  "short": "77e9a463"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "ours",
+  "tasks": "0,1,2,3,4",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 50,
+  "secs": 635.5429828166962,
+  "success_rate": 0.9,
+  "tasks": {
+   "0": {
+    "errors": 0,
+    "language": "pick up the alphabet soup and place it in the basket",
+    "mean_steps": 213.8,
+    "n": 10,
+    "success_rate": 0.7
+   },
+   "1": {
+    "errors": 0,
+    "language": "pick up the cream cheese and place it in the basket",
+    "mean_steps": 134.0,
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "2": {
+    "errors": 0,
+    "language": "pick up the salad dressing and place it in the basket",
+    "mean_steps": 132.7,
+    "n": 10,
+    "success_rate": 0.9
+   },
+   "3": {
+    "errors": 0,
+    "language": "pick up the bbq sauce and place it in the basket",
+    "mean_steps": 133.1,
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "4": {
+    "errors": 0,
+    "language": "pick up the ketchup and place it in the basket",
+    "mean_steps": 151.7,
+    "n": 10,
+    "success_rate": 0.9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "bv_parity__libero_object__smolvla_libero__first_trial-0__mode-ours__tasks-0-1-2-3-4__trials-10__s7__77e9a463",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-27T22:41:41+00:00",
+ "stream": null,
+ "tag": "smolvla_libero"
+}

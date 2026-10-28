@@ -1,0 +1,124 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/vla-operator-binding/results/bindvla/eval/parity_smolvla_libero_libero_10_5-9.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_10",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ours SUITE=libero_10 TASKS=5,6,7,8,9 TRIALS=10 (job 4292733)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/vla-operator-binding/results/bindvla/eval/parity_smolvla_libero_libero_10_5-9.json",
+   "port": 9460,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_10",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "5,6,7,8,9",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4292733",
+  "mode": "ours"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "chitti.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4292733",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "bv_parity",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "77e9a463279043c85e8015fa8d92887b378192cf",
+  "short": "77e9a463"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "ours",
+  "tasks": "5,6,7,8,9",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 50,
+  "secs": 1441.2063601016998,
+  "success_rate": 0.58,
+  "tasks": {
+   "5": {
+    "errors": 0,
+    "language": "pick up the book and place it in the back compartment of the caddy",
+    "mean_steps": 274.9,
+    "n": 10,
+    "success_rate": 0.7
+   },
+   "6": {
+    "errors": 0,
+    "language": "put the white mug on the plate and put the chocolate pudding to the right of the plate",
+    "mean_steps": 395.3,
+    "n": 10,
+    "success_rate": 0.5
+   },
+   "7": {
+    "errors": 0,
+    "language": "put both the alphabet soup and the cream cheese box in the basket",
+    "mean_steps": 328.9,
+    "n": 10,
+    "success_rate": 0.7
+   },
+   "8": {
+    "errors": 0,
+    "language": "put both moka pots on the stove",
+    "mean_steps": 505.8,
+    "n": 10,
+    "success_rate": 0.1
+   },
+   "9": {
+    "errors": 0,
+    "language": "put the yellow and white mug in the microwave and close it",
+    "mean_steps": 285.1,
+    "n": 10,
+    "success_rate": 0.9
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "bv_parity__libero_10__smolvla_libero__first_trial-0__mode-ours__tasks-5-6-7-8-9__trials-10__s7__77e9a463",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-27T22:54:50+00:00",
+ "stream": null,
+ "tag": "smolvla_libero"
+}
