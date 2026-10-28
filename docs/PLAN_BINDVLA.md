@@ -605,3 +605,42 @@ within the phase-2 60 A40-h.
 - GPU smoke (60 steps, every C flag on): every loss fires; LOL diag, key probe, entity map and ho_envs are logged.
 - Trainable parameters with pose + no-glob: 110,589,625 (binder 10,708,633).
 - The fresh key probe already reads position from the keys of the base-initialised binder at 60 steps (MLP R^2 0.89 / 0.81).
+
+### 12.1 Probe results (2026-10-28; 6k x 32 each, seed 0; training data only)
+
+LOL = leave-layout-out final-level hit on the 4 held-out layouts (182 episodes, 343 records; chance 0.035). HO-ep = the
+section 11 held-out-episode hit on training layouts. Key R^2 = the fresh MLP probe of token (row, col) from the binder keys.
+
+| probe | change vs C0 | val loss | LOL hit | LOL object | LOL goal | LOL depth 2 | HO-ep object / goal | key R^2 row / col | kept? |
+|---|---|---|---|---|---|---|---|---|---|
+| C0 | main2 setting + hold 4 | 0.478 | 0.730 | 0.665 | 0.795 | 0.555 | 0.945 / 0.898 | 0.893 / 0.808 | (base) |
+| C1 | pose + no-glob | 0.491 | 0.681 | 0.555 | 0.807 | 0.409 | 0.945 / 0.898 | 0.890 / 0.809 | no |
+| C1g | pose, glob kept | 0.485 | 0.726 | 0.632 | 0.820 | 0.511 | 0.964 / 0.898 | 0.890 / 0.808 | no |
+| C2 | swap 1.0 | 0.474 | 0.705 | 0.621 | 0.789 | 0.496 | 0.936 / 0.898 | 0.894 / 0.820 | no |
+| C3 | proto 0.1 | 0.488 | 0.746 | 0.709 | 0.783 | 0.613 | 0.955 / 0.898 | 0.889 / 0.819 | no (+0.016) |
+| C4 | adv 0.1 | 0.478 | 0.743 | 0.703 | 0.783 | 0.606 | 0.945 / 0.898 | 0.887 / 0.801 | no (+0.013) |
+| C5 | lambda 1.0 | 0.491 | **0.795** | **0.808** | 0.783 | 0.745 | 0.955 / 0.898 | 0.889 / 0.811 | no: LOL +0.065, val +0.013 > +0.01 |
+
+**What the probes show.**
+- **Binding mostly transfers to unseen layouts without any C piece.** C0's LOL hit is 0.73 (object 0.665, goal 0.795). This
+  is below its held-out-episode hit (0.945 / 0.898) but 20x chance, and it clears S1's 0.6 on both roles. So main2's slot hit
+  is not only a layout shortcut. Part of the object hit (-0.28) is layout-specific.
+- **No piece clears the pre-registered bar.**
+  - The pose motor lowers LOL (-0.05 / -0.004) and raises val loss.
+  - The swap contrast is learned on training layouts (swap hit 0.997 at 5.9k) but does not transfer (LOL -0.025).
+  - Prototypes and the adversary are within noise (+0.016 / +0.013). The within-run LOL moves by up to 0.09 between 2k
+    evaluations, so differences of this size are not resolved.
+- **The adversary does not remove the position leak.** Its own probe keeps R^2 0.83 under gradient reversal, and the fresh
+  probe is unchanged (C0 0.893 / 0.808 vs C4 0.887 / 0.801).
+  - The keys are a learned map of frozen SigLIP features after the nullspace projection. Position survives nonlinearly in the
+    frozen content, and a weight-0.1 reversal through the key map does not erase it.
+  - The leak does not stop LOL binding (0.73), so it is not the blocker it looked like.
+- **Closest miss: V-REx lambda 1.0 (C5).** It gives LOL +0.065, object +0.14, depth 2 +0.19, but val loss is +0.013, against
+  a bar of +0.01. It is not kept under the rule as written. This is the one result that matches the invariance theory: an
+  env-invariance penalty helps exactly the cross-layout read. It is reported as exploratory and needs seeds before it means
+  anything.
+- **Under the rule, C = C0.** C0 is main2's setting minus 4 layouts, so a 60k C run would re-train main2 on less data. The
+  60k C run is therefore not launched by default. main2's read stands for the C question, with C0's LOL as its
+  cross-layout number.
+
+Spend: 7 probes, 4.4 A40-h (36-41 min each on A40).
