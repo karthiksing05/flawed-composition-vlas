@@ -792,3 +792,37 @@ dev numbers stay those of bv_dev.
 
 **Reported, not tested** (no bar): cause shares, by CD bin; slot-on rates at start / grasp / release; the per-task first-contact
 table. Expected from 11.1: most failures are motor or no_grasp with the slot on the named object, and the habit share is high.
+
+**12.4 result, main2** (results/bindvla/cldiag_bindvla_main2_60000.json; 290 fresh logged dev episodes)
+- Reproducibility: success is 0.041 (12 / 290), equal to the pre-registered bv_dev read.
+
+**Slot-on rates** (step 0; a 3 x 3 window holds >= 0.05 oracle coverage of the entity):
+
+| | object on named, first query | object on named, grasp query | object on contacted, grasp query | goal on target, first query | goal on target, release query |
+|---|---|---|---|---|---|
+| all | 0.81 (n=290) | 0.72 | 0.70 | 0.75 | 0.70 |
+| CD 0.1 / 0.3 / 0.5 / part | 1.00 / 0.72 / 0.53 / 0.86 | 0.73 / 0.70 / 0.76 / 0.71 | | 1.00 / 0.83 / 0.93 / 0.61 | 0.91 / 0.90 / 0.81 / 0.57 |
+
+**Causes of the 278 failures:** motor 106, no_grasp 97, drift 37, start_miss 29, place 9.
+- Fixture-named tasks (cabinet / stove: libero_90:0, 1, 7, 11, 22, 44, 45; 70 episodes) have no movable "contacted object",
+  so their failures fall into no_grasp (59). They are split out below.
+- **Movable-object tasks** (22 tasks, 220 episodes, 208 failures): motor 100 (48%), no_grasp 38 (18%), drift 33 (16%),
+  start_miss 28 (13%), place 9 (4%).
+
+**First contact on the movable-object tasks:** none 177, named 21, other 13, habit 9.
+- When the gripper moves an object at all (43 episodes), it is the named object in 21 (49%), a training-habit object in 9
+  (21%) and another object in 13 (30%).
+- Habit cases:
+  - libero_90:16 grasps bowl_2 for bowl_1;
+  - libero_90:61 grasps the black bowl for the chocolate pudding;
+  - libero_90:50 grasps milk / orange juice for the alphabet soup.
+- The phrase match failed for libero_90:40 (named = none). Its 4 successes count only in the success rate.
+
+**Reading.**
+- **(a) dominates.** The object slot sits on the named object at the query before the grasp in 72% of grasps, yet the
+  gripper closes on nothing in most episodes (none = 177 / 220).
+- (b) drift accounts for 16% of the movable-task failures: the slot-on rate falls from 0.81 at the first query to 0.72 at the
+  grasp query.
+- (c) place / transport is rare (4%).
+- The motor policy gets the right binding and does not reach the bound location. This is the case C1's pose interface was
+  built for.
