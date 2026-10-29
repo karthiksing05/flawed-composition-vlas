@@ -1,0 +1,241 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_BINDVLA phase-2 dev read",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "claptrap.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4320868",
+  "torch": "2.10.0+cu128"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7dc1328523288b2ddd29583e32a7fa5957dda042",
+  "short": "7dc13285"
+ },
+ "keys": {},
+ "metrics": {
+  "bars": {
+   "S1": "held-out-training-episode final-level slot hit >= 0.6 for object AND goal; depth-2 and depth-3 lower 95% bound > 0.070",
+   "S2": "training-task parity >= 0.65",
+   "S3": "dev success (29 tasks x 10 episodes, MODE=ours, init 0-9) of main2 minus vanilla: paired task-cluster bootstrap 95% CI excludes 0, AND main2 absolute dev success >= 0.30"
+  },
+  "dev_slot_diagnostic": "descriptive: experiments/bv_devdiag.py on main2 and phase-1 main, final-level hit vs the dev demos' contact-event referents (scored only), by CD bin / role / depth, task-cluster CIs; vanilla has no slots",
+  "files_sha256": {
+   "docs/PLAN_BINDVLA.md": "c78c250f981ca05feb654de9018560301f7b168e60f77081aabe90b2a113a3a4",
+   "experiments/bv_devdiag.py": "c8e90fa257dcbf035a8572342e3dd2052dbf32f6058c25b2f9b131a04926f96a",
+   "experiments/bv_devrefs.py": "4d1cfd505a9e378e81c7bdce472f86b80867797490b3f580f655655f4c145a72",
+   "experiments/bv_eval.py": "cf62c61f721223a993826379da9230d1dad78c9fedb2deb18691b61a7a654932",
+   "experiments/bv_leakcheck.py": "70000aff357a70091ac3ea1228ab57ce32084fadcff6fcdb04d21bfdf30c71b1",
+   "experiments/bv_refs.py": "3845d87eab2b37d97c417e13c08a322f9c78f865c14c89442b73ad297cf46935",
+   "experiments/bv_train.py": "798de999ffed6c7d2861f8bed430372e8462e32d4fdd6efa2d675a5d20d9bf65",
+   "lifelong_ood/policy/backbone_bindvla.py": "e4d3b488e4305435b336502e5dac66a9242afe592c5ddfc6a0cd2938a35acf9f",
+   "lifelong_ood/policy/bindvla.py": "6f42b8abf289052cda37a25b7bb8360e61c76671de7a5b5fdf41977d0eb3138e",
+   "results/bindvla/devrefs.json": "77fc4f7be87ee590170e5f4529946122d7a640346456e7bfca37408c05ba1d4c"
+  },
+  "leakcheck": {
+   "3_heldout_episodes": {
+    "n_heldout_episodes": 150,
+    "n_train_frames_cache": 472824,
+    "referent_frames_in_heldout": 11771,
+    "sampled_by_trainer": false
+   },
+   "4_runs": {
+    "main": {
+     "aux": 0.0,
+     "init_base": false,
+     "matches_cache": true,
+     "n_train_frames": 472824
+    },
+    "main2": {
+     "aux": 1.0,
+     "init_base": true,
+     "matches_cache": true,
+     "n_train_frames": 472824
+    },
+    "vanilla": {
+     "aux": 0.0,
+     "init_base": true,
+     "matches_cache": true,
+     "n_train_frames": 472824
+    }
+   },
+   "PASS": true
+  },
+  "models": {
+   "main2": {
+    "ckpt": "results/bindvla/main2/ckpt/step_060000.pt",
+    "last_eval": {
+     "diag": {
+      "depth1": {
+       "chance": 0.03515625,
+       "hit": 0.9328358208955224,
+       "hit_ci95": [
+        0.8880597014925373,
+        0.9701492537313433
+       ],
+       "hit_level1": 0.9328358208955224,
+       "mass3x3": 0.9321887728611641,
+       "n": 134
+      },
+      "depth2": {
+       "chance": 0.03515625,
+       "hit": 1.0,
+       "hit_ci95": [
+        1.0,
+        1.0
+       ],
+       "hit_level1": 0.625,
+       "mass3x3": 0.999565564095974,
+       "n": 56
+      },
+      "depth3": {
+       "chance": 0.03515625,
+       "hit": 0.625,
+       "hit_ci95": [
+        0.25,
+        0.875
+       ],
+       "hit_level1": 0.5,
+       "mass3x3": 0.6248147147397688,
+       "n": 8
+      },
+      "goal": {
+       "chance": 0.03515625,
+       "hit": 0.8863636363636364,
+       "hit_ci95": [
+        0.8181818181818182,
+        0.9431818181818182
+       ],
+       "hit_level1": 0.8181818181818182,
+       "mass3x3": 0.881583853861638,
+       "n": 88
+      },
+      "object": {
+       "chance": 0.03515625,
+       "hit": 0.9818181818181818,
+       "hit_ci95": [
+        0.9543181818181818,
+        1.0
+       ],
+       "hit_level1": 0.8363636363636363,
+       "mass3x3": 0.9846191430078596,
+       "n": 110
+      }
+     },
+     "step": 60000,
+     "val_loss": 0.4535086154937744
+    },
+    "sha256": "679435d73625f160dead13e409fc9aeef6e8a85b7dd10a5d790d44cb0640f20a"
+   },
+   "vanilla": {
+    "ckpt": "results/bindvla/vanilla/ckpt/step_060000.pt",
+    "last_eval": {
+     "diag": {},
+     "step": 60000,
+     "val_loss": 0.4585704207420349
+    },
+    "sha256": "bdd72b1875461e000ba58dba402d1163f0e01f37ad6536eeaa475574f18a1c75"
+   }
+  },
+  "parity_training_tasks": {
+   "bindvla_main2@60000": {
+    "bar_0.8x_ref": 0.65,
+    "by_suite": {
+     "libero_10": 0.4,
+     "libero_90": 0.6568181818181819,
+     "libero_goal": 0.7375,
+     "libero_object": 0.922222222222222,
+     "libero_spatial": 0.85
+    },
+    "ci95": [
+     0.6526315789473685,
+     0.7578947368421053
+    ],
+    "episodes": 760,
+    "mean": 0.7052631578947368,
+    "reached": true,
+    "tasks": 76
+   },
+   "bindvla_main@60000": {
+    "bar_0.8x_ref": 0.65,
+    "by_suite": {
+     "libero_10": 0.4,
+     "libero_90": 0.6659090909090909,
+     "libero_goal": 0.7250000000000001,
+     "libero_object": 0.922222222222222,
+     "libero_spatial": 0.72
+    },
+    "ci95": [
+     0.6368421052631579,
+     0.7447697368421049
+    ],
+    "episodes": 760,
+    "mean": 0.6921052631578949,
+    "reached": true,
+    "tasks": 76
+   },
+   "bindvla_vanilla@60000": {
+    "bar_0.8x_ref": 0.65,
+    "by_suite": {
+     "libero_10": 0.3,
+     "libero_90": 0.7113636363636363,
+     "libero_goal": 0.8375,
+     "libero_object": 0.8888888888888888,
+     "libero_spatial": 0.82
+    },
+    "ci95": [
+     0.6815789473684211,
+     0.7802631578947369
+    ],
+    "episodes": 760,
+    "mean": 0.7328947368421053,
+    "reached": true,
+    "tasks": 76
+   },
+   "smolvla_libero": {
+    "by_suite": {
+     "libero_10": 0.62,
+     "libero_goal": 0.8200000000000001,
+     "libero_object": 0.9,
+     "libero_spatial": 0.9099999999999999
+    },
+    "ci95": [
+     0.7425,
+     0.8775000000000001
+    ],
+    "episodes": 400,
+    "mean": 0.8125,
+    "tasks": 40
+   }
+  },
+  "status": "PRE-REGISTERED the phase-2 BindVLA dev read (PLAN_BINDVLA section 11)",
+  "success": "BindVLA succeeds iff S1 and S2 and S3",
+  "written_before": "any phase-2 dev episode and any dev slot score"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__pbv2__s7__7dc13285",
+ "schema": 1,
+ "script": "experiments/prereg/pbv2.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-29T01:24:38+00:00",
+ "stream": null,
+ "tag": "pbv2"
+}

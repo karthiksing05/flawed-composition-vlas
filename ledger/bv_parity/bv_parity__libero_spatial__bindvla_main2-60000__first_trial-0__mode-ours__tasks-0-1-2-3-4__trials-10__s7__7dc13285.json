@@ -1,0 +1,124 @@
+{
+ "artifacts": [
+  "/coc/flash10/ksingara3/vla-operator-binding/results/bindvla/eval/parity_bindvla_main2_60000_libero_spatial_0-4.json"
+ ],
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_spatial",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "roll.sh MODE=ours SUITE=libero_spatial TASKS=0,1,2,3,4 TRIALS=10 (job 4316788)",
+ "config": {
+  "client": {
+   "all_objects": false,
+   "bind": "",
+   "branches": "",
+   "first_trial": 0,
+   "fresh": "",
+   "host": "127.0.0.1",
+   "light": false,
+   "max_steps": 0,
+   "no_meta": false,
+   "objects": false,
+   "out": "/coc/flash10/ksingara3/vla-operator-binding/results/bindvla/eval/parity_bindvla_main2_60000_libero_spatial_0-4.json",
+   "port": 9416,
+   "record": false,
+   "replan": 5,
+   "resize": 224,
+   "seed": 7,
+   "seg": false,
+   "state_mod": 0,
+   "suite": "libero_spatial",
+   "swap": "",
+   "swap_cams": "both",
+   "swap_mode": "render",
+   "swap_phase": "all",
+   "tasks": "0,1,2,3,4",
+   "trials": 10,
+   "videos": 2,
+   "wait": 10
+  },
+  "job": "4316788",
+  "mode": "ours"
+ },
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "puma.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4316788",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "bv_parity",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "7dc1328523288b2ddd29583e32a7fa5957dda042",
+  "short": "7dc13285"
+ },
+ "keys": {
+  "first_trial": 0,
+  "mode": "ours",
+  "tasks": "0,1,2,3,4",
+  "trials": 10
+ },
+ "metrics": {
+  "complete": true,
+  "n_episodes": 50,
+  "secs": 474.1826024055481,
+  "success_rate": 0.84,
+  "tasks": {
+   "0": {
+    "errors": 0,
+    "language": "pick up the black bowl between the plate and the ramekin and place it on the plate",
+    "mean_steps": 123.3,
+    "n": 10,
+    "success_rate": 0.7
+   },
+   "1": {
+    "errors": 0,
+    "language": "pick up the black bowl next to the ramekin and place it on the plate",
+    "mean_steps": 116.1,
+    "n": 10,
+    "success_rate": 0.9
+   },
+   "2": {
+    "errors": 0,
+    "language": "pick up the black bowl from table center and place it on the plate",
+    "mean_steps": 100.0,
+    "n": 10,
+    "success_rate": 1.0
+   },
+   "3": {
+    "errors": 0,
+    "language": "pick up the black bowl on the cookie box and place it on the plate",
+    "mean_steps": 108.6,
+    "n": 10,
+    "success_rate": 0.8
+   },
+   "4": {
+    "errors": 0,
+    "language": "pick up the black bowl in the top drawer of the wooden cabinet and place it on the plate",
+    "mean_steps": 145.3,
+    "n": 10,
+    "success_rate": 0.8
+   }
+  }
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "bv_parity__libero_spatial__bindvla_main2-60000__first_trial-0__mode-ours__tasks-0-1-2-3-4__trials-10__s7__7dc13285",
+ "schema": 1,
+ "script": "experiments/libero_client.py",
+ "seconds": null,
+ "seed": 7,
+ "source_commit": null,
+ "started": "2026-10-28T21:12:09+00:00",
+ "stream": null,
+ "tag": "bindvla_main2@60000"
+}
