@@ -724,8 +724,8 @@ decided after main2's dev read:
 - Together with the LOL result (12.1, 0.73), this rules out the layout-shortcut reading of the 0.98 held-out hit for most of
   the hit. Depth-3 paths are the exception (0.28).
 - **The motor policy does not use correct bindings on new compounds.** With slots right about 72% of the time, dev success is
-  0.04. If success were limited by binding alone, the predicted success would be about 0.72 x 0.57 x the training
-  competence, about 0.3, not 0.04.
+  0.04. If success were limited by binding alone, the predicted success would be about 0.81 (object) x 0.57 (goal) x 0.705 (parity)
+  = 0.33, not 0.04.
 - So the bottleneck is the motor side: the expert reads the slot tokens as a code for training tasks, not as poses to act on.
   This is exactly risk 2 of section 12.
 - vanilla is not better on dev (0.007), so the bottleneck is not an artefact of the binding prefix. main2's +0.034 has a CI
