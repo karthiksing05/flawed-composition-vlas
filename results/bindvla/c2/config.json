@@ -1,0 +1,797 @@
+{
+ "setting": "bindvla",
+ "cfg": {
+  "binder": true,
+  "parser": "rule",
+  "cross_role": false,
+  "hier": true,
+  "levels": 3,
+  "foveate": false,
+  "pos_keys": true,
+  "bottleneck": true,
+  "wrist_slots": true,
+  "inv": 0.0,
+  "d": 384,
+  "n_layers": 2,
+  "n_steps": 2,
+  "phrase_len": 12,
+  "k_generic": 6,
+  "noisy_p": 0.3,
+  "sigma_min": 0.05,
+  "chunk": 50,
+  "max_state_dim": 32,
+  "max_action_dim": 32,
+  "tok_len": 48,
+  "motor": "full",
+  "glob": true,
+  "shape_dim": 16
+ },
+ "params": {
+  "expert": 98245840,
+  "heads": 1635152,
+  "binder": 9939657,
+  "frozen": 350165184,
+  "total_trainable": 109820649
+ },
+ "args": {
+  "posfit": false,
+  "posfit_frames": 1200,
+  "setting": "bindvla",
+  "exp": "c2",
+  "steps": 6000,
+  "timing": 0,
+  "batch": 32,
+  "envs": 4,
+  "inv": 0.0,
+  "levels": 0,
+  "init_base": true,
+  "aux": 1.0,
+  "hold_layouts": 4,
+  "swap": 1.0,
+  "proto": 0.0,
+  "adv": 0.0,
+  "motor": "full",
+  "no_glob": false,
+  "lr": 0.0001,
+  "lr_min": 2.5e-06,
+  "warmup": 1000,
+  "workers": 8,
+  "seed": 0,
+  "eval_every": 2000,
+  "save_every": 1000
+ },
+ "envs": [
+  "KITCHEN_SCENE1",
+  "KITCHEN_SCENE10",
+  "KITCHEN_SCENE2",
+  "KITCHEN_SCENE3",
+  "KITCHEN_SCENE4",
+  "KITCHEN_SCENE5",
+  "KITCHEN_SCENE6",
+  "KITCHEN_SCENE8",
+  "KITCHEN_SCENE9",
+  "LIVING_ROOM_SCENE1",
+  "LIVING_ROOM_SCENE2",
+  "LIVING_ROOM_SCENE3",
+  "LIVING_ROOM_SCENE4",
+  "LIVING_ROOM_SCENE5",
+  "LIVING_ROOM_SCENE6",
+  "STUDY_SCENE4",
+  "libero_goal",
+  "libero_object:alphabet_soup+basket+bbq_sauce+chocolate_pudding+cream_cheese+ketchup+salad_dressing",
+  "libero_object:alphabet_soup+basket+bbq_sauce+chocolate_pudding+ketchup+orange_juice+salad_dressing",
+  "libero_object:alphabet_soup+basket+butter+cream_cheese+milk+orange_juice+tomato_sauce",
+  "libero_object:alphabet_soup+basket+butter+cream_cheese+milk+salad_dressing+tomato_sauce",
+  "libero_object:alphabet_soup+basket+cream_cheese+ketchup+milk+salad_dressing+tomato_sauce",
+  "libero_object:basket+bbq_sauce+butter+chocolate_pudding+ketchup+orange_juice+tomato_sauce",
+  "libero_object:basket+bbq_sauce+butter+chocolate_pudding+milk+orange_juice+tomato_sauce",
+  "libero_object:basket+butter+chocolate_pudding+cream_cheese+milk+orange_juice+tomato_sauce",
+  "libero_spatial:0",
+  "libero_spatial:1",
+  "libero_spatial:2",
+  "libero_spatial:3",
+  "libero_spatial:4",
+  "libero_spatial:5",
+  "libero_spatial:6",
+  "libero_spatial:7"
+ ],
+ "n_train_frames": 443164,
+ "n_held_frames": 22489,
+ "entity_map": {
+  "LIVING_ROOM_SCENE5": {
+   "white mug": {
+    "token": 122,
+    "n": 36,
+    "tids": [
+     "libero_10:4"
+    ],
+    "purity": 0.8333333333333334
+   },
+   "left plate": {
+    "token": 143,
+    "n": 64,
+    "tids": [
+     "libero_10:4",
+     "libero_90:65"
+    ],
+    "purity": 0.46875
+   },
+   "yellow and white mug": {
+    "token": 132,
+    "n": 36,
+    "tids": [
+     "libero_10:4"
+    ],
+    "purity": 0.5555555555555556
+   },
+   "right plate": {
+    "token": 144,
+    "n": 35,
+    "tids": [
+     "libero_10:4"
+    ],
+    "purity": 0.7714285714285715
+   },
+   "red mug": {
+    "token": 102,
+    "n": 32,
+    "tids": [
+     "libero_90:65"
+    ],
+    "purity": 0.6875
+   }
+  },
+  "LIVING_ROOM_SCENE6": {
+   "white mug": {
+    "token": 122,
+    "n": 34,
+    "tids": [
+     "libero_10:6"
+    ],
+    "purity": 0.7352941176470589
+   },
+   "plate": {
+    "token": 182,
+    "n": 88,
+    "tids": [
+     "libero_10:6",
+     "libero_90:69",
+     "libero_90:71"
+    ],
+    "purity": 0.3409090909090909
+   },
+   "chocolate pudding": {
+    "token": 149,
+    "n": 80,
+    "tids": [
+     "libero_10:6",
+     "libero_90:69"
+    ],
+    "purity": 0.4875
+   },
+   "red mug": {
+    "token": 102,
+    "n": 42,
+    "tids": [
+     "libero_90:71"
+    ],
+    "purity": 0.6428571428571429
+   }
+  },
+  "KITCHEN_SCENE2": {
+   "black bowl at the front": {
+    "token": 179,
+    "n": 40,
+    "tids": [
+     "libero_90:13"
+    ],
+    "purity": 0.475
+   },
+   "plate": {
+    "token": 166,
+    "n": 40,
+    "tids": [
+     "libero_90:13"
+    ],
+    "purity": 0.5
+   },
+   "middle black bowl": {
+    "token": 148,
+    "n": 37,
+    "tids": [
+     "libero_90:17"
+    ],
+    "purity": 0.8378378378378378
+   },
+   "back black bowl": {
+    "token": 119,
+    "n": 37,
+    "tids": [
+     "libero_90:17"
+    ],
+    "purity": 0.5675675675675675
+   }
+  },
+  "KITCHEN_SCENE3": {
+   "frying pan": {
+    "token": 154,
+    "n": 45,
+    "tids": [
+     "libero_90:18"
+    ],
+    "purity": 0.6444444444444445
+   },
+   "stove": {
+    "token": 145,
+    "n": 44,
+    "tids": [
+     "libero_90:18"
+    ],
+    "purity": 0.3409090909090909
+   }
+  },
+  "KITCHEN_SCENE4": {
+   "black bowl": {
+    "token": 169,
+    "n": 46,
+    "tids": [
+     "libero_90:25"
+    ],
+    "purity": 0.5
+   },
+   "cabinet": {
+    "token": 80,
+    "n": 46,
+    "tids": [
+     "libero_90:25"
+    ],
+    "purity": 0.30434782608695654
+   },
+   "wine bottle": {
+    "token": 119,
+    "n": 78,
+    "tids": [
+     "libero_90:26",
+     "libero_90:27"
+    ],
+    "purity": 0.4358974358974359
+   },
+   "bottom drawer of the cabinet": {
+    "token": 117,
+    "n": 39,
+    "tids": [
+     "libero_90:26"
+    ],
+    "purity": 0.41025641025641024
+   },
+   "wine rack": {
+    "token": 79,
+    "n": 30,
+    "tids": [
+     "libero_90:27"
+    ],
+    "purity": 0.7333333333333333
+   }
+  },
+  "KITCHEN_SCENE6": {
+   "yellow and white mug": {
+    "token": 150,
+    "n": 42,
+    "tids": [
+     "libero_90:34"
+    ],
+    "purity": 0.6904761904761905
+   },
+   "white mug": {
+    "token": 157,
+    "n": 1,
+    "tids": [
+     "libero_90:34"
+    ],
+    "purity": 1.0
+   }
+  },
+  "KITCHEN_SCENE8": {
+   "stove": {
+    "token": 123,
+    "n": 22,
+    "tids": [
+     "libero_90:39"
+    ],
+    "purity": 1.0
+   }
+  },
+  "KITCHEN_SCENE9": {
+   "frying pan": {
+    "token": 164,
+    "n": 77,
+    "tids": [
+     "libero_90:41",
+     "libero_90:42"
+    ],
+    "purity": 0.4155844155844156
+   },
+   "cabinet": {
+    "token": 92,
+    "n": 77,
+    "tids": [
+     "libero_90:41",
+     "libero_90:43"
+    ],
+    "purity": 0.18181818181818182
+   },
+   "white bowl": {
+    "token": 133,
+    "n": 43,
+    "tids": [
+     "libero_90:43"
+    ],
+    "purity": 0.8837209302325582
+   }
+  },
+  "LIVING_ROOM_SCENE1": {
+   "alphabet soup": {
+    "token": 170,
+    "n": 41,
+    "tids": [
+     "libero_90:46"
+    ],
+    "purity": 0.5121951219512195
+   },
+   "basket": {
+    "token": 112,
+    "n": 86,
+    "tids": [
+     "libero_90:46",
+     "libero_90:47"
+    ],
+    "purity": 0.3953488372093023
+   },
+   "cream cheese box": {
+    "token": 134,
+    "n": 45,
+    "tids": [
+     "libero_90:47"
+    ],
+    "purity": 0.7555555555555555
+   }
+  },
+  "LIVING_ROOM_SCENE2": {
+   "milk": {
+    "token": 154,
+    "n": 40,
+    "tids": [
+     "libero_90:52"
+    ],
+    "purity": 0.5
+   },
+   "basket": {
+    "token": 112,
+    "n": 77,
+    "tids": [
+     "libero_90:52",
+     "libero_90:53"
+    ],
+    "purity": 0.3246753246753247
+   },
+   "orange juice": {
+    "token": 142,
+    "n": 37,
+    "tids": [
+     "libero_90:53"
+    ],
+    "purity": 0.4594594594594595
+   }
+  },
+  "LIVING_ROOM_SCENE4": {
+   "salad dressing": {
+    "token": 90,
+    "n": 44,
+    "tids": [
+     "libero_90:62"
+    ],
+    "purity": 0.6136363636363636
+   },
+   "tray": {
+    "token": 113,
+    "n": 80,
+    "tids": [
+     "libero_90:62",
+     "libero_90:63"
+    ],
+    "purity": 0.225
+   },
+   "left bowl": {
+    "token": 140,
+    "n": 42,
+    "tids": [
+     "libero_90:63"
+    ],
+    "purity": 0.5476190476190477
+   },
+   "right bowl": {
+    "token": 135,
+    "n": 42,
+    "tids": [
+     "libero_90:63"
+    ],
+    "purity": 0.5952380952380952
+   },
+   "bowls": {
+    "token": 135,
+    "n": 42,
+    "tids": [
+     "libero_90:63"
+    ],
+    "purity": 0.47619047619047616
+   }
+  },
+  "STUDY_SCENE4": {
+   "book in the middle": {
+    "token": 171,
+    "n": 46,
+    "tids": [
+     "libero_90:86"
+    ],
+    "purity": 0.5869565217391305
+   },
+   "book on the right": {
+    "token": 152,
+    "n": 90,
+    "tids": [
+     "libero_90:88",
+     "libero_90:89"
+    ],
+    "purity": 0.6444444444444445
+   },
+   "cabinet shelf": {
+    "token": 132,
+    "n": 5,
+    "tids": [
+     "libero_90:88",
+     "libero_90:89"
+    ],
+    "purity": 0.2
+   }
+  },
+  "libero_goal": {
+   "bowl": {
+    "token": 151,
+    "n": 175,
+    "tids": [
+     "libero_goal:1",
+     "libero_goal:4",
+     "libero_goal:6",
+     "libero_goal:8"
+    ],
+    "purity": 0.37142857142857144
+   },
+   "stove": {
+    "token": 115,
+    "n": 46,
+    "tids": [
+     "libero_goal:1"
+    ],
+    "purity": 0.717391304347826
+   },
+   "wine bottle": {
+    "token": 104,
+    "n": 79,
+    "tids": [
+     "libero_goal:2",
+     "libero_goal:9"
+    ],
+    "purity": 0.5189873417721519
+   },
+   "cabinet": {
+    "token": 108,
+    "n": 88,
+    "tids": [
+     "libero_goal:2",
+     "libero_goal:4"
+    ],
+    "purity": 0.3409090909090909
+   },
+   "cream cheese": {
+    "token": 165,
+    "n": 38,
+    "tids": [
+     "libero_goal:6"
+    ],
+    "purity": 0.5263157894736842
+   },
+   "plate": {
+    "token": 183,
+    "n": 47,
+    "tids": [
+     "libero_goal:8"
+    ],
+    "purity": 0.723404255319149
+   },
+   "rack": {
+    "token": 61,
+    "n": 34,
+    "tids": [
+     "libero_goal:9"
+    ],
+    "purity": 0.5882352941176471
+   }
+  },
+  "libero_object:alphabet_soup+basket+butter+cream_cheese+milk+salad_dressing+tomato_sauce": {
+   "alphabet soup": {
+    "token": 123,
+    "n": 42,
+    "tids": [
+     "libero_object:0"
+    ],
+    "purity": 0.7857142857142857
+   },
+   "basket": {
+    "token": 99,
+    "n": 42,
+    "tids": [
+     "libero_object:0"
+    ],
+    "purity": 0.40476190476190477
+   }
+  },
+  "libero_object:alphabet_soup+basket+butter+cream_cheese+milk+orange_juice+tomato_sauce": {
+   "cream cheese": {
+    "token": 153,
+    "n": 43,
+    "tids": [
+     "libero_object:1"
+    ],
+    "purity": 0.7441860465116279
+   },
+   "basket": {
+    "token": 99,
+    "n": 43,
+    "tids": [
+     "libero_object:1"
+    ],
+    "purity": 0.5581395348837209
+   }
+  },
+  "libero_object:alphabet_soup+basket+cream_cheese+ketchup+milk+salad_dressing+tomato_sauce": {
+   "salad dressing": {
+    "token": 137,
+    "n": 45,
+    "tids": [
+     "libero_object:2"
+    ],
+    "purity": 0.4444444444444444
+   },
+   "basket": {
+    "token": 99,
+    "n": 44,
+    "tids": [
+     "libero_object:2"
+    ],
+    "purity": 0.38636363636363635
+   }
+  },
+  "libero_object:alphabet_soup+basket+bbq_sauce+chocolate_pudding+cream_cheese+ketchup+salad_dressing": {
+   "bbq sauce": {
+    "token": 137,
+    "n": 44,
+    "tids": [
+     "libero_object:3"
+    ],
+    "purity": 0.8409090909090909
+   },
+   "basket": {
+    "token": 99,
+    "n": 44,
+    "tids": [
+     "libero_object:3"
+    ],
+    "purity": 0.5454545454545454
+   }
+  },
+  "libero_object:basket+bbq_sauce+butter+chocolate_pudding+milk+orange_juice+tomato_sauce": {
+   "tomato sauce": {
+    "token": 153,
+    "n": 40,
+    "tids": [
+     "libero_object:5"
+    ],
+    "purity": 0.325
+   },
+   "basket": {
+    "token": 99,
+    "n": 40,
+    "tids": [
+     "libero_object:5"
+    ],
+    "purity": 0.375
+   }
+  },
+  "libero_object:basket+bbq_sauce+butter+chocolate_pudding+ketchup+orange_juice+tomato_sauce": {
+   "butter": {
+    "token": 140,
+    "n": 43,
+    "tids": [
+     "libero_object:6"
+    ],
+    "purity": 0.4186046511627907
+   },
+   "basket": {
+    "token": 99,
+    "n": 43,
+    "tids": [
+     "libero_object:6"
+    ],
+    "purity": 0.3953488372093023
+   }
+  },
+  "libero_object:basket+butter+chocolate_pudding+cream_cheese+milk+orange_juice+tomato_sauce": {
+   "milk": {
+    "token": 107,
+    "n": 43,
+    "tids": [
+     "libero_object:7"
+    ],
+    "purity": 0.4418604651162791
+   },
+   "basket": {
+    "token": 98,
+    "n": 43,
+    "tids": [
+     "libero_object:7"
+    ],
+    "purity": 0.37209302325581395
+   }
+  },
+  "libero_object:alphabet_soup+basket+bbq_sauce+chocolate_pudding+ketchup+orange_juice+salad_dressing": {
+   "chocolate pudding": {
+    "token": 139,
+    "n": 48,
+    "tids": [
+     "libero_object:8"
+    ],
+    "purity": 0.5625
+   },
+   "basket": {
+    "token": 98,
+    "n": 48,
+    "tids": [
+     "libero_object:8"
+    ],
+    "purity": 0.4166666666666667
+   }
+  },
+  "libero_spatial:0": {
+   "black bowl between the plate and the ramekin": {
+    "token": 148,
+    "n": 43,
+    "tids": [
+     "libero_spatial:0"
+    ],
+    "purity": 0.6046511627906976
+   },
+   "plate": {
+    "token": 180,
+    "n": 41,
+    "tids": [
+     "libero_spatial:0"
+    ],
+    "purity": 0.6341463414634146
+   }
+  },
+  "libero_spatial:1": {
+   "black bowl next to the ramekin": {
+    "token": 129,
+    "n": 43,
+    "tids": [
+     "libero_spatial:1"
+    ],
+    "purity": 0.7674418604651163
+   },
+   "plate": {
+    "token": 178,
+    "n": 43,
+    "tids": [
+     "libero_spatial:1"
+    ],
+    "purity": 0.7906976744186046
+   }
+  },
+  "libero_spatial:3": {
+   "black bowl on the cookie box": {
+    "token": 182,
+    "n": 41,
+    "tids": [
+     "libero_spatial:3"
+    ],
+    "purity": 0.6585365853658537
+   },
+   "plate": {
+    "token": 178,
+    "n": 41,
+    "tids": [
+     "libero_spatial:3"
+    ],
+    "purity": 0.7804878048780488
+   }
+  },
+  "libero_spatial:4": {
+   "black bowl in the top drawer of the wooden cabinet": {
+    "token": 138,
+    "n": 40,
+    "tids": [
+     "libero_spatial:4"
+    ],
+    "purity": 0.825
+   },
+   "plate": {
+    "token": 162,
+    "n": 40,
+    "tids": [
+     "libero_spatial:4"
+    ],
+    "purity": 0.475
+   }
+  },
+  "libero_spatial:5": {
+   "black bowl on the ramekin": {
+    "token": 117,
+    "n": 37,
+    "tids": [
+     "libero_spatial:5"
+    ],
+    "purity": 0.7027027027027027
+   },
+   "plate": {
+    "token": 164,
+    "n": 37,
+    "tids": [
+     "libero_spatial:5"
+    ],
+    "purity": 0.7837837837837838
+   }
+  },
+  "libero_spatial:6": {
+   "black bowl next to the cookie box": {
+    "token": 200,
+    "n": 44,
+    "tids": [
+     "libero_spatial:6"
+    ],
+    "purity": 0.8181818181818182
+   },
+   "plate": {
+    "token": 178,
+    "n": 44,
+    "tids": [
+     "libero_spatial:6"
+    ],
+    "purity": 0.8181818181818182
+   }
+  },
+  "libero_spatial:7": {
+   "black bowl on the stove": {
+    "token": 105,
+    "n": 33,
+    "tids": [
+     "libero_spatial:7"
+    ],
+    "purity": 0.9696969696969697
+   },
+   "plate": {
+    "token": 178,
+    "n": 32,
+    "tids": [
+     "libero_spatial:7"
+    ],
+    "purity": 0.6875
+   }
+  }
+ },
+ "ho_envs": [
+  "libero_spatial:9",
+  "libero_spatial:8",
+  "libero_object:basket+bbq_sauce+butter+chocolate_pudding+ketchup+orange_juice+salad_dressing",
+  "KITCHEN_SCENE7"
+ ]
+}

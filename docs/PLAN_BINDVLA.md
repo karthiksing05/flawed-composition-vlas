@@ -826,3 +826,49 @@ table. Expected from 11.1: most failures are motor or no_grasp with the slot on 
 - (c) place / transport is rare (4%).
 - The motor policy gets the right binding and does not reach the bound location. This is the case C1's pose interface was
   built for.
+
+### 12.5 C1 read and the 12.3 verdict (2026-10-29)
+
+**Checkpoint (deviation, recorded).** The section 12 rule picks the evaluated step with the highest LOL hit. That step is 2k
+(LOL 0.820, val 0.580), but the trainer keeps only the 10k-interval checkpoints plus 59k / 60k. Among the saved checkpoints the
+rule picks **20k** (LOL 0.793, val 0.485). The 60k checkpoint has LOL 0.772.
+- c1main's val loss bottoms out at 0.470 (16k) and rises to 0.509 at 60k. main2 ends at 0.4535.
+- The dev read ran with `--slotlog` (ledger bv_devlog), so the pre-registered C1 read and the 12.4 diagnostic come from the same
+  290 episodes. main2's logged re-run reproduces its bv_dev success exactly (0.041), so the two protocols agree.
+
+| | main2 (60k) | C1 (20k) | vanilla (60k) |
+|---|---|---|---|
+| parity, 76 training tasks x 10 | 0.705 | **0.441** (72 trained tasks 0.465; 4 held-out-layout tasks 0.00) | 0.733 |
+| dev success, 29 x 10 | 0.041 | **0.024** | 0.007 |
+| dev by CD 0.1 / 0.3 / 0.5 / part | 0.16 / 0.00 / 0.08 / 0.00 | 0.14 / 0.00 / 0.00 / 0.00 | 0.00 / 0.02 / 0.02 / 0.00 |
+| offline dev slot hit [task CI] | 0.716 [0.64, 0.79] | 0.745 [0.67, 0.82] | - |
+| object / goal / depth 3 | 0.810 / 0.568 / 0.283 | 0.810 / 0.642 / 0.413 | - |
+| closed loop: object on named, start / grasp query | 0.81 / 0.72 | 0.87 / 0.79 | - |
+| closed loop: goal on target, start / release query | 0.75 / 0.70 | 0.85 / 0.65 | - |
+| CD failure slope (15 CD tasks) | +0.20 [-0.42, +0.84] | +0.35 [-0.00, +0.78] | -0.05 [-0.16, +0.02] |
+| predicted vs observed (28 tasks): mean pred / obs, r [CI] | 0.44 / 0.03, r 0.27 [0.09, 0.48] | 0.34 / 0.03, r 0.09 [-0.11, 0.33] | - |
+
+- Paired C1 - main2 = **-0.017 [-0.052, +0.007]** (1 task up, 2 down). Paired C1 - vanilla = +0.017 [-0.010, +0.055].
+- The predicted-vs-observed column uses this protocol: hit_obj x hit_goal = the task's closed-loop first-query slot-on rates
+  (12.4), times the parity success of training tasks with the same parsed verb.
+
+**12.4 for C1** (movable-object tasks, 220 episodes, 213 failures):
+- causes: motor 99 (46%), no_grasp 45 (21%), drift 27 (13%), place 26 (12%), start_miss 16 (8%);
+- first contact: none 163, named 33, other 20, habit 4. When an object is moved (57), it is the named one in 58% (main2 49%)
+  and a habit object in 7% (main2 21%).
+
+**Verdict: the 12.3 prediction fails.**
+- C1 did not raise dev success above main2. The difference is negative, and its CI includes 0.
+- C1 also fails S2 (parity 0.441 < 0.65).
+- The pose interface keeps binding: the dev slot hit is unchanged, and the closed-loop slot-on rates are slightly better. It
+  makes the gripper go to the named object more often, with fewer habit grasps, but it fails more often after contact
+  (place 26 vs 9).
+- It also costs training-task competence (0.705 -> 0.465 on the tasks it trained on), with a worse val loss. So the slot
+  content that C1 removed (qmean, s_fin, s1, sw, g) carries information the expert needs to execute grasps and placements,
+  beyond the pose.
+- Under 12.3's stated alternative, the bottleneck is the expert's use of any slot code. The next lever is training-side
+  (more varied bindings per motor skill), not the interface.
+- Phase-2 status against the bars: S1 and S2 are met by main2; S3 is not met by any model. The best dev success is main2's
+  0.041, far from 0.30.
+- Budget: about 40 of the 60 phase-2 A40-h used. Breakdown: probes 6.9, main2 + vanilla ~16, c1main ~7, parity / dev /
+  logged rollouts ~9, diagnostics ~1.
