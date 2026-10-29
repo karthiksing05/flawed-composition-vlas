@@ -1,0 +1,384 @@
+# The Flawed Composition of VLAs
+
+Working document, started 2026-10-29. It lays out the problem, how prior work has attacked it, and how we plan to diagnose
+and resolve it in VLA architectures. It supersedes `docs/history/2026-10-29-vla-operator-binding/THEORY_FRAMING.md` and
+`PLAN_BINDVLA.md`; those remain the record of the evidence cited here.
+
+Citation status: arXiv IDs marked (v) were read or seen in search results on 2026-10-29. Everything else is cited from
+memory and is marked (check) until verified against the source.
+
+---
+
+## 0. One-paragraph statement
+
+A VLA is a chain of stages. Perception turns pixels into features, binding maps each phrase to a scene entity, and the
+action expert turns what was bound into motion. A new task built from familiar parts is solved only if **every** stage
+treats the new combination as a combination: its inputs about each part must be uncontaminated by the other parts, and its
+way of combining them must be the one it learned on other combinations. Current VLAs fail this at more than one interface,
+and fixing one interface moves the failure to the next. We call the per-interface failure **compositional debt**. We
+measure it inside the network with counterfactual interventions, predict it from the training split before training, and
+remove it with structure that makes the debt zero by construction, chosen without supervision.
+
+---
+
+## 1. The problem
+
+### 1.1 What "composition" should buy a VLA
+
+Training covers tasks such as "put the bowl on the plate" and "put the mug in the basket". A compositional policy should
+also solve "put the mug on the plate": every atom (mug, plate, put-on) was seen, only the combination is new. Keysers et
+al.'s MCD split makes this precise (check: ICLR 2020). Hold atom divergence near zero (every test atom appears in training)
+and vary compound divergence (how unfamiliar the combinations are). A compositional learner's error stays flat in compound
+divergence. A holistic learner's error rises.
+
+### 1.2 What actually happens (our evidence)
+
+All numbers come from this repo; the commits and docs are in `docs/history/2026-10-29-vla-operator-binding/`.
+
+| finding | number | source |
+|---|---|---|
+| Binding error rises with referring-expression depth | 0.18 / 0.38 / 0.945 at depth 0 / 1 / 2 | E4 |
+| Off-the-shelf grounding fails held-out depth 1 | Qwen, Molmo 0.00; pi0.5 no usable grounding | B0 |
+| LIBERO's left/right is mirrored relative to the policy image | corr(col, y) = −0.99; VLM depth-1 binding 0.60–0.67 after rescoring | B0 |
+| Holistic binding error rises with compound divergence, factorised does not | slope 1.07 [0.65, 1.46] vs 0.21; interaction 0.86 [0.33, 1.37] | B1.3, a55f6c99 |
+| A transfer-scored criterion recovers the shape bias; a fit-scored one does not | nouns → appearance, relations → geometry under prequential MDL; B1.2 identity-coding MDL fails all bars | B1.2, B1.3 |
+| In distribution, success factorises | success = P(binding) × competence, calibration slope 0.997 | E2b |
+| An oracle binding fixes binding errors and leaves motion errors alone | binding error 0.234 → 0.048 | S0 |
+| BindVLA's slots bind, including on held-out combinations | 0.98 / 0.89 held-out episodes; 0.73 held-out layouts; 0.72 held-out compounds, flat across compound divergence | main2, 7ffe600c |
+| The slots stay bound in closed loop | object slot on the named object 0.81 at start, 0.72 at grasp | 12.4, 6c46ddd2 |
+| **Success does not follow binding** | predicted 0.44, observed 0.03; dev success 0.041 vs plain SmolVLA 0.007, +0.034 [−0.003, 0.083] | main2 |
+| **About half the failures have the slot on the right object and the gripper elsewhere** | motor 48%, no grasp 18%, drift 16%, start miss 13%, place 4% | 12.4 |
+| **Removing scene information from the motor moves the failure** | C1: named-object contact 49% → 58%, habit-object contact 21% → 7%, place failures 4% → 12%, training-task success 0.705 → 0.441 | C1, 5bf63e2c |
+
+The last three rows are the observations this document is built on. Binding was repaired and composition still failed.
+The failure moved into the action expert. Taking information away from the expert moved it again.
+
+### 1.3 The general problem
+
+Prior VLA work treats the composition failure as a failure at one place: the referent (ReGuide), or the
+instruction-to-trajectory shortcut (ECT). Our data says the failure is a property of the chain:
+
+> A policy composes only if every interface passes role-pure messages, every stage combines them by a rule identified on
+> the training combinations, and no route carries compound identity around the stages that are meant to factor it.
+
+Section 3 makes this precise. Sections 4 and 5 give the diagnosis and the fixes.
+
+---
+
+## 2. How prior work has attacked it
+
+Each line of work below fixes one cell of the taxonomy in Section 3.5: one interface, with one lever. The table says which.
+
+### 2.1 Classical and theoretical accounts of compositionality
+
+- **Frege's principle; Fodor & Pylyshyn (check: Cognition 1988).** The meaning of a whole is a function of its parts'
+  meanings and their mode of combination. Systematicity: a system that represents aRb can represent bRa. These give the
+  homomorphism view that Section 3 adopts.
+- **Hupkes et al., "Compositionality decomposed" (check: JAIR 2020).** Five testable properties: systematicity,
+  productivity, substitutivity, localism, overgeneralisation. We make localism graded and per-interface.
+- **Andreas, Tree Reconstruction Error (check: ICLR 2019).** Measures whether one representation decomposes into parts.
+  It is a single-map measure, and it cannot see a downstream stage that ignores a decomposed representation.
+- **Wiedemer et al., "Compositional generalization from first principles" (check: NeurIPS 2023).** For a generator
+  x = C(φ₁(z₁), …, φ_K(z_K)) with a known composition function C, compositional support in training is sufficient for
+  generalisation. **This is the closest formal precedent.** Their condition is our per-stage condition for a single stage
+  whose composition rule is given. We add: chains of stages, bypass routes, debt relocation, measurement in trained
+  networks, closed loop.
+- **Lippl & Stachenfeld, kernel theory of compositional generalisation (check: 2024).** Kernel models generalise only to
+  tasks that are additive over conjunctions seen in training. This is a precise statement of why a holistic stage fails on
+  a new joint input. It predicts our action-expert failure if the expert behaves like a kernel machine over its joint input.
+- **Elmoznino et al., complexity-based theory of compositionality (check: 2024).** Compositionality as compressibility
+  of a representation. It relates to our acquisition argument (Section 3.4), but is stated for representations, not for
+  multi-stage policies.
+- **Okawa et al., multiplicative emergence of compositional abilities (2310.09336, check).** Success on a composite is the
+  product of component competences. This is our in-distribution factorisation. We find it breaks out of distribution, and
+  explain why.
+- **Lake & Baroni, SCAN (check: ICML 2018); Bahdanau et al., "Systematic generalization: what is required and can it be
+  learned?" (check: ICLR 2019).** Seq2seq models fail systematic splits. In Bahdanau et al., module layouts given by
+  structure generalise where learned layouts do not. This is evidence for the structural lever.
+- **Greff et al., "On the binding problem in artificial neural networks" (check: 2020).** Frames segregation,
+  representation and composition as the binding problem. Our stage 1 is their binding problem. Our point is that solving
+  it is necessary, not sufficient.
+- **Our own recoverability paper (`compositionality-theory/`).** Compositionality as role-factorised recovery of fresh
+  parts. It covers stage 1. This document extends it to every later stage.
+
+### 2.2 Causal and invariance tools
+
+- **Causal abstraction and interchange interventions (Geiger et al., check: NeurIPS 2021; interchange intervention
+  training, check: ICML 2022).** Swap a variable's value between two inputs and check that the output follows the
+  high-level model. **This is our measurement tool, and the closest prior art for the per-interface framing.** The novelty
+  has to be in what we measure with it (compositional debt in closed-loop policies, predicted from the split), not in the
+  tool.
+- **ICP (Peters et al., check: 2016), IRM (Arjovsky et al., check: 2019), V-REx (Krueger et al., check: 2021).**
+  Invariance across environments as an identification principle. We use layouts as environments. V-REx at λ = 1 did not
+  survive our seed check (C5).
+- **Independent mechanisms and modular networks (Parascandolo et al., check: 2018; Goyal et al. RIMs, check: 2021).**
+  Learned modularity. In general it does not guarantee that the modules factor along the task's roles.
+
+### 2.3 Structure built into robot policies
+
+- **Transporter Networks (check: Zeng et al. 2020).** Pick and place as cross-correlation in image space, exactly
+  translation-equivariant. Generalises to new positions by construction.
+- **Neural Descriptor Fields (check: Simeonov et al. 2022); Equivariant Diffusion Policy (check: Wang et al. 2024);
+  EquiBot (check: Yang et al. 2024); ET-SEED (check: 2024).** SE(3) equivariance or object-frame action generation.
+- **What they share with us:** structure that makes a generalisation hold by construction.
+- **What they lack:** language roles, a rule for which structure to build, and an account of what the structure costs.
+
+### 2.4 VLA composition and binding failures (the immediate competitors)
+
+| work | claim | interface | lever | what we add |
+|---|---|---|---|---|
+| ReGuide (2609.38616, v) | Failures on new object–destination pairs come from binding the wrong referent; the skill is intact. Training-free rebinding plus geometric guidance on frozen pi0.5 | language → referent | external structure (grounder + poses) | our closed loop shows the skill is **not** intact once the referent is right |
+| ECT (2609.39971, v) | "Instruction-action binding": the instruction recalls a trajectory family, vision only adjusts it. Narrow action support makes grounded and instruction-keyed solutions indistinguishable. Fix: counterfactual demo pairs plus a paired loss. LIBERO-PRO position swap 36 → 59; UR5e 8 → 88 | instruction → action (a bypass) | variation | ECT is the variation lever at one interface; we measure every interface and predict which needs variation |
+| LIBERO-OOD / text-latent interpolation (2505.03500, v) | Skills exist and compose when the text latent is interpolated by hand (pi0 9 → 83) | language interface | hand-built message | a hand-built input does not show which stage is indebted |
+| ACT-VLA (2607.00351, check) | interpolate, roll out, filter, fine-tune on synthetic compositions | language interface | variation (synthetic) | same |
+| Grounded Semantic Re-Binding (2608.02497, v) | paraphrase failures from joint vision–text encoding shifts; decoupled semantics plus a re-initialised action expert | instruction encoding | structure (decoupling) | paraphrase robustness, not new combinations |
+| SlotFlow (2609.24155, v; CoRL 2026) | what/where split for flow-matching policies | perception → action | structure | no roles, no composition evaluation |
+| ObjDream (2610.20223, v) | object slots plus identity-guided routing in a VLA | perception → VLM | structure | no bottleneck, no composition evaluation |
+| POT-VLA (2607.18016, v) | role-indexed 3D object tokens fed to the action expert | binding → action | structure | closest to our role tokens; no factorised combination rule |
+| LIBERO-PRO (2510.03827, v), LIBERO-Plus (2510.13626, v), CRAFT (2610.00524, check) | VLAs memorise layouts and largely ignore language | benchmarks | — | these motivate the problem; they do not localise it |
+
+**Summary of the field.** Every published fix acts on one interface: the referent, the instruction shortcut, or the
+language latent. Each implicitly assumes the remaining stages compose. None measures where the debt is before choosing a
+fix. None predicts from the training split which interfaces will fail.
+
+---
+
+## 3. Theory
+
+### 3.1 Setup
+
+- A task instance is x = (c, z).
+  - c = (a₁, …, a_R) is the **compound**: one atom per role r (verb, object, goal, and modifiers at deeper levels).
+  - z is the **nuisance**: layout, start state, distractors.
+- Training covers a set T of compounds. Test compounds c* ∉ T have all their atoms in T (atom divergence ≈ 0).
+- The policy is a directed graph of stages S₁ … S_K. Stage k reads messages and writes a message m_k.
+- A **declared interface** splits a message into role parts and a shared part: m_k = (m_k¹, …, m_k^R, m_k⁰). Examples:
+  BindVLA's slot tokens are m^r, and the state and global token are m⁰. In a VLA with no declared interface, we impose one
+  (Section 4.1).
+- Any path from the inputs (o, ℓ) to stage k that avoids its declared input is a **bypass**.
+
+### 3.2 Three conditions for composition at an interface
+
+**(P) Purity.** Each role message depends on its own atom and the nuisance, not on the other atoms:
+m_k^r = g_k^r(a_r, z), so m_k^r ⫫ a_{−r} | a_r, z.
+
+**(F) Factored combination.** The next stage combines role messages by a rule with shared per-role components:
+S_{k+1}(m) = Φ(h¹(m¹), …, h^R(m^R), m⁰), with Φ from a family identified on T (Section 3.4). A holistic stage computes
+an arbitrary function of the joint message. On a new joint value it is extrapolating, even when every m^r is pure.
+This is Wiedemer's condition and Lippl & Stachenfeld's conjunction-additivity, applied to one stage.
+
+**(S) Sufficiency.** The role messages carry what the next stage needs about each atom. There exists a Φ meeting (F) that
+is correct on all compounds.
+
+**(B) No bypass.** No input to stage k+1 outside its declared messages carries information about c beyond what the role
+messages carry.
+
+The policy composes on c* if (P), (F), (S) and (B) hold at every interface, and each stage is competent on the role
+values it receives. In that case success on c* is the product of per-role competences: Okawa's multiplicativity, now a
+consequence.
+
+### 3.3 Debt
+
+Each condition has a graded violation, measured by interventions (Section 4):
+
+- **Purity debt** δ^P_{k,r}: how much m_k^r moves when other roles' atoms change while a_r and z stay fixed.
+- **Combination debt** δ^F_k: the error of stage k+1 when its role messages are interchanged to form a joint message never
+  seen in training (role r's message from compound c, role s's from c′), scored against the correct behaviour for the
+  recombined compound.
+- **Bypass debt** δ^B_k: how much behaviour changes when only the bypass inputs are interchanged between compounds.
+- **Insufficiency** shows up as a stage that is incompetent even on in-support joint messages once its bypasses are cut.
+
+**Proposition 1 (decomposition; to be stated and proved).** The gap between predicted success (binding × competence) and
+observed success on c* is bounded by a sensitivity-weighted sum of the debts along the chain. The bound itself is standard
+error propagation. Its use is that every term can be measured.
+
+**Proposition 2 (relocation; to be stated and proved).** Suppose stage k+1 needs information I about atom a_r, and m_k^r
+lacks I. Then any parameter setting that is competent on T must take a proxy for I from another input that is correlated
+with a_r on T. That input is another role's message (purity debt), the shared message or a bypass (bypass debt), or the
+joint message (combination debt). Removing information without adding a pure route for it relocates the debt; it does not
+remove it.
+- **Evidence:** C1 removed the expert's scene features. Aim improved, but grasp and place failures rose, and training
+  competence fell from 0.705 to 0.441.
+
+### 3.4 Acquisition: why trained VLAs end up indebted
+
+- **Observational equivalence.**
+  - On the training support, a factored solution and a holistic one can reach the same imitation loss.
+  - In LIBERO, and in most demo datasets, each compound comes with a narrow set of layouts. So compound identity, layout
+    and trajectory are confounded.
+  - ECT gives this argument for its one interface. Our B1 series shows it for binding: "left" was learned as a remembered
+    image location (B1, R² 0.72).
+- **Fit versus transfer.**
+  - A learner scored by fit on T has no reason to prefer the factored solution.
+  - When the confound is strong, the holistic code ("this compound → this trajectory") is often the shorter description.
+  - A criterion scored by transfer, such as prequential leave-layout-out MDL, prefers the factored code, because the
+    holistic one fails on the held-out layouts.
+  - **Evidence:** B1.2's fit-scored MDL put nouns into geometry and transfer collapsed. B1.3's transfer-scored criterion
+    routed words correctly and learned the mirror unaided.
+- **A support condition per interface (to be derived).** Stage k+1 can be identified as factored only if:
+  - T, projected onto that stage's roles, is connected (Wiedemer's compositional support);
+  - each atom is seen with enough varied partners and nuisances to break the confound.
+
+  This can be computed from the split alone, before training.
+
+  **Prediction:** the interfaces whose projected support is weakest carry the most debt.
+
+### 3.5 Taxonomy of fixes
+
+| debt | lever | examples | cost |
+|---|---|---|---|
+| purity | structure: role-local queries, position-free keys, nested part masks | BindVLA binder | features may still leak nonlinearly (MLP probe R² 0.96) |
+| purity | variation plus a transfer-scored criterion | B1.3 MDL; layout diversity | needs varied layouts per atom |
+| combination | structure: a factored stage (per-role phases, a fixed combination rule) plus frame equivariance for the nuisance | Transporter, NDF and Equivariant Diffusion Policy, for pose | wrong wherever the task violates the factorisation |
+| combination | variation on the projected support | ECT counterfactual pairs | demo collection |
+| bypass | cut the route (bottleneck) | BindVLA bottleneck | insufficiency, if the cut route carried needed information (C1) |
+| bypass | variation on the bypass | ECT | demos |
+| insufficiency | enrich the role message | per-object grasp features in the slot | must stay pure |
+
+The theory's job is to say which lever each interface needs, and to predict, before running, what each fix will buy.
+
+---
+
+## 4. Diagnosis: measuring debt in VLA architectures
+
+### 4.1 Declaring the stage graph
+
+| model | interfaces we declare |
+|---|---|
+| BindVLA (ours) | VLM features → binder; binder slots → bottleneck → action expert; bypasses: state, global token, the nonlinear position content of features |
+| SmolVLA, pi0, pi0.5, X-VLA, GR00T N1.5 | prefix (vision + language) KV → action expert; we read role content from the KV entries of the referent's image tokens and the instruction's role words, using the KV-level interventions already built for S0 |
+
+### 4.2 Counterfactual instances
+
+- Use the procedural LIBERO layouts from B1.3 (4 table types, held-out compounds × layouts) and the BDDL generator.
+- From them, build matched pairs that change exactly one thing: one role's atom, the nuisance, or the instruction alone.
+- Demos are fitted or scored only, never executed.
+
+### 4.3 Measurements
+
+1. **Purity debt.** Interchange other roles' atoms. Measure the change in m^r (normalised distance, and probe accuracy for
+   a_{−r} given a_r).
+2. **Combination debt.** Build interchanged joint messages. Score the action expert's output against demos of the
+   recombined compound, using the dev demos (scored only). Report flow loss and the grasp-site and release-site error.
+3. **Bypass debt.** Interchange only the bypass inputs (state, global token, instruction tokens outside the roles). Measure
+   the change in output.
+4. **Insufficiency.** Cut the bypasses and measure in-support competence.
+5. **Decodable versus used.** Report probes and interventions side by side. A probe shows information is present; only an
+   intervention shows it is used.
+
+### 4.4 Predictions to pre-register
+
+| ID | prediction | falsified if |
+|---|---|---|
+| D1a | In main2, combination debt at the motor is high and purity debt at binding is low | combination debt ≤ purity debt |
+| D1b | Per-task combination debt predicts per-task held-out failure across the 29 dev tasks | rank correlation CI includes 0 |
+| D1c | C1 has lower bypass debt and higher insufficiency than main2 (relocation) | both fall, or neither changes |
+| D2 | Across the five archive VLAs, per-task debt predicts per-task OOD failure better than compound divergence alone | no gain over compound divergence |
+| D3 | In the B1 binders, the factored code wins beyond a contexts-per-atom threshold, and the threshold is predicted by the MDL arithmetic | no threshold, or a threshold off by more than 2× |
+| D0 | Interfaces with the weakest projected support (from the split, before training) carry the highest debt | rank correlation CI includes 0 |
+
+---
+
+## 5. Resolution: removing debt in VLA architectures
+
+### 5.1 Stage 1 (binding): already largely paid
+
+- BindVLA's binder: role-local queries, nested part masks, position-free keys, and the label-free contact-event referent
+  loss.
+- Remaining debt: the nonlinear position content of the frozen features. Lever: layout variation plus transfer-scored
+  selection.
+
+### 5.2 Stage 2 (action expert): the factored, frame-equivariant motor
+
+Each constraint targets one condition from Section 3.2:
+
+1. **Phases**, split at the contact events already extracted from proprioception: approach and grasp, then transport and
+   place. This gives the combination rule Φ: sequencing.
+2. **Role-local reads.** The grasp phase reads only the object slot. The place phase reads only the goal slot and the held
+   object. No phase sees the joint instruction or the other role's slot. This targets (F) and (B).
+3. **Frame equivariance.** Each phase generates actions in its slot's frame (position from the slot mask) and maps them back
+   through the slot pose. Generalisation over the nuisance holds by construction. This targets (F) for z.
+4. **Sufficient role messages.** Each slot carries its object's grasp features, learned from the same contact events. This
+   targets (S), and is what C1 lacked.
+
+Predictions to pre-register:
+- **Multiplicativity.** Held-out success ≈ binding × grasp competence for that object × place competence for that goal,
+  each measured on training tasks.
+- **A listed failure set.** Tasks that violate the factorisation (a grasp that depends on the goal, articulated objects)
+  will fail, and the list is written down before the run.
+- **Debt reduction.** D1's measurement on the new motor shows combination and bypass debt near zero.
+
+### 5.3 The unsupervised arm
+
+| component | supervised / privileged version | unsupervised version |
+|---|---|---|
+| roles | rule parser over LIBERO templates | induced from contact events: words that predict the grasp site are object words; words that predict the release site are goal words |
+| phase read-sets | designed | chosen by leave-layout-out prequential MDL over candidate read-sets |
+| frames | sim camera calibration | self-calibrated by regressing the gripper's pixel location from its own end-effector position |
+
+**Claim:** the unsupervised arm recovers the designed structure, or we state exactly where it does not.
+
+**Known gap:** tasks with contact but no carry, such as drawers and the stove, may yield only one role.
+
+### 5.4 Baselines
+
+- plain SmolVLA (`vanilla_frozen`);
+- BindVLA main2;
+- ECT applied to main2 (counterfactual pairs plus the paired loss);
+- ReGuide (oracle-pose and perception variants);
+- per-task fine-tuning.
+
+All use the same split and the same demo budget.
+
+---
+
+## 6. Experiments, order and cost
+
+| step | content | A40-h | decides |
+|---|---|---|---|
+| D1 | debt map for main2, C1 and vanilla (no training) | 2–4 | whether debt exists where the theory says it does, and predicts failure |
+| D0 | support-graph prediction from the split | < 1 | the pre-training prediction |
+| D2 | the same for pi0.5, pi0, SmolVLA, X-VLA and GR00T archive checkpoints | 4–6 | generality across architectures |
+| D3 | contexts-per-atom crossover in the B1 binders | 2–3 | the acquisition account |
+| N | targeted novelty search: factored, frame-equivariant VLA motors; interchange interventions in policies | 0 | whether Section 5.2 is new |
+| R1 | factored motor, hand-specified, on main2's binder | roughly main2's cost, plus 2 seeds | the multiplicativity prediction and the listed failure set |
+| R2 | unsupervised arm | roughly R1's cost | the unsupervised claim |
+| R3 | baselines (ECT, ReGuide) | to be costed | comparison |
+
+About 20 A40-h of the phase-2 budget remain. D0–D3 fit within it. R1–R3 need a new budget.
+
+---
+
+## 7. Novelty and risks
+
+**Likely ours:**
+- the chain view, with purity, combination, bypass and sufficiency debt;
+- the relocation result, with C1 as evidence;
+- per-interface debt measured by interchange interventions in closed-loop policies, and shown to predict failure;
+- the support-graph prediction of debt from the split;
+- the factored, frame-equivariant motor selected by transfer-scored MDL, with roles induced from contact events;
+- the atlas: depth, compound divergence, the LIBERO mirror.
+
+**Not ours, to be credited:**
+- the single-stage support condition (Wiedemer);
+- conjunction-additivity (Lippl & Stachenfeld);
+- interchange interventions (Geiger);
+- the identifiability argument at the instruction interface (ECT);
+- equivariant pick and place (Transporter, NDF, Equivariant Diffusion Policy);
+- error propagation as a bound.
+
+**Risks:**
+- **D1 shows no predictive debt.** That kills the theory cheaply.
+- **Interchange interventions on a flow-matching expert are noisy.** Scoring against recombined-compound demos may not
+  separate debt from ordinary error. Mitigation: use grasp-site and release-site error, not flow loss alone.
+- **Role induction from contact events may fail on articulated tasks.**
+- **The factored motor may cost more competence than it buys** (Proposition 2 in reverse, if the factorisation is wrong
+  for many tasks).
+
+---
+
+## 8. Open decisions
+
+1. Whether this and the recoverability paper become one theory or companion papers.
+2. Budget for R1–R3.
+3. Whether to keep LIBERO as the only testbed, or add CALVIN-C (already split) for a second dataset.
