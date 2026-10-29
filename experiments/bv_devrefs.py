@@ -84,7 +84,7 @@ def main():
                             continue
                         rc = W.project(np.asarray(ep["state"][fr][:3], np.float64), K, E)
                         tok = int(np.clip(rc[0] // 16, 0, 15)) * 16 + int(np.clip(rc[1] // 16, 0, 15))
-                        ev.append(dict(kind=kind, frame=int(fr), token=tok))
+                        ev.append(dict(kind=kind, frame=int(fr), token=tok, eef=[float(x) for x in ep["state"][fr][:3]]))   # eef: transports' regrasp rule
                 imgs.append(image_tools.convert_to_uint8(image_tools.resize_with_pad(im, 224, 224)))
                 tids.append(tid), srcs.append(int(e)), evs.append(ev), bins.append(b)
                 n += 1

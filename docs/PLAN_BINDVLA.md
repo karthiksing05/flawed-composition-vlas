@@ -689,3 +689,68 @@ decided after main2's dev read:
 - Seed 0's +0.065 was noise. Between seeds, C0's own LOL spreads over 0.68-0.74 and its LOL object hit over 0.54-0.69.
 - No C piece survives on the slot-hit criterion. C1 (pose motor) waits for main2's dev read under the 12.2 rule.
 - Spend: 4 runs, 2.5 A40-h (C probes total 6.9 A40-h).
+
+### 11.1 Phase-2 read: main2 vs vanilla (2026-10-28; m3_prereg pbv2 written before any dev episode or dev slot score)
+
+**Bars.**
+
+| bar | main2 | vanilla | met? |
+|---|---|---|---|
+| S1: held-out-episode slot hit >= 0.6 object and goal; depth 2 / 3 lower bound > 0.070 | 0.982 / 0.886; depth 2 1.00 [1.00, 1.00] (n=56), depth 3 0.625 [0.25, 0.875] (n=8) | no slots | **yes** |
+| S2: training-task parity >= 0.65 (76 tasks x 10) | **0.705** | 0.733 | **yes** |
+| S3: dev success above vanilla, paired task-cluster CI excludes 0, absolute >= 0.30 | 0.041; paired diff +0.034 [-0.003, +0.083] | 0.007 | **no** |
+
+**Closed-loop dev success** (29 tasks x 10 init states):
+
+| | CD 0.1 | CD 0.3 | CD 0.5 | part | all |
+|---|---|---|---|---|---|
+| main2 | 0.16 | 0.00 | 0.08 | 0.00 | 0.041 |
+| vanilla | 0.00 | 0.02 | 0.02 | 0.00 | 0.007 |
+
+- main2's dev successes come from 3 tasks: libero_90:14 0.3, :60 0.5, :40 0.4. Vanilla's come from 2 tasks: :29 0.1, :40 0.1.
+- CD failure slope (task-level OLS over the 15 CD-bin tasks, bootstrap CI): main2 +0.20 [-0.43, +0.82], vanilla -0.05
+  [-0.16, +0.02]. Both floor at near-total failure, so the slope reads nothing here.
+
+**Offline dev slot hit** (results/bindvla/devdiag.json; 290 dev demos, 380 role records; chance 0.035; task-cluster CIs):
+
+| | all | object | goal | CD 0.1 | CD 0.3 | CD 0.5 | part | depth 1 | depth 2 | depth 3 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| main2 | **0.716** [0.64, 0.79] | 0.810 | 0.568 | 0.797 | 0.850 | 0.739 | 0.641 | 0.779 | 0.767 | 0.283 |
+| phase-1 main (no signal) | 0.163 [0.08, 0.26] | 0.181 | 0.135 | 0.322 | 0.117 | 0.188 | 0.120 | 0.176 | 0.211 | 0.000 |
+
+**What the read says.**
+- **Binding transfers to the held-out compounds.** main2's slots find the right object and goal on dev tasks' own frames at
+  0.72, flat across CD bins (0.80 / 0.85 / 0.74), and still 0.64 on part tasks.
+- Together with the LOL result (12.1, 0.73), this rules out the layout-shortcut reading of the 0.98 held-out hit for most of
+  the hit. Depth-3 paths are the exception (0.28).
+- **The motor policy does not use correct bindings on new compounds.** With slots right about 72% of the time, dev success is
+  0.04. If success were limited by binding alone, the predicted success would be about 0.72 x 0.57 x the training
+  competence, about 0.3, not 0.04.
+- So the bottleneck is the motor side: the expert reads the slot tokens as a code for training tasks, not as poses to act on.
+  This is exactly risk 2 of section 12.
+- vanilla is not better on dev (0.007), so the bottleneck is not an artefact of the binding prefix. main2's +0.034 has a CI
+  that just includes 0.
+- Leakage check: PASS (section 11; re-run with main2 / vanilla configs, commit 7dc13285).
+
+**Deviation, recorded.** The first devdiag job crashed before scoring anything (no devdiag.json was written).
+- Cause: bv_devrefs.py stored events without `eef`, and b1_bind.transports, the pre-registered "same rule as the training
+  referents", needs `eef` for its regrasp check.
+- Fix: bv_devrefs.py now stores eef = state[frame][:3], the same source as b1_demos.py. devrefs was rebuilt and then scored.
+- The pbv2 row hashes the old bv_devrefs.py. The changed line only restores the pre-registered rule.
+
+### 12.3 Decision under the 12.2 rule: the next 60k run is C1
+
+- main2's offline dev slot hit is 0.716 (>= 0.5) and its closed-loop dev success is 0.041 (< 0.30), so by the 12.2 rule the
+  motor side is the bottleneck.
+- The next 60k run is `c1main`: C1 = pose motor + no-glob, lambda 0 (12.2 dropped lambda 1.0), base init, aux 1, hier L = 3,
+  `--hold-layouts 4`. The checkpoint is selected by the LOL hit as in section 12.
+- C1's dev read, pre-registered here before it runs:
+  - closed-loop dev success vs main2 and vanilla (paired task-cluster CIs);
+  - offline dev slot hit;
+  - CD slope;
+  - predicted vs observed (section 12).
+- Prediction: if the pose interface is the fix, C1's dev success rises above main2's (paired CI excluding 0) at a dev slot
+  hit similar to main2's. If C1's dev success stays near main2's, the bottleneck is in the expert's use of any slot code, and
+  the next lever is training-side (more varied bindings per motor skill), not the interface.
+- S2 applies to C1's parity. C1 lost 4 training tasks to the held-out layouts, so parity is read on its 72 trained tasks and
+  reported on all 76.
