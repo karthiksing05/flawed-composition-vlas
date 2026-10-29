@@ -15,8 +15,8 @@ and contributes exactly 0.
 """
 import os, sys
 import numpy as np, torch
-sys.path.insert(0, "/coc/flash10/ksingara3/vla-operator-binding")
-sys.path.insert(0, "/coc/flash10/ksingara3/vla-operator-binding/experiments")
+sys.path.insert(0, "/coc/flash10/ksingara3/flawed-composition-vlas")
+sys.path.insert(0, "/coc/flash10/ksingara3/flawed-composition-vlas/experiments")
 from common import CACHE, ood_queries
 from lifelong_ood.data.datasets import load_colormnist
 from lifelong_ood.neural import NeuralLifelongLearner, load_field, to_model

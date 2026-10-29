@@ -1,6 +1,6 @@
 """Pre-registration of the rendered-scene reader read (after the v2 read; ledger m3_prereg tag v2_synth)."""
 import sys
-sys.path.insert(0, "/coc/flash10/ksingara3/vla-operator-binding")
+sys.path.insert(0, "/coc/flash10/ksingara3/flawed-composition-vlas")
 from lifelong_ood import ledger
 
 print(ledger.record(

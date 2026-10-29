@@ -3,7 +3,7 @@ import glob
 import hashlib
 import os
 import sys
-ROOT = "/coc/flash10/ksingara3/vla-operator-binding"
+ROOT = "/coc/flash10/ksingara3/flawed-composition-vlas"
 sys.path.insert(0, ROOT)
 from lifelong_ood import ledger
 

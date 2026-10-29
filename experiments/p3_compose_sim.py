@@ -23,7 +23,7 @@ from multiprocessing import Pool
 
 import numpy as np
 
-REPO = "/coc/flash10/ksingara3/vla-operator-binding"
+REPO = "/coc/flash10/ksingara3/flawed-composition-vlas"
 R = os.path.join(REPO, "results", "robot")
 spec = importlib.util.spec_from_file_location("p0r", os.path.join(REPO, "experiments", "p0_retarget.py"))
 P0 = importlib.util.module_from_spec(spec)

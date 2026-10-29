@@ -3,7 +3,7 @@
 task, rank 16, 500 steps per task), the final adapter serving every task, on E3's fresh set b at seed 13, paired with W1's served
 arms."""
 import sys
-sys.path.insert(0, "/coc/flash10/ksingara3/vla-operator-binding")
+sys.path.insert(0, "/coc/flash10/ksingara3/flawed-composition-vlas")
 from lifelong_ood import ledger
 print(ledger.record(
     "m3_prereg", bench="libero_90", tag="g11_cl_baselines", seed=13,

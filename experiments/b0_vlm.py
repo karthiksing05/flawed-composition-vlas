@@ -40,7 +40,7 @@ import time
 
 import numpy as np
 
-ROOT = "/coc/flash10/ksingara3/vla-operator-binding"
+ROOT = "/coc/flash10/ksingara3/flawed-composition-vlas"
 EXT = "/coc/flash10/ksingara3/b0_ext"
 W = os.path.join(EXT, "weights")
 OD = os.path.join(ROOT, "results", "bind", "b0")

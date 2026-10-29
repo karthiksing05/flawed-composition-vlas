@@ -5,7 +5,7 @@
 #SBATCH --mem=24G
 #SBATCH --time=01:00:00
 #SBATCH --open-mode=append
-REPO=/coc/flash10/ksingara3/vla-operator-binding
+REPO=/coc/flash10/ksingara3/flawed-composition-vlas
 ROBOT=/coc/flash10/ksingara3/robot/openpi
 cd $REPO
 for v in $(env | grep -o '^SLURM_[A-Z_]*' | grep -v -E '^SLURM_(JOB_ID|RESTART_COUNT|CPUS_PER_TASK)$'); do unset $v; done

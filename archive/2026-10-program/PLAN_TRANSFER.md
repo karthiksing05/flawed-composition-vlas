@@ -91,7 +91,7 @@ vocabulary, not the number of tasks.
 
 ## 3. Components
 
-All paths under `/coc/flash10/ksingara3/lifelong-ood-learner/`.
+All paths under `/coc/flash10/ksingara3/flawed-composition-vlas/`.
 
 3.1 Oracle state recording (`experiments/libero_client.py`, `--objects`). Per step: every movable object's `<o>_pos` / `<o>_quat`
 (already in the LIBERO obs; `bddl_base_domain.py:470-490`), fixture body poses (`env.env.sim.data.body_xpos[env.env.obj_body_id[o]]`),

@@ -15,7 +15,7 @@ import pathlib
 import re
 import sys
 
-REPO = "/coc/flash10/ksingara3/vla-operator-binding"
+REPO = "/coc/flash10/ksingara3/flawed-composition-vlas"
 sys.path.insert(0, REPO)
 import numpy as np                                                          # noqa: E402
 from lifelong_ood.policy import phase as PH                                # noqa: E402

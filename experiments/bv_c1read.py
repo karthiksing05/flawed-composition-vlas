@@ -4,7 +4,7 @@ import sys
 
 import numpy as np
 
-R = "/coc/flash10/ksingara3/vla-operator-binding"
+R = "/coc/flash10/ksingara3/flawed-composition-vlas"
 sys.path[:0] = [R, R + "/experiments"]
 import bv_eval as E  # noqa: E402
 import bv_c  # noqa: E402

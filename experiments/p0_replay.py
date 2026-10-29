@@ -20,7 +20,7 @@ from multiprocessing import Pool
 
 import numpy as np
 
-REPO = "/coc/flash10/ksingara3/vla-operator-binding"
+REPO = "/coc/flash10/ksingara3/flawed-composition-vlas"
 R = os.path.join(REPO, "results", "robot")
 OUT = os.path.join(R, "p0_replay")
 DUMMY = [0.0] * 6 + [-1.0]

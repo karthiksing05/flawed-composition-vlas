@@ -8,7 +8,7 @@
 if ! nvidia-smi -L 2>/dev/null | grep -q "GPU "; then echo "[guard] no GPU on $(hostname)"; scontrol requeue $SLURM_JOB_ID; exit 97; fi
 for v in $(env | grep -o '^SLURM_[A-Z_]*' | grep -v -E '^SLURM_(JOB_ID|RESTART_COUNT)$'); do unset $v; done
 export PYTHONUNBUFFERED=1 HF_HOME=/coc/flash10/ksingara3/s3b_ext/hf_home
-cd /coc/flash10/ksingara3/vla-operator-binding
+cd /coc/flash10/ksingara3/flawed-composition-vlas
 echo "[s3b run] $(date) on $(hostname): $(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
 /coc/flash10/ksingara3/s3b_ext/venv/bin/python -I experiments/s3b_robopoint.py ${S3BARGS:-}
 echo "exit=$? | $(date)"

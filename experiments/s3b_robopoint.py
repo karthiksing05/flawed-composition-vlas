@@ -21,7 +21,7 @@ import time
 
 import numpy as np
 
-ROOT = "/coc/flash10/ksingara3/vla-operator-binding"
+ROOT = "/coc/flash10/ksingara3/flawed-composition-vlas"
 EXT = "/coc/flash10/ksingara3/s3b_ext"
 MP = os.path.join(EXT, "weights", "robopoint-v1-vicuna-v1.5-13b")
 OD = os.path.join(ROOT, "results", "bind", "s3b")

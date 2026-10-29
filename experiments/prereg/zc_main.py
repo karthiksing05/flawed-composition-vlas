@@ -1,6 +1,6 @@
 """Pre-registration of the main composition read (ledger m3_prereg tag zc_main), after the pilot's go (ledger zc_pilot)."""
 import sys
-sys.path.insert(0, "/coc/flash10/ksingara3/vla-operator-binding")
+sys.path.insert(0, "/coc/flash10/ksingara3/flawed-composition-vlas")
 from lifelong_ood import ledger
 from lifelong_ood.policy import factors as F
 

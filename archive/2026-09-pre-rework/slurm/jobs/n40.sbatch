@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=loln40
-#SBATCH --output=/coc/flash10/ksingara3/vla-operator-binding/slurm/%j.out
-#SBATCH --error=/coc/flash10/ksingara3/vla-operator-binding/slurm/%j.out
+#SBATCH --output=/coc/flash10/ksingara3/flawed-composition-vlas/slurm/%j.out
+#SBATCH --error=/coc/flash10/ksingara3/flawed-composition-vlas/slurm/%j.out
 #SBATCH --gres=gpu:a40:1
 #SBATCH --cpus-per-task=6
 #SBATCH --time=08:00:00
 #SBATCH --partition=overcap
 #SBATCH --account=overcap
-cd /coc/flash10/ksingara3/vla-operator-binding
+cd /coc/flash10/ksingara3/flawed-composition-vlas
 export PYTHONIOENCODING=utf-8
 PY=$HOME/flash/miniconda3/envs/chunks/bin/python
 srun $PY experiments/n40_budget.py --quick || exit 1

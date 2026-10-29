@@ -3,7 +3,7 @@ to the grammar arm of q24_grammar.  Acceptance: the grammar arm and zero-shot on
 (experiment q26_accept); keep the grammar only with MORE successes.  Test: q24_main's episodes (init states 30-49, seed 6) of the kept
 arm against zero-shot."""
 import sys
-sys.path.insert(0, "/coc/flash10/ksingara3/vla-operator-binding")
+sys.path.insert(0, "/coc/flash10/ksingara3/flawed-composition-vlas")
 from lifelong_ood import ledger
 
 print(ledger.record(

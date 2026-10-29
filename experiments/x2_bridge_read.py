@@ -15,7 +15,7 @@ import json
 import os
 import sys
 
-REPO = "/coc/flash10/ksingara3/vla-operator-binding"
+REPO = "/coc/flash10/ksingara3/flawed-composition-vlas"
 sys.path.insert(0, REPO)
 from lifelong_ood import ledger, stats  # noqa: E402
 

@@ -1,4 +1,4 @@
-# vla-operator-binding (formerly lifelong-ood-learner)
+# flawed-composition-vlas (formerly vla-operator-binding, lifelong-ood-learner)
 
 **Current direction (2026-10-26), docs/PLAN_BIND.md: compositional operators, holistic binding.** Flow VLAs compose in their
 motor operators (pose-equivariant, shared across objects) but bind instruction roles to scene entities holistically, by

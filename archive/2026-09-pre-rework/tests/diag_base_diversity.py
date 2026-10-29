@@ -7,8 +7,8 @@ be blamed and nothing downstream can fix it.
 """
 import os, sys
 import numpy as np, torch
-sys.path.insert(0, "/coc/flash10/ksingara3/vla-operator-binding")
-sys.path.insert(0, "/coc/flash10/ksingara3/vla-operator-binding/experiments")
+sys.path.insert(0, "/coc/flash10/ksingara3/flawed-composition-vlas")
+sys.path.insert(0, "/coc/flash10/ksingara3/flawed-composition-vlas/experiments")
 from common import CACHE
 from lifelong_ood.data.datasets import load_colormnist
 from lifelong_ood.evals import composition_accuracy, fit_probes, precision_recall, sample_geometry

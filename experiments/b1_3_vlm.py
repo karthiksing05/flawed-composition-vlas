@@ -14,7 +14,7 @@ import time
 
 import numpy as np
 
-ROOT = "/coc/flash10/ksingara3/vla-operator-binding"
+ROOT = "/coc/flash10/ksingara3/flawed-composition-vlas"
 sys.path.insert(0, os.path.join(ROOT, "experiments"))
 import b0_vlm as B0  # noqa: E402
 
