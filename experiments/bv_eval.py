@@ -70,17 +70,18 @@ def launch(a):
     for suite, ids in task_groups(a.set, a.model).items():
         for k in range(0, len(ids), CHUNK):
             part = ids[k:k + CHUNK]
-            name = f"{a.set}_{tag.replace('@', '_')}_{suite}_{part[0]}-{part[-1]}"
+            name = f"{a.set}{'log' if a.slotlog else ''}_{tag.replace('@', '_')}_{suite}_{part[0]}-{part[-1]}"
             out = os.path.join(R, name + ".json")
             if os.path.exists(out):
                 continue
-            sp = dict(MODE="ours", SUITE=suite, TASKS="+".join(map(str, part)), TRIALS=TRIALS, FIRST=0, EXPERIMENT=f"bv_{a.set}",
+            sp = dict(MODE="ours", SUITE=suite, TASKS="+".join(map(str, part)), TRIALS=TRIALS, FIRST=0, EXPERIMENT=f"bv_{a.set}{'log' if a.slotlog else ''}",
                       TAG=tag, OUT=out, BACKBONE_CONFIG="smolvla", SERVER_PY=SMOL_PY,
-                      **({"BACKBONE_CKPT": os.path.abspath(a.ckpt)} if a.model != "smolvla_libero" else {}))
+                      **({"BACKBONE_CKPT": os.path.abspath(a.ckpt)} if a.model != "smolvla_libero" else {}),
+                      **(dict(RECORD=1, LIGHT=1, OBJECTS=1, ALL_OBJECTS=1, REC_QIMG=1) if a.slotlog else {}))
             specs.append(sp)
     jobs = []
     for k in range(0, len(specs), PER_GPU):
-        path = os.path.join(R, "packs", f"{a.set}_{tag.replace('@', '_')}_{k // PER_GPU:03d}.tsv")
+        path = os.path.join(R, "packs", f"{a.set}{'log' if a.slotlog else ''}_{tag.replace('@', '_')}_{k // PER_GPU:03d}.tsv")
         with open(path, "w", encoding="utf-8") as fh:
             for sp in specs[k:k + PER_GPU]:
                 fh.write("\t".join(f"{kk}={v}" for kk, v in sp.items()) + "\n")
@@ -152,6 +153,7 @@ def read(a):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--set", choices=("parity", "dev"), default="parity")
+    ap.add_argument("--slotlog", action="store_true", help="PLAN_BINDVLA 12.4: record each query's policy inputs + oracle coverage (ledger bv_devlog)")
     ap.add_argument("--model", choices=("bindvla", "smolvla_libero"), default="bindvla")
     ap.add_argument("--ckpt", default="")
     ap.add_argument("--launch", action="store_true")

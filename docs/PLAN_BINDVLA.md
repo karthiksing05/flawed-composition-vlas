@@ -754,3 +754,41 @@ decided after main2's dev read:
   the next lever is training-side (more varied bindings per motor skill), not the interface.
 - S2 applies to C1's parity. C1 lost 4 training tasks to the held-out layouts, so parity is read on its 72 trained tasks and
   reported on all 76.
+
+### 12.4 Closed-loop slot diagnostic (pre-registered 2026-10-28 as DESCRIPTIVE, before any of its rollouts; coordinator request)
+
+**Question.** main2's predicted success is 0.33 (from the dev slot hit) and its observed success is 0.04. Which cause opens
+the gap?
+- (a) The slots bind in closed loop, but the motor ignores them or acts wrongly.
+- (b) The slots bind offline, but drift under closed-loop covariate shift.
+- (c) The grasp lands on the bound object, but the transport or place fails.
+
+**Recording.** `bv_eval.py --set dev --slotlog`, ledger experiment bv_devlog, separate from the pre-registered bv_dev rows.
+The client runs with `--record --light --objects --all-objects` plus the opt-in `REC_QIMG=1` (libero_client.py). At every
+policy query it saves:
+- the exact policy inputs (agent / wrist image, state);
+- the oracle per-token coverage of every object and fixture (the `--seg` maps, recorded and never sent to the policy);
+- obj_of_interest;
+- every movable object's pose per step.
+Run on all 29 dev tasks x 10 init states for main2 now and for C1 with its dev read. These are fresh rollouts; the pre-registered
+dev numbers stay those of bv_dev.
+
+**Scoring** (`experiments/bv_cldiag.py`; step 0 of the instruction):
+- First grasp / release use the training-referent event rule (b1_render.events on the executed gripper command).
+- The contacted object is the movable object displaced most (> 3 cm) between grasp and release.
+- The named object / target is the step-0 phrase matched by word overlap to the scene's names (obj_of_interest first).
+- Slot masks are recomputed with the checkpoint from the recorded inputs at the first query, the query before the grasp and
+  the query before the release. The prefix is deterministic, so these are the masks the policy acted on.
+- A slot is "on" an entity when that entity's oracle coverage in the 3 x 3 window around the mask argmax is >= 0.05.
+
+**Causes** (one per failed episode):
+- start_miss: off the named object at the first query;
+- drift (b): on it at the first query, off it at the grasp query;
+- motor (a): on it at the grasp query, but another object or nothing is contacted;
+- place (c): the named object is contacted, the episode still fails;
+- no_grasp.
+
+**First-contact object per task:** named / habit (an object named by a training task of the same scene) / other / none.
+
+**Reported, not tested** (no bar): cause shares, by CD bin; slot-on rates at start / grasp / release; the per-task first-contact
+table. Expected from 11.1: most failures are motor or no_grasp with the slot on the named object, and the habit share is high.

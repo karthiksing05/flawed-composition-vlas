@@ -387,7 +387,8 @@ def main():
                     swapped = True
             plan = collections.deque()
             t, calls, done, frames, t0 = 0, 0, False, [], time.time()
-            tables = seg_tables(env) if (a.seg or a.swap) else None
+            qlog = os.environ.get("REC_QIMG") == "1" and a.record   # opt-in (BindVLA closed-loop slot log, PLAN_BINDVLA 12.4)
+            tables = seg_tables(env) if (a.seg or a.swap or qlog) else None
             pairs = [tuple(p.split(":")) for p in a.swap.split("+") if p] if a.swap else []
             swap_cache, last_q, rec_act = {}, None, []
             bound, bound_step, start_pos = None, None, None
@@ -445,6 +446,10 @@ def main():
                     if len(eps) < a.videos:
                         frames.append(np.concatenate([img, img_q], axis=1) if (pairs and a.swap_mode == "pixel") else img)
                     st8 = np.concatenate((obs["robot0_eef_pos"], quat2axisangle(obs["robot0_eef_quat"]), obs["robot0_gripper_qpos"]))
+                    if qlog and not plan:                    # the policy's exact inputs at this query + oracle per-token coverage
+                        for _k, _v in (("qimg", img_q), ("qwrist", wimg_q), ("qstate", np.asarray(st8, np.float32)), ("qt", t - a.wait),
+                                       ("qseg", seg_maps(env, tables, "agentview"))):
+                            rec.setdefault(_k, []).append(_v)
                     if not plan:
                         el = {"observation/image": img_q, "observation/wrist_image": wimg_q,
                               "observation/state": st8,
@@ -528,7 +533,10 @@ def main():
                 np.savez_compressed(str(rec_dir / (f"task{tid}_trial{k}" + ("" if br is None else f"_{br['id']}") + ".npz")), state=np.stack(rec["state"]), action=np.stack(rec["action"]),
                                     **({} if a.light else dict(image=np.stack(rec["image"]), wrist=np.stack(rec["wrist"]))),
                                     success=bool(done), trial=k, task=tid, **extra,
-                                    **({"sim": np.stack(rec["sim"])} if rec.get("sim") else {}))
+                                    **({"sim": np.stack(rec["sim"])} if rec.get("sim") else {}),
+                                    **(dict(qimg=np.stack(rec["qimg"]), qwrist=np.stack(rec["qwrist"]), qstate=np.stack(rec["qstate"]),
+                                            qseg=np.stack(rec["qseg"]), qt=np.asarray(rec["qt"]), seg_names=np.array(tables[0]),
+                                            ooi=np.array(list(env.obj_of_interest))) if rec.get("qimg") else {}))
             if frames:
                 import imageio
                 imageio.mimwrite(str(vid_dir / f"task{tid}_trial{k}_{'success' if done else 'failure'}.mp4"), frames, fps=10)
