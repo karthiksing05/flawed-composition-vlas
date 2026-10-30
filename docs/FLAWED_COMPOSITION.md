@@ -611,6 +611,68 @@ Per block (partial ρ of the debt composite):
   - pi0 and SmolVLA were excluded as floored.
   - Two pi0.5-L90 tasks carry no debt.
 
+### 4.9 N1 protocol: input novelty against compound novelty (fixed 2026-10-30, before any N1 read; m3_prereg tag pn1)
+
+Question: is held-out failure explained by how far a task's inputs are from training (layout, positions, state, appearance)
+rather than by how new its compound is? No training.
+
+Scripts: `experiments/fc_n1_tasklist.py`, `fc_n1_render.py`, `fc_n1_novelty.py`, `fc_n1_read.py`. Budget: 3 A40-h.
+
+**Data.**
+- Initial scenes are rendered as the client starts an episode: reset, set the init state, then 10 settle steps of the dummy
+  action. No policy is run and no demo is executed.
+- Standard LIBERO tasks use the benchmark's init states 0 to 9, the states of the BindVLA dev and parity episodes. They cover
+  113 tasks: the 76 LIBERO-90-C training tasks, the 29 dev tasks, the 40 LIBERO tasks, and the 54 unsealed LIBERO-90 tasks of D2.
+- Li's 20 tasks use the 10 practice start states of set a (results/robot/fresh_ood_a). Their scoring set e was not used: this is
+  a deviation, and the states come from the same generator.
+- The sealed LIBERO-90-C tasks were **inferred** from the salted hashes in split.json; split_sealed.json was never opened.
+  Their identities are used only to exclude them, and for nothing else.
+
+**Blocks, training sets and outcomes.**
+
+| block | tasks | training set | outcome |
+|---|---|---|---|
+| bv-main2, bv-vanilla | 29 dev | the 76 LIBERO-90-C training tasks | 1 − closed-loop dev success (c1_read.json) |
+| bv-c1 | 29 dev | its 72 trained tasks | same |
+| pi05-L90 | 54 | the 40 LIBERO tasks | 1 − zs/20 (g8_read.json) |
+| pi05-LI, groot-LI, xvla-LI | 20 | the 40 LIBERO tasks | 1 − zs/20 (g15/g18) |
+
+**Novelty, fixed before any outcome is joined.**
+- **Compound novelty.** The D0 score and u (the share of the task's compounds absent from training), the same as before. The
+  composite is the mean within-block rank of the two.
+- **Input novelty.** Nearest-training distances, from means over the task's 10 states, with positions relative to the robot
+  base:
+  - (a) referent and goal positions. The instances are the goal atom's arguments; a region maps to its fixture. For each role,
+    d_a is the minimum distance to any training task's same role, averaged over the roles present.
+  - (b) scene and robot state. d_b is the minimum over training tasks of the Chamfer distance between the object and fixture
+    position sets, plus the end-effector distance, plus the gripper-opening distance.
+  - (c) visual. The frozen SigLIP features of the agentview first frame (SmolVLM2's tower, mean over tokens and states); d_c is
+    the minimum cosine distance.
+  - (d) BindVLA only. d_d is the minimum distance of the checkpoint's own step-0 slot-mask moments (μ, σ for the object and
+    goal) at the first frame. This one is secondary.
+  - **The primary input novelty is the mean within-block rank of (a), (b) and (c).**
+
+**Tests.**
+- Method: every variable is ranked within its block, and CIs are 2,000-draw bootstraps over task identities.
+- **N1a.** Pooled Spearman of input novelty with failure, with block as stratum.
+  - Holds if ρ > 0 and the CI excludes 0; otherwise falsified.
+- **N1b (KEY).** Two partial correlations:
+  - the input-beyond-compound partial, partial(input | score, u, block);
+  - the reverse partial, partial(compound | input, block).
+  - The "where, not what" reading **holds** only if the first partial's CI excludes 0 (ρ > 0) **and** the reverse partial's CI
+    includes 0.
+  - **Falsifier:** the first partial's CI includes 0, meaning input novelty adds nothing beyond compound novelty.
+  - If both CIs exclude 0, both kinds of novelty matter.
+- **N1c.** For main2 and C1: Spearman of D1's per-task dev excess δ^F(d) with the block's input novelty, over 29 tasks.
+  - Holds if ρ > 0 and the CI excludes 0.
+- Secondary:
+  - each component in N1a and N1b, and d_d in the BindVLA blocks;
+  - the pool without the BindVLA blocks;
+  - every block on its own;
+  - continuous outcomes for main2 and C1, because 26 of the 29 BindVLA dev tasks fail always: (i) the share of episodes with
+    neither success nor first contact on the named object, from the 12.4 logs; (ii) the gripper's closest approach to the
+    named object over the episode, from the logged rollouts.
+
 ---
 
 ## 5. Resolution: removing debt in VLA architectures
