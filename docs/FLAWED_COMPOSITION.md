@@ -526,6 +526,91 @@ Budget: 10 A40-h.
     frames.
   - Only key names and role-span token counts were inspected (2 to 5 tokens), never a debt or error value.
 
+### 4.8 D2/D1x results (2026-10-30; ledger fc_d2 tag d2; results/flawed/d2_read.json; 0.50 A40-h)
+
+**D1x: interchange at the expert-read level** (task-bootstrap 95% CIs).
+
+| | main2 | C1 |
+|---|---|---|
+| compounds with an (A, B) pair: in-support / dev (frames) | 25 / 8 (294 / 453) | 25 / 8 |
+| in-support error: true → rec (A alone, B alone) | 0.469 → 0.496 (0.681, 0.727) | 0.529 → 0.560 (0.704, 0.694) |
+| dev error: true → rec (A alone, B alone) | 0.648 → 0.647 (0.725, 0.730) | 0.689 → 0.708 (0.813, 0.810) |
+| ρ_in | 0.056 [0.007, 0.104] | 0.058 [0.016, 0.111] |
+| ρ_dev | −0.000 [−0.060, 0.061] | 0.027 [−0.049, 0.100] |
+| Δ = ρ_dev − ρ_in | −0.057 [−0.135, 0.021] | −0.031 [−0.121, 0.052] |
+| agreement (IIA), in-support / dev | 0.66 [0.53, 0.78] / 0.76 [0.65, 0.86] | 0.45 [0.34, 0.55] / 0.55 [0.38, 0.72] |
+
+- **D1x-a is inconclusive for both models.** Recombining in-support role messages costs about 6% of action error on training
+  compounds, against 45% to 55% for the wrong compound's prefix. The upper CI bounds (0.104, 0.111) sit just above the 0.10 bar.
+- **D1x-b: the expert-read combination debt is absent.** Δ's CI includes 0, and the point estimate is negative.
+  - On the 8 dev compounds that have in-support parts, a prefix assembled from training compounds' messages does as well as
+    the model's own dev prefix.
+  - Its outputs also agree with the true compound's more often than on support (main2 0.76).
+- **Reading.** The expert combines its read messages close to factorially. D1's dev excess (δ^F_rel ≈ 1) therefore does not
+  come from the expert facing a new joint message. It sits where the messages and frames themselves are new:
+  - the dev frames' layouts and demo states;
+  - the tasks without an in-support (A, B) pair, which are 21 of 29 (part tasks, drawers).
+  - The 8 testable dev tasks are the easier ones: dev E_true is 0.65 here, against 1.09 over all 29 tasks in D1.
+- **Caveat.** Only the step-0 object position is interchanged. The frozen text layers have already mixed every slot into
+  every position, so B's goal-position states still carry B's object. The test is therefore a lower bound on what a fully
+  factored read would show.
+
+**D2: cross-VLA debt.**
+
+Success distributions used (policy alone, 20 episodes per task; tasks at 0 / at 1-5 / at 6-14 / at 15-19 / at 20):
+
+| block | n | mean success | histogram |
+|---|---|---|---|
+| pi0.5-L90 | 52 | 0.31 | 28 / 6 / 4 / 7 / 7 |
+| pi0.5-LI | 20 | 0.36 | 6 / 5 / 5 / 1 / 3 |
+| GR00T-LI | 20 | 0.28 | 8 / 4 / 5 / 2 / 1 |
+| X-VLA-LI | 20 | 0.20 | 14 / 1 / 2 / 2 / 1 |
+
+- pi0.5-L90 has 54 unsealed tasks. Two have no same-scene partner in the block and no valid swaps, so they carry no debt and
+  drop out.
+
+Debt per block (means over tasks, 95% CIs):
+
+| block | purity (kv at role words) | bypass share | combination (pi0.5-L90) |
+|---|---|---|---|
+| pi0.5-L90 | 0.44 [0.39, 0.48] (26 tasks) | 0.74 [0.68, 0.80] | 1.11 [0.97, 1.26] |
+| pi0.5-LI | 0.47 [0.44, 0.51] (19) | 0.40 [0.29, 0.51] | – |
+| GR00T-LI | 0.42 [0.39, 0.46] (19) | 0.39 [0.25, 0.54] | – |
+| X-VLA-LI | 0.34 [0.31, 0.38] (19) | 0.34 [0.20, 0.47] | – |
+
+**KEY test: falsified. Debt adds nothing beyond novelty.**
+- Pooled partial Spearman of debt with failure, controlling for the D0 score, u and block: ρ = −0.003 [−0.196, 0.217]
+  (112 rows, 72 tasks).
+- Without controls: 0.016 [−0.195, 0.221].
+- Purity alone: −0.156 [−0.347, 0.136]. Bypass alone: 0.068 [−0.173, 0.286].
+- The two most graded blocks pooled: −0.276 [−0.565, 0.114].
+
+Per block (partial ρ of the debt composite):
+
+| block | partial ρ | purity alone | bypass alone |
+|---|---|---|---|
+| pi0.5-L90 | 0.141 [−0.121, 0.411] | 0.128 [−0.409, 0.564] | 0.049 [−0.209, 0.322] |
+| pi0.5-LI | −0.158 [−0.689, 0.403] | −0.458 [−0.807, 0.067] | 0.133 [−0.444, 0.578] |
+| GR00T-LI | −0.408 [−0.717, 0.134] | −0.499 [−0.815, 0.082] | −0.049 [−0.579, 0.401] |
+| X-VLA-LI | 0.316 [−0.327, 0.771] | 0.326 [−0.191, 0.773] | 0.140 [−0.384, 0.555] |
+
+- pi0.5-L90's combination error alone: 0.072 [−0.205, 0.320].
+- No block's CI excludes 0. The point estimates disagree in sign across models.
+
+**What this says.**
+- On four model-by-benchmark blocks with graded outcomes, the measured purity, bypass and combination debts do not rank
+  per-task OOD failure once task novelty is held fixed. Nor do they rank it without that control.
+- With D0 (falsified) and D1b (tie-driven), this leaves no evidence that per-task debt, as estimated here, predicts failure.
+- The interface-level picture still holds as a description:
+  - every model's role messages move with the other role (purity 0.34 to 0.47);
+  - pi0.5 on LIBERO-90's new scenes routes 74% of its compound dependence outside the instruction, against 34% to 40% on
+    Li's familiar-scene suites.
+- **Deviations.**
+  - The D2 interface omits the referent image tokens (4.7).
+  - Insufficiency was not measured in D2.
+  - pi0 and SmolVLA were excluded as floored.
+  - Two pi0.5-L90 tasks carry no debt.
+
 ---
 
 ## 5. Resolution: removing debt in VLA architectures
