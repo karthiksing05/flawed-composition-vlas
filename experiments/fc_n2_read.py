@@ -193,7 +193,20 @@ def main():
         bs = [diff[rng.integers(0, len(diff), len(diff))].mean() for _ in range(B)]
         man[d] = dict(est=float(diff.mean()), ci95=[float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))])
     res["manipulation_check_new_minus_familiar"] = man
-    from scipy.stats import spearmanr
+    def _rank(v):                                                  # average ranks (ties share the mean rank)
+        o = np.argsort(v, kind="mergesort")
+        r = np.empty(len(v))
+        r[o] = np.arange(len(v), dtype=float)
+        for u in np.unique(v):
+            m_ = v == u
+            r[m_] = r[m_].mean()
+        return r
+
+    def spearmanr(x_, y_):                                         # scipy is absent from this venv: Pearson of average ranks
+        a_, b_ = _rank(np.asarray(x_, float)), _rank(np.asarray(y_, float))
+        if a_.std() == 0 or b_.std() == 0:
+            return (float("nan"),)
+        return (float(np.corrcoef(a_, b_)[0, 1]),)
     rel = {}
     for m in MODELS:
         x = np.array([nov["tasks"][str(t["tid"])]["input_composite"] for t in n2["tasks"]])

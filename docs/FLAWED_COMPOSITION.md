@@ -823,6 +823,105 @@ libero_spatial); no new slot occurs in any of the 40 tasks.
     On. The compound factor carries that along with novelty; g separates the grasp from the placement.
   - The layout factor moves only movable objects; fixture targets stay put.
 
+**N2 results (2026-10-30; ledger fc_n2 tag n2; results/flawed/n2_read.json, n2_smoke.json; 3.59 A40-h)**
+
+- **Smoke gate passed.** Known / familiar smoke success was 0.97 for both models (31 of 32 episodes each), so the main run
+  went ahead.
+- **Main run.** 640 episodes per model (32 tasks × 20 states), with no episode errors.
+
+**Cell table** (95% CIs; s = success, g = grasped the named object or succeeded, p = success given g).
+
+| model | compound / layout | s | g | p |
+|---|---|---|---|---|
+| pi0.5 | known / familiar | 0.99 [0.95, 1.00] | 1.00 [1.00, 1.00] | 0.99 [0.95, 1.00] |
+| pi0.5 | known / new | 0.28 [0.12, 0.45] | 0.47 [0.27, 0.66] | 0.59 [0.35, 0.79] |
+| pi0.5 | new / familiar | 0.38 [0.14, 0.64] | 0.79 [0.53, 0.99] | 0.47 [0.21, 0.74] |
+| pi0.5 | new / new | 0.28 [0.16, 0.42] | 0.59 [0.41, 0.76] | 0.47 [0.28, 0.72] |
+| GR00T | known / familiar | 0.96 [0.89, 1.00] | 1.00 [1.00, 1.00] | 0.96 [0.89, 1.00] |
+| GR00T | known / new | 0.14 [0.04, 0.28] | 0.37 [0.21, 0.54] | 0.39 [0.14, 0.64] |
+| GR00T | new / familiar | 0.13 [0.01, 0.33] | 0.86 [0.63, 1.00] | 0.15 [0.01, 0.37] |
+| GR00T | new / new | 0.12 [0.02, 0.26] | 0.36 [0.21, 0.52] | 0.33 [0.07, 0.63] |
+
+**Effects** (success scale; > 0 means the factor hurts).
+
+| | pi0.5 | GR00T |
+|---|---|---|
+| layout L | 0.40 [0.26, 0.57] | 0.41 [0.31, 0.54] |
+| compound C | 0.30 [0.13, 0.46] | 0.43 [0.29, 0.54] |
+| L − C | 0.10 [−0.18, 0.41] | −0.01 [−0.20, 0.20] |
+| interaction I | 0.62 [0.28, 0.94] | 0.80 [0.56, 1.01] |
+| layout on g | 0.37 [0.22, 0.52] | 0.56 [0.43, 0.70] |
+| compound on g | 0.04 [−0.15, 0.26] | 0.07 [−0.07, 0.27] |
+| layout on p | 0.24 [0.04, 0.45] | 0.23 [0.03, 0.43] |
+| compound on p | 0.39 [0.18, 0.58] | 0.60 [0.40, 0.78] |
+
+- DD = (L_GR00T − C_GR00T) − (L_pi0.5 − C_pi0.5) = −0.11 [−0.46, 0.19]. On g it is 0.16 [−0.06, 0.39]; on p,
+  −0.22 [−0.64, 0.18].
+- The pick-and-place pairs alone (K1-K6, N1-N6) give the same picture:
+  - pi0.5: L 0.44 [0.25, 0.63], C 0.25 [0.08, 0.42];
+  - GR00T: L 0.43 [0.32, 0.57], C 0.44 [0.28, 0.59];
+  - DD −0.20 [−0.58, 0.18].
+- The log-odds scale agrees: every L and C is above 0, and DD_logit = −0.72 [−3.00, 1.35].
+
+**Verdict against the pre-registered criteria.**
+- P1 holds: GR00T's layout effect is 0.41 [0.31, 0.54].
+- P2 holds: pi0.5's compound effect is 0.30 [0.13, 0.46].
+- P3 fails: DD's CI includes 0, and its point estimate has the wrong sign.
+- So `fc_n2_read.py`'s pre-registered decision order returns **"partial"** (P1 and P2 without P3).
+- The kill criterion's conditions are **also all met**. DD's CI includes 0. In both models L and C are both > 0 with CIs
+  excluding 0, and L − C's CI includes 0.
+  - pn2 does not say which verdict wins when both apply. The code checks "partial" first.
+  - Read plainly, P1 and P2 hold only because both factors hurt both models.
+- **Substantive verdict: no double dissociation.** Inside one scene, compound novelty and layout novelty each cost pi0.5 and
+  GR00T about 0.3 to 0.4 of success, by similar amounts. N1's model-by-axis split does not survive the control, so the
+  "two axes, one per model" story is dropped. N1's split was the benchmark confound.
+
+**What the cells show.**
+- **The effects are not additive.** Every cell other than known / familiar falls to 0.12 to 0.38, and new / new is no worse
+  than the single-novelty cells (I = 0.62 and 0.80). Both policies solve the trained instruction in the trained layout and
+  lose most of it under either change.
+- **Within each model, the two factors break different parts of the task.** This was not pre-registered as a test.
+  - A new compound in the familiar layout leaves the grasp intact: g is 0.79 for pi0.5 and 0.86 for GR00T. Both CIs for the
+    compound effect on g include 0. The new compound's cost is in the placement: the compound effect on p is 0.39 and 0.60.
+  - A new layout breaks the grasp: the layout effect on g is 0.37 and 0.56. It also costs placement (0.24 and 0.23).
+  - This "where → grasp, what → place" split holds in **both** models. It is a within-model dissociation of task phases,
+    not a between-model one.
+- **Per task.**
+  - On new compounds in the familiar layout, both models usually pick the right object and then fail to place it. GR00T
+    succeeds 0 of 20 times on bottle on plate, bottle on stove and bottle in bowl, after grasping in 19 to 20 of 20.
+  - pi0.5 places the bottle on the plate or stove 17 of 20 times.
+  - On cheese on plate and cheese on stove, pi0.5 succeeds more often in the new layout (0.30 and 0.45) than in the familiar
+    one (0.10 and 0.20). In the training layout the trained trajectory pulls it toward the familiar target.
+  - The drawer pair (K7 / N7) and the push pair (K8 / N8) are near 0 off the baseline cell.
+- **N1's input novelty.**
+  - The manipulation check holds: the composite rises by 0.50 [0.48, 0.52] from familiar to new layouts, and d_a by
+    0.030 [0.022, 0.039] m.
+  - Across the 32 tasks, the composite correlates with failure: ρ = 0.52 [0.18, 0.75] for pi0.5 and 0.34 [0.00, 0.65] for
+    GR00T.
+  - It misses compound novelty entirely: new / familiar has the same composite as known / familiar (0.27 vs 0.26) and fails
+    as often as known / new.
+
+**Caveats.**
+- The compound effect includes physical difficulty under LIBERO's strict On: GR00T grasps the bottle and never stands it on
+  the plate. The g / p split shows where the failure sits, not why.
+- 8 compounds per status. The compound effect is a between-task contrast, and its CIs are wide.
+- The near-ceiling baseline cell makes every effect on the success scale partly a ceiling effect. The interaction I is large
+  for that reason; the log-odds scale gives the same signs.
+- New layouts move only the movable objects. N1's d_a registers only about 0.03 m of the 0.20 m mean shift.
+- One scene. The result says nothing yet about whether pi0.5's LIBERO-90 compound sensitivity in N1 came from compounds or
+  from new scenes.
+
+**Deviations.**
+- `fc_n2_read.py` was edited after the pre-registration and before the main read. The smolvla venv has no scipy, so the
+  secondary Spearman is computed in numpy as the Pearson correlation of average ranks. No primary estimator changed.
+- The ambiguity between "partial" and the kill criterion is reported above, not resolved after the fact.
+- The layout generator was relaxed twice before the pre-registration. The bar on distance from other objects' training
+  positions was dropped (it allowed almost no layouts), and the settle check was made relative to the familiar state's own
+  settle (LIBERO's start states drop about 7 cm). No rollout existed then.
+
+**Cost.** 3.59 A40-h: task generation and renders 0.40 (three failed generator runs included), novelty 0.01, smoke 0.57,
+main 2.62.
+
 ---
 
 ## 5. Resolution: removing debt in VLA architectures
