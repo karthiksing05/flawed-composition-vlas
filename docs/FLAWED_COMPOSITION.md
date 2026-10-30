@@ -673,6 +673,77 @@ Scripts: `experiments/fc_n1_tasklist.py`, `fc_n1_render.py`, `fc_n1_novelty.py`,
     neither success nor first contact on the named object, from the 12.4 logs; (ii) the gripper's closest approach to the
     named object over the episode, from the logged rollouts.
 
+### 4.10 N1 results (2026-10-30; ledger fc_n1 tag n1; results/flawed/n1_read.json; 0.53 A40-h)
+
+**Success distributions** (per-task success; "fail" = 0 of the episodes, "succeed" = all of them).
+
+| block | tasks | mean success | always fail | between | always succeed |
+|---|---|---|---|---|---|
+| bv-main2 | 29 | 0.041 | 26 | 3 | 0 |
+| bv-c1 | 29 | 0.024 | 27 | 2 | 0 |
+| bv-vanilla | 29 | 0.007 | 27 | 2 | 0 |
+| pi05-L90 | 54 | 0.304 | 29 | 18 | 7 |
+| pi05-LI | 20 | 0.358 | 6 | 11 | 3 |
+| groot-LI | 20 | 0.283 | 8 | 11 | 1 |
+| xvla-LI | 20 | 0.200 | 14 | 5 | 1 |
+
+The BindVLA blocks are floored: ranks within them mostly separate 2 or 3 tasks from ties.
+
+**Pooled tests** (201 rows, 7 blocks; task-bootstrap 95% CIs).
+
+| test | ρ [95% CI] | verdict |
+|---|---|---|
+| N1a: input novelty vs failure | 0.305 [0.153, 0.436] | holds |
+| N1b: partial(input \| score, u, block) | 0.288 [0.100, 0.427] | excludes 0 |
+| N1b: partial(compound \| input, block) | 0.128 [−0.038, 0.319] | includes 0 |
+| N1b verdict | | "where, not what" holds |
+| N1c main2: δ^F(d) vs input novelty | −0.190 [−0.591, 0.232] | falsified |
+| N1c C1 | −0.129 [−0.487, 0.278] | falsified |
+
+**Per block** (partial ρ [95% CI]).
+
+| block | N1a | input beyond compound | compound beyond input |
+|---|---|---|---|
+| bv-main2 | 0.21 [−0.11, 0.53] | 0.02 [−0.52, 0.53] | 0.31 [−0.31, 0.71] |
+| bv-c1 | 0.06 [−0.17, 0.29] | −0.22 [−0.55, 0.10] | 0.49 [−0.12, 0.74] |
+| bv-vanilla | 0.34 [0.11, 0.57] | 0.32 [−0.10, 0.62] | −0.09 [−0.42, 0.26] |
+| pi05-L90 | 0.22 [−0.04, 0.46] | −0.02 [−0.36, 0.33] | **0.46 [0.22, 0.67]** |
+| pi05-LI | 0.40 [−0.08, 0.71] | 0.33 [−0.13, 0.68] | −0.17 [−0.60, 0.30] |
+| groot-LI | 0.55 [0.13, 0.80] | **0.56 [0.09, 0.85]** | 0.17 [−0.36, 0.63] |
+| xvla-LI | 0.55 [0.20, 0.76] | **0.63 [0.20, 0.85]** | 0.22 [−0.24, 0.58] |
+
+**Secondary.**
+- Components (pooled, N1a / beyond compound):
+  - d_a positions: 0.30 [0.14, 0.42] / 0.24 [0.06, 0.40];
+  - d_b state: 0.27 [0.09, 0.42] / 0.23 [0.02, 0.39];
+  - d_c visual: 0.18 [0.01, 0.33] / 0.16 [−0.03, 0.30].
+  - d_d, the BindVLA slot pose (main2 and C1), gives N1a 0.29 [0.09, 0.48].
+- Pool without the BindVLA blocks: N1a 0.36 [0.16, 0.53]; input beyond compound 0.38 [0.15, 0.53]; compound beyond input 0.14
+  [−0.04, 0.35]. The verdict is the same.
+- Continuous BindVLA outcomes (N1a / input beyond compound / compound beyond input):
+  - main2 closest approach to the named object (21 tasks): 0.72 [0.43, 0.88] / 0.19 [−0.40, 0.73] / 0.47 [0.01, 0.82];
+  - main2 named-contact failure (28 tasks): 0.12 [−0.24, 0.44] / −0.07 [−0.48, 0.37] / 0.37 [−0.06, 0.71];
+  - C1 closest approach: −0.05 [−0.55, 0.45] / −0.48 [−0.83, 0.10] / 0.50 [−0.03, 0.82];
+  - C1 named-contact failure: **−0.62 [−0.83, −0.29]** / −0.62 [−0.81, −0.36] / 0.16 [−0.36, 0.52]. Novel-input C1 tasks fail
+    less often by missing the named object; the sign is the opposite of the prediction.
+
+**Reading.**
+- The pooled pre-registered verdict is "where, not what": input novelty predicts failure beyond the D0 score and u, and compound
+  novelty adds nothing significant beyond input novelty.
+- The pool is heterogeneous, and the verdict comes mostly from Li's OOD suites. GR00T and X-VLA give the clearest input
+  effects. Li's three blocks are the same 20 tasks; the task bootstrap resamples them together, so they are not three
+  independent replications.
+- pi0.5 on LIBERO-90 shows the reverse: compound novelty beyond input 0.46 [0.22, 0.67], with input beyond compound null. One untested
+  explanation: Li's suites perturb the layouts of mostly known compounds, while LIBERO-90 tasks are new compounds.
+- BindVLA is floored and says little either way. N1c is falsified for both models: D1's dev excess does not track input novelty.
+- main2's closest approach follows input novelty (0.72) but loses it once compound novelty is controlled. In that block the two
+  measures are confounded.
+
+**Deviations.**
+- Li's tasks use set-a practice start states. The scoring set e was not used.
+- Sealed LIBERO-90-C identities were inferred from salted hashes and used only for exclusion (0 of the 113 tasks are sealed).
+- The overcap render shards were cancelled while they were still pending, and one tail-lab job rendered all 113 tasks.
+
 ---
 
 ## 5. Resolution: removing debt in VLA architectures
