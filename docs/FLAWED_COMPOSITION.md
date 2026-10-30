@@ -975,6 +975,107 @@ Predictions to pre-register:
 
 All use the same split and the same demo budget.
 
+### 5.5 Prototype A, stage 1 (oracle state)
+
+Question: is the motor the reason a correct grasp ends in the wrong place (N2: compound novelty costs p, layout novelty costs
+g)? Stage 1 gives every arm privileged perception, so any new-pairing failure that remains belongs to the motor. Pre-registration
+`experiments/prereg/pa1.py` (m3_prereg tag pa1). Budget: 10 A40-h.
+
+**Oracle inputs, the same for every arm.**
+- Slots: the simulator poses of LIBERO-Goal's 4 movable objects (bowl, cream cheese, wine bottle, plate) and 5 target sites (stove
+  cook region, cabinet top side, rack top, top drawer region, stove front region). Each slot carries its position, its yaw, a
+  hand-set size (radius, height), an identity one-hot, and (top drawer only) the drawer's opening.
+- Roles (object, target) come from a template parse of the prompt (`fa1_common.roles`). This is oracle grounding.
+- Proprio: end-effector position and rotation, finger positions, the last gripper command.
+
+**Architecture A** (`lifelong_ood/policy/factored_flow.py`). A rectified-flow policy over 8-step chunks of LIBERO's 7-d delta
+actions:
+v(a) = (1 − c) · T_o⁻¹ v_o(T_o a | slot_o, proprio in frame_o) + c · T_t⁻¹ v_t(T_t a | slot_t, held object, proprio in frame_t).
+- c = 1 while the last gripper command is "close". The object term drives approach and grasp, and the target term drives carry and
+  place.
+- frame_r is the slot's translation plus yaw. T_r rotates each step's translation and rotation deltas by −yaw_r. The demos confirm
+  that LIBERO's delta axes are the world axes: the least-squares map from action to displacement is diagonal, about 0.01 m per unit.
+- Each term reads only its own slot. The target term also reads the held object's position and yaw in the target frame and the
+  held object's size, masked to 0 while the gripper is open. It never sees the held object's identity.
+- The sum is fixed. There is no learned cross-role term.
+
+**Comparison arms**, all on the same data with the same recipe:
+- **H** (holistic, the "slots at perception only" arm): one MLP over all 9 slots in the world frame, with role flags, plus the
+  instruction's role code (object and target one-hots). Actions are in the world frame.
+- **R** (OA-WAM-like): one fused MLP over the two role-routed slots and proprio, all in the end-effector frame. Actions are in the
+  end-effector frame.
+- **A_noframe**: A with world-frame terms.
+- **A_nogate**: A with both terms always on. The sum stays fixed.
+- **A_nosum**: A's role-local inputs (both frames, the chunk in both frames) fed to one learned joint MLP. Actions are in the world
+  frame.
+- Widths are 512 for H, R and A_nosum, and 352 per term for the A variants.
+
+**Data and recipe** (`experiments/fa1_data.py`, `fa1_train.py`).
+- The training set is LIBERO-Goal's raw human demos for N2's 8 known tasks, 50 each. No-op steps are dropped (p0's rule), leaving
+  52,204 steps.
+- Object poses come from setting each recorded simulator state and reading the scene. No demo action is executed.
+- Phase labels come from the gripper commands. Of the 50 demos of each pick task (K1-K6), 45 to 50 close the gripper exactly
+  once; 42 of the 50 drawer demos (K7) do; every push demo (K8) keeps it open.
+- The training start positions vary by only about 2 cm, and yaw does not vary at all.
+- Recipe: flow matching (t ~ U(0, 1), 10 Euler steps at inference); AdamW with lr 3e-4, weight decay 1e-4 and cosine decay;
+  batch 512; 30,000 steps; seed 0; EMA weights at 0.999. Every arm gets the same budget.
+- Development used only held-out demos: the dev models were trained with demos 45-49 of each task held out. Their flow loss was
+  tracked, and the dev models were rolled from those demos' start states (`results/flawed/a1_dev`). The final models train on all
+  50.
+- Dev rollouts (40 episodes per arm; held-out demo starts, not an eval cell): H 26/40, R 25/40, A 22/40. H clears the 0.5 bar, so
+  the first recipe was kept, unchanged and identical for every arm.
+- Training-curve check (dev models, `results/flawed/a1_train_dev.json`): in every arm the held-out EMA flow loss falls from
+  0.17 to 0.20 at step 5,000 and ends within 0.01 of the train loss. At 30,000 steps it is 0.124 (H), 0.120 (R), 0.131 (A), 0.127 (A_noframe), 0.109
+  (A_nogate) and 0.130 (A_nosum).
+- Parameter counts: H 965,176; R 886,328; A, A_noframe and A_nogate 870,608 each; A_nosum 924,728. The largest is 1.11 times the
+  smallest.
+
+**Rollouts** (`experiments/fa1_roll.py`). N2's protocol, in process on CPU:
+- N2's BDDLs, start states and noise seed bases (13000000 + 1000 k, plus the query index).
+- A fresh env per episode, re-seeded (seed 7); 10 settle steps; 300 steps; replanning every 5 steps; the client's bind track.
+  Actions are clipped to [−1, 1].
+- The env runs without cameras. `fa1_data.py equiv` showed that this env steps bit-identically to N2's OffScreenRenderEnv: the
+  state difference was 0 after 130 steps (`results/flawed/a1_equiv.json`).
+- Smoke: states 0-3 on the 8 known / familiar tasks, for every arm. Main: states 4-23 on all 32 tasks (640 episodes per arm).
+
+**Outcomes** (`experiments/fa1_read.py`).
+- s and g are N2's.
+- r (relaxed placement) is s, or the object's end position within max(RAD, dxy_rest + 0.03) of the target reference with dz in
+  [dz_rest − 0.04, dz_rest + 0.06].
+  - dz_rest and dxy_rest are calibrated by teleport and settle (`results/flawed/a1_calib.json`). Every new compound except N7 is
+    strictly feasible in that check, on all 4 states.
+  - The drawer target has no relaxed test.
+- p is s given g (strict) and r given g (relaxed).
+- Habit view: on new-compound episodes with g = 1 and s = 0, the end position is classified as instructed, habit (a target this
+  object reaches in a training task), other target, or elsewhere.
+
+**Pre-registered predictions** (95% CIs from a 2,000-draw bootstrap, seed 0, resampling compounds within status and start states,
+jointly across arms).
+- **Gate (smoke):** if s_H(known, familiar) < 0.5, stop, fix the recipe on held-out demos, and re-register.
+- **A1 (parity):** s_A(known, fam) − s_H(known, fam) ≥ −0.10 (point estimate).
+- **A2 (placement):** p_rel,A(new, fam) exceeds both p_rel,H(new, fam) and p_rel,R(new, fam), with both CIs excluding 0.
+- **A3 (layout):** L_g = mean_c [g(c, fam) − g(c, new)] over all 16 compounds. L_g(H) − L_g(A) > 0 and L_g(R) − L_g(A) > 0, with
+  both CIs excluding 0.
+- **A4 (relocation):** for H and for R, p_rel(known, fam) − p_rel(new, fam) > 0, with the CI excluding 0.
+- **A5 (descriptive):** per ablation, p_rel,A − p_rel,Y on new / familiar, and L_g(Y) − L_g(A).
+- **Verdict:** the first rule that applies.
+  1. s_H(known, fam) < 0.5 on the main run → uninformative.
+  2. Not A1 → "A1 fails: A is a worse policy".
+  3. A2 and A3 → confirmed.
+  4. A2 only → "placement confirmed, layout not".
+  5. Otherwise → "killed: the factored motor does not fix placement".
+
+  A4 is reported beside the verdict and never changes it. The rules are ordered and exhaustive, so no outcome maps to two verdicts.
+- **Listed factorisation violations:** K7 / N7 (the articulated drawer is opened before the place) and K8 / N8 (no gripper closure,
+  so A's target term never runs).
+- **Secondary:** strict p; the pick-and-place pairs alone (K1-K6, N1-N6); success effects; a per-compound table.
+- **Known weaknesses.**
+  - The training layout barely varies (2 cm), so every arm extrapolates on the new layouts. A's frames make the inputs
+    translation-relative, not in-distribution: the end effector starts at a relative offset never seen in training.
+  - 8 compounds per status.
+
+**Results** (pending: smoke and main not yet run).
+
 ---
 
 ## 6. Experiments, order and cost

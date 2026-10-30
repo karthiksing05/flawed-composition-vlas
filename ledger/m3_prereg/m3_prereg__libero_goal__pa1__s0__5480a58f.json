@@ -1,0 +1,164 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: FLAWED_COMPOSITION 5.5 prototype A stage 1",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "cell.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4368177",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "5480a58fd0bbc9e08088a114813bc8feb828a908",
+  "short": "5480a58f"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": {
+   "A": {
+    "params": 870608
+   },
+   "A_noframe": {
+    "params": 870608
+   },
+   "A_nogate": {
+    "params": 870608
+   },
+   "A_nosum": {
+    "params": 924728
+   },
+   "H": {
+    "params": 965176
+   },
+   "R": {
+    "params": 886328
+   }
+  },
+  "checkpoints_sha256": {
+   "A": "7103e4f4903a36e344b27be952c8af13c2b47a88ef3c529c89eb1484f6e56444",
+   "A_noframe": "a4f9944670ec55728ff32d85b3140ad9edf525f86718b16f3e2ee96eb6fccf9e",
+   "A_nogate": "e251804d4bce3f15fc996f9ec6efbbeccd88d4e6037b24bfd01c145899d0d9b8",
+   "A_nosum": "9e7f5eb31ce299b728c49583f15edc2fb796d3ef59afe37af8f13eecb59b675c",
+   "H": "7a1f324e2c46d0f899ecd3f178bd552896214bce47c01567dbbea3b5719755e2",
+   "R": "accdf16d8ac861fd5383ede4b6ff965c973b3eb5f2b67f5b99ce825d33a21e06"
+  },
+  "ci": "2,000-draw percentile bootstrap, seed 0, compounds resampled within status and start states resampled, jointly for every arm",
+  "data_sha256": {
+   "demos.npz": "5ee10822a5ade1537cddde2dd8421280a10a1bd432f90b0c1172516d023906dc"
+  },
+  "episodes": "N2's 32 tasks; smoke: states 0-3 on the 8 known / familiar tasks; main: states 4-23 on all 32; fresh re-seeded env per episode, N2's noise seed bases, identical across arms",
+  "files_sha256": {
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fa1_data.py": "d6b537d27e647192332cdcb6335430c1dc2926d7b7c438c3d9255837ef96ef5b",
+   "experiments/fa1_read.py": "3bbe5c26150c527f0bdc77ef137a2ce123a7b87fddb6825a9b1e655d141cab18",
+   "experiments/fa1_roll.py": "8e1f18ac719416ade3dca2bc3bdc8bf5fc4e56500149a54d97af6994de2c8c68",
+   "experiments/fa1_train.py": "a2215541bcd2305d0ec01af16c7523587fbe7610291cba944eaee8b185407ad3",
+   "lifelong_ood/policy/factored_flow.py": "cee6107747d857632e9da998b0d7a45ebec3d02b3dfaa7f55c1189fc59f38ca6",
+   "results/flawed/a1_calib.json": "c8b45b87ae94776dfd5e6b3afabbc300c3c4f64d98d916d19c4d0b093385adde",
+   "results/flawed/a1_equiv.json": "82d286750c5e469999f56edd36e61e4e4328529b13719dd3d84b41819626dcc1",
+   "results/flawed/a1_train_final.json": "326d1256406546c304bc60d81795162d9e8e9784f27847debaa6b91d4a75b6cc",
+   "results/flawed/n2_bddl/K1.bddl": "4a95d6bc0f51aa1178f7565d3aa766d8e82b5e84069761b43df3e93e6671f969",
+   "results/flawed/n2_bddl/K2.bddl": "1a91a6c3e0038debcccc2f406ccb2f5763df14fbac806d48d3acee588d77ee7c",
+   "results/flawed/n2_bddl/K3.bddl": "d94f7671cc78be2d54972929206a73f6fc8496e0ccfbd6c5c319896f527da083",
+   "results/flawed/n2_bddl/K4.bddl": "3671152ddd1d676fef54451bf7c7d1b2059ef6bcd10c7185fab44be8da8e8716",
+   "results/flawed/n2_bddl/K5.bddl": "122268fde5ceb4eb4688d1a476a8479aa64711b6b27e9d6842cd0d07b2e586aa",
+   "results/flawed/n2_bddl/K6.bddl": "3e35ce6478ad167b1e1f1c5a81e27706d97bc10291dca9d2c3d3a1c02d68008a",
+   "results/flawed/n2_bddl/K7.bddl": "81072421a01040ed047e8460385d8848a621b243b79a12de07147dc32c7b8077",
+   "results/flawed/n2_bddl/K8.bddl": "c01171f1ab2643cb59f65ee132d595730ba4e480a66a7b3c69218b3d57cb9026",
+   "results/flawed/n2_bddl/N1.bddl": "ea669246017a3474bf7773b71803fcb3972bac1364b87c8d01527fab2e53acde",
+   "results/flawed/n2_bddl/N2.bddl": "056fb9652763bc469707c160acfe5be857a88a58fb0370c3a309b2684114326f",
+   "results/flawed/n2_bddl/N3.bddl": "449ac1938f75fb63dd7a6ea9768ba1d6b1dc0fa7b09bb196b2d117877f62c0ef",
+   "results/flawed/n2_bddl/N4.bddl": "6089cb6644e2e3ea89cf35155da7bbe17c7ed9b53f766687d7b2a562f809f359",
+   "results/flawed/n2_bddl/N5.bddl": "584b70aee9cb352ebe059a36ea6842cb74ffdaebe8be037113f233cb42e471d4",
+   "results/flawed/n2_bddl/N6.bddl": "6915915bb0310fffbdee4f8a6ac584e56dfd6b40ce82c08d4bb282ce5bf1c87b",
+   "results/flawed/n2_bddl/N7.bddl": "862af94435cfd1f7bdbf551baba6c32e42937e69fa7ef1df678a2a11d9f85848",
+   "results/flawed/n2_bddl/N8.bddl": "bd7884d815d497e3e5d5c2314e3c1061b71cf73cfc4c9740df0c1c15701346e6",
+   "results/flawed/n2_branches_main.json": "764e9e0473120f744c65893707612d2c01d5ba7dc3a52a4ecb20aa9d5f2ceb5f",
+   "results/flawed/n2_branches_smoke.json": "e1502e8b5cbbada27d72879895b13113c586303415b8485df077a7fbc8a3d1a7",
+   "results/flawed/n2_states/n2_goal_0.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_1.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_10.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_11.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_12.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_13.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_14.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_15.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_16.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_17.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_18.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_19.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_2.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_20.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_21.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_22.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_23.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_24.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_25.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_26.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_27.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_28.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_29.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_3.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_30.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_31.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_4.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_5.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_6.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_7.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_8.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_9.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_tasks.json": "8f7cd36af15424334081bb45c1649bb34adf849081320187ee24c10f0b194bd4"
+  },
+  "gate": "after the smoke: H's known / familiar smoke success < 0.5 -> stop, fix the recipe on held-out demos only, re-register; no main run",
+  "oracle": "slots = simulator poses of the 4 movable objects and 5 target sites (+ identity one-hot, hand-set size, top-drawer opening); roles from a template parse of the prompt; same for every arm",
+  "predictions": {
+   "A1": "s_A(known, fam) - s_H(known, fam) >= -0.10 (point)",
+   "A2": "p_rel,A(new, fam) - p_rel,H(new, fam) > 0 and p_rel,A(new, fam) - p_rel,R(new, fam) > 0, both 95% CIs excluding 0",
+   "A3": "L_g(H) - L_g(A) > 0 and L_g(R) - L_g(A) > 0, both CIs excluding 0; L_g = mean_c [g(c, fam) - g(c, new)] over all 16 compounds",
+   "A4": "for H and for R: p_rel(known, fam) - p_rel(new, fam) > 0, CI excluding 0",
+   "A5": "descriptive: per ablation, p_rel,A(new, fam) - p_rel,Y(new, fam) and L_g(Y) - L_g(A) with CIs",
+   "listed_failures": "K7 / N7 (articulated drawer opened before the place) and K8 / N8 (no gripper closure, A's target term never runs) violate A's factorisation",
+   "verdict_order": "floor (s_H(known, fam) < 0.5 on main) -> uninformative; not A1 -> 'A1 fails: A is a worse policy'; A2 and A3 -> confirmed; A2 only -> 'placement confirmed, layout not'; else -> 'killed: the factored motor does not fix placement'; A4 reported beside, never changes the verdict"
+  },
+  "relaxed": "s, or the object's end position within max(RAD, dxy_rest + 0.03) of the target reference and dz in [dz_rest - 0.04, dz_rest + 0.06] (a1_calib.json); drawer target strict only",
+  "secondary": "strict p; pick-and-place pairs only (K1-K6, N1-N6); success effects; per-compound table; habit table (instructed / habit / other / elsewhere on new-compound g = 1, s = 0)",
+  "section_5_5_protocol_sha256": "022f3f78c619e8007f31aacea28d02f688e466ea5c322d5037af58c08533b648",
+  "status": "PRE-REGISTERED A1 (FLAWED_COMPOSITION 5.5, prototype A stage 1, oracle state)",
+  "training": {
+   "batch": 512,
+   "holdout": 0,
+   "horizon": 8,
+   "lr": 0.0003,
+   "n_train": 52204,
+   "seed": 0,
+   "steps": 30000
+  },
+  "written_before": "any A1 smoke or main rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pa1__s0__5480a58f",
+ "schema": 1,
+ "script": "experiments/prereg/pa1.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-30T17:18:40+00:00",
+ "stream": null,
+ "tag": "pa1"
+}
