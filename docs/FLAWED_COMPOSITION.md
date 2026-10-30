@@ -445,6 +445,87 @@ pushed shut) is scored at 0.25, 0.5 and 0.75 of its length.
 - Purity covers only the 30 in-support tasks that have both swaps in their scene. LIBERO-Object (one task per scene) and
   LIBERO-Spatial (one goal) have none.
 
+### 4.7 D2/D1x protocol (fixed 2026-10-29, before any D2 or D1x read; m3_prereg tag pd2)
+
+No training. Scripts: `experiments/fc_d1x.py`, `fc_d2_frames.py`, `fc_d2_support.py`, `fc_d2_debt.py`, `fc_d2_read.py`.
+Budget: 10 A40-h.
+
+**D1x: the interchange test at the expert-read level (main2, C1).**
+- Compounds C with demos:
+  - in-support training tasks (their held-out episodes, the D1 IN frames);
+  - dev tasks (the D1 DEV frames; scored only, never executed).
+- For each C, two of the 72 in-support training tasks are chosen, same BDDL scene first, then by a fixed hash:
+  - A has C's step-0 object phrase and a different goal phrase;
+  - B has C's goal phrase and a different object phrase.
+- On each of C's frames, four prefixes are scored:
+  - true: C's own instruction;
+  - A: A's instruction;
+  - B: B's instruction;
+  - rec: B's key and value states at every layer, with the step-0 object-slot position replaced by A's. The expert then reads
+    A's object message and B's other messages, a joint input that no single instruction produces.
+- The action error is D1's, with D1's noise draws.
+- Agreement (interchange-intervention accuracy): rec's output is nearer to true's than to both A's and B's.
+- Estimators:
+  - ρ_in = (E_rec − E_true) / E_true over the in-support compounds (task means);
+  - ρ_dev, the same over the dev compounds;
+  - Δ = ρ_dev − ρ_in, the combination debt at the expert-read level.
+- **D1x-a (factored on support)** holds if the upper CI bound of ρ_in is below 0.10. It is falsified if the lower bound is above
+  0.10, and inconclusive otherwise.
+- **D1x-b**: expert-read combination debt is present if Δ > 0 with a CI that excludes 0, and absent if the CI includes 0.
+- Prediction: D1x-a holds and D1x-b is present. On training compounds, recombined in-support messages behave like the true
+  compound; on held-out compounds they do not.
+
+**D2: cross-VLA debt.**
+- *Models and outcomes.* The archive's policy-alone zero-shot arm (`zs`, 20 episodes per task), on blocks whose per-task
+  success is graded:
+
+  | block | file | success distribution: tasks at 0 / at 20 / in between (n) |
+  |---|---|---|
+  | pi0.5-L90 | g8_read.json | recorded in the pre-registration row (12 sealed tasks of the 66 skipped; n = 54) |
+  | pi0.5-LI | g15_read_pi05.json | 6 / 3 / 11 (20) |
+  | GR00T N1.5-LI | g18_read_groot_libero.json | 8 / 1 / 11 (20) |
+  | X-VLA-LI | g18_read_xvla.json | 14 / 1 / 5 (20) |
+
+  - Excluded: pi0 (14 of 20 tasks at 0) and SmolVLA (one task above 1 success). They are floored.
+  - X-VLA is kept at the edge: 5 graded tasks, 4 of them at 11 or more.
+  - All four checkpoints were fine-tuned on the same 40 LIBERO tasks.
+  - The success distributions were read to choose the blocks; no debt had been measured.
+- *Frames.*
+  - LI: the 10 rendered start states of practice set a per task (results/lang/frames; never a scoring set).
+  - L90: frame 0 of the first 10 IPEC demos, plus their event frames for combination (scored only).
+  - Sealed LIBERO-90-C tasks are skipped by the salted hash in split.json; split_sealed.json is never opened.
+- *Interface (deviation from 4.1).*
+  - The role messages are the expert-read prefix features at the instruction's role phrases:
+    - pi0.5: the value states of all 18 layers;
+    - X-VLA: the encoder features the denoiser reads;
+    - GR00T: the backbone features the DiT cross-attends.
+  - The phrase span is where the tokenisation of the phrase-swapped instruction differs from the intact one.
+  - The referent image tokens are not declared. The OOD tasks have no demos, so there are no contact-event referents, and
+    projecting oracle poses into each model's image tokens was not built within budget.
+  - So the bypass is every non-instruction input (both views and the state), and the bypass share measures how much of the
+    output's compound dependence enters outside the instruction.
+- *Estimators per task.*
+  - Purity: D1's ratio, with swaps from the same scene (L90) or the same suite (LI).
+  - Bypass share: Σd_byp / (Σd_byp + Σd_role). The partner is another task of the same scene or suite, at the same frame
+    index. d is the sample MSE over the first min(10, H) steps, in the model's own normalised rows, with 2 shared seeds.
+  - Combination (pi0.5-L90 only): the action error on the event frames, per dim divided by the pooled std of the scored chunks.
+  - Insufficiency is not measured in D2. With the image in the bypass, cutting it removes the referent too.
+- *Controls (task definitions only, fc_d2_support.py):*
+  - u, the fraction of the task's compounds absent from the 40 training tasks (compound divergence);
+  - the D0 score with the 40 tasks as training set.
+- **KEY test.** The debt is x = the mean of the within-block ranks of purity and bypass.
+  - Pooled partial Spearman: ranks within each block, x and failure (1 − zs/20) each residualised on [score, u, block dummies],
+    then the correlation of the residuals.
+  - CI: 2,000 bootstrap draws over task identities.
+  - **Holds** if ρ > 0 and the CI excludes 0. **Falsified** if the CI includes 0, which says that debt adds nothing beyond
+    novelty.
+  - Reported too: each block; purity alone; bypass alone; pi0.5-L90's combination error; the uncontrolled correlation; and the
+    pool of the two most graded blocks (pi0.5-LI, GR00T-LI).
+- **Validation before the read.**
+  - Smoke runs (`--limit`) of every script on all three models checked the code paths: 2 tasks per block, plus 20 + 20 D1x
+    frames.
+  - Only key names and role-span token counts were inspected (2 to 5 tokens), never a debt or error value.
+
 ---
 
 ## 5. Resolution: removing debt in VLA architectures

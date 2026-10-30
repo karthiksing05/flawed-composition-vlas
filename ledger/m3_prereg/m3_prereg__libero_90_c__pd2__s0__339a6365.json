@@ -1,0 +1,130 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_90_c",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: FLAWED_COMPOSITION D1x / D2",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "clank.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4355229",
+  "torch": "2.10.0+cu128"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "339a6365d9ed100c9e9b65509fb5c34afe0dba97",
+  "short": "339a6365"
+ },
+ "keys": {},
+ "metrics": {
+  "checkpoints": {
+   "c1": "results/bindvla/c1main/ckpt/step_020000.pt",
+   "groot": "ar0s/groot_libero",
+   "main2": "results/bindvla/main2/ckpt/step_060000.pt",
+   "pi05": "pi05_libero (openpi pytorch)",
+   "xvla": "lerobot/xvla-libero"
+  },
+  "deviations_declared": "D2 interface = role-phrase prefix features only (no referent image tokens: no demos / referents on the OOD tasks); bypass = all non-instruction inputs; no D2 insufficiency",
+  "files_sha256": {
+   "docs/FLAWED_COMPOSITION.md": "223c6a3d519f78f45a31ae66528584c0cec4b447d997df7b1f6c4a0d62eb2da0",
+   "experiments/fc_d1_debt.py": "e650b1ad7128c97b0b456acaddfd9a1e57ce30ced9335455b50bf0aca002ac83",
+   "experiments/fc_d1x.py": "b18970ceae359b10349fe946403c01db1d4b7ee943ebb7ff862c4c8ff743b6a5",
+   "experiments/fc_d2_debt.py": "a8f895346a253b2f5a4915fb14c76937ad209116e2e2b9ffc07ed6c11d6a2dba",
+   "experiments/fc_d2_frames.py": "c5c453575ad8b2fc50719b32d3e72ae7c0e9f24572e4ab797a014c528ecbe830",
+   "experiments/fc_d2_read.py": "15c32d503c9f4b8d9b696b7455e037cc3bd2541d40cddb38094a7c5c20cb4eaa",
+   "experiments/fc_d2_support.py": "f6826aca30352bcdb7e2a3accdf9ffba8648bcc97200216d33cefedc2b2e4771",
+   "results/flawed/d2_frames.json": "b451decdd23dffe3ef75c1e3a9902016d7398582576eadedf32a8a827de5067b",
+   "results/flawed/d2_support.json": "b968e16ecb79c89f3bd3eb399145b00bed40c159f85e955b5eeeae8fca817c7e"
+  },
+  "l90_sealed_skipped": [
+   "libero_90:2",
+   "libero_90:12",
+   "libero_90:24",
+   "libero_90:30",
+   "libero_90:48",
+   "libero_90:56",
+   "libero_90:66",
+   "libero_90:74",
+   "libero_90:81",
+   "libero_90:84",
+   "libero_90:85",
+   "libero_90:87"
+  ],
+  "predictions": {
+   "D1x-a": "rho_in (relative excess error of the expert-read interchanged prefix over the true prefix, in-support compounds): holds if upper CI < 0.10; falsified if lower CI > 0.10; else inconclusive (main2 and C1)",
+   "D1x-b": "delta = rho_dev - rho_in: present if CI excludes 0 above; absent if CI includes 0",
+   "D2-KEY": "pooled partial Spearman of per-task debt (mean within-block rank of purity and bypass share) with failure 1 - zs/20, controlling for the D0-style score and u with block dummies, task-identity bootstrap 95% CI: holds if rho > 0 and CI excludes 0; falsified (debt adds nothing beyond novelty) otherwise"
+  },
+  "secondary": "per block; purity alone; bypass alone; pi0.5-L90 combination error; uncontrolled; pool of pi05-LI + groot-LI; D1x agreement (IIA)",
+  "smoke": "--limit runs of fc_d1x.py, fc_d2_debt.py (3 models) and fc_d2_read.py; only key names and role-span token counts inspected",
+  "status": "PRE-REGISTERED D1x / D2 (FLAWED_COMPOSITION 4.7)",
+  "success_distributions": {
+   "excluded_pi0-LI": {
+    "at_0": 14,
+    "at_20": 0,
+    "between": 6,
+    "mean": 0.0875,
+    "n": 20
+   },
+   "excluded_smolvla-LI": {
+    "at_0": 17,
+    "at_20": 0,
+    "between": 3,
+    "mean": 0.0125,
+    "n": 20
+   },
+   "groot-LI": {
+    "at_0": 8,
+    "at_20": 1,
+    "between": 11,
+    "mean": 0.2825,
+    "n": 20
+   },
+   "pi05-L90": {
+    "at_0": 29,
+    "at_20": 7,
+    "between": 18,
+    "mean": 0.3037037037037037,
+    "n": 54
+   },
+   "pi05-LI": {
+    "at_0": 6,
+    "at_20": 3,
+    "between": 11,
+    "mean": 0.3575,
+    "n": 20
+   },
+   "xvla-LI": {
+    "at_0": 14,
+    "at_20": 1,
+    "between": 5,
+    "mean": 0.2,
+    "n": 20
+   }
+  },
+  "written_before": "any D1x or D2 measurement"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_90_c__pd2__s0__339a6365",
+ "schema": 1,
+ "script": "experiments/prereg/pd2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-30T03:33:21+00:00",
+ "stream": null,
+ "tag": "pd2"
+}
