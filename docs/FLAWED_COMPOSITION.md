@@ -277,6 +277,103 @@ The theory's job is to say which lever each interface needs, and to predict, bef
 | D3 | In the B1 binders, the factored code wins beyond a contexts-per-atom threshold, and the threshold is predicted by the MDL arithmetic | no threshold, or a threshold off by more than 2× |
 | D0 | Interfaces with the weakest projected support (from the split, before training) carry the highest debt | rank correlation CI includes 0 |
 
+### 4.5 D0/D1 protocol (fixed 2026-10-29, before any D1 read; m3_prereg tag pd01)
+
+No training. Three checkpoints: main2 (results/bindvla/main2, 60k), C1 (results/bindvla/c1main, 20k, the checkpoint of
+PLAN_BINDVLA 12.5) and vanilla (results/bindvla/vanilla, 60k). Scripts: `experiments/fc_d0_support.py`, `fc_d1_frames.py`,
+`fc_d1_debt.py`, `fc_d1_read.py`.
+
+**D0 (computed from the split alone, before this protocol was fixed; results/flawed/d0_support.json).**
+- Atoms and compounds are the split's own (`c_split.steps / compounds`: verb, object type, target with region, scene).
+- Per dev task step (v, o, t) in scene s, over the 76 training tasks: the varied-partner counts P_o, P_t (targets seen with o,
+  objects seen with t), the layout counts L_o, L_t (scenes in which the atom appears), and whether (v, o), (o, t), (o, s),
+  (t, s) occur in training.
+- Predicted debt: the components 1 − seen(v,o), 1 − seen(o,t), 1 − seen(o,s), 1 − seen(t,s), −log(1+P_o), −log(1+P_t),
+  −log(1+L_o), −log(1+L_t) are averaged over the task's steps, ranked across the 29 dev tasks, and averaged. The resulting
+  rank (1 = most debt) is recorded in the pre-registration row. Binder and motor sub-scores are reported, not tested.
+- D0 predicted order, most debt first (ties in score keep the split's order): libero_90:44; the caddy book tasks :73, :75,
+  :77, :78, :79, :80, :82, :83; :32, :58, :76, :38, :45, :40, :11, :59, :36, :7, :22, :61, :1, :29, :0, :50, :9, :16,
+  :60, :14. The ranking mostly follows the part set first and then the CD bins. Its additions over the bin are the partner
+  and layout counts.
+
+**Frames.** Each frame is scored at the training-referent events (b1_render.events on the gripper command; b1_bind.transports
+drops regrasps): e − 10, e − 5 and e for the first two grasps and releases. An episode with no closed-gripper run (a drawer
+pushed shut) is scored at 0.25, 0.5 and 0.75 of its length.
+- IN: the held-out episodes of the training tasks (2 per task, never trained on), from the training cache.
+- DEV: the 10 demos per dev task that bv_devrefs used, passed through the cache's image pipeline. They are scored only:
+  never trained on, never executed.
+- In-support set: the 72 training tasks that all three models trained on (C1's 4 held-out-layout tasks are excluded). The
+  combination comparator uses its 43 LIBERO-90 cells, which share the demo source and scene families of the dev tasks.
+
+**Predictions and errors.**
+- Every prediction is the model's own 10-step Euler sample from 2 fixed noise draws, seeded by the frame's identity, so
+  every model and every variant sees the same noise.
+- Action error is the MSE over the first 10 chunk steps and the 7 action dims, in the cache's MEAN_STD units.
+- The output change of an intervention is the same MSE between the intervened sample and the intact one.
+
+**Interfaces.**
+- BindVLA: the role messages are the binder's slot tokens. The bypass is the global token (main2 only) and the state token.
+- vanilla: the role messages are the instruction tokens and the agentview connector cells within Chebyshev 1 (8 × 8 grid)
+  of the step-0 contact-event referents. The bypass is the other agentview cells, the wrist cells and the state token.
+
+**Estimators.**
+- **Purity debt δ^P.** On IN frames, with the image fixed, step 0's goal phrase is replaced by a goal phrase of another training
+  task of the same scene, and separately its object phrase is replaced by the object phrase of another transport task of
+  the same scene. A frame is scored only when both swaps exist and each replaced phrase occurs once in the instruction (on
+  the training data this leaves 345 frames of 29 tasks). For the object message, the ratio is
+  Σ‖Δm‖ under the goal swap / Σ‖Δm‖ under the object swap, per task; the goal message is symmetric. δ^P is the mean of the
+  two ratios over tasks.
+  - Levels: `tok`, the binder's output token (BindVLA only; the primary level for D1a); `kv`, the value states the expert
+    reads (16 layers), at the slot position (BindVLA) or averaged over the role phrase's tokens (vanilla).
+  - Probe (descriptive): nearest-centroid decoding of the other role's atom from this role's intact message, across held-out
+    episodes, within groups of training tasks that share this role's atom.
+- **Combination debt δ^F.**
+  - E_dev(d) is the mean intact action error on dev task d's frames. E_in is the mean over the 43 in-support LIBERO-90 cells
+    of their intact error on held-out episodes.
+  - δ^F_rel = (mean_d E_dev − E_in) / E_in, with dev and in-support tasks bootstrapped independently. Per task,
+    δ^F(d) = E_dev(d) − E_in.
+  - For BindVLA the slot tokens of a dev frame are computed role by role. The interchanged joint message ("object token
+    from one compound, goal token from another") is therefore the dev forward itself; the purity check verifies this
+    numerically.
+  - Secondary scores: grasp-only and release-only frames, the fixed-(t, noise) flow loss, and the summed-position site error.
+- **Bypass debt δ^B.** Each IN frame is paired with a frame of another training task of the same scene, at the same phase
+  fraction of that task's first held-out episode (fixed hash).
+  - Role swap: the partner's instruction on this frame.
+  - Bypass swap: the partner's bypass inputs, with the role messages kept.
+  - δ^B per task = ΣΔ_byp / (ΣΔ_byp + ΣΔ_role), averaged over tasks.
+  - Also reported: the state-only swap (all models) and the global-only swap (main2).
+- **Insufficiency.** The bypass is mean-ablated over IN frames (main2: global token; vanilla: non-interface cells; C1 has
+  nothing to cut). I is the in-support action error with the bypass cut, averaged over tasks. Also reported: the state
+  mean-ablated as well, and I − E_in.
+- All CIs are 2,000-draw percentile bootstraps over tasks.
+
+**Predictions and falsifiers.**
+
+| ID | test | holds if | falsified if |
+|---|---|---|---|
+| D1a | main2: δ^F_rel vs δ^P (tok) | lower CI bound of δ^F_rel > upper CI bound of δ^P | δ^F_rel ≤ δ^P (point estimates); anything else is inconclusive |
+| D1b | main2: Spearman ρ(δ^F(d), dev failure(d)) over the 29 tasks; dev failure = 1 − bv_dev success | ρ > 0 and CI excludes 0 | CI includes 0, or ρ < 0 |
+| D1c | paired over in-support tasks: dB = δ^B_C1 − δ^B_main2, dI = I_C1 − I_main2 | CI(dB) < 0 and CI(dI) > 0 | both fall (CI(dB) < 0 and CI(dI) < 0), or neither changes (both CIs include 0); anything else is partial |
+| D0 | Spearman ρ(D0 predicted-debt score, δ^F_main2(d)) over the 29 tasks | ρ > 0 and CI excludes 0 | CI includes 0, or ρ < 0 |
+
+- Secondary, not tested: the same correlations for C1 and vanilla; failure scored as "neither success nor first contact on
+  the named object" (12.4 logs, main2 and C1); D0 sub-scores and the CD bin alone against δ^F.
+- **Known weaknesses, stated before the read.**
+  - D1a compares two dimensionless ratios of different quantities.
+  - For BindVLA the binder output is role-pure by construction (per-role queries and slot MLP), so δ^P(tok) is expected to
+    be 0. That part of D1a tests the construction, not a learned property. The kv level, where the frozen text layers mix
+    the slots, is the learned one.
+  - Dev failure has heavy ties: main2 succeeds on only 3 of the 29 tasks. D1b has little power, and the named-contact
+    failure is reported for that reason.
+  - E_dev − E_in also contains layout and demo difficulty, not only combination.
+- **Validation before the read.**
+  - The dev frames went through the cache's pipeline with zero pixel difference on 4 training frames.
+  - A `--limit` smoke of `fc_d1_debt.py` (60 IN and 60 DEV frames per model) and of `fc_d1_read.py` checked the code paths.
+    Its numbers were written to scratch and not inspected.
+  - Two fixes were made before the pre-registration, on training data only: episodes without a gripper event get the
+    fixed-fraction frames, and object swaps are restricted to transport tasks (the first swap check produced instructions
+    such as "close the black bowl").
+
 ---
 
 ## 5. Resolution: removing debt in VLA architectures
