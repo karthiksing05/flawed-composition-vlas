@@ -1,0 +1,905 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: FLAWED_COMPOSITION N2",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4362403",
+  "torch": "2.10.0+cu128"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d781c8af16f3d0ef62eab00602007632b5c8f4a6",
+  "short": "d781c8af"
+ },
+ "keys": {},
+ "metrics": {
+  "ci": "2,000-draw percentile bootstrap, seed 0, compounds resampled within status and start states resampled, jointly for both models",
+  "compound_check": {
+   "K1": {
+    "language": "put the bowl on the plate",
+    "n_training_tasks_moving_object": 15,
+    "n_training_tasks_with_target": 13,
+    "slot": [
+     "On",
+     "akita_black_bowl",
+     "plate",
+     null
+    ],
+    "status": "known",
+    "training_tasks_with_slot": [
+     "libero_goal:8",
+     "libero_spatial:0",
+     "libero_spatial:1",
+     "libero_spatial:2",
+     "libero_spatial:3",
+     "libero_spatial:4",
+     "libero_spatial:5",
+     "libero_spatial:6",
+     "libero_spatial:7",
+     "libero_spatial:8",
+     "libero_spatial:9"
+    ]
+   },
+   "K2": {
+    "language": "put the bowl on the stove",
+    "n_training_tasks_moving_object": 15,
+    "n_training_tasks_with_target": 3,
+    "slot": [
+     "On",
+     "akita_black_bowl",
+     "flat_stove",
+     "cook"
+    ],
+    "status": "known",
+    "training_tasks_with_slot": [
+     "libero_goal:1"
+    ]
+   },
+   "K3": {
+    "language": "put the bowl on top of the cabinet",
+    "n_training_tasks_moving_object": 15,
+    "n_training_tasks_with_target": 2,
+    "slot": [
+     "On",
+     "akita_black_bowl",
+     "wooden_cabinet",
+     "top_side"
+    ],
+    "status": "known",
+    "training_tasks_with_slot": [
+     "libero_goal:4"
+    ]
+   },
+   "K4": {
+    "language": "put the wine bottle on top of the cabinet",
+    "n_training_tasks_moving_object": 2,
+    "n_training_tasks_with_target": 2,
+    "slot": [
+     "On",
+     "wine_bottle",
+     "wooden_cabinet",
+     "top_side"
+    ],
+    "status": "known",
+    "training_tasks_with_slot": [
+     "libero_goal:2"
+    ]
+   },
+   "K5": {
+    "language": "put the wine bottle on the rack",
+    "n_training_tasks_moving_object": 2,
+    "n_training_tasks_with_target": 1,
+    "slot": [
+     "On",
+     "wine_bottle",
+     "wine_rack",
+     "top"
+    ],
+    "status": "known",
+    "training_tasks_with_slot": [
+     "libero_goal:9"
+    ]
+   },
+   "K6": {
+    "language": "put the cream cheese in the bowl",
+    "n_training_tasks_moving_object": 4,
+    "n_training_tasks_with_target": 1,
+    "slot": [
+     "On",
+     "cream_cheese",
+     "akita_black_bowl",
+     null
+    ],
+    "status": "known",
+    "training_tasks_with_slot": [
+     "libero_goal:6"
+    ]
+   },
+   "K7": {
+    "language": "open the top drawer and put the bowl inside",
+    "n_training_tasks_moving_object": 15,
+    "n_training_tasks_with_target": 1,
+    "slot": [
+     "In",
+     "akita_black_bowl",
+     "wooden_cabinet",
+     "top"
+    ],
+    "status": "known",
+    "training_tasks_with_slot": [
+     "libero_goal:3"
+    ]
+   },
+   "K8": {
+    "language": "push the plate to the front of the stove",
+    "n_training_tasks_moving_object": 1,
+    "n_training_tasks_with_target": 1,
+    "slot": [
+     "On",
+     "plate",
+     "flat_stove",
+     "front"
+    ],
+    "status": "known",
+    "training_tasks_with_slot": [
+     "libero_goal:5"
+    ]
+   },
+   "N1": {
+    "language": "put the cream cheese on the plate",
+    "n_training_tasks_moving_object": 4,
+    "n_training_tasks_with_target": 13,
+    "slot": [
+     "On",
+     "cream_cheese",
+     "plate",
+     null
+    ],
+    "status": "new",
+    "training_tasks_with_slot": []
+   },
+   "N2": {
+    "language": "put the cream cheese on the stove",
+    "n_training_tasks_moving_object": 4,
+    "n_training_tasks_with_target": 3,
+    "slot": [
+     "On",
+     "cream_cheese",
+     "flat_stove",
+     "cook"
+    ],
+    "status": "new",
+    "training_tasks_with_slot": []
+   },
+   "N3": {
+    "language": "put the cream cheese on top of the cabinet",
+    "n_training_tasks_moving_object": 4,
+    "n_training_tasks_with_target": 2,
+    "slot": [
+     "On",
+     "cream_cheese",
+     "wooden_cabinet",
+     "top_side"
+    ],
+    "status": "new",
+    "training_tasks_with_slot": []
+   },
+   "N4": {
+    "language": "put the wine bottle on the plate",
+    "n_training_tasks_moving_object": 2,
+    "n_training_tasks_with_target": 13,
+    "slot": [
+     "On",
+     "wine_bottle",
+     "plate",
+     null
+    ],
+    "status": "new",
+    "training_tasks_with_slot": []
+   },
+   "N5": {
+    "language": "put the wine bottle on the stove",
+    "n_training_tasks_moving_object": 2,
+    "n_training_tasks_with_target": 3,
+    "slot": [
+     "On",
+     "wine_bottle",
+     "flat_stove",
+     "cook"
+    ],
+    "status": "new",
+    "training_tasks_with_slot": []
+   },
+   "N6": {
+    "language": "put the wine bottle in the bowl",
+    "n_training_tasks_moving_object": 2,
+    "n_training_tasks_with_target": 1,
+    "slot": [
+     "On",
+     "wine_bottle",
+     "akita_black_bowl",
+     null
+    ],
+    "status": "new",
+    "training_tasks_with_slot": []
+   },
+   "N7": {
+    "language": "open the top drawer and put the cream cheese inside",
+    "n_training_tasks_moving_object": 4,
+    "n_training_tasks_with_target": 1,
+    "slot": [
+     "In",
+     "cream_cheese",
+     "wooden_cabinet",
+     "top"
+    ],
+    "status": "new",
+    "training_tasks_with_slot": []
+   },
+   "N8": {
+    "language": "push the bowl to the front of the stove",
+    "n_training_tasks_moving_object": 15,
+    "n_training_tasks_with_target": 1,
+    "slot": [
+     "On",
+     "akita_black_bowl",
+     "flat_stove",
+     "front"
+    ],
+    "status": "new",
+    "training_tasks_with_slot": []
+   }
+  },
+  "design": {
+   "K1_fam": {
+    "goal": [
+     "On",
+     "akita_black_bowl_1",
+     "plate_1"
+    ],
+    "language": "put the bowl on the plate",
+    "layout": "familiar",
+    "status": "known"
+   },
+   "K1_new": {
+    "goal": [
+     "On",
+     "akita_black_bowl_1",
+     "plate_1"
+    ],
+    "language": "put the bowl on the plate",
+    "layout": "new",
+    "status": "known"
+   },
+   "K2_fam": {
+    "goal": [
+     "On",
+     "akita_black_bowl_1",
+     "flat_stove_1_cook_region"
+    ],
+    "language": "put the bowl on the stove",
+    "layout": "familiar",
+    "status": "known"
+   },
+   "K2_new": {
+    "goal": [
+     "On",
+     "akita_black_bowl_1",
+     "flat_stove_1_cook_region"
+    ],
+    "language": "put the bowl on the stove",
+    "layout": "new",
+    "status": "known"
+   },
+   "K3_fam": {
+    "goal": [
+     "On",
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "language": "put the bowl on top of the cabinet",
+    "layout": "familiar",
+    "status": "known"
+   },
+   "K3_new": {
+    "goal": [
+     "On",
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "language": "put the bowl on top of the cabinet",
+    "layout": "new",
+    "status": "known"
+   },
+   "K4_fam": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "language": "put the wine bottle on top of the cabinet",
+    "layout": "familiar",
+    "status": "known"
+   },
+   "K4_new": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "language": "put the wine bottle on top of the cabinet",
+    "layout": "new",
+    "status": "known"
+   },
+   "K5_fam": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "wine_rack_1_top_region"
+    ],
+    "language": "put the wine bottle on the rack",
+    "layout": "familiar",
+    "status": "known"
+   },
+   "K5_new": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "wine_rack_1_top_region"
+    ],
+    "language": "put the wine bottle on the rack",
+    "layout": "new",
+    "status": "known"
+   },
+   "K6_fam": {
+    "goal": [
+     "On",
+     "cream_cheese_1",
+     "akita_black_bowl_1"
+    ],
+    "language": "put the cream cheese in the bowl",
+    "layout": "familiar",
+    "status": "known"
+   },
+   "K6_new": {
+    "goal": [
+     "On",
+     "cream_cheese_1",
+     "akita_black_bowl_1"
+    ],
+    "language": "put the cream cheese in the bowl",
+    "layout": "new",
+    "status": "known"
+   },
+   "K7_fam": {
+    "goal": [
+     "In",
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_region"
+    ],
+    "language": "open the top drawer and put the bowl inside",
+    "layout": "familiar",
+    "status": "known"
+   },
+   "K7_new": {
+    "goal": [
+     "In",
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_region"
+    ],
+    "language": "open the top drawer and put the bowl inside",
+    "layout": "new",
+    "status": "known"
+   },
+   "K8_fam": {
+    "goal": [
+     "On",
+     "plate_1",
+     "main_table_stove_front_region"
+    ],
+    "language": "push the plate to the front of the stove",
+    "layout": "familiar",
+    "status": "known"
+   },
+   "K8_new": {
+    "goal": [
+     "On",
+     "plate_1",
+     "main_table_stove_front_region"
+    ],
+    "language": "push the plate to the front of the stove",
+    "layout": "new",
+    "status": "known"
+   },
+   "N1_fam": {
+    "goal": [
+     "On",
+     "cream_cheese_1",
+     "plate_1"
+    ],
+    "language": "put the cream cheese on the plate",
+    "layout": "familiar",
+    "status": "new"
+   },
+   "N1_new": {
+    "goal": [
+     "On",
+     "cream_cheese_1",
+     "plate_1"
+    ],
+    "language": "put the cream cheese on the plate",
+    "layout": "new",
+    "status": "new"
+   },
+   "N2_fam": {
+    "goal": [
+     "On",
+     "cream_cheese_1",
+     "flat_stove_1_cook_region"
+    ],
+    "language": "put the cream cheese on the stove",
+    "layout": "familiar",
+    "status": "new"
+   },
+   "N2_new": {
+    "goal": [
+     "On",
+     "cream_cheese_1",
+     "flat_stove_1_cook_region"
+    ],
+    "language": "put the cream cheese on the stove",
+    "layout": "new",
+    "status": "new"
+   },
+   "N3_fam": {
+    "goal": [
+     "On",
+     "cream_cheese_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "language": "put the cream cheese on top of the cabinet",
+    "layout": "familiar",
+    "status": "new"
+   },
+   "N3_new": {
+    "goal": [
+     "On",
+     "cream_cheese_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "language": "put the cream cheese on top of the cabinet",
+    "layout": "new",
+    "status": "new"
+   },
+   "N4_fam": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "plate_1"
+    ],
+    "language": "put the wine bottle on the plate",
+    "layout": "familiar",
+    "status": "new"
+   },
+   "N4_new": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "plate_1"
+    ],
+    "language": "put the wine bottle on the plate",
+    "layout": "new",
+    "status": "new"
+   },
+   "N5_fam": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "flat_stove_1_cook_region"
+    ],
+    "language": "put the wine bottle on the stove",
+    "layout": "familiar",
+    "status": "new"
+   },
+   "N5_new": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "flat_stove_1_cook_region"
+    ],
+    "language": "put the wine bottle on the stove",
+    "layout": "new",
+    "status": "new"
+   },
+   "N6_fam": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "akita_black_bowl_1"
+    ],
+    "language": "put the wine bottle in the bowl",
+    "layout": "familiar",
+    "status": "new"
+   },
+   "N6_new": {
+    "goal": [
+     "On",
+     "wine_bottle_1",
+     "akita_black_bowl_1"
+    ],
+    "language": "put the wine bottle in the bowl",
+    "layout": "new",
+    "status": "new"
+   },
+   "N7_fam": {
+    "goal": [
+     "In",
+     "cream_cheese_1",
+     "wooden_cabinet_1_top_region"
+    ],
+    "language": "open the top drawer and put the cream cheese inside",
+    "layout": "familiar",
+    "status": "new"
+   },
+   "N7_new": {
+    "goal": [
+     "In",
+     "cream_cheese_1",
+     "wooden_cabinet_1_top_region"
+    ],
+    "language": "open the top drawer and put the cream cheese inside",
+    "layout": "new",
+    "status": "new"
+   },
+   "N8_fam": {
+    "goal": [
+     "On",
+     "akita_black_bowl_1",
+     "main_table_stove_front_region"
+    ],
+    "language": "push the bowl to the front of the stove",
+    "layout": "familiar",
+    "status": "new"
+   },
+   "N8_new": {
+    "goal": [
+     "On",
+     "akita_black_bowl_1",
+     "main_table_stove_front_region"
+    ],
+    "language": "push the bowl to the front of the stove",
+    "layout": "new",
+    "status": "new"
+   }
+  },
+  "episodes": "smoke: states 0-3; main: states 4-23; every cell and model on the same states and noise seeds",
+  "files_sha256": {
+   "docs/FLAWED_COMPOSITION.md": "84a9b54fd1464808412fc7afe80a8122e69ff72c9b396f0f53e243c5f0ef4699",
+   "experiments/fc_n2_client.py": "5709a33ad3d0cd1a6211bf1ecdac251fba26faaf804c85c3d910119cbc7b9013",
+   "experiments/fc_n2_novelty.py": "355f126e6dbf21e56acef027f8e09c3b27a7406e21a0013ff55dfb09da3f490c",
+   "experiments/fc_n2_read.py": "867de108a75e56c9486787e61b4eacf5501920c525d00882ccfb9e50fda629f4",
+   "experiments/fc_n2_roll.sh": "38b84faae12dca7a029562a3e4567304c7d8744500d63baab3555e881332f09e",
+   "experiments/fc_n2_tasks.py": "47735c9883c8a2d06d859d1467b46264f6792e6ffabf476694cd72fcc71d81c4",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/serve_guided.py": "00fb8826f7bb4cf3efc16c32851d7778a19a3ebe079d091120a51dfad3baf52b",
+   "results/flawed/n2_bddl/K1.bddl": "4a95d6bc0f51aa1178f7565d3aa766d8e82b5e84069761b43df3e93e6671f969",
+   "results/flawed/n2_bddl/K2.bddl": "1a91a6c3e0038debcccc2f406ccb2f5763df14fbac806d48d3acee588d77ee7c",
+   "results/flawed/n2_bddl/K3.bddl": "d94f7671cc78be2d54972929206a73f6fc8496e0ccfbd6c5c319896f527da083",
+   "results/flawed/n2_bddl/K4.bddl": "3671152ddd1d676fef54451bf7c7d1b2059ef6bcd10c7185fab44be8da8e8716",
+   "results/flawed/n2_bddl/K5.bddl": "122268fde5ceb4eb4688d1a476a8479aa64711b6b27e9d6842cd0d07b2e586aa",
+   "results/flawed/n2_bddl/K6.bddl": "3e35ce6478ad167b1e1f1c5a81e27706d97bc10291dca9d2c3d3a1c02d68008a",
+   "results/flawed/n2_bddl/K7.bddl": "81072421a01040ed047e8460385d8848a621b243b79a12de07147dc32c7b8077",
+   "results/flawed/n2_bddl/K8.bddl": "c01171f1ab2643cb59f65ee132d595730ba4e480a66a7b3c69218b3d57cb9026",
+   "results/flawed/n2_bddl/N1.bddl": "ea669246017a3474bf7773b71803fcb3972bac1364b87c8d01527fab2e53acde",
+   "results/flawed/n2_bddl/N2.bddl": "056fb9652763bc469707c160acfe5be857a88a58fb0370c3a309b2684114326f",
+   "results/flawed/n2_bddl/N3.bddl": "449ac1938f75fb63dd7a6ea9768ba1d6b1dc0fa7b09bb196b2d117877f62c0ef",
+   "results/flawed/n2_bddl/N4.bddl": "6089cb6644e2e3ea89cf35155da7bbe17c7ed9b53f766687d7b2a562f809f359",
+   "results/flawed/n2_bddl/N5.bddl": "584b70aee9cb352ebe059a36ea6842cb74ffdaebe8be037113f233cb42e471d4",
+   "results/flawed/n2_bddl/N6.bddl": "6915915bb0310fffbdee4f8a6ac584e56dfd6b40ce82c08d4bb282ce5bf1c87b",
+   "results/flawed/n2_bddl/N7.bddl": "862af94435cfd1f7bdbf551baba6c32e42937e69fa7ef1df678a2a11d9f85848",
+   "results/flawed/n2_bddl/N8.bddl": "bd7884d815d497e3e5d5c2314e3c1061b71cf73cfc4c9740df0c1c15701346e6",
+   "results/flawed/n2_branches_main.json": "764e9e0473120f744c65893707612d2c01d5ba7dc3a52a4ecb20aa9d5f2ceb5f",
+   "results/flawed/n2_branches_smoke.json": "e1502e8b5cbbada27d72879895b13113c586303415b8485df077a7fbc8a3d1a7",
+   "results/flawed/n2_novelty.json": "17a70a0265d03e33f3a42a95f796c4c2a1c33329e758d9e2ab1a87938b752bc8",
+   "results/flawed/n2_states/n2_goal_0.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_1.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_10.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_11.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_12.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_13.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_14.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_15.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_16.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_17.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_18.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_19.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_2.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_20.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_21.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_22.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_23.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_24.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_25.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_26.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_27.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_28.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_29.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_3.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_30.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_31.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_4.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_5.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_6.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_7.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_8.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_9.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_tasks.json": "8f7cd36af15424334081bb45c1649bb34adf849081320187ee24c10f0b194bd4"
+  },
+  "gate": "after the smoke: a model whose known-compound / familiar-layout smoke success is < 0.20 is floored; stop and report, no main run",
+  "models": {
+   "groot": "ar0s/groot_libero (GR00T N1.5), serve_guided mode ours",
+   "pi05": "openpi pi05_libero (PyTorch), serve_guided mode ours"
+  },
+  "novelty_cells": {
+   "known/familiar": {
+    "d_a": 0.0022562500598724,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.2578125
+   },
+   "known/new": {
+    "d_a": 0.030797681538388133,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7604166666666666
+   },
+   "new/familiar": {
+    "d_a": 0.0022762713124393485,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.2734375
+   },
+   "new/new": {
+    "d_a": 0.03329645562916994,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7708333333333333
+   }
+  },
+  "novelty_tasks": {
+   "0": {
+    "d_a": 0.002859780564904213,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.3125
+   },
+   "1": {
+    "d_a": 0.050050973892211914,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.8125
+   },
+   "10": {
+    "d_a": 0.0033043057192116976,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.3229166666666667
+   },
+   "11": {
+    "d_a": 0.035755544900894165,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7916666666666666
+   },
+   "12": {
+    "d_a": 0.0008771018474362791,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.22916666666666666
+   },
+   "13": {
+    "d_a": 0.012668432667851448,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.6979166666666666
+   },
+   "14": {
+    "d_a": 0.007835043594241142,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.34375
+   },
+   "15": {
+    "d_a": 0.06964511424303055,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.84375
+   },
+   "16": {
+    "d_a": 0.00433499738574028,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.3333333333333333
+   },
+   "17": {
+    "d_a": 0.05442499741911888,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.8229166666666666
+   },
+   "18": {
+    "d_a": 0.002352318726480007,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.28125
+   },
+   "19": {
+    "d_a": 0.017042458057403564,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7291666666666666
+   },
+   "2": {
+    "d_a": 0.0008771018474362791,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.22916666666666666
+   },
+   "20": {
+    "d_a": 0.002352318726480007,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.28125
+   },
+   "21": {
+    "d_a": 0.017042458057403564,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7291666666666666
+   },
+   "22": {
+    "d_a": 0.002692461246624589,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.3020833333333333
+   },
+   "23": {
+    "d_a": 0.06384479999542236,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.8333333333333334
+   },
+   "24": {
+    "d_a": 0.0007097825291566551,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.19791666666666666
+   },
+   "25": {
+    "d_a": 0.026462260633707047,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7708333333333334
+   },
+   "26": {
+    "d_a": 0.0016617694636806846,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.25
+   },
+   "27": {
+    "d_a": 0.04517534747719765,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.8020833333333334
+   },
+   "28": {
+    "d_a": 0.002352318726480007,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.28125
+   },
+   "29": {
+    "d_a": 0.017042458057403564,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7291666666666666
+   },
+   "3": {
+    "d_a": 0.012668432667851448,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.6979166666666666
+   },
+   "30": {
+    "d_a": 0.0017542036948725581,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.2604166666666667
+   },
+   "31": {
+    "d_a": 0.025336865335702896,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.75
+   },
+   "4": {
+    "d_a": 0.0008771018474362791,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.22916666666666666
+   },
+   "5": {
+    "d_a": 0.012668432667851448,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.6979166666666666
+   },
+   "6": {
+    "d_a": 0.0007097825291566551,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.19791666666666666
+   },
+   "7": {
+    "d_a": 0.026462260633707047,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7708333333333334
+   },
+   "8": {
+    "d_a": 0.0007097825291566551,
+    "d_b": 0.004903533070375943,
+    "d_c": 0.00022923946380615234,
+    "input_composite": 0.19791666666666666
+   },
+   "9": {
+    "d_a": 0.026462260633707047,
+    "d_b": 0.03877696212663295,
+    "d_c": 0.0011896491050720215,
+    "input_composite": 0.7708333333333334
+   }
+  },
+  "predictions": {
+   "P1": "GR00T layout effect L_groot = mean_c [s(c, fam) - s(c, new)] > 0, 95% CI excluding 0",
+   "P2": "pi0.5 compound effect C_pi05 = mean_known sbar - mean_new sbar > 0, 95% CI excluding 0",
+   "P3": "DD = (L_groot - C_groot) - (L_pi05 - C_pi05) > 0, 95% CI excluding 0",
+   "double_dissociation": "P1, P2, P3, and L_groot > C_groot and C_pi05 > L_pi05 (points)",
+   "kill_two_axes": "DD CI includes 0 and in both models L and C both > 0 (CIs exclude 0) with L - C CI including 0: both factors hurt equally in both models -> the two-axes story is dropped",
+   "otherwise": "inconclusive",
+   "partial": "P3 without P1 or P2, or P1 and P2 without P3",
+   "reversed": "DD < 0 with CI excluding 0",
+   "uninformative": "a model with success <= 0.05 in all three non-baseline cells is uninformative; both -> the experiment is uninformative"
+  },
+  "secondary": "g (grasped the named object, or success) and p (success given g); log-odds scale; pick-and-place pairs only (K1-K6, N1-N6); interaction I per model; per-cell N1 input novelty, the manipulation check new - familiar on d_a / d_b / d_c, and Spearman of the task composite with failure",
+  "status": "PRE-REGISTERED N2 (FLAWED_COMPOSITION 4.11)",
+  "written_before": "any N2 rollout, smoke included"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pn2__s0__d781c8af",
+ "schema": 1,
+ "script": "experiments/prereg/pn2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-30T12:33:06+00:00",
+ "stream": null,
+ "tag": "pn2"
+}

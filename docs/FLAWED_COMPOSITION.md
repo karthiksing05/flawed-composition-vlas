@@ -744,6 +744,85 @@ The BindVLA blocks are floored: ranks within them mostly separate 2 or 3 tasks f
 - Sealed LIBERO-90-C identities were inferred from salted hashes and used only for exclusion (0 of the 113 tasks are sealed).
 - The overcap render shards were cancelled while they were still pending, and one tail-lab job rendered all 113 tasks.
 
+### 4.11 N2: compound against layout in one scene (protocol fixed 2026-10-30, before any N2 rollout; m3_prereg tag pn2)
+
+Question: N1's split (GR00T / X-VLA failures track input novelty on Li's suites, pi0.5's track compound novelty on LIBERO-90)
+is confounded with benchmark, tasks and scenes. N2 crosses the two factors inside one scene, so that only the factor changes.
+No training. Scripts: `experiments/fc_n2_tasks.py`, `fc_n2_client.py`, `fc_n2_roll.sh`, `fc_n2_novelty.py`, `fc_n2_read.py`,
+`fc_n2_record.py`; pre-registration `experiments/prereg/pn2.py`. Budget: 5 A40-h.
+
+**Scene and factors.**
+- The scene is LIBERO-Goal's kitchen table: black bowl, cream cheese, wine bottle and plate (movable); wooden cabinet, flat
+  stove and wine rack (fixtures). Both checkpoints were fine-tuned on the same 40 LIBERO tasks, LIBERO-Goal included
+  (pi0.5_libero; ar0s/groot_libero, `lifelong_ood/policy/backbone_groot.py`), so "known" means the same thing for both.
+- Every N2 BDDL is LIBERO-Goal's `put_the_cream_cheese_in_the_bowl.bddl` with only its language, objects of interest and goal
+  replaced. Objects, distractors, fixtures and regions are identical across all 16 tasks.
+- **Factor A, compound.** 8 known tasks are LIBERO-Goal's own object-to-target tasks (its prompt, its goal atom): bowl on
+  plate, bowl on stove, bowl on cabinet, bottle on cabinet, bottle on rack, cheese in bowl, open the top drawer and put the
+  bowl inside, push the plate to the front of the stove. 8 new tasks re-pair the same scene's atoms: cheese on plate, cheese
+  on stove, cheese on cabinet, bottle on plate, bottle on stove, bottle in bowl, open the top drawer and put the cream cheese
+  inside, push the bowl to the front of the stove. `fc_n2_novelty.py` checks this by `factors.py`'s parse against the 40
+  training tasks: a known task's (object type, target, region) slot occurs in some training task; a new task's does not,
+  while its object is moved and its target is used in some training task.
+- **Factor B, layout.** Familiar: LIBERO's own placement sampler on the scene's training regions (seeds 600000 + k).
+  New: the same state k with all four movable objects relocated (seed 700000 + k). Each object is at least 0.10 m from its
+  own training position (the mean over the template task's 50 stored init states, whose largest deviation is 0.027 m), inside
+  the box spanned by the four training positions widened by 0.08 m. Objects keep 0.02 m clearance from each other and the
+  fixtures and stay off the stove-front region. A layout is accepted only if, over 10 settle steps of the dummy action, no
+  object moves more than 2 cm in the plane and none drops more than 2 cm beyond its drop from the familiar state. Swaps into another object's training spot are allowed. Fixtures do not move, so the stove,
+  cabinet and rack targets keep their training positions.
+- Start states 0-3 are the smoke set and 4-23 the main set (20 episodes per task). All 16 tasks of a layout use the same
+  states, and every cell and both models use the same noise seeds (the server's branch seed 13000000 + 1000 k).
+
+**Rollouts.** `serve_guided.py` in mode `ours` (the frozen policy) and `libero_client.py` unchanged; `fc_n2_client.py` only
+adds the N2 suite to LIBERO's benchmark dictionary. Each episode runs through the client's branch path, which builds a fresh
+env and re-seeds it per episode. Prompt = LIBERO's file-name instruction; 300 steps; replan every 5; bind tracking on.
+Per episode: s = success; g = success, or the first object moved while the commanded gripper is closed is the task's
+object; p = s given g.
+
+**N1's input novelty.** d_a, d_b and d_c (N1's definitions, the 40 LIBERO tasks as training set), from renders of main
+states 4-13; composite = mean within-N2 rank. Recorded per task and cell before any rollout (results/flawed/n2_novelty.json):
+
+| cell (compound / layout) | d_a (m) | d_b | d_c | composite |
+|---|---|---|---|---|
+| known / familiar | 0.0023 | 0.0049 | 0.0002 | 0.26 |
+| known / new | 0.0308 | 0.0388 | 0.0012 | 0.76 |
+| new / familiar | 0.0023 | 0.0049 | 0.0002 | 0.27 |
+| new / new | 0.0333 | 0.0388 | 0.0012 | 0.77 |
+
+The layout factor moves N1's input novelty and the compound factor does not. The new layouts move each object 0.20 to
+0.24 m on average from its training position (at least 0.107 m), but d_a rises only to about 0.03 m: N1's d_a takes the
+nearest referent of any of the 40 training tasks, and the relocated objects land near other tasks' referents.
+
+The compound check by `factors.py` agrees with the design: each known slot occurs in libero_goal (K1 also in all of
+libero_spatial); no new slot occurs in any of the 40 tasks.
+
+**Estimators** (per model, probability scale; s(c, l) = task-cell success, c over compounds).
+- Layout effect L = mean_c [s(c, fam) − s(c, new)]. Compound effect C = mean over known c of s̄(c) − mean over new c of s̄(c),
+  with s̄ the mean over layouts. Interaction I = layout drop on known − layout drop on new.
+- Model × factor contrast DD = (L_GR00T − C_GR00T) − (L_pi0.5 − C_pi0.5).
+- CIs: 2,000-draw percentile bootstrap (seed 0), resampling compounds within each status and start states, jointly for both
+  models.
+
+**Pre-registered predictions and criteria** (from N1).
+- Gate (after the smoke): a model whose known / familiar smoke success is below 0.20 is floored. Then stop and report; no
+  main run.
+- P1: L_GR00T > 0, CI excluding 0. P2: C_pi0.5 > 0, CI excluding 0. P3: DD > 0, CI excluding 0.
+- **Double dissociation** holds if P1, P2 and P3 hold and L_GR00T > C_GR00T and C_pi0.5 > L_pi0.5 (points).
+- **Partial**: P3 without P1 or P2, or P1 and P2 without P3. **Reversed**: DD < 0 with its CI excluding 0.
+- **Kill (two axes dropped)**: DD's CI includes 0 and, in both models, L and C are both > 0 with CIs excluding 0 while L − C's
+  CI includes 0. Both factors then hurt equally in both models.
+- **Uninformative**: a model with success ≤ 0.05 in all three non-baseline cells; if both, the experiment is uninformative.
+- Otherwise inconclusive.
+- Secondary, not tested: g and p; the log-odds scale; the pick-and-place pairs alone (K1-K6, N1-N6); I; per-cell input
+  novelty, the manipulation check new − familiar on d_a, d_b, d_c, and the Spearman of the task composite with failure.
+- **Known weaknesses, stated before the read.**
+  - 8 compounds per status: the compound effect is a between-task contrast with little power. The layout effect is within
+    task.
+  - New compounds can be physically harder (a bottle standing on a plate, cheese on a stove's burner) under LIBERO's strict
+    On. The compound factor carries that along with novelty; g separates the grasp from the placement.
+  - The layout factor moves only movable objects; fixture targets stay put.
+
 ---
 
 ## 5. Resolution: removing debt in VLA architectures
