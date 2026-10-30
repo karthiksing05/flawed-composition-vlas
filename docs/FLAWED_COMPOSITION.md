@@ -374,6 +374,77 @@ pushed shut) is scored at 0.25, 0.5 and 0.75 of its length.
     fixed-fraction frames, and object swaps are restricted to transport tasks (the first swap check produced instructions
     such as "close the black bowl").
 
+### 4.6 D0/D1 results (2026-10-29; ledger fc_d1 tag d01; results/flawed/d1_read.json)
+
+- Frames: 888 IN frames over 76 training tasks and 1,386 DEV frames over 290 demos of the 29 dev tasks.
+- Purity frames: 345, from 30 in-support tasks (22 for the goal token).
+- Bypass pairs: 63 tasks. Cost: 0.30 A40-h.
+
+**Debt table** (task-bootstrap 95% CIs; action error in normalised units, first 10 steps).
+
+| | main2 | C1 | vanilla |
+|---|---|---|---|
+| purity δ^P, binder output (tok) | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | no binder |
+| purity δ^P, expert-read values (kv): object / goal / mean | 0.33 / 0.62 / 0.48 [0.39, 0.57] | 0.80 / 0.57 / 0.69 [0.65, 0.72] | 0.14 / 0.14 / 0.14 [0.13, 0.15] |
+| probe: goal atom from the object message, tok / kv (chance 0.32) | 0.45 / 0.57 | 0.44 / 0.65 | – / 0.70 (chance 0.31) |
+| probe: object atom from the goal message, tok / kv (chance 0.28) | 0.57 / 0.69 | 0.50 / 0.72 | – / 0.79 |
+| combination: E_in (43 cells) → E_dev (29 tasks) | 0.49 → 1.09 | 0.60 → 1.17 | 0.48 → 1.02 |
+| combination δ^F_rel | **1.21** [0.55, 2.15] | 0.95 [0.42, 1.72] | 1.13 [0.56, 1.96] |
+| δ^F_rel on grasp / release frames | 0.36 [0.13, 0.63] / 0.99 [0.49, 1.61] | 0.39 / 0.83 | 0.48 / 1.12 |
+| δ^F_rel, flow loss / site error | 2.20 / 0.81 | 1.25 / 0.50 | 2.17 / 1.02 |
+| bypass δ^B (full bypass swap) | 0.58 [0.54, 0.63] | 0.59 [0.54, 0.65] (state only) | 0.65 [0.62, 0.69] |
+| bypass, state-only / global-only swap | 0.57 / 0.18 | 0.59 / – | 0.59 / – |
+| raw output change: role / bypass / state / global swap | 0.61 / 0.75 / 0.72 / 0.09 | 0.52 / 0.66 / 0.66 / – | 0.53 / 0.91 / 0.72 / – |
+| in-support error: intact → bypass cut (I) → cut + state mean | 0.495 → **0.524** → 1.24 | 0.594 → **0.594** → 1.42 | 0.481 → **0.680** → 1.47 |
+
+**Verdicts against the pre-registered falsifiers.**
+- **D1a holds, but only as a test of the construction.**
+  - Combination debt is δ^F_rel = 1.21 [0.55, 2.15]. Binder-output purity debt is exactly 0, as the per-role binder
+    guarantees.
+  - At the level the expert reads, after the frozen text layers mix the slots, purity debt is 0.48 [0.39, 0.57]. Against
+    that level the comparison is inconclusive: the lower bound 0.55 overlaps 0.57.
+  - Over half of the summed excess error comes from three drawer tasks (:22 at 4.7, :7 at 2.5, :11 at 2.2). The median
+    per-task excess is 0.24, which is 0.49 relative.
+- **D1b holds for main2.**
+  - Spearman ρ(δ^F, dev failure) = 0.36 [0.07, 0.58] (95 of the 2,000 draws were degenerate). The secondary
+    named-contact failure gives 0.39 [0.03, 0.66].
+  - The result is fragile. Failure is tied at 1.0 on 26 of the 29 tasks, so ρ mostly says that main2's three solved tasks
+    (:14, :40, :60) have low combination debt: :40 has the lowest (−0.08), and :60 is 24th of 29.
+  - The D0 split score predicts the same failure about as well (ρ = 0.37 [0.00, 0.62], secondary). So D1b does not show
+    that the measured debt adds information beyond task novelty.
+  - Not significant for C1 (0.19 [−0.08, 0.44]) or vanilla (0.13 [−0.25, 0.53]). Their failures are almost all ties.
+- **D1c is partial: insufficiency rose, bypass debt did not fall.**
+  - dI = I_C1 − I_main2 = +0.070 [0.042, 0.108]. dB = +0.011 [−0.018, 0.041], which includes 0.
+  - Removing the global token did not lower the share of output change that comes through the bypass. In main2 the
+    global token carries little (global-only share 0.18, raw change 0.09). The state carries the bypass in both models,
+    and C1's state share is, if anything, higher (state-only dB = +0.024 [−0.006, 0.053]).
+  - So the relocation reading of C1 holds only for its cost (insufficiency), not as a measured drop in bypass debt.
+- **D0 is falsified.**
+  - ρ(D0 score, δ^F_main2) = −0.05 [−0.40, 0.30].
+  - The CD bin alone is no better (−0.11 [−0.48, 0.24]), nor are the binder and motor sub-scores (0.01 and −0.05).
+  - Support counted from the split does not rank the measured per-task combination debt. The largest measured debts are
+    drawer tasks, which the split ranks as mid-support.
+
+**What this says.**
+- Every architecture carries combination debt of about the same size: δ^F_rel 0.95 to 1.21, with overlapping CIs, for
+  main2, C1 and vanilla. The bottleneck neither created nor removed it.
+- The excess error is larger at release (0.83 to 1.12) than at grasp (0.36 to 0.48). This matches 12.4's finding that the
+  gripper reaches the bound object more often than it completes the placement.
+- vanilla's kv purity debt (0.14) is lower than BindVLA's (0.48 to 0.69). The kv ratios are not comparable across
+  architectures, though. vanilla's own-role swap changes the role words' own embeddings, while BindVLA's slot position
+  receives the change only through the binder.
+- All three models still decode the other role's atom from a role's message well above chance (probe 0.44 to 0.79 vs about
+  0.3). The source is natural co-variation (layout, time), not the interventional dependence that the tok purity rules out.
+
+**Could not be measured, and why.**
+- Purity at the binder for vanilla: there are no slots. Only the kv level is measured, at the role words. The referent
+  image cells enter vanilla's interface and bypass definitions but not its purity score.
+- A KV-level interchange combination test (object-slot KV from one training compound, goal-slot KV from another, on dev
+  frames) was not run. δ^F uses the dev joint message itself. For BindVLA this equals the slot-token interchange by
+  construction; at the KV level it does not.
+- Purity covers only the 30 in-support tasks that have both swaps in their scene. LIBERO-Object (one task per scene) and
+  LIBERO-Spatial (one goal) have none.
+
 ---
 
 ## 5. Resolution: removing debt in VLA architectures
