@@ -1603,6 +1603,77 @@ object factor, where (Suff) says it belongs.
 
 **Budget.** 1 A40-h.
 
+**Results (2026-10-31; ledger fc_a1d tag a1d; results/flawed/a1d_read.json)**
+
+- 320 episodes per model, 5 models, no episode errors.
+- Grasp identity holds for every Ad model: 51 of 51, 41 of 41 and 41 of 41 groups, and 50 of 50 for each ablation.
+
+**Cell table, pick-and-place pairs.**
+
+| arm | s known | s new | g known | g new | p_s known | p_s new | p_r new |
+|---|---|---|---|---|---|---|---|
+| Ad | 0.69 [0.46, 0.93] | 0.50 [0.34, 0.65] | 0.88 [0.71, 0.99] | 0.70 [0.53, 0.86] | 0.79 [0.57, 0.95] | 0.72 [0.59, 0.84] | 0.76 [0.62, 0.87] |
+| Ad_tilt | 0.75 [0.53, 0.94] | 0.42 [0.23, 0.63] | 0.94 [0.80, 1.00] | 0.82 [0.62, 0.97] | 0.80 [0.57, 0.96] | 0.51 [0.25, 0.84] | 0.60 [0.34, 0.88] |
+| Ad_fing | 0.76 [0.53, 0.96] | 0.64 [0.45, 0.82] | 0.93 [0.75, 1.00] | 0.78 [0.55, 0.94] | 0.82 [0.60, 0.98] | 0.83 [0.66, 0.96] | 0.85 [0.71, 0.97] |
+| Ac (5.7) | 0.68 [0.42, 0.92] | 0.27 [0.14, 0.41] | 0.87 [0.71, 0.99] | 0.69 [0.52, 0.84] | 0.78 [0.54, 0.95] | 0.39 [0.18, 0.66] | 0.43 [0.25, 0.68] |
+| Hb (5.6) | 0.67 [0.49, 0.85] | 0.01 [0.00, 0.03] | 0.88 [0.80, 0.96] | 0.18 [0.06, 0.31] | 0.76 [0.59, 0.90] | 0.03 [0.00, 0.12] | 0.05 [0.00, 0.15] |
+| Rb (5.6) | 0.77 [0.56, 0.95] | 0.01 [0.00, 0.02] | 0.91 [0.80, 0.99] | 0.16 [0.07, 0.26] | 0.84 [0.67, 0.96] | 0.03 [0.00, 0.15] | 0.07 [0.00, 0.23] |
+
+- Per seed, Ad's s(known) is 0.76, 0.69 and 0.63, and its s(new) 0.68, 0.42 and 0.41.
+
+**Criteria.**
+- **C1 holds:** +0.02 [−0.14, 0.19]. The predicted relocation into insufficiency did not appear.
+- **C2 fails:** 0.72 [0.46, 1.19]. Both the point (< 0.8) and the lower bound (< 0.6) miss.
+- **C3 fails** on 4 of 6 pairings (table below).
+- **C4 holds:** +0.50 [0.34, 0.64] against Hb and against Rb.
+
+| pairing | g_o | g | p_t | p | predicted s | observed s | D |
+|---|---|---|---|---|---|---|---|
+| N1 cheese → plate | 0.53 | 0.53 | 0.97 | 0.69 | 0.52 | 0.37 | −0.15 [−0.26, −0.05] |
+| N2 cheese → stove | 0.53 | 0.55 | 0.97 | 0.70 | 0.52 | 0.38 | −0.13 [−0.26, −0.02] |
+| N3 cheese → cabinet | 0.53 | 0.53 | 0.88 | 0.69 | 0.47 | 0.37 | −0.10 [−0.21, 0.01] |
+| N4 bottle → plate | 0.86 | 0.87 | 0.97 | 0.71 | 0.83 | 0.62 | −0.21 [−0.35, −0.09] |
+| N5 bottle → stove | 0.86 | 0.87 | 0.97 | 0.85 | 0.83 | 0.73 | −0.10 [−0.20, −0.00] |
+| N6 bottle → bowl | 0.86 | 0.85 | 0.62 | 0.65 | 0.54 | 0.55 | +0.01 [−0.15, 0.21] |
+
+**Verdict (pre-registered order): "not compositional (fails: C2, C3)".**
+- Cutting the bypass nearly doubles new-pairing success. Ad − Ac is +0.24 [0.05, 0.45] on s(new) and +0.33 [0.09, 0.55] on
+  p(new). On s(known) it is +0.02 [−0.03, 0.08].
+- The bottle pairings recover the most: N4 from 0.12 to 0.62, N5 from 0.32 to 0.73, N6 from 0.08 to 0.55. That matches the
+  prediction.
+- Each cut matters, though the fingers less clearly:
+  - Ad − Ad_tilt is +0.09 [−0.20, 0.37] on s(new). Per pairing, putting the tilt back sends N4 and N6 to 0.15 and 0.10.
+  - Ad − Ad_fing is −0.14 [−0.26, −0.01]. With one seed, keeping the fingers scored higher on s(new).
+
+**What limits C3 now (descriptive).**
+- **The cheese pairings track the cheese's own known task, seed by seed.** K6 against N1 / N2 / N3, success:
+  - seed 0: 0.50 against 0.50 / 0.50 / 0.50;
+  - seed 1: 0.20 against 0.20 / 0.20 / 0.20;
+  - seed 2: 0.30 against 0.40 / 0.45 / 0.40.
+
+  The cheese's success given a grasp is its own (p 0.69-0.70 on new targets; p 0.62 pooled on K6), whatever the target. The
+  two-factor prediction takes p_t from the bowl's secure hold (0.97) and overshoots.
+  - This is (Suff) failing for the cheese: the carry outcome depends on the held object's physics, here grasp security, which
+    no place-term input can supply.
+  - The pre-registered three-factor split confirms it for the cheese. It puts the hold-and-carry factor on the object side:
+    D3 = +0.02, +0.03 and +0.02 for N1-N3, with CIs [0.00, 0.06], [0.00, 0.08] and [0.00, 0.05].
+- **For the bottle the three-factor split is not usable as defined.** Its arrival test (within 3 cm of the target reference while
+  held) almost never fires on the bottle's known targets (a_o = 0.10), because the cabinet and rack reference sites are not
+  where held objects come to rest. D3 is therefore +0.48 to +0.66 for N4-N6. This is a flaw of the estimator, recorded as
+  found.
+- **N4 is the out-of-support carry predicted in 5.7.** Its carry distance (0.26 m) exceeds every plate carry in training
+  (0.12-0.17 m), and it has the largest deficit (−0.21).
+
+**Descriptive class.**
+- K7 and N7: 0.
+- K8: 0.00-0.05.
+- N8 (push the bowl): 0.65-0.85 for Ad, against 0.15-0.20 for Ac and 0 for Hb and Rb.
+
+**Deviations.** `experiments/fa1d_roll.py` was created on the login node by a `sed` copy of fa1c_roll.py, not with the edit
+tools. No computation ran there. It was edited afterwards with the edit tools, before the pre-registration.
+
+**Cost.** 0.42 A40-h (training). CPU: rollouts 3.70 CPU-job-h (10 jobs); proxy, regression, swap and read about 0.1 h.
+
 ---
 
 ## 6. Experiments, order and cost
