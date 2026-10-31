@@ -33,10 +33,12 @@ ROLLDIR = {"Hb": "a1b_roll", "Rb": "a1b_roll", "Ab": "a1b_roll", "Ab_cmd": "a1b_
 
 
 class Read:
-    def __init__(self, A, abl, refs):
-        """A: the factored arm (3 seeds); abl: its seed-0 ablations; refs: earlier arms shown beside it, as (name, seeds)."""
-        self.A, self.abl = A, tuple(abl)
-        self.main = ("Hb", "Rb", A)
+    def __init__(self, A, abl, refs, H="Hb", R="Rb", layout="familiar"):
+        """A: the factored arm (3 seeds); abl: its seed-0 ablations; refs: earlier arms shown beside it, as (name, seeds).
+        H, R: the holistic and role-routed baselines (stage 1g on: retrained on the same data as A); layout: N2's familiar or new
+        cells.  The defaults are stages 1b-1f's read, unchanged."""
+        self.A, self.abl, self.H, self.R, self.layout = A, tuple(abl), H, R, layout
+        self.main = (H, R, A)
         self.runs = [(m, s) for m in self.main for s in SEEDS] + [(m, 0) for m in self.abl]
         self.refs = list(refs)
         self.all_runs = self.runs + [(m, s) for m, ss in self.refs for s in ss if (m, s) not in self.runs]
@@ -49,7 +51,7 @@ class Read:
     def load(self):
         n2 = json.load(open(os.path.join(OUT, "n2_tasks.json"), encoding="utf-8"))
         cal = json.load(open(os.path.join(OUT, "a1_calib.json"), encoding="utf-8"))["pairs"]
-        fam = [t for t in n2["tasks"] if t["layout"] == "familiar"]
+        fam = [t for t in n2["tasks"] if t["layout"] == self.layout]
         comps = sorted({t["compound"] for t in fam}, key=lambda c: (c[0] != "K", int(c[1:])))
         ks = n2["states"]["main"]
         info = {t["compound"]: t for t in fam}
@@ -126,7 +128,7 @@ def run(rd, out_name):
     for k, v in X.items():
         for x in ("S", "G", "R"):
             assert np.isfinite(v[x]).all(), (k, x)
-    A = rd.A
+    A, HB, RB = rd.A, rd.H, rd.R
     groups = {m: SEEDS for m in rd.main}
     groups.update({m: (0,) for m in rd.abl})
     groups.update({m: tuple(ss) for m, ss in rd.refs})
@@ -143,15 +145,15 @@ def run(rd, out_name):
 
     def evaluate(kn, nw, kk):
         st = {m: arm_stats(Ps[m], kn, nw, kk) for m in Ps}
-        c = {"C1": st[A]["s_known"] - st["Hb"]["s_known"], "C2": st[A]["ratio"],
-             "C4_vs_H": st[A]["s_new"] - st["Hb"]["s_new"], "C4_vs_R": st[A]["s_new"] - st["Rb"]["s_new"]}
+        c = {"C1": st[A]["s_known"] - st[HB]["s_known"], "C2": st[A]["ratio"],
+             "C4_vs_H": st[A]["s_new"] - st[HB]["s_new"], "C4_vs_R": st[A]["s_new"] - st[RB]["s_new"]}
         for y in list(rd.abl) + [m for m, _ in rd.refs]:
             for k in ("s_known", "s_new", "prel_new", "g_new", "p_new"):
                 c[f"{A}_minus_{y}_{k}"] = st[A][k] - st[y][k]
         return st, c
 
     def dvals(kk):
-        return {f"D_{m}_{j}": d["D"] for m in (A, "Hb", "Rb") for j, d in mult(Ps[m], comps, kk, info).items()}
+        return {f"D_{m}_{j}": d["D"] for m in (A, HB, RB) for j, d in mult(Ps[m], comps, kk, info).items()}
 
     idx = np.array([comps.index(c) for c in PRIMARY])
     kn, nw = idx[:6], idx[6:]
@@ -174,7 +176,7 @@ def run(rd, out_name):
 
     cells = {m: {k: dict(est=pst[m][k], ci=ci([d[m][k] for d in ds])) for k in pst[m]} for m in pst}
     con = {k: dict(est=pc[k], ci=ci([d[k] for d in dc])) for k in pc}
-    v = dict(floor=cells["Hb"]["s_known"]["est"] < 0.5, C1=con["C1"]["est"] >= -0.10,
+    v = dict(floor=cells[HB]["s_known"]["est"] < 0.5, C1=con["C1"]["est"] >= -0.10,
              C2=con["C2"]["est"] >= 0.8 and con["C2"]["ci"][0] >= 0.6,
              C3=all(con[k]["ci"][0] <= 0 <= con[k]["ci"][1] for k in con if k.startswith(f"D_{A}_")),
              C4=all(con[k]["est"] > 0 and con[k]["ci"][0] > 0 for k in ("C4_vs_H", "C4_vs_R")))
@@ -184,7 +186,7 @@ def run(rd, out_name):
         v["verdict"] = "compositional"
     else:
         v["verdict"] = "not compositional (fails: " + ", ".join(k for k in ("C1", "C2", "C3", "C4") if not v[k]) + ")"
-    mt = {m: mult(Ps[m], comps, np.arange(n), info) for m in [A, "Hb", "Rb"] + [x for x, _ in rd.refs]}
+    mt = {m: mult(Ps[m], comps, np.arange(n), info) for m in [A, HB, RB] + [x for x, _ in rd.refs]}
     per = {c: {f"{m}_s{sd}": dict(s=float(X[(m, sd)]["S"][i].mean()), g=float(X[(m, sd)]["G"][i].mean()),
                                   r=float(X[(m, sd)]["R"][i].mean())) for m, sd in rd.all_runs} for i, c in enumerate(comps)}
     habit = {}
@@ -211,7 +213,7 @@ def run(rd, out_name):
                 else:
                     diff += 1
         gid[f"{m}_s{sd}"] = dict(identical=same, differ=diff, never_held=none, share_identical=same / (same + diff) if same + diff else float("nan"))
-    res = dict(A=A, phase="main", layout="familiar", n_states=n, compounds=comps, primary=PRIMARY, descriptive=DESCR, verdict=v,
+    res = dict(A=A, phase="main", layout=rd.layout, n_states=n, compounds=comps, primary=PRIMARY, descriptive=DESCR, verdict=v,
                cells=cells, contrasts=con, multiplicativity=mt, per_compound=per, habit=habit, grasp_identity=gid, errors=err)
     json.dump(res, open(os.path.join(OUT, out_name), "w", encoding="utf-8"), indent=1)
     print(json.dumps(dict(verdict=v), indent=1))

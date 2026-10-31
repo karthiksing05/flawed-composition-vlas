@@ -1950,6 +1950,88 @@ So N6 counts in C3 and in 3F. A failure there is recorded as a failure of (Suff)
 **Cost.** 0.25 A40-h (training, 3 × 3-6 min plus start-up). CPU: rollouts 2.1 CPU-job-h (3 jobs); swap, read and pre-registration
 under 0.05 h.
 
+### 5.12 Stage 1g: support by generated varied-layout carries; the first layout test (protocol fixed 2026-10-31, before any stage-1g rollout; m3_prereg tag pa1g)
+
+**Measured weakness (5.8-5.10).** (Supp) over the carry distance. Every target's training carries come from one layout:
+- pooled, 0.10-0.17 m and 0.24-0.33 m (demo start states, a1g_gen.json);
+- N3 needs 0.39 m and N4 0.26 m from the bottle's spot.
+
+Sharing the place term (1e, 1f) pooled the support, but it could not create carries that no demo makes. No N2 new-layout cell
+has been read so far.
+
+**Principle.** The support condition of 3.4, met by data. The place term's input (the foot in the canonical frame) must be
+covered by training wherever a test lands. The cover comes from new trajectories of the known pairings only. No new pairing is
+ever shown, so composition is still what the new cells test.
+
+**The change: data, not architecture.** A scripted oracle-state planner (`experiments/fa1g_plan.py`) generates carries. It
+never replays or executes a demo action.
+- **Keypoints fitted from the demos' recorded states** (mode stats, results/flawed/a1g_keypoints.json). Per known pick-and-place
+  task, medians over the 50 demos of:
+  - the grasp offset (end effector minus object at the first close command) and the grasp rotation;
+  - the carry height;
+  - the release offset (end effector minus target at the first open command) and the release rotation.
+- **Layouts.** Per attempt, N2's familiar sampler is run with seed 900000 + 1000 · task + k. N2's own seeds are 600000-600023
+  and 700000-700023, so no evaluation state is used. Then the four movable objects are relocated uniformly in N2's layout box,
+  with N2's clearance and settle rules. The 0.10 m exclusion from the training spot is dropped, so that both familiar-like and
+  relocated layouts occur. The movable targets (plate, bowl) move too.
+- **Episodes.** Each episode is the rollouts' own: a fresh env, 10 dummy steps, at most 300 steps. A proportional controller
+  runs on the live state through these steps: approach, descend, close, lift to the carry height, carry above the release
+  point, descend, open, retreat. Waypoints are jittered (1 cm, carry height 2 cm), and there is 0.03 action noise.
+- **Kept only if LIBERO's success predicate fires.** 50 kept per task for K1-K6. Attempts per task: 78, 63, 53, 133, 86, 72.
+- **Rows** (`merge`, DATA/gen_g.npz, labelled gen = 1, demo ids 100-149). They have demos.npz's fields, no-op steps dropped by
+  the demos' rule, and held / offset from the same Held machine. 25,779 rows in all.
+- **Generated carry distances** (start, object to target; min, median, max, results/flawed/a1g_gen.json):
+
+| task | demos | generated |
+|---|---|---|
+| K1 bowl → plate | 0.12, 0.14, 0.17 | 0.18, 0.26, 0.40 |
+| K2 bowl → stove | 0.24, 0.26, 0.28 | 0.07, 0.30, 0.44 |
+| K3 bowl → cabinet | 0.26, 0.28, 0.29 | 0.22, 0.35, 0.51 |
+| K4 bottle → cabinet | 0.29, 0.31, 0.33 | 0.21, 0.36, 0.52 |
+| K5 bottle → rack | 0.12, 0.14, 0.16 | 0.10, 0.27, 0.52 |
+| K6 cheese → bowl | 0.10, 0.14, 0.16 | 0.13, 0.20, 0.44 |
+
+**Arms, all on the same data** (demos plus generated, rows drawn uniformly; `experiments/fa1g_train.py --tag g`, recipe
+unchanged; seeds 0, 1 and 2):
+- **Ag** = the Ae_nosize architecture (5.9, 5.11). Its single place function, shared by every target, is the one that
+  generated support can cover for all targets at once. 5.11 found no cost to dropping the size (−0.01 against Ae).
+- **Hg, Rg** = the Hb and Rb architectures, retrained on the same union. Data are held equal, so C1 and C4 compare
+  architectures.
+
+**Rollouts.** `experiments/fa1g_roll.py` (stage 1d's episode, files named Ag / Hg / Rg). One job per model and layout, so each
+layout's 16 tasks run on one node.
+
+**Swap test** (`fa1e_swap.py`, FA1_SWAP_MODELS, -> results/flawed/a1g_swap.json). Ag must show 0 on T1-T3, T5 and T6, and at
+most 1e-4 on T4. This is asserted in the pre-registration.
+- Result before the rollouts: all three seeds give 0 on T1-T3, T5 and T6, and at most 1.1e-5 on T4.
+- Training: 77,983 rows (25,779 generated), 30,000 steps. 190-321 s per arm, 12.4 min per seed job.
+- The 1f read engine was generalised (H, R and layout parameters). With its defaults it reproduces a1f_read.json exactly:
+  cells, contrasts, multiplicativity, per-compound, habit and grasp identity are identical.
+
+**Primary read, one verdict** (`experiments/fa1g_read.py`).
+- Each layout is read on its own cells: familiar = even tids, new = odd tids.
+- Per layout: C1-C4 (engine, A = Ag, H = Hg, R = Rg) and 3F (5.11's estimator on that layout's cells). The per-layout mapping
+  is 5.11's:
+  - "uninformative" if s_H(known) < 0.5;
+  - "compositional; three-factor law holds";
+  - "compositional by C1-C4; three-factor law fails";
+  - "not compositional (fails: ...)".
+- **Verdict = "familiar: <verdict> | new layout: <verdict>".** Compositional with the guarantee iff both layouts read
+  "compositional; three-factor law holds".
+- N6 stays in, for 5.11's reason.
+
+**Predictions.**
+- Role locality and grasp identity stay exact (architecture unchanged).
+- Familiar: N4 and N3 improve now that their carries are in support. C3 keeps holding.
+- C2 stays open: it is limited by the weak known cells K5 and K6, which generated data also covers.
+- 3F's cheese bias (5.11) remains unless K6 improves.
+- New layout: Hg and Rg reach known-task parity there (the floor holds), and Ag stays within 0.10 of them (C1). Hg and Rg
+  still fail the new pairings (C4).
+- Expected: "not compositional" on both layouts, with C2 and possibly 3F failing. Any C1 failure on the new layout means the
+  factored motor is worse than the holistic head at absorbing layout variation.
+
+**Budget.** 1 A40-h (9 models). CPU: 18 rollout jobs, about 13 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost
