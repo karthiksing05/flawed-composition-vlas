@@ -1466,6 +1466,76 @@ each pairing, the distance to the nearest training onset is given in 1b's coordi
   - An earlier T4 run without the rotated noise gave 0.29 for Ac. It was replaced before the pre-registration.
 - Budget: 1 A40-h.
 
+**Results (2026-10-31; ledger fc_a1c tag a1c; results/flawed/a1c_read.json, a1c_diag.json)**
+
+- 320 episodes per model, 5 models, no episode errors.
+- Closed-loop grasp identity holds for every Ac model: 50 of 50, 42 of 42 and 41 of 41 groups, and 49 of 49 and 50 of 50 for the
+  ablations.
+
+**Cell table, pick-and-place pairs** (Hb and Rb as in 5.6).
+
+| arm | s known | s new | g known | g new | p_s known | p_s new | p_r new |
+|---|---|---|---|---|---|---|---|
+| Ac | 0.68 [0.42, 0.92] | 0.27 [0.14, 0.41] | 0.87 [0.71, 0.99] | 0.69 [0.52, 0.84] | 0.78 [0.54, 0.95] | 0.39 [0.18, 0.66] | 0.43 [0.25, 0.68] |
+| Ac_nobear | 0.67 [0.47, 0.85] | 0.32 [0.11, 0.56] | 0.90 [0.75, 1.00] | 0.74 [0.55, 0.91] | 0.74 [0.55, 0.89] | 0.43 [0.15, 0.72] | 0.47 [0.21, 0.76] |
+| Ac_noft | 0.67 [0.44, 0.87] | 0.34 [0.19, 0.53] | 0.92 [0.76, 1.00] | 0.78 [0.57, 0.94] | 0.73 [0.50, 0.91] | 0.44 [0.24, 0.71] | 0.57 [0.34, 0.83] |
+| Ab (5.6) | 0.72 [0.51, 0.91] | 0.26 [0.09, 0.46] | 0.88 [0.70, 0.99] | 0.69 [0.53, 0.83] | 0.82 [0.67, 0.93] | 0.37 [0.13, 0.64] | 0.48 [0.25, 0.73] |
+
+- Per seed, Ac's s(known) is 0.71, 0.69 and 0.62, and its s(new) 0.36, 0.21 and 0.23.
+
+**Criteria.**
+- **C1 holds:** +0.00 [−0.18, 0.19].
+- **C2 fails:** 0.40 [0.19, 0.74].
+- **C3 fails** on 4 of 6 pairings (table below). N2 and N3 now have CIs containing 0.
+- **C4 holds:** +0.26 [0.13, 0.41] against Hb and +0.26 [0.14, 0.41] against Rb.
+
+| pairing | g_o | g | p_t | p | predicted s | observed s | D | 1c gap |
+|---|---|---|---|---|---|---|---|---|
+| N1 cheese → plate | 0.53 | 0.53 | 0.97 | 0.56 | 0.52 | 0.30 | −0.22 [−0.35, −0.10] | 0.010 |
+| N2 cheese → stove | 0.53 | 0.55 | 0.97 | 0.79 | 0.52 | 0.43 | −0.08 [−0.18, 0.01] | 0.001 |
+| N3 cheese → cabinet | 0.53 | 0.52 | 0.84 | 0.68 | 0.45 | 0.35 | −0.10 [−0.21, 0.01] | 0.064 |
+| N4 bottle → plate | 0.84 | 0.85 | 0.97 | 0.14 | 0.81 | 0.12 | −0.70 [−0.85, −0.54] | 0.102 |
+| N5 bottle → stove | 0.84 | 0.85 | 0.97 | 0.37 | 0.81 | 0.32 | −0.50 [−0.65, −0.34] | 0.001 |
+| N6 bottle → bowl | 0.84 | 0.85 | 0.59 | 0.10 | 0.50 | 0.08 | −0.42 [−0.62, −0.23] | 0.000 |
+
+**Verdict (pre-registered order): "not compositional (fails: C2, C3)".**
+- The canonical frame does not move the aggregate: Ac − Ab is −0.04 [−0.14, 0.04] on s(known) and +0.01 [−0.16, 0.14] on
+  s(new).
+- Neither ablation differs from Ac. Ac − Ac_nobear on s(new) is −0.05 [−0.23, 0.11], and Ac − Ac_noft is −0.08 [−0.19, 0.03].
+
+**The support prediction, checked** (descriptive; `experiments/fa1c_diag.py`). In closed loop, Ac's onset gaps match the
+prediction: 0.000-0.006 for N1, N2, N5 and N6, 0.065 for N3 and 0.088 for N4. An in-support onset is not enough, though. The
+failures split by held object:
+- **Cheese (N1-N3): the carry stops short.**
+  - Every far release lands short of the target (overshoot 0-9%). The median end position is 0.17-0.38 m back along the bearing,
+    near the cheese's start.
+  - Placed given a hold is 0.56-0.81, about the same as the cheese's own known task K6 (0.59), which fails the same way (end
+    0.12 m back).
+  - The cheese loses or ends its hold early on known and new targets alike. That is a property of the held object, and the
+    product g_o · p_t has no term for it: p_t was measured with the bowl, a secure hold.
+  - In Proposition 3's terms this is (Suff): the place outcome depends on the held object beyond the foot.
+- **Bottle (N4-N6): the carry overshoots or never releases.**
+  - 27-43% of the failures are still held at the end.
+  - Of the far releases, 63-73% end beyond the target (median 0.07-0.12 m along the bearing and 0.06-0.09 m lateral).
+  - This happens even where the onset is in support (N5, N6).
+- **Descriptive class.**
+  - K7: 0 for every model (the bowl is grasped and the drawer never opened).
+  - K8: 0.00-0.05.
+  - N7: 0.
+  - N8: Ac 0.15-0.20 and Ac_noft 0.45, against Ab's 0.00.
+
+**What the result says.** The bearing and foot frame removed the support gap at the onset, as designed. The place term still
+fails with an unseen held object. Two of its remaining inputs carry the held object's identity, which `experiments/fa1d_proxy.py`
+measured on training states afterwards (5.8):
+- the end effector's tilt, because the bottle is grasped tilted;
+- the finger positions, because grip width depends on the object.
+
+On a new held object those inputs are off-support. This is condition (B): a bypass of the role message.
+
+**Deviations.** In the stage-1c training jobs, the job files and logs went to `.claude_tmp/pa1b`, not `pa1c`.
+
+**Cost.** 0.40 A40-h (training). CPU: rollouts 3.75 CPU-job-h (10 jobs); support, swap, read and diagnosis about 0.15 h.
+
 ---
 
 ## 6. Experiments, order and cost
