@@ -2032,6 +2032,86 @@ most 1e-4 on T4. This is asserted in the pre-registration.
 
 **Budget.** 1 A40-h (9 models). CPU: 18 rollout jobs, about 13 CPU-job-h.
 
+**Results (2026-10-31; ledger fc_a1g tag a1g; results/flawed/a1g_read.json, a1g_read_familiar.json, a1g_read_new.json)**
+
+- 320 episodes per model and layout, 9 models, no episode errors.
+- **Grasp identity is exact for Ag in both layouts:** 50/50, 47/47 and 53/53 familiar; 42/42, 38/38 and 41/41 new. Hg and Rg:
+  0 identical in every group.
+
+**Verdict (pre-registered mapping): "familiar: uninformative | new layout: uninformative".**
+- The floor failed in both layouts. Hg's s(known) is 0.48 [0.27, 0.71] on the familiar layout and 0.02 [0.00, 0.05] on the new
+  one, both below 0.5.
+- **The generated data broke the holistic baseline, not the factored arm.** Trained on demos alone, Hb had 0.67 on the familiar
+  known tasks. With the generated carries added, Hg falls to 0.48 there and to 0.02 on the new layout. Rg falls to 0.28 on the
+  new layout.
+- The protocol predicted that Hg and Rg would reach known-task parity on the new layout. That prediction was wrong, and the
+  floor rule turns this into "uninformative" by design. The criteria below are descriptive only. They decide nothing.
+
+| layout | arm | s known | s new | g known | g new | p_s new | ratio |
+|---|---|---|---|---|---|---|---|
+| familiar | Ag | 0.62 [0.36, 0.88] | 0.52 [0.39, 0.66] | 0.90 | 0.78 | 0.67 | 0.84 [0.54, 1.53] |
+| familiar | Hg / Rg | 0.48 / 0.75 | 0.01 / 0.04 | 0.71 / 0.92 | 0.09 / 0.17 | 0.15 / 0.21 | 0.03 / 0.05 |
+| familiar | Hb / Rb (5.6, demos only) | 0.67 / 0.77 | 0.01 / 0.01 | 0.88 / 0.91 | 0.18 / 0.16 | 0.03 / 0.03 | 0.01 / 0.01 |
+| new | Ag | 0.56 [0.34, 0.77] | 0.38 [0.26, 0.50] | 0.82 | 0.66 | 0.57 | 0.68 [0.43, 1.16] |
+| new | Hg / Rg | 0.02 / 0.28 | 0.00 / 0.04 | 0.23 / 0.46 | 0.06 / 0.26 | 0.00 / 0.15 | 0.00 / 0.14 |
+
+**Descriptive criteria for Ag (not a verdict).**
+- **Familiar layout:**
+  - C1: +0.14 against Hg, and −0.05 [−0.21, 0.12] against the demo-only Hb.
+  - C2: 0.84 [0.54, 1.53]. The point estimate clears 0.8 for the first time; the CI lower bound does not reach 0.6.
+  - C3: misses on one pairing. N5 is −0.10 [−0.22, −0.00]; the other five CIs contain 0.
+  - C4: +0.51 [0.39, 0.63] against Hg and +0.49 [0.35, 0.63] against Rg.
+  - 3F: fails on N2 and N3 (+0.18, +0.15) and on N5 (+0.04 [0.01, 0.08]). The cheese bias of 5.11 is still there: the
+    cheese's only known task, K6, predicts arrival at 0.52, against 0.75-0.77 observed.
+- **New layout:**
+  - C1 +0.54, C2 0.68 [0.43, 1.16], C4 +0.38 against Hg and +0.34 against Rg.
+  - C3 fails on N2 (−0.23), N3 (−0.21) and N6 (+0.20).
+  - **3F holds on all six pairings:** N1 +0.02 [−0.09, 0.14], N2 +0.02 [−0.00, 0.06], N3 +0.02 [−0.00, 0.06], N4 +0.07
+    [−0.04, 0.18], N5 +0.02 [−0.03, 0.07], N6 +0.10 [−0.07, 0.29].
+
+**What the round shows (descriptive).**
+- **The first layout test separates the architectures sharply.** On relocated layouts, Ag keeps 0.56 / 0.62 = 0.90 of its
+  known-task success and 0.38 / 0.52 = 0.73 of its new-pairing success. The holistic head, trained on the same varied-layout
+  data, keeps 0.02 / 0.48. The factored motor absorbs layout variation, and the holistic head does not even absorb it as
+  training data.
+- **Generated support helped where it was predicted to.**
+  - Ag − Ae_nosize on familiar s(new) is +0.09 [−0.02, 0.20].
+  - N4 rose from 0.43 to 0.55, and N3 from 0.42 to 0.53.
+  - The cheese's grasp rose from 0.53 to 0.67 (h_o 0.73).
+- **The known side now caps C2.** K5 (bottle on the rack, 0.17) and K6 (cheese in the bowl, 0.23) stay the weakest cells of
+  every factored arm since 5.8. The demo-only Hb gets 0.45 on both. These two cells hold s(known) at 0.62. The compound
+  bootstrap over cells ranging from 0.2 to 1.0 then puts C2's lower bound at 0.54, even with a point ratio of 0.84.
+
+**Deviations.**
+- The prediction about the baselines' new-layout parity was wrong. The verdict follows the registered floor rule regardless.
+- The waiter for the 18 rollout jobs exited when all of them had finished, not on the first one (one waiter, no overlap).
+
+**Cost.** 0.62 A40-h (training, 3 jobs of 12.4 min, 3 arms each). CPU: generation 1.3 CPU-job-h (6 jobs plus smoke), rollouts
+15.5 CPU-job-h (18 jobs), read and swap under 0.05 h.
+
+### 5.13 Where the guarantee stands after rounds 1f-1g
+
+| round | change (principle) | s known | s new | C1 | C2 ratio | C3 in CI | 3F in CI | C4 | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| 1f (5.11) | size-free place term, confirmatory (B) | 0.60 | 0.43 | −0.08 | 0.73 [0.44, 1.30] | 6/6 | 3/6 | +0.43 | not compositional (C2, 3F) |
+| 1g familiar (5.12) | generated varied-layout carries (Supp by data) | 0.62 | 0.52 | (+0.14) | (0.84 [0.54, 1.53]) | (5/6) | (3/6) | (+0.51) | uninformative (floor: Hg 0.48) |
+| 1g new layout (5.12) | same | 0.56 | 0.38 | (+0.54) | (0.68 [0.43, 1.16]) | (3/6) | (6/6) | (+0.38) | uninformative (floor: Hg 0.02) |
+
+Numbers in parentheses are descriptive (the floor failed).
+
+**Still guaranteed, for every parameter setting.** Role locality (swap tests exactly 0, T4 at most 2.5e-5) and target-blind
+grasping (grasp identity in every group, now in both layouts).
+
+**Not yet guaranteed.**
+1. **The floor and C1 reference once H is retrained on generated data.** The registered floor uses the H trained on the same
+   data. Generated data destroy that H's known-task competence, so any data-side round reads "uninformative". Choosing another
+   reference changes a registered criterion: either the demo-only Hb on the familiar layout, or a floor taken on A's own known
+   cells. **That choice is left to the user.** It is not made here after seeing the data.
+2. **(Suff) on two known cells, K5 and K6.** These cap C2's CI lower bound. Both need information that 1d removed from the
+   place term as a bypass. The bottle's tilt carries the rack placement. The cheese's arrival in a movable, small bowl couples
+   object and target, which also biases 3F (5.11, 5.12 familiar). A role-pure route for the held object's geometry, decoupled
+   from its identity, is the next architectural candidate. It is not run.
+
 ---
 
 ## 6. Experiments, order and cost
