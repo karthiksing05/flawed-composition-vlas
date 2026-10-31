@@ -1725,6 +1725,128 @@ sites. The split is computed for Ae and, from its logged rollouts, for Ad.
 
 **Budget.** 1 A40-h.
 
+**Results (2026-10-31; ledger fc_a1e tag a1e; results/flawed/a1e_read.json)**
+
+- 320 episodes per model, 4 models, no episode errors.
+- **Grasp identity.** Ae seeds 1 and 2 match in 41 of 41 and 42 of 42 groups, and Ae_nosize in 52 of 52. Ae seed 0 matches in
+  only 19 of 49.
+  - In that run the known-task half ran on a Xeon E5-2690 v4 node and the new-task half on a Xeon Gold 6132 node.
+  - Rerunning seed 0's K6 on the Gold node (scratch output, not a registered file) reproduces N1-N3 in 20 of 20 episodes.
+  - Against the registered K6 run, the first held step agrees in every episode and the end-effector position differs only in
+    the 6th decimal (8 of 20).
+  - So the break is cross-CPU floating-point rounding, not a violation of Proposition 3 (ii).
+
+**Cell table, pick-and-place pairs.**
+
+| arm | s known | s new | g known | g new | p_s known | p_s new | p_r new |
+|---|---|---|---|---|---|---|---|
+| Ae | 0.63 [0.41, 0.86] | 0.44 [0.33, 0.57] | 0.88 [0.71, 0.99] | 0.73 [0.55, 0.89] | 0.72 [0.48, 0.91] | 0.61 [0.46, 0.78] | 0.69 [0.58, 0.82] |
+| Ae_nosize | 0.62 [0.38, 0.85] | 0.60 [0.43, 0.77] | 0.89 [0.73, 1.00] | 0.80 [0.62, 0.95] | 0.69 [0.46, 0.88] | 0.75 [0.59, 0.92] | 0.79 [0.63, 0.94] |
+| Ad (5.8) | 0.69 [0.46, 0.93] | 0.50 [0.34, 0.65] | 0.88 [0.71, 0.99] | 0.70 [0.53, 0.86] | 0.79 [0.57, 0.95] | 0.72 [0.59, 0.84] | 0.76 [0.62, 0.87] |
+| Hb / Rb (5.6) | 0.67 / 0.77 | 0.01 / 0.01 | 0.88 / 0.91 | 0.18 / 0.16 | 0.76 / 0.84 | 0.03 / 0.03 | 0.05 / 0.07 |
+
+- Per seed, Ae's s(known) is 0.68, 0.63 and 0.58, and its s(new) 0.60, 0.37 and 0.37.
+
+**Criteria.**
+- **C1 holds:** −0.04 [−0.20, 0.10].
+- **C2 fails:** 0.70 [0.46, 1.16].
+- **C3 fails:**
+  - The CI contains 0 on N1 (−0.01 [−0.16, 0.13]), N2 (−0.05 [−0.16, 0.06]) and N3 (−0.00 [−0.09, 0.10]).
+  - It excludes 0 on the bottle pairings: N4 −0.27 [−0.40, −0.13], N5 −0.23 [−0.37, −0.10] and N6 −0.27 [−0.45, −0.10].
+- **C4 holds:** +0.44 [0.32, 0.56] against Hb and against Rb.
+
+**Verdict (pre-registered order): "not compositional (fails: C2, C3)".**
+
+**What the change did (descriptive).**
+- **The shared place term lost target-specific precision.** This is Proposition 2's relocation, predicted in the protocol.
+  - K1 (bowl on plate) fell from Ad's 0.97 to 0.73 strict, while its relaxed placement stayed at 0.95-1.00. The bowl ends at the
+    plate but not on it under LIBERO's check.
+  - So p_t(plate) fell to 0.73. The cheese pairings pass C3 because their predicted value fell, not because the cheese improved:
+    cheese success is 0.37-0.45, against Ad's 0.37-0.38.
+- **N4 did not improve.** It went from 0.62 (Ad) to 0.38. Pooled support over the carry distance did not buy the long carry.
+  Ae − Ad on s(new) is −0.06 [−0.17, 0.04].
+- **Ae_nosize (one seed) has the highest s(new) of any model:** 0.60, with a ratio of 0.97 [0.62, 1.63] (Ae_nosize − Ae on
+  s(new): +0.16 [0.04, 0.27]). It is an ablation with one seed and was not the registered arm, so it decides nothing. It is the
+  candidate for a confirmatory run.
+- **The corrected three-factor split** (descriptive; arrival = within the relaxed radius while held).
+  - For Ae, D3's CI contains 0 on N1-N5:
+    - N1 +0.06 [−0.03, 0.15];
+    - N2 +0.04 [0.00, 0.09];
+    - N3 +0.01 [−0.00, 0.02];
+    - N4 −0.08 [−0.18, 0.02];
+    - N5 +0.03 [−0.01, 0.06].
+  - It excludes 0 on N6: −0.18 [−0.31, −0.06].
+  - For Ad it contains 0 on N1-N3 and excludes it on N4 (−0.08 [−0.16, −0.00]), N5 (+0.04 [0.01, 0.07]) and N6 (−0.13
+    [−0.24, −0.02]).
+  - Wherever the bottle fails, it is at q. Arrival on N6 is 0.91-0.93, but placement after arrival is 0.66-0.83 against the
+    bowl target's 0.95-0.96, which was learned with the cheese. Standing a tall bottle in a bowl is (Suff).
+- **Descriptive class.** K7 and N7: 0. K8: 0.00-0.05. N8: 0.85-0.95.
+
+**Deviations.** The identity rerun is an extra check made after the read, not pre-registered. Its output stays in scratch and
+changes no registered number.
+
+**Cost.** 0.30 A40-h (training). CPU: rollouts 2.90 CPU-job-h (8 jobs); swap, regression, read and identity check about 0.1 h.
+
+### 5.10 Where the guarantee stands after stage 1 (rounds 1b-1e)
+
+**Verdict: not compositional by C1-C4 in any round.** C1 and C4 held in every round, and C2 and C3 never did. The best
+registered arm is Ad (5.8).
+
+| round | change (principle) | s known | s new | C1 | C2 ratio | C3 pairings in CI | C4 vs Hb |
+|---|---|---|---|---|---|---|---|
+| 1 (5.5) | factored, command-gated motor | 0.45 | 0.05 | fails | n/a | n/a | n/a |
+| 1b (5.6) | contact gate, offset (B, S) | 0.72 | 0.26 | +0.04 | 0.36 | 1/6 | +0.25 [0.08, 0.45] |
+| 1c (5.7) | canonical place frame (Supp by equivariance) | 0.68 | 0.27 | +0.00 | 0.40 | 2/6 | +0.26 [0.13, 0.41] |
+| 1d (5.8) | cut the held-object bypass (B) | 0.69 | 0.50 | +0.02 | 0.72 [0.46, 1.19] | 2/6 | +0.50 [0.34, 0.64] |
+| 1e (5.9) | one place term over all targets (Supp by sharing) | 0.63 | 0.44 | −0.04 | 0.70 [0.46, 1.16] | 3/6 | +0.44 [0.32, 0.56] |
+
+Stage 1's row is on the same pick-and-place, familiar-layout cells, so it is the A row of 5.6's table.
+
+**What is guaranteed (for every parameter setting, verified each round).**
+- Proposition 3 (i), role locality, is exact.
+  - The swap tests show exactly 0 change on every applicable test:
+    - T1: target role swapped in the object phase;
+    - T2: held object's identity swapped in the place phase;
+    - T3: non-role slots moved;
+    - T5: gripper rotation and fingers swapped (1d on);
+    - T6: target identity swapped (1e).
+  - T4 (rotation about the target, 1c on) shows float round-off, at most 1.1e-5.
+  - On the tests whose input they read, Hb and Rb change by a mean of 0.18-1.31 (5.6).
+- Proposition 3 (ii), target-blind grasping, holds in closed loop.
+  - For every factored arm with the contact gate, the first held step and the end-effector position there are identical in
+    every group: Ab 134 of 134 (1b), and every group for every Ac and Ad model, Ae seeds 1 and 2, and Ae_nosize.
+  - The one break, Ae seed 0, was traced to cross-CPU rounding. The grasp factor therefore transfers exactly: g on a new pairing equals g_o,
+  for example 0.53-0.55 against 0.53 (cheese) and 0.85-0.87 against 0.86 (bottle) in 5.8.
+- The holistic and role-routed heads get 0.01 on new pairings with the same oracle inputs, while the factored motor gets
+  0.44-0.50.
+
+**What is not guaranteed, and which assumption fails.** The success factorisation g_o · p_t (Proposition 3 (iv)) needs (Supp)
+and (Suff). Each failed somewhere, and each failure was measured.
+- **(Supp), carry distance.** The canonical frame (1c) removes the bearing and offset gaps by construction. The carry distance
+  stays a nuisance:
+  - N3 (0.39 m) and N4 (0.26 m) lie outside their targets' trained carries, and N4 is Ad's largest deficit.
+  - Pooling support across targets (1e) relocates the debt into insufficiency, as Proposition 2 says. The target's geometry
+    alone does not carry its release precision.
+  - The remaining lever is variation: carries from varied start positions to each target. That needs varied-layout training data
+    from a scripted oracle-state planner, labelled generated. That is the layout round, which this run did not reach.
+- **(Suff), held-object physics.**
+  - The cheese's success after a grasp is its own (0.6-0.7) on every target. On the known task too, the hold or carry fails at
+    the same rate. N1-N3 track K6 seed by seed in 5.8.
+  - Standing the bottle in the bowl (N6) fails after arrival.
+  - No place-term input can supply these, because they are properties of the object, not of the target.
+- **The law that holds instead.** Moving the hold-and-carry factor to the object side, s ≈ h_o · a_o · q_t, gives
+  multiplicativity that holds within CI on 5 of 6 pairings for Ae. It fails only on N6, the (Suff) case. This split was
+  pre-registered as descriptive in 5.8 and 5.9 and never changed a verdict. It is the candidate statement of Proposition 3
+  (iii) for a confirmatory round.
+
+**Next (not run).**
+1. A confirmatory round on Ae_nosize (3 seeds), with the three-factor law pre-registered as the primary multiplicativity test.
+2. Then the layout round with generated carries for (Supp).
+
+Stage 2 (vision slots on pi0.5 features, 5.5's plan) stays gated on C1-C4 holding on oracle state.
+
+**Total cost of rounds 1b-1e.** 1.73 A40-h (training only), plus 18.8 CPU-job-h of rollouts.
+
 ---
 
 ## 6. Experiments, order and cost
