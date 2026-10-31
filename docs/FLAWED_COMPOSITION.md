@@ -1188,6 +1188,114 @@ nodes: data and calibration about 0.15 h, dev rollouts 0.4 h, smoke 0.4 h, main 
 4. Prediction to register: A's success ≈ (stage-1b A success) × (role-binding accuracy), against H's fall.
 5. Budget: the pi0.5 feature cache plus training at about 3 A40-h, and rollouts on GPU nodes (rendering) at about 4 A40-h.
 
+### 5.6 What "compositional, with success guaranteed" means; stage 1b (contact gate, grasp offset, 3 seeds)
+
+**Definition.** A policy is *compositional over pairings* on a split if two things hold.
+1. A structural guarantee: a proposition, true for every parameter setting, that says which role inputs the action can depend
+   on in each phase. From it, success on a new pairing factorises into part competences that were measured on trained tasks.
+2. Empirical criteria C1-C4 (below), pre-registered and tested on pick-and-place pairings with oracle state.
+
+The guarantee is conditional. Section 3.2's conditions say what it needs: (F) and (B) come from the architecture, while (S) and
+the support condition (3.4) come from the data. The proposition states every assumption that does not follow from the
+architecture.
+
+**Setting.** Arm A (stage 1b's Ab). s is the simulator state, o the object role and t the target role. The velocity field is
+v = (1 − c) T_o⁻¹ v_o(φ_o) + c T_t⁻¹ v_t(φ_t). The terms read:
+- φ_o = the object slot and proprio, in the object frame;
+- φ_t = the target slot, proprio and the held-object geometry h(s), in the target frame. h(s) is the held object's position, yaw,
+  size and grasp offset. It carries no identity.
+
+The phase c ∈ {0, 1} is the held machine (`experiments/fa1b_common.py`), which reads only the simulator contacts and the height of
+the object role o. A chunk is sampled by integrating v from fixed noise. c is an input to that integration, not a function of the
+chunk.
+
+**Proposition 3 (role locality and conditional factorisation).**
+- (i) *Role locality, for every parameter setting.* If c = 0, the sampled chunk is a function of (φ_o, noise) only. It does not
+  change when t is replaced by any t′, or when any slot other than o's is changed. If c = 1, the chunk is a function of
+  (φ_t, noise) only. It does not change when o's identity is replaced, provided h is kept, or when any slot other than t's and
+  the held object's is changed.
+  - *Proof.* Each Euler step adds v(x_k) / 10. With c fixed for the query, v(x_k) is a function of x_k and of the inputs
+    listed. So by induction every x_k is, starting from x_0 = noise. ∎
+- (ii) *The grasp is target-blind in closed loop.* Take two tasks (o, t) and (o, t′) from the same start state with the same
+  noise seeds, where the scene and its physics do not depend on the goal (true for N2's BDDLs). Let τ be the first step at
+  which c turns on. By (i) and determinism, the trajectories are identical up to τ, so the law of (τ, s_τ) depends on o only.
+  Write g_o = P(τ < ∞ | o).
+- (iii) *Factorisation.* Assume (a) a pick-and-place success needs a held phase, and (b) the episode has one held segment. A
+  regrasp after a lost hold is counted against the place. Then P(success | o, t) = g_o · q_t(o), where
+  q_t(o) = E[P(success | s_τ, t) | τ < ∞, o]. By (i), after τ the actions depend on (o, s) only through φ_t, and in particular
+  through h.
+- (iv) *Transfer.* q_t(o) = q_t(o′) = p_t holds, so P(success | o, t) = g_o · p_t with g_o measured on any trained task with
+  object o and p_t on any trained task with target t, under two further conditions:
+  - **(Supp) support:** along the place phase, the law of φ_t under (o, t) stays where the place term was fit for target t. In
+    particular, h(o) must lie in the range of held geometries trained with t.
+  - **(Suff) sufficiency:** the outcome of the place phase depends on the held object only through h, and not on its mass,
+    friction or mesh beyond h.
+
+(i) and (ii) are guarantees of the architecture and are checked numerically below (the swap test, and closed-loop grasp
+identity). (iv) is not guaranteed by the architecture. On this training set (Supp) fails for every new pairing:
+- each target is placed on with one held object (plate and stove: bowl; rack: bottle; bowl: cheese), except the cabinet (bowl
+  and bottle);
+- no new pairing's held object lies inside its target's trained range of held geometry. The cheese is lower than both objects
+  trained on the cabinet (0.03 m against 0.05 and 0.28).
+
+So the factorisation g_o · p_t is a prediction that the data do not license here. C3 tests whether it holds anyway.
+
+**Empirical criteria** (pre-registered in pa1b; pick-and-place pairs K1-K6 and N1-N6, oracle state, familiar layout; A = Ab,
+H = Hb, R = Rb; success s is LIBERO's strict check; values pooled over 3 seeds).
+- **C1 parity:** s_A(known) − s_H(known) ≥ −0.10 (point estimate; CI reported).
+- **C2 compositional ratio:** s_A(new) / s_A(known) ≥ 0.8 (point), with the CI's lower bound ≥ 0.6.
+- **C3 multiplicativity:** for every new pairing (o, t), the 95% CI of s_A(o, t) − g_A(o) · p_A(t) contains 0.
+  - g_A(o) is the episode-pooled g over the known pick-and-place tasks with object o.
+  - p_A(t) is s given g, pooled over the known pick-and-place tasks with target t.
+  - Only start states are resampled for C3.
+- **C4 baselines:** s_A(new) − s_H(new) > 0 and s_A(new) − s_R(new) > 0, both CIs excluding 0.
+- **Verdict**, the first rule that applies:
+  1. s_H(known) < 0.5 → "uninformative";
+  2. C1, C2, C3 and C4 all hold → "compositional";
+  3. otherwise → "not compositional (fails: …)", listing the failing criteria in order.
+- **Descriptive class**, declared before the read: K7 / N7 (the drawer is opened before the place) and K8 / N8 (a push with no
+  grasp). These are reported per compound and never enter C1-C4.
+
+**Stage 1b changes** (from 5.5's measured weaknesses; pre-registration `experiments/prereg/pa1b.py`, m3_prereg tag pa1b).
+1. **Contact gate.** c is the held machine, not the last gripper command. c turns on when the object role touches both fingers
+   and is lifted at least 1 cm above its height at the first step. It stays on while the object touches either finger, and turns
+   off when it touches neither.
+   - Weakness: the command gate handed control to the target term on every close, including closes on air. A_nogate showed the
+     cost: best in distribution, and loses the grasp on new pairings.
+   - Principle: (B), since the phase boundary should be the physical event that separates the roles. The command was a bypass
+     proxy for it.
+   - On the demos (`results/flawed/a1b_held.json`): the machine has 1 held segment in 36-48 of 50 demos per pick task, against
+     10-45 for raw two-finger contact. It turns on 11-15 steps (median) after the first close command. On the push task K8 it
+     is on for 0.5% of steps, against 49% for raw contact.
+2. **Grasp offset.** The target term also reads the held object's position minus the end effector's, captured when the hold
+   starts, in the target frame. It still never reads the held object's identity.
+   - Principle: (S), since the place term needs the held geometry relative to the gripper.
+3. **The same oracle inputs for every arm.** Hb and Rb get the held flag and the offset in their proprio (world and
+   end-effector frames).
+4. **Seeds.** Hb, Rb and Ab are trained with seeds 0, 1 and 2. The ablations are trained with seed 0 only:
+   - Ab_cmd: the stage-1 command gate, with stage 1b's held features;
+   - Ab_nooff: no offset;
+   - Ab_nosum: a joint MLP over Ab's inputs.
+- **Recipe unchanged** (5.5; `experiments/fa1b_train.py`). It was not tuned, so no dev round was run. Training data is stage
+  1's 52,204 steps plus the contact labels (`experiments/fa1b_data.py held`; recorded states set and read, no action executed).
+- **Rollouts** (`experiments/fa1b_roll.py`): stage 1's protocol, with the held machine stepped after every simulator step.
+  - They cover N2's 16 familiar-layout tasks, main states 4-23: 320 episodes per model, 12 models.
+  - There is no new-layout run in this round. Layout is a later round (the training layout varies 2 cm).
+  - There is no smoke run. The floor rule is applied to the main run.
+- **Read**: `experiments/fa1b_read.py`. The bootstrap resamples the 6 known and 6 new compounds within status and the 20 start
+  states (2,000 draws, seed 0), jointly for every arm and seed. A state draw applies to every seed, and seeds are not resampled.
+- **Swap test** (`experiments/fa1b_swap.py`, training states only, run before the pre-registration): it checks (i) per arm on
+  4,000 steps.
+  - T1 swaps the target role in the object phase.
+  - T2 swaps the object identity, keeping its geometry, in the place phase.
+  - T3 moves every non-role slot by 5 cm.
+  - A must show 0 change in all three.
+- **Predictions**, stated with the support analysis above:
+  - (ii) makes A's grasp on a new pairing equal to the grasp on the known tasks with the same object, episode for episode;
+  - C1 and C3 are open;
+  - C2 is expected to fail, because (Supp) fails.
+- Budget: 1 A40-h for this round.
+
 ---
 
 ## 6. Experiments, order and cost
