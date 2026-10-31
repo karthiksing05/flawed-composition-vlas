@@ -1,0 +1,327 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: FLAWED_COMPOSITION 5.14 prototype A stage 1h",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4406507",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "6b72d497634a9dd1f08a0b17f9eea3ac49a52907",
+  "short": "6b72d497"
+ },
+ "keys": {},
+ "metrics": {
+  "checkpoints_sha256": {
+   "Ah_rot_s0": "037cf6b314d67ff3f1823f95ff3a357a466a0ceb38476b6b0d4d5ab064f276bb",
+   "Ah_rot_s1": "cab66133e07ebfc3b028482e748e3d4d74499d0b8fd54130d1761522e13e68a2",
+   "Ah_rot_s2": "b1327266be8291f3eb7479f9054af40d1222d162e4c186b279bc3ff4d6b6069d",
+   "Ah_s0": "f55d6fa16f5dceaba2b8242d967dc6c407dce4454e610835e3f914ee709c2bee"
+  },
+  "criteria": "per layout: floor, C1 (vs 0.672), C2, C3, C4 (vs Hg, Rg), 3F; N6 in",
+  "criterion_change": "user-approved after the 1g read: floor and C1 reference = stage 1b demo-only Hb familiar s_known 0.672 (results/flawed/a1b_read.json sha256 74fcd712..., commit 3ae1e9fc), fixed, both layouts; C4 vs Hg and Rg (1g); 1g's verdict unchanged",
+  "data_sha256": {
+   "demos.npz": "5ee10822a5ade1537cddde2dd8421280a10a1bd432f90b0c1172516d023906dc",
+   "demos_b.npz": "6b12c14d98588886e0a4899e409bd1a2f7f1ec84d72b7a57c268b110c9388635",
+   "gen_g.npz": "e445c6cd4ccfc7b5edcd6de05b31ddcbda011c9ee5052f1b26e6e9d361c6ff3a"
+  },
+  "files_sha256": {
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fa1_read.py": "3bbe5c26150c527f0bdc77ef137a2ce123a7b87fddb6825a9b1e655d141cab18",
+   "experiments/fa1b_common.py": "ddf11055f9a15658b771a2922d6b9003d18a4600256262d9306252c4cb749758",
+   "experiments/fa1c_common.py": "54de91cd1e5c2508164b9eb25cad2fcb40f322696e89d3f628df5a1aae677374",
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1g_train.py": "0ee040ea8f9fcf0dc9bc6f69dd7823594146f0101f6bec873273cdbfca7da2c2",
+   "experiments/fa1h_probe.py": "2d832b9ab3f8a9916a5c6e9f95e0902b8eff9e6ace4823c1514e4b32306a7fd3",
+   "experiments/fa1h_read.py": "a2bead89971d275433833a9c35ce16a9207353839cfb8ed1a2e43d8f098ce949",
+   "experiments/fa1h_roll.py": "bd30a2f7eddcb9a581d82604af03e8ec7e143ee39870142b2476f5a219e0f6d0",
+   "experiments/fa1h_swap.py": "f4bdf4071b258affbd7f389b7ae269ff6e00b74dbc8e40a0339ea71c4367f341",
+   "experiments/fa1x_read.py": "932ad4a8527720462f416251f373027e24b288d316505ba60268dca43ecfb407",
+   "lifelong_ood/policy/factored_flow.py": "056ab43a09e3e5b961e9d6f98f5ba081ed879e65c628c2eb48099ecef8400ea9",
+   "results/flawed/a1_calib.json": "c8b45b87ae94776dfd5e6b3afabbc300c3c4f64d98d916d19c4d0b093385adde",
+   "results/flawed/a1b_read.json": "74fcd712eef3c263b1b2c797d06de20edb103f5c0682f3dec2c1c631ec256760",
+   "results/flawed/a1g_read.json": "dc7fdff34e2d91ae9d4265605c2102ac4a8403f7ad343a1ec433009997701c38",
+   "results/flawed/a1g_train_h_s0.json": "c45949b80612dd0ecfaf5e652e6b39a71f6fa7392e313b83ffb663cc14c757f9",
+   "results/flawed/a1g_train_h_s1.json": "2343f4fb54609b3b426eff6d395608662f59c18a77c0addca04dc3ebbc65aa41",
+   "results/flawed/a1g_train_h_s2.json": "c3391115c3a1dc8c6728847fdfde1ea9695fd1e3bf38c20b65392fe45e06a4ab",
+   "results/flawed/a1h_probe.json": "1aef539cbe3de77036d6962c8d4b9c4ba955cb8a64e0d5c34ac3e3afeea2e0f9",
+   "results/flawed/a1h_swap.json": "02a956e63be0967bd0cef584b6fda0894dcc101c2a233edec75ba54e0b34bdf5",
+   "results/flawed/n2_bddl/K1.bddl": "4a95d6bc0f51aa1178f7565d3aa766d8e82b5e84069761b43df3e93e6671f969",
+   "results/flawed/n2_bddl/K2.bddl": "1a91a6c3e0038debcccc2f406ccb2f5763df14fbac806d48d3acee588d77ee7c",
+   "results/flawed/n2_bddl/K3.bddl": "d94f7671cc78be2d54972929206a73f6fc8496e0ccfbd6c5c319896f527da083",
+   "results/flawed/n2_bddl/K4.bddl": "3671152ddd1d676fef54451bf7c7d1b2059ef6bcd10c7185fab44be8da8e8716",
+   "results/flawed/n2_bddl/K5.bddl": "122268fde5ceb4eb4688d1a476a8479aa64711b6b27e9d6842cd0d07b2e586aa",
+   "results/flawed/n2_bddl/K6.bddl": "3e35ce6478ad167b1e1f1c5a81e27706d97bc10291dca9d2c3d3a1c02d68008a",
+   "results/flawed/n2_bddl/K7.bddl": "81072421a01040ed047e8460385d8848a621b243b79a12de07147dc32c7b8077",
+   "results/flawed/n2_bddl/K8.bddl": "c01171f1ab2643cb59f65ee132d595730ba4e480a66a7b3c69218b3d57cb9026",
+   "results/flawed/n2_bddl/N1.bddl": "ea669246017a3474bf7773b71803fcb3972bac1364b87c8d01527fab2e53acde",
+   "results/flawed/n2_bddl/N2.bddl": "056fb9652763bc469707c160acfe5be857a88a58fb0370c3a309b2684114326f",
+   "results/flawed/n2_bddl/N3.bddl": "449ac1938f75fb63dd7a6ea9768ba1d6b1dc0fa7b09bb196b2d117877f62c0ef",
+   "results/flawed/n2_bddl/N4.bddl": "6089cb6644e2e3ea89cf35155da7bbe17c7ed9b53f766687d7b2a562f809f359",
+   "results/flawed/n2_bddl/N5.bddl": "584b70aee9cb352ebe059a36ea6842cb74ffdaebe8be037113f233cb42e471d4",
+   "results/flawed/n2_bddl/N6.bddl": "6915915bb0310fffbdee4f8a6ac584e56dfd6b40ce82c08d4bb282ce5bf1c87b",
+   "results/flawed/n2_bddl/N7.bddl": "862af94435cfd1f7bdbf551baba6c32e42937e69fa7ef1df678a2a11d9f85848",
+   "results/flawed/n2_bddl/N8.bddl": "bd7884d815d497e3e5d5c2314e3c1061b71cf73cfc4c9740df0c1c15701346e6",
+   "results/flawed/n2_branches_main.json": "764e9e0473120f744c65893707612d2c01d5ba7dc3a52a4ecb20aa9d5f2ceb5f",
+   "results/flawed/n2_states/n2_goal_0.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_1.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_10.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_11.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_12.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_13.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_14.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_15.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_16.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_17.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_18.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_19.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_2.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_20.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_21.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_22.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_23.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_24.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_25.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_26.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_27.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_28.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_29.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_3.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_30.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_31.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_4.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_5.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_6.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_7.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_states/n2_goal_8.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_9.npy": "b5d1231625d30cc797f9ac4fa47835164c791d5815c2be7ce826808007a87a69",
+   "results/flawed/n2_tasks.json": "8f7cd36af15424334081bb45c1649bb34adf849081320187ee24c10f0b194bd4"
+  },
+  "identity_check": {
+   "I1": true,
+   "I1_rot": true,
+   "I2": true,
+   "drot": 0.5320501226277656,
+   "drot_onset": 0.3123255150361912,
+   "max_abs_route_model_minus_geom": 2.8386260775281613e-07,
+   "max_abs_route_model_rot_minus_drot": 2.8386260775281613e-07,
+   "n_onset": 668,
+   "n_rows": 27972,
+   "objects": [
+    "akita_black_bowl_1",
+    "cream_cheese_1",
+    "wine_bottle_1"
+   ],
+   "off": 0.9676328793029615,
+   "probe": "multinomial logistic, 5 folds by episode, balanced accuracy",
+   "proxy_1d": 0.9590408129121099,
+   "route_geom": 0.9827966054742395,
+   "route_model": 0.9827966054742395,
+   "route_model_rot": 0.5320501226277656
+  },
+  "runs": {
+   "Ah_rot_s0": {
+    "params": 861808
+   },
+   "Ah_rot_s1": {
+    "params": 861808
+   },
+   "Ah_rot_s2": {
+    "params": 861808
+   },
+   "Ah_s0": {
+    "params": 862864
+   }
+  },
+  "section_5_14_protocol_sha256": "4d468e00b9abe62da7d183d65f56463025aef6249e32f5f10921b153858df7cd",
+  "status": "PRE-REGISTERED A1h (FLAWED_COMPOSITION 5.14, role-pure rotation-since-onset route, oracle state, familiar and new layout)",
+  "swap_test_before_rollouts": {
+   "h_s0/Ah": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.2945144772529602
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3218906819820404
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3036033809185028
+    },
+    "T4": {
+     "max": 8.225440979003906e-06,
+     "mean": 3.7972134236952115e-07,
+     "mean_abs_action": 0.32308322191238403
+    },
+    "T5p": {
+     "max": 7.152557373046875e-06,
+     "mean": 3.438852047565888e-07,
+     "mean_abs_action": 0.32119834423065186
+    },
+    "T6": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.32119834423065186
+    },
+    "T7": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.31998583674430847
+    }
+   },
+   "h_s0/Ah_rot": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.294490784406662
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3224906623363495
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3037785589694977
+    },
+    "T4": {
+     "max": 1.693516969680786e-05,
+     "mean": 3.9509183125119307e-07,
+     "mean_abs_action": 0.32372772693634033
+    },
+    "T5p": {
+     "max": 1.0073184967041016e-05,
+     "mean": 3.5849564028467285e-07,
+     "mean_abs_action": 0.3220043182373047
+    },
+    "T6": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3220043182373047
+    },
+    "T7": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3203458786010742
+    }
+   },
+   "h_s1/Ah_rot": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.29454904794692993
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3229280710220337
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.30419138073921204
+    },
+    "T4": {
+     "max": 9.037554264068604e-06,
+     "mean": 3.912489034973987e-07,
+     "mean_abs_action": 0.3243527412414551
+    },
+    "T5p": {
+     "max": 9.328126907348633e-06,
+     "mean": 3.4617113442436676e-07,
+     "mean_abs_action": 0.322696715593338
+    },
+    "T6": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.322696715593338
+    },
+    "T7": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3211109936237335
+    }
+   },
+   "h_s2/Ah_rot": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.29402756690979004
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3224336504936218
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3036825358867645
+    },
+    "T4": {
+     "max": 7.62939453125e-06,
+     "mean": 3.7215889392427925e-07,
+     "mean_abs_action": 0.32380908727645874
+    },
+    "T5p": {
+     "max": 8.411705493927002e-06,
+     "mean": 3.386890057299752e-07,
+     "mean_abs_action": 0.3210471570491791
+    },
+    "T6": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3210471570491791
+    },
+    "T7": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3201972544193268
+    }
+   }
+  },
+  "training": {
+   "batch": 512,
+   "horizon": 8,
+   "lr": 0.0003,
+   "n_generated": 25779,
+   "n_train": 77983,
+   "steps": 30000
+  },
+  "verdict_mapping": "per layout as 5.11 (floor/C1 per the change); verdict = 'familiar: <v> | new layout: <v>'; guarantee iff both 'compositional; three-factor law holds'",
+  "written_before": "any stage-1h rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pa1h__s0__6b72d497",
+ "schema": 1,
+ "script": "experiments/prereg/pa1h.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-31T15:50:16+00:00",
+ "stream": null,
+ "tag": "pa1h"
+}

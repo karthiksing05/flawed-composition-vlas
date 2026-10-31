@@ -29,6 +29,24 @@ from lifelong_ood.policy import factored_flow as FF                         # no
 FIELDS = ("task", "demo", "step", "action", "ee_pos", "ee_rot", "grip", "pos", "yaw", "drawer", "prev_grip")
 
 
+def rot0_rows(D, held):
+    """Stage 1h (5.14): per row, the end effector's rotation at the onset of the current hold (the current rotation while not held),
+    stepped over each episode's rows in order -- the rollout's own rule (fa1h_roll.py).  Ignored by every arm before 1h."""
+    key = D["task"].astype(np.int64) * 1000 + D["demo"]
+    out = D["ee_rot"].copy()
+    on, r0 = False, None
+    for i in range(len(key)):
+        if i == 0 or key[i] != key[i - 1]:
+            on = False
+        h = bool(held[i] > 0.5)
+        if h and not on:
+            r0 = D["ee_rot"][i].copy()
+        on = h
+        if h:
+            out[i] = r0
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--tag", required=True)
@@ -62,6 +80,8 @@ def main():
     full = dict(ee_pos=T(D["ee_pos"]), ee_rot=T(D["ee_rot"]), grip=T(D["grip"]), prev=T(D["prev_grip"]), pos=T(D["pos"]),
                 yaw=T(D["yaw"]), drawer=T(D["drawer"]), oi=T(oi, torch.long), ti=T(ti, torch.long), held=T(Db["held"]), off=T(Db["off"]),
                 zrest=T(zr), cyaw=T(cy))
+    if any(x in FF.ARMS_H for x in a.arms.split("+")):                       # stage 1h only; 1g's runs are unchanged
+        full["rot0"] = T(rot0_rows(D, Db["held"]))
     act = T(np.clip(X, -1, 1))
     tr_idx = np.arange(len(D["action"]))
     print(f"[fa1g] {len(tr_idx)} train steps ({int(gen.sum())} generated); held share {float((Db['held'] > 0.5).mean()):.3f}; "

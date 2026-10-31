@@ -72,15 +72,25 @@ ARMS_B = ("Hb", "Rb", "Ab", "Ab_cmd", "Ab_nooff", "Ab_nosum")
 ARMS_C = ("Ac", "Ac_nobear", "Ac_noft")
 ARMS_D = ("Ad", "Ad_tilt", "Ad_fing")
 ARMS_E = ("Ae", "Ae_nosize")
+# Stage 1h arms (section 5.14; ARMS_H): Ae_nosize's target term plus a ROLE-PURE route for the held object's geometry, measured
+# relative to the grasp, never its identity:
+#   drot  the end effector's rotation SINCE THE HOLD'S ONSET, R_now R_onset^T, in the canonical frame (2 columns; the identity matrix
+#         at the onset for every object, so the grasp rotation that made 1d's tilt an identity proxy is cancelled)
+#   off   the grasp offset (held object minus end effector, captured at the onset), in the canonical frame: where the held body
+#         hangs below the hand (its extent along the grip), a measured, continuous quantity
+#   Ah      drot + off
+#   Ah_rot  drot only                                                                   (ablates the offset)
+ARMS_H = ("Ah", "Ah_rot")
+GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0)}
 BASE = {"Hb": "H", "Rb": "R", "Ab": "A", "Ab_cmd": "A", "Ab_nooff": "A", "Ab_nosum": "A_nosum", "Ac": "A", "Ac_nobear": "A", "Ac_noft": "A",
-        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A"}
+        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A"}
 WIDTH = {"H": 512, "R": 512, "A": 352, "A_noframe": 352, "A_nogate": 352, "A_nosum": 512,
          "Hb": 512, "Rb": 512, "Ab": 352, "Ab_cmd": 352, "Ab_nooff": 352, "Ab_nosum": 512, "Ac": 352, "Ac_nobear": 352, "Ac_noft": 352,
-         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352}
+         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352}
 # the canonical target term's optional inputs per arm: (end-effector tilt, full end-effector rotation, finger positions, target
 # identity one-hot, target size)
 CANON_IN = {"Ac": (1, 0, 1, 1, 1), "Ac_nobear": (0, 1, 1, 1, 1), "Ac_noft": (1, 0, 1, 1, 1), "Ad": (0, 0, 0, 1, 1), "Ad_tilt": (1, 0, 0, 1, 1),
-            "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0)}
+            "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0), "Ah": (0, 0, 0, 0, 0), "Ah_rot": (0, 0, 0, 0, 0)}
 TABLE = 8                                                   # slot whose height is the table surface (main_table_stove_front_region)
 
 
@@ -128,9 +138,9 @@ def chunk_from(Q, x):
 class FactoredFlow(nn.Module):
     def __init__(self, arm, horizon=8, center=(0.0, 0.0, 0.0), size=None):
         super().__init__()
-        assert arm in ARMS + ARMS_B + ARMS_C + ARMS_D + ARMS_E, arm
+        assert arm in ARMS + ARMS_B + ARMS_C + ARMS_D + ARMS_E + ARMS_H, arm
         self.arm, self.H = arm, horizon
-        self.c = arm in ARMS_C + ARMS_D + ARMS_E                # stage 1c / 1d / 1e: canonical place frame
+        self.c = arm in ARMS_C + ARMS_D + ARMS_E + ARMS_H       # stage 1c / 1d / 1e / 1h: canonical place frame
         self.b = arm in ARMS_B or self.c                        # stage 1b: contact flag and grasp offset available
         self.base = BASE.get(arm, arm)
         self.gate_contact = arm in ("Ab", "Ab_nooff", "Ab_nosum") or self.c
@@ -154,7 +164,8 @@ class FactoredFlow(nn.Module):
         elif self.c:
             self.obj = mlp(dprop + dslot + da + dt, da, w)
             tilt, rot6, fing, ident, tsize = CANON_IN[self.arm]
-            self.tgt = mlp(3 + 3 * tilt + 6 * rot6 + 2 * fing + 1 + (2 * tsize + N_ENT * ident + 1) + da + dt, da, w)
+            drot, goff = GEO_IN.get(self.arm, (0, 0))
+            self.tgt = mlp(3 + 3 * tilt + 6 * rot6 + 2 * fing + 1 + (2 * tsize + N_ENT * ident + 1) + 6 * drot + 3 * goff + da + dt, da, w)
         else:
             self.obj = mlp(dprop + dslot + da + dt, da, w)
             self.tgt = mlp(dprop + dslot + dhold + da + dt, da, w)
@@ -226,8 +237,22 @@ class FactoredFlow(nn.Module):
             parts.append(self.size[e])
         if ident:
             parts.append(self.onehot[e])
-        ctx = torch.cat(parts + [aux[:, None] * 10.0], -1)
+        parts.append(aux[:, None] * 10.0)
+        parts += self.geo_route(b, Q)
+        ctx = torch.cat(parts, -1)
         return Q, ctx
+
+    def geo_route(self, b, Q):
+        """Stage 1h's held-geometry route (GEO_IN), in the canonical frame Q; [] for every earlier arm."""
+        drot, goff = GEO_IN.get(self.arm, (0, 0))
+        out, QT = [], Q.transpose(1, 2)
+        if drot:
+            r0 = b["rot0"] if "rot0" in b else b["ee_rot"]
+            rel = torch.einsum("bij,bkj->bik", b["ee_rot"], r0)                   # R_now R_onset^T (world)
+            out.append(torch.einsum("bij,bjk,bkl->bil", QT, rel, Q)[:, :, :2].reshape(-1, 6))
+        if goff:
+            out.append(torch.einsum("bij,bj->bi", QT, b["off"]) * POS_SCALE)
+        return out
 
     def _gate(self, b):
         return b["held"] if self.gate_contact else (b["prev"] > 0).float()
@@ -315,10 +340,14 @@ def n_params(m):
     return int(sum(p.numel() for p in m.parameters()))
 
 
-def batch_from_scene(sc, oi, ti, prev, held=0.0, off=(0.0, 0.0, 0.0), zrest=0.0, cyaw=0.0):
+def batch_from_scene(sc, oi, ti, prev, held=0.0, off=(0.0, 0.0, 0.0), zrest=0.0, cyaw=0.0, rot0=None):
     """One oracle scene (fa1_common.scene) -> a batch of 1.  held / off: stage 1b's contact flag and grasp offset; zrest / cyaw:
-    stage 1c's rest height and bearing (each ignored by the arms that do not read it)."""
+    stage 1c's rest height and bearing; rot0: stage 1h's end-effector rotation at the hold's onset (None: the current rotation)
+    (each ignored by the arms that do not read it)."""
     f = lambda v: torch.tensor(np.asarray(v, np.float32))[None]               # noqa: E731
-    return dict(ee_pos=f(sc["ee_pos"]), ee_rot=f(sc["ee_rot"]), grip=f(sc["grip"]), prev=f(prev).reshape(1), pos=f(sc["pos"]),
-                yaw=f(sc["yaw"]), drawer=f(sc["drawer"]).reshape(1), oi=torch.tensor([oi]), ti=torch.tensor([ti]),
-                held=f(float(held)).reshape(1), off=f(off), zrest=f(float(zrest)).reshape(1), cyaw=f(float(cyaw)).reshape(1))
+    b = dict(ee_pos=f(sc["ee_pos"]), ee_rot=f(sc["ee_rot"]), grip=f(sc["grip"]), prev=f(prev).reshape(1), pos=f(sc["pos"]),
+             yaw=f(sc["yaw"]), drawer=f(sc["drawer"]).reshape(1), oi=torch.tensor([oi]), ti=torch.tensor([ti]),
+             held=f(float(held)).reshape(1), off=f(off), zrest=f(float(zrest)).reshape(1), cyaw=f(float(cyaw)).reshape(1))
+    if rot0 is not None:
+        b["rot0"] = f(rot0)
+    return b

@@ -2112,6 +2112,100 @@ grasping (grasp identity in every group, now in both layouts).
    object and target, which also biases 3F (5.11, 5.12 familiar). A role-pure route for the held object's geometry, decoupled
    from its identity, is the next architectural candidate. It is not run.
 
+**Criterion change approved by the user (2026-10-31, after the 1g read).** This applies from round 1h on; 1g's verdict
+"uninformative" stays on record unchanged.
+- The floor and the C1 parity reference become a fixed number: the demo-only Hb's known-task success on the familiar layout,
+  measured in stage 1b before any generated data existed. That is 0.672 (results/flawed/a1b_read.json, cells.Hb.s_known.est;
+  file sha256 74fcd712...; commit 3ae1e9fc). The same number is used for both layouts.
+  - Floor: "uninformative" if the reference is below 0.5.
+  - C1: s_A(known) − 0.672 ≥ −0.10 (point estimate, as before).
+- Hg and Rg (trained on generated data) remain the C4 baselines and are reported descriptively. They no longer gate the
+  verdict.
+
+### 5.14 Stage 1h: a role-pure route for the held object's rotation (protocol fixed 2026-10-31, before any stage-1h rollout; m3_prereg tag pa1h)
+
+**Measured weakness (5.12, 5.13).** (Suff) on two known cells.
+- K5 (bottle on the rack) is 0.17 for Ag, against 0.45 for the demo-only Hb.
+- K6 (cheese in the bowl) is 0.23 for Ag, against 0.45.
+- These two cells hold s(known) at 0.62 and keep C2's lower bound below 0.6.
+- Since 1d the target term has not seen the end effector's orientation at all. 1d cut the tilt because it decoded the held
+  object at 0.82: the grasp rotation differs per object. The rack placement needs a turn of the hand during the carry. The
+  demos' release rotation differs from the grasp rotation (a1g_keypoints.json), and the target term cannot servo a rotation it
+  cannot see.
+
+**Principle.** (S) without breaking (B). The target term receives the held object's geometry measured relative to the grasp,
+in the canonical frame. The quantity is the end effector's rotation since the hold's onset, Q^T (R_now R_onset^T) Q (two
+columns, `factored_flow.GEO_IN`).
+- At the onset it is the identity matrix for every object, so the per-object grasp rotation behind 1d's identity proxy cancels.
+- After the onset it changes only through the turns the place term itself commands.
+- It is exactly equivariant under rotations about the target (T4).
+
+**Arms** (trained on demos plus 1g's generated carries, `experiments/fa1g_train.py --tag h`, recipe unchanged).
+- **Ah_rot** (registered A, seeds 0, 1, 2): Ae_nosize's target term plus the rotation since the onset.
+- **Ah** (ablation, seed 0): Ah_rot plus the grasp offset in the canonical frame. The offset is the held body's extent below
+  the hand.
+- The protocol first drafted Ah, with the offset, as the registered arm. **The identity check moved it to the ablation before
+  any rollout** (next paragraph). Seeds 1 and 2 of Ah were cancelled at start-up and retrained as Ah_rot.
+- H, R for C4 are Hg and Rg (1g, same data). Ag (1g) and Ae_nosize (1f) are shown beside.
+
+**Identity check** (`experiments/fa1h_probe.py`, results/flawed/a1h_probe.json; training rows, demos plus generated, held rows of
+K1-K6, 27,972 rows). The probe is a multinomial logistic regression, 5 folds by episode, scored by balanced accuracy over the
+three held objects (chance 0.33). Its two pass/fail thresholds were fixed in the script before it ran:
+
+| features | balanced accuracy |
+|---|---|
+| Ah's route (rotation + offset) as the network builds it | 0.983 |
+| the same geometry recomputed in numpy | 0.983 (max difference 2.8e-7) |
+| Ah_rot's route (rotation since onset) | 0.532 |
+| rotation since onset, at each hold's first row | 0.312 |
+| offset alone | 0.968 |
+| 1d's cut proxies (tilt + fingers), same rows | 0.959 |
+
+- **I1 holds.** Each route carries nothing beyond its geometry: |difference| = 0 for both routes.
+- **I2 holds.** The rotation route is at chance at the grasp: 0.31 against 0.35.
+- **Read honestly, the offset is an identity code in this scene.** It decodes the held object as well as the inputs 1d cut
+  (0.97 against 0.96). Admitting it would reopen the bypass through geometry. So the registered arm reads only the rotation
+  since onset. Its 0.53 over held rows comes from the carries' turns, which the bottle-on-rack task makes and the others do
+  not; that is the task's motion, not the object's identity at the grasp.
+
+**Swap test** (`experiments/fa1h_swap.py`, -> results/flawed/a1h_swap.json; rows carry rot0). Every model must show 0 on these
+tests, and at most 1e-4 on T4; this is asserted in the pre-registration:
+- T1-T3 and T6 as before;
+- T4 with rot0 and the offset rotated too;
+- **T5'**: the end effector's rotation and the fingers taken from another object's held row, rot0 moved with them so that the
+  rotation since onset is kept. The target term must not read the absolute rotation or the fingers.
+- **T7**: T2 with the fingers also taken from a held row of another object.
+- **Grasp identity** (closed loop) must stay exact.
+- **Result before the rollouts** (results/flawed/a1h_swap.json):
+  - All four models give 0 on T1-T3, T6 and T7, at most 1.7e-5 on T4, and at most 1e-5 on T5'.
+  - T5' rebuilds rot0 by float matrix products, so the rotation since onset is kept only to round-off. Like T4, it is therefore
+    held to at most 1e-4 instead of exactly 0. That tolerance was set after T5' first ran and before any rollout.
+  - The first T7 draft crashed: the plate is never held, so it had no donor row. T7 now takes the fingers from a held row of any
+    other object.
+- **Training:** 30,000 steps per arm, 77,983 rows, 196-200 s per arm.
+
+**Rollouts.** `experiments/fa1h_roll.py`: stage 1d's episode plus rot0, captured on the step the held machine turns on (the
+training rows' rule). One job per model and layout.
+
+**Read** (`experiments/fa1h_read.py`). Per layout: floor and C1 against 0.672; C2 and C3 as in 5.6; C4 against Hg and Rg; 3F
+as in 5.11. The mapping is 5.11's. Verdict = "familiar: <v> | new layout: <v>". The guarantee holds iff both layouts read
+"compositional; three-factor law holds". N6 stays in. K5 and K6 are reported per seed against Ag (1g) and Ae_nosize (1f).
+
+**Predictions.**
+- K5 rises from Ag's 0.17 towards the demo-only Hb's 0.45. The rack turn is now servoable.
+- K6 changes little. The cheese's failure there is the hold and arrival in a small movable bowl (5.11), which no rotation
+  input supplies.
+- Familiar s(known) rises by about 0.04-0.05 (one cell of six). C2's lower bound rises but stays below 0.6 unless K6 moves too.
+- New pairings: unchanged within CI. The bottle pairings N4-N6 may gain from servoing the release rotation; the cheese
+  pairings stay.
+- C1 holds on the familiar layout (Ag was 0.62 against 0.672) and is at risk on the new layout (Ag 0.56 < 0.572).
+- C3 is near the edge (5 of 6 in 1g). 3F on the familiar layout keeps the cheese bias.
+- Expected verdict: "familiar: not compositional (fails: C2, 3F) | new layout: not compositional (fails: C2, ...)".
+- Ah (with the offset) is expected to do better on known cells and worse on new pairings than Ah_rot. That is the bypass's
+  signature; it is descriptive and has one seed.
+
+**Budget.** 0.7 A40-h (4 models). CPU: 8 rollout jobs, about 6.5 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost
