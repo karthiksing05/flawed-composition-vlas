@@ -1,0 +1,306 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: FLAWED_COMPOSITION 5.7 prototype A stage 1c",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4392766",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "3ae1e9fc27e23f7771b43219459a5c232f7f125c",
+  "short": "3ae1e9fc"
+ },
+ "keys": {},
+ "metrics": {
+  "baselines": "H = Hb, R = Rb: stage 1b's runs (a1b_roll, 3 seeds each), not retrained",
+  "change": "target term in the canonical place frame (origin target, x = bearing foot->target frozen at the hold's onset); reads the held object's foot, the end effector's tilt, fingers, last command, target identity / size / drawer; drops held size / yaw / offset, ee position / yaw, target yaw",
+  "checkpoints_sha256": {
+   "Ac_nobear_s0": "9418968b383c6d3d7b3520c2f319df9a46b3e0ab78a3fc11f0cfae5bb5bf6028",
+   "Ac_noft_s0": "972d3de370373d056e2a6041c2c50d46aaa97a138aaac7c717eb86100bd3739a",
+   "Ac_s0": "cf42d075d1d2f32720579336274adff01a415b873b7007e466a6aad816bf051e",
+   "Ac_s1": "dcf83533c5a2c120187e40982d57e5064fbb7c5ca3406af51b88986488ba4ac0",
+   "Ac_s2": "3be32299a5cdc90722b1877109d17332a5d1f2e1b04ce70ba973b66d2226e258"
+  },
+  "criteria": "C1-C4 and verdict order of section 5.6 (fa1b_read.py), A = Ac; engine fa1x_read.py reproduces the registered 1b read exactly with A = Ab",
+  "data_sha256": {
+   "demos.npz": "5ee10822a5ade1537cddde2dd8421280a10a1bd432f90b0c1172516d023906dc",
+   "demos_b.npz": "6b12c14d98588886e0a4899e409bd1a2f7f1ec84d72b7a57c268b110c9388635"
+  },
+  "files_sha256": {
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fa1_read.py": "3bbe5c26150c527f0bdc77ef137a2ce123a7b87fddb6825a9b1e655d141cab18",
+   "experiments/fa1b_common.py": "ddf11055f9a15658b771a2922d6b9003d18a4600256262d9306252c4cb749758",
+   "experiments/fa1c_common.py": "54de91cd1e5c2508164b9eb25cad2fcb40f322696e89d3f628df5a1aae677374",
+   "experiments/fa1c_read.py": "3333c9b7f4579cb4a9b96f1a4cc6be1f7fcd3dd2b2f39f9c0a91ca2af1ec3681",
+   "experiments/fa1c_roll.py": "9fe360467e9f20eb21206e7eee9e76b214af1e0da0d5909ad368e1d6a8079e3f",
+   "experiments/fa1c_support.py": "04807e3bb811000aef0f3a9918cc18ae9d6e96fbf8c0fa57c0b7b98e6458a8a1",
+   "experiments/fa1c_swap.py": "190a89ab46e25a3bacadd7aab7d9121fa1df2335a9a03920f812d0d9c1a3cf00",
+   "experiments/fa1c_train.py": "e870dcb7123f6e8f62f82a43551a820b202ad199251917e0c800529c922008a8",
+   "experiments/fa1x_read.py": "c4a673041f9f9ede17639fd9430eec82fa398d8ec033824d2e1de4a1bb2b1a6d",
+   "lifelong_ood/policy/factored_flow.py": "ceba92436655bff08e5bfb50b3e8f1ff429fc0d8d1b806bba40a3b5f3bd2db85",
+   "results/flawed/a1_calib.json": "c8b45b87ae94776dfd5e6b3afabbc300c3c4f64d98d916d19c4d0b093385adde",
+   "results/flawed/a1b_read.json": "74fcd712eef3c263b1b2c797d06de20edb103f5c0682f3dec2c1c631ec256760",
+   "results/flawed/a1c_support.json": "a55e41be77e465f69e8862bdf842398e945bea578ffd9a3d6deb51f787e786dc",
+   "results/flawed/a1c_swap.json": "79663fb31e459b5dc43d1834ffb5051e6eeccc32f609236ab90606488a6149b7",
+   "results/flawed/a1c_train_c_s0.json": "40b0b7ab2cf9c104f85014dfe68732a7361bbe273155fab73fa5ff474b7d62d6",
+   "results/flawed/a1c_train_c_s1.json": "8dbbef035e1d4d1786b04358d2e7b6b80e20332c2264f0025a84a13739c12fc6",
+   "results/flawed/a1c_train_c_s2.json": "c043f2551911f589a0ca6a8757054469db10d5f644d9b443e83b96d4acefd450",
+   "results/flawed/n2_bddl/K1.bddl": "4a95d6bc0f51aa1178f7565d3aa766d8e82b5e84069761b43df3e93e6671f969",
+   "results/flawed/n2_bddl/K2.bddl": "1a91a6c3e0038debcccc2f406ccb2f5763df14fbac806d48d3acee588d77ee7c",
+   "results/flawed/n2_bddl/K3.bddl": "d94f7671cc78be2d54972929206a73f6fc8496e0ccfbd6c5c319896f527da083",
+   "results/flawed/n2_bddl/K4.bddl": "3671152ddd1d676fef54451bf7c7d1b2059ef6bcd10c7185fab44be8da8e8716",
+   "results/flawed/n2_bddl/K5.bddl": "122268fde5ceb4eb4688d1a476a8479aa64711b6b27e9d6842cd0d07b2e586aa",
+   "results/flawed/n2_bddl/K6.bddl": "3e35ce6478ad167b1e1f1c5a81e27706d97bc10291dca9d2c3d3a1c02d68008a",
+   "results/flawed/n2_bddl/K7.bddl": "81072421a01040ed047e8460385d8848a621b243b79a12de07147dc32c7b8077",
+   "results/flawed/n2_bddl/K8.bddl": "c01171f1ab2643cb59f65ee132d595730ba4e480a66a7b3c69218b3d57cb9026",
+   "results/flawed/n2_bddl/N1.bddl": "ea669246017a3474bf7773b71803fcb3972bac1364b87c8d01527fab2e53acde",
+   "results/flawed/n2_bddl/N2.bddl": "056fb9652763bc469707c160acfe5be857a88a58fb0370c3a309b2684114326f",
+   "results/flawed/n2_bddl/N3.bddl": "449ac1938f75fb63dd7a6ea9768ba1d6b1dc0fa7b09bb196b2d117877f62c0ef",
+   "results/flawed/n2_bddl/N4.bddl": "6089cb6644e2e3ea89cf35155da7bbe17c7ed9b53f766687d7b2a562f809f359",
+   "results/flawed/n2_bddl/N5.bddl": "584b70aee9cb352ebe059a36ea6842cb74ffdaebe8be037113f233cb42e471d4",
+   "results/flawed/n2_bddl/N6.bddl": "6915915bb0310fffbdee4f8a6ac584e56dfd6b40ce82c08d4bb282ce5bf1c87b",
+   "results/flawed/n2_bddl/N7.bddl": "862af94435cfd1f7bdbf551baba6c32e42937e69fa7ef1df678a2a11d9f85848",
+   "results/flawed/n2_bddl/N8.bddl": "bd7884d815d497e3e5d5c2314e3c1061b71cf73cfc4c9740df0c1c15701346e6",
+   "results/flawed/n2_branches_main.json": "764e9e0473120f744c65893707612d2c01d5ba7dc3a52a4ecb20aa9d5f2ceb5f",
+   "results/flawed/n2_states/n2_goal_0.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_10.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_12.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_14.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_16.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_18.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_2.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_20.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_22.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_24.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_26.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_28.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_30.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_4.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_6.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_8.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_tasks.json": "8f7cd36af15424334081bb45c1649bb34adf849081320187ee24c10f0b194bd4"
+  },
+  "predictions": "(Supp) holds for N2, N5, N6, nearly N1, not N3 / N4 (support table, a1c_support.json); C3 can hold at most on N1, N2, N5, N6 and only if (Suff) holds there; C2 open",
+  "runs": {
+   "Ac_nobear_s0": {
+    "params": 866384
+   },
+   "Ac_noft_s0": {
+    "params": 865328
+   },
+   "Ac_s0": {
+    "params": 865328
+   },
+   "Ac_s1": {
+    "params": 865328
+   },
+   "Ac_s2": {
+    "params": 865328
+   }
+  },
+  "section_5_7_protocol_sha256": "8589967b05c02b946f114adb116b1bf5bb40daa07555db62f39df0e348febf69",
+  "status": "PRE-REGISTERED A1c (FLAWED_COMPOSITION 5.7, canonical place frame, oracle state, familiar layout)",
+  "support_prediction": {
+   "K1": {
+    "d_median": 0.1493600729999859,
+    "gap_b": 0.0122571024213492,
+    "gap_c": 0.0006925819549764289,
+    "n": 59,
+    "object": "akita_black_bowl_1",
+    "target": "plate_1"
+   },
+   "K2": {
+    "d_median": 0.2699809326898269,
+    "gap_b": 0.016331397049614307,
+    "gap_c": 0.0010315663642462836,
+    "n": 59,
+    "object": "akita_black_bowl_1",
+    "target": "flat_stove_1_cook_region"
+   },
+   "K3": {
+    "d_median": 0.2837784112233072,
+    "gap_b": 0.018940259872877983,
+    "gap_c": 0.00025954203612277293,
+    "n": 59,
+    "object": "akita_black_bowl_1",
+    "target": "wooden_cabinet_1_top_side"
+   },
+   "K4": {
+    "d_median": 0.31285973176789156,
+    "gap_b": 0.021921623124899838,
+    "gap_c": 0.0002961527627454441,
+    "n": 42,
+    "object": "wine_bottle_1",
+    "target": "wooden_cabinet_1_top_side"
+   },
+   "K5": {
+    "d_median": 0.14024095972603273,
+    "gap_b": 0.020915627985180516,
+    "gap_c": 0.0008906306960318466,
+    "n": 42,
+    "object": "wine_bottle_1",
+    "target": "wine_rack_1_top_region"
+   },
+   "K6": {
+    "d_median": 0.14676520061140266,
+    "gap_b": 0.008159245150872576,
+    "gap_c": 0.00035424934673250474,
+    "n": 33,
+    "object": "cream_cheese_1",
+    "target": "akita_black_bowl_1"
+   },
+   "N1": {
+    "d_median": 0.1809867846023077,
+    "gap_b": 0.06867095876705476,
+    "gap_c": 0.009975992346906076,
+    "n": 33,
+    "object": "cream_cheese_1",
+    "target": "plate_1"
+   },
+   "N2": {
+    "d_median": 0.23089978631200928,
+    "gap_b": 0.08256938188144321,
+    "gap_c": 0.000687206793794054,
+    "n": 33,
+    "object": "cream_cheese_1",
+    "target": "flat_stove_1_cook_region"
+   },
+   "N3": {
+    "d_median": 0.38977904657374,
+    "gap_b": 0.09987511487616049,
+    "gap_c": 0.06431599000940896,
+    "n": 33,
+    "object": "cream_cheese_1",
+    "target": "wooden_cabinet_1_top_side"
+   },
+   "N4": {
+    "d_median": 0.2729935968648764,
+    "gap_b": 0.14699527510441995,
+    "gap_c": 0.10198280460947479,
+    "n": 42,
+    "object": "wine_bottle_1",
+    "target": "plate_1"
+   },
+   "N5": {
+    "d_median": 0.26373437068275485,
+    "gap_b": 0.13712424529230022,
+    "gap_c": 0.000591982910200517,
+    "n": 42,
+    "object": "wine_bottle_1",
+    "target": "flat_stove_1_cook_region"
+   },
+   "N6": {
+    "d_median": 0.13805171412699163,
+    "gap_b": 0.25110198657420724,
+    "gap_c": 0.0004837571604862645,
+    "n": 42,
+    "object": "wine_bottle_1",
+    "target": "akita_black_bowl_1"
+   }
+  },
+  "swap_test_before_rollouts": {
+   "Ac": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.2715053856372833
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3113943636417389
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.28836503624916077
+    },
+    "T4": {
+     "max": 4.708766937255859e-06,
+     "mean": 3.5715260082724853e-07,
+     "mean_abs_action": 0.311194509267807
+    }
+   },
+   "Ac_nobear": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.2714230716228485
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.31153208017349243
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.2886967360973358
+    },
+    "T4": {
+     "max": 6.070647239685059,
+     "mean": 0.8952431678771973,
+     "mean_abs_action": 0.3108992278575897
+    }
+   },
+   "Ac_noft": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.2714558243751526
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.31017157435417175
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.28793787956237793
+    },
+    "T4": {
+     "max": 5.662441253662109e-06,
+     "mean": 3.6822217452936457e-07,
+     "mean_abs_action": 0.3098815083503723
+    }
+   }
+  },
+  "training": {
+   "batch": 512,
+   "horizon": 8,
+   "lr": 0.0003,
+   "n_train": 52204,
+   "steps": 30000
+  },
+  "written_before": "any stage-1c rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pa1c__s0__3ae1e9fc",
+ "schema": 1,
+ "script": "experiments/prereg/pa1c.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-31T06:03:15+00:00",
+ "stream": null,
+ "tag": "pa1c"
+}

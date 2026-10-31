@@ -30,6 +30,16 @@ frame, captured at the grasp, 0 while not held):
   Ab_nosum  Ab's role-local inputs (+ held flag) into one learned joint MLP                (the joint-head control)
 Stage 1's arms are unchanged (their checkpoints load and run as before).
 
+Stage 1c arms (section 5.7; ARMS_C): Ab with the target term in a CANONICAL PLACE FRAME, invariant to the grasp nuisance (which object
+is held, where it is held, from which side it was approached).  Extra inputs: b["zrest"] (the held object's rest height, the minimum
+of its height before the hold began) and b["cyaw"] (the bearing, at the hold's onset, from the held object's foot to the target).
+  foot      the held object's bottom point: its position with z replaced by z - zrest + z(table site, slot 8)
+  Ac        target term in the frame (origin = target, x-axis = cyaw); reads the foot, the end effector's TILT (the world-z row of its
+            rotation: invariant to rotations about z), fingers, last command, and the target slot's identity / size / drawer opening;
+            no held size, offset or yaw, no end-effector yaw
+  Ac_nobear Ac's foot and dropped identity proxies, but the target's own frame (yaw) and the end effector's rotation as in Ab
+  Ac_noft   Ac's bearing frame and tilt, but the END EFFECTOR's position in place of the foot
+
 Rectified flow: x_t = (1 - t) x0 + t x1, target x1 - x0, t ~ U(0, 1); sampling = Euler from N(0, I).  Works in torch 1.11 (the
 LIBERO venv, rollouts on CPU) and 2.x (training).  Weights travel as npz (save / load).
 """
@@ -46,9 +56,11 @@ N_ENT, DRAWER = 9, 7                    # fa1_common.ENT order; index of wooden_
 POS_SCALE, GRIP_SCALE = 5.0, 25.0
 ARMS = ("H", "R", "A", "A_noframe", "A_nogate", "A_nosum")
 ARMS_B = ("Hb", "Rb", "Ab", "Ab_cmd", "Ab_nooff", "Ab_nosum")
-BASE = {"Hb": "H", "Rb": "R", "Ab": "A", "Ab_cmd": "A", "Ab_nooff": "A", "Ab_nosum": "A_nosum"}
+ARMS_C = ("Ac", "Ac_nobear", "Ac_noft")
+BASE = {"Hb": "H", "Rb": "R", "Ab": "A", "Ab_cmd": "A", "Ab_nooff": "A", "Ab_nosum": "A_nosum", "Ac": "A", "Ac_nobear": "A", "Ac_noft": "A"}
 WIDTH = {"H": 512, "R": 512, "A": 352, "A_noframe": 352, "A_nogate": 352, "A_nosum": 512,
-         "Hb": 512, "Rb": 512, "Ab": 352, "Ab_cmd": 352, "Ab_nooff": 352, "Ab_nosum": 512}
+         "Hb": 512, "Rb": 512, "Ab": 352, "Ab_cmd": 352, "Ab_nooff": 352, "Ab_nosum": 512, "Ac": 352, "Ac_nobear": 352, "Ac_noft": 352}
+TABLE = 8                                                   # slot whose height is the table surface (main_table_stove_front_region)
 
 
 def mlp(din, dout, width, depth=4):
@@ -73,6 +85,11 @@ def rz(yaw):
     return torch.stack([torch.stack([c, -s, z], -1), torch.stack([s, c, z], -1), torch.stack([z, z, o], -1)], -2)   # [B, 3, 3]
 
 
+def arm_c_rot(arm):
+    """Stage-1c arms whose target term reads the end effector's full rotation (2 columns in the frame) instead of its tilt."""
+    return arm == "Ac_nobear"
+
+
 def chunk_to(Q, x):
     """Express a world-frame action chunk x [B, H, 7] in the frame with rotation Q [B, 3, 3] (vectors -> Q^T v)."""
     QT = Q.transpose(1, 2)
@@ -90,12 +107,13 @@ def chunk_from(Q, x):
 class FactoredFlow(nn.Module):
     def __init__(self, arm, horizon=8, center=(0.0, 0.0, 0.0), size=None):
         super().__init__()
-        assert arm in ARMS + ARMS_B, arm
+        assert arm in ARMS + ARMS_B + ARMS_C, arm
         self.arm, self.H = arm, horizon
-        self.b = arm in ARMS_B                                  # stage 1b: contact flag and grasp offset available
+        self.c = arm in ARMS_C                                  # stage 1c: canonical place frame
+        self.b = arm in ARMS_B or self.c                        # stage 1b: contact flag and grasp offset available
         self.base = BASE.get(arm, arm)
-        self.gate_contact = arm in ("Ab", "Ab_nooff", "Ab_nosum")
-        self.offset = self.b and arm != "Ab_nooff"
+        self.gate_contact = arm in ("Ab", "Ab_nooff", "Ab_nosum") or self.c
+        self.offset = self.b and arm != "Ab_nooff" and not self.c
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
         self.register_buffer("size", torch.tensor(size if size is not None else np.zeros((N_ENT, 2)), dtype=torch.float32))
         self.register_buffer("onehot", torch.eye(N_ENT))
@@ -112,6 +130,10 @@ class FactoredFlow(nn.Module):
             self.net = mlp(dprop + 1 + 2 * dslot + da + dt, da, w)  # + world height of the ee
         elif arm == "A_nosum":
             self.net = mlp(2 * (dprop + dslot) + dhold + 1 + 2 * da + dt, da, w)
+        elif self.c:
+            self.obj = mlp(dprop + dslot + da + dt, da, w)
+            drot = 6 if arm_c_rot(self.arm) else 3
+            self.tgt = mlp(3 + drot + 2 + 1 + (2 + N_ENT + 1) + da + dt, da, w)
         else:
             self.obj = mlp(dprop + dslot + da + dt, da, w)
             self.tgt = mlp(dprop + dslot + dhold + da + dt, da, w)
@@ -152,6 +174,31 @@ class FactoredFlow(nn.Module):
             parts.append(torch.einsum("bij,bj->bi", Qt.transpose(1, 2), b["off"]) * POS_SCALE)
         return closed * torch.cat(parts, -1)
 
+    def _canon(self, b):
+        """Stage 1c's place frame (Q, origin) and the target term's context."""
+        B = b["pos"].shape[0]
+        idx = torch.arange(B, device=b["pos"].device)
+        pt = b["pos"][idx, b["ti"]]
+        if self.arm == "Ac_nobear":
+            Q = rz(b["yaw"][idx, b["ti"]])
+        else:
+            Q = rz(b["cyaw"])
+        QT = Q.transpose(1, 2)
+        if self.arm == "Ac_noft":
+            p = b["ee_pos"]
+        else:
+            p = b["pos"][idx, b["oi"]].clone()
+            p[:, 2] = p[:, 2] - b["zrest"] + b["pos"][:, TABLE, 2]
+        pr = torch.einsum("bij,bj->bi", QT, p - pt) * POS_SCALE
+        if arm_c_rot(self.arm):
+            rot = torch.einsum("bij,bjk->bik", QT, b["ee_rot"])[:, :, :2].reshape(-1, 6)
+        else:
+            rot = b["ee_rot"][:, 2, :]                                   # world-z row: invariant to rotations about z
+        e = b["ti"]
+        aux = b["drawer"] * (e == DRAWER).float()
+        ctx = torch.cat([pr, rot, b["grip"] * GRIP_SCALE, b["prev"][:, None], self.size[e], self.onehot[e], aux[:, None] * 10.0], -1)
+        return Q, ctx
+
     def _gate(self, b):
         return b["held"] if self.gate_contact else (b["prev"] > 0).float()
 
@@ -179,6 +226,14 @@ class FactoredFlow(nn.Module):
             c = torch.cat([self._prop(b, Q, o), h, self._slot(b, b["oi"], Q, o, y0), self._slot(b, b["ti"], Q, o, y0)], -1)
             v = self.net(torch.cat([c, flat(chunk_to(Q, x)), te], -1)).reshape(B, self.H, 7)
             return chunk_from(Q, v)
+        if self.c:
+            Qo, oo, yo = self._frame(b, b["oi"], False)
+            co = torch.cat([self._prop(b, Qo, oo), self._slot(b, b["oi"], Qo, oo, yo)], -1)
+            Qc, ct = self._canon(b)
+            vo = chunk_from(Qo, self.obj(torch.cat([co, flat(chunk_to(Qo, x)), te], -1)).reshape(B, self.H, 7))
+            vt = chunk_from(Qc, self.tgt(torch.cat([ct, flat(chunk_to(Qc, x)), te], -1)).reshape(B, self.H, 7))
+            g = self._gate(b)[:, None, None]
+            return (1 - g) * vo + g * vt
         world = self.arm == "A_noframe"
         Qo, oo, yo = self._frame(b, b["oi"], world)
         Qt, ot, yt = self._frame(b, b["ti"], world)
@@ -230,10 +285,10 @@ def n_params(m):
     return int(sum(p.numel() for p in m.parameters()))
 
 
-def batch_from_scene(sc, oi, ti, prev, held=0.0, off=(0.0, 0.0, 0.0)):
-    """One oracle scene (fa1_common.scene) -> a batch of 1.  held / off: stage 1b's contact flag and grasp offset (ignored by
-    stage 1's arms)."""
+def batch_from_scene(sc, oi, ti, prev, held=0.0, off=(0.0, 0.0, 0.0), zrest=0.0, cyaw=0.0):
+    """One oracle scene (fa1_common.scene) -> a batch of 1.  held / off: stage 1b's contact flag and grasp offset; zrest / cyaw:
+    stage 1c's rest height and bearing (each ignored by the arms that do not read it)."""
     f = lambda v: torch.tensor(np.asarray(v, np.float32))[None]               # noqa: E731
     return dict(ee_pos=f(sc["ee_pos"]), ee_rot=f(sc["ee_rot"]), grip=f(sc["grip"]), prev=f(prev).reshape(1), pos=f(sc["pos"]),
                 yaw=f(sc["yaw"]), drawer=f(sc["drawer"]).reshape(1), oi=torch.tensor([oi]), ti=torch.tensor([ti]),
-                held=f(float(held)).reshape(1), off=f(off))
+                held=f(float(held)).reshape(1), off=f(off), zrest=f(float(zrest)).reshape(1), cyaw=f(float(cyaw)).reshape(1))

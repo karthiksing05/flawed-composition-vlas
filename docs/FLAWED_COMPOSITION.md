@@ -1389,6 +1389,83 @@ on the same cells).
 **Cost.** 0.61 A40-h (training: 3 jobs, 37 min). CPU: rollouts 8.45 CPU-job-h (24 jobs); contact labels, swap test, read and
 diagnoses about 0.1 h.
 
+### 5.7 Stage 1c: a canonical place frame (protocol fixed 2026-10-31, before any stage-1c rollout; m3_prereg tag pa1c)
+
+**Measured weakness (5.6).** The place factor does not transfer, because (Supp) fails. A new pairing starts its carry 7-25 cm
+outside the target term's training onsets (start gap), with a grasp offset 4-9 cm from any trained with that target (offset
+gap).
+
+**Principle.** Section 3.5's lever for a nuisance on a factored stage: frame equivariance, so that the stage's inputs are the
+same for every value of the nuisance. Here the nuisance is the grasp: which object is held, where it is held, and from which
+side of the target it was picked up. Rigid holding makes this exact. A translation delta moves the gripper and the held object
+alike, so the place can be written as a motion of the held object relative to the target.
+
+**The change (one, structural; arm Ac, `lifelong_ood/policy/factored_flow.py` ARMS_C).** The target term is moved into a
+canonical place frame. The object term and the contact gate are unchanged from Ab.
+- **Origin and axes.** The origin is the target. The x-axis is the bearing, frozen at the hold's onset, from the held object's
+  foot to the target. The foot is the object's position with its height replaced by height − rest height + table height. The
+  rest height is the object's lowest height before the hold began (`experiments/fa1c_common.py`).
+- **Inputs.**
+  - the foot in this frame;
+  - the end effector's tilt (the world-z row of its rotation, which is invariant to rotations about z);
+  - finger positions;
+  - the last command;
+  - the target slot's identity, size and drawer opening.
+- **Dropped:** the held object's size, yaw and offset (identity proxies), the end effector's position and yaw, and the target's
+  yaw.
+- **What it buys, by construction.** The offset gap vanishes, since the foot is the same point on every object. The start gap
+  shrinks to the carry distance d, since the bearing is canonical and the foot height at onset is fixed by the lift rule.
+
+**Proposition 3 for Ac.**
+- (i) and (ii) hold as before. The object term and the gate are Ab's.
+- New in (i): the place chunk is equivariant to rotating the scene about the target's vertical axis. If the bearing, every slot
+  except the target, and the end effector rotate together, the chunk rotates with them. This holds for every parameter setting.
+- In (iv), (Supp) reduces to one condition: the pairing's carry distance d lies in the range trained for its target.
+
+**Support prediction, made before the rollouts** (`experiments/fa1c_support.py`, results/flawed/a1c_support.json). The onsets
+are stage 1b's Ab grasp onsets, and the foot is approximated from the end effector and the object's median training offset. For
+each pairing, the distance to the nearest training onset is given in 1b's coordinates (end effector, target frame) and in 1c's
+(|d − nearest trained d|):
+
+| pairing | 1b gap | 1c gap | d | trained d for the target (min-max) |
+|---|---|---|---|---|
+| N1 cheese → plate | 0.069 | 0.010 | 0.18 | 0.12-0.17 |
+| N2 cheese → stove | 0.083 | 0.001 | 0.23 | 0.22-0.29 |
+| N3 cheese → cabinet | 0.100 | 0.064 | 0.39 | 0.25-0.33 |
+| N4 bottle → plate | 0.147 | 0.102 | 0.27 | 0.12-0.17 |
+| N5 bottle → stove | 0.137 | 0.001 | 0.26 | 0.22-0.29 |
+| N6 bottle → bowl | 0.251 | 0.000 | 0.14 | 0.12-0.16 |
+
+- Prediction: Ac's (Supp) holds for N2, N5 and N6, nearly for N1, and not for N3 or N4, whose carries are longer than any
+  trained to that target.
+- So C3 is predicted to hold at most on N1, N2, N5 and N6, and only if (Suff) holds there. N6 (bottle in bowl) and N4 (bottle
+  on plate) may fail on physics.
+- C2 needs most pairings in support and is open.
+
+**Arms.**
+- Ac with seeds 0, 1 and 2.
+- Ablations, seed 0:
+  - Ac_nobear: the foot, in the target's own yaw frame, with the full end-effector rotation;
+  - Ac_noft: the bearing frame and tilt, with the end-effector position in place of the foot.
+- H and R are stage 1b's Hb and Rb runs (same protocol, states and noise), not retrained. Ac reads the rest height and the
+  bearing, which they do not. Both are functions of the object's and target's poses over time, already in their inputs. Ab (1b)
+  and stage 1's A are shown beside them.
+
+**Recipe, rollouts, read.**
+- The recipe is unchanged and was not tuned (`experiments/fa1c_train.py`).
+- Rollouts follow stage 1b's protocol, with the canonical tracker stepped after every simulator step (`experiments/fa1c_roll.py`).
+  The read is `experiments/fa1c_read.py`, on the engine `experiments/fa1x_read.py`. With A = Ab, the engine reproduces the
+  registered 1b read exactly (worst difference 0.0).
+- The criteria C1-C4, the classes, the CIs and the verdict order are 5.6's, with A = Ac.
+- The swap test (`experiments/fa1c_swap.py`, training states) adds a fourth check, T4: the place chunk's error after rotating
+  the scene about the target. Ac must show 0 on T1-T4.
+  - T4 rotates the flow noise with the scene. The sampler is equivariant per sample only then; in distribution it always is,
+    because the noise is isotropic.
+  - Result before the rollouts (results/flawed/a1c_swap.json): Ac gives 0 on T1-T3 and at most 5e-6 on T4 (float32 round-off).
+    Ac_noft gives the same. Ac_nobear gives 0 on T1-T3 and a mean of 0.90 (max 6.07) on T4.
+  - An earlier T4 run without the rotated noise gave 0.29 for Ac. It was replaced before the pre-registration.
+- Budget: 1 A40-h.
+
 ---
 
 ## 6. Experiments, order and cost
