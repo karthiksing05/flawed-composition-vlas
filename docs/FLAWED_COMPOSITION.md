@@ -2445,6 +2445,70 @@ C2, C3, 3F)".**
 **Cost.** 0.28 A40-h (training, 5.3-5.9 min per seed). Running total for rounds 1b-1i: 3.19 A40-h. CPU: rollouts 4.3
 CPU-job-h (6 jobs), diagnostic traces about 1.2 CPU-job-h (12 jobs), swap, pre-registration and read under 0.1 h.
 
+**Criterion change approved by the user (2026-10-31, after the 1i read).** The three-factor law 3F becomes the binding
+multiplicativity test from round 1j on. C3, the two-factor view, is still reported but is descriptive. 1i's verdict stays on
+record unchanged.
+- **Rationale.**
+  - C3 predicts s(o, t) = g_o · p_t, with p_t taken from the target's known tasks. That assumes success after a grasp depends on
+    the target alone.
+  - 1i contradicts this with a one-signed bias: observed success lies about 0.1 below g_o · p_t on five of six pairings, which
+    is the object's own hold-and-carry factor. 5.15 measures it directly: the cheese is grasped and carried less reliably than
+    the bowl.
+  - 3F models that factor (h_o · a_o · q_t, hold and arrival from the object's known tasks, placement after arrival from the
+    target's). It has been a registered primary test since 1f (5.11), so the binding test is not chosen after the fact.
+
+### 5.17 Stage 1j: confirmatory read of Ai on fresh seeds (protocol fixed 2026-10-31, before any stage-1j rollout; m3_prereg tag pa1j)
+
+**Purpose.** To confirm 1i on seeds never trained or read before. Ai is unchanged: architecture, data (demos plus 1g's generated
+carries) and recipe.
+- Seeds 3, 4 and 5 (tag j): `experiments/fa1g_train.py --tag j --seed s --arms Ai`.
+- Rollouts: `experiments/fa1h_roll.py --arm Ai --name Aj` -> results/flawed/a1j_roll. One job per model and layout.
+- Baselines: C4 against Hg and Rg (1g's runs). Ai (1i, seeds 0-2) is shown beside.
+- The engine gained per-arm seeds (`fa1x_read.Read(..., a_seeds)`). With its defaults it reproduces the 1i engine reads exactly
+  (regression job, below).
+
+**Checks before the rollouts.** These are the same as 1i's and are asserted in the pre-registration:
+- swap test 0 on T1-T3 and T7, at most 1e-4 on T4 and T5' (T6 descriptive);
+- grasp identity exact, read with the results.
+- Result before the rollouts:
+  - The swap test gives 0 on T1-T3 and T7, at most 1.3e-5 on T4 and at most 1.1e-5 on T5'. T6 changes by a mean of 0.63-0.65.
+  - Training took 3.2-4.0 min per seed.
+  - The engine regression reproduces 1i's familiar and new reads identically.
+
+**Binding criteria, one verdict** (`experiments/fa1j_read.py`).
+- **Familiar layout:**
+  - C1: s_A(known) − 0.672 ≥ −0.10;
+  - C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6;
+  - 3F: every N1-N6 CI of D3 contains 0;
+  - C4: against Hg and Rg, both differences > 0 with CIs excluding 0.
+- **New layout:**
+  - C1 = layout invariance L ≥ 0.8 (point), with CI lower bound ≥ 0.6;
+  - C2, 3F and C4 as above, on the new-layout cells.
+- C3 is reported, descriptive only. N6 stays in.
+- **Mapping per layout:**
+  - "uninformative" if 0.672 < 0.5;
+  - "compositional" if C1, C2, 3F and C4 all hold;
+  - otherwise "not compositional (fails: ...)", listing the failing members of C1, C2, 3F, C4 in that order.
+- **Verdict = "familiar: <v> | new layout: <v>". CONFIRMED iff both layouts read "compositional".**
+
+**Predictions** (from 1i's values; fresh seeds vary by about ±0.1 per cell):
+- **Familiar layout:**
+  - C1 holds (1i: +0.08).
+  - C2 holds at the point (1i: 0.87); its lower bound is near 0.6 (1i: 0.63) and may fall either side.
+  - C4 holds.
+  - **3F: N3 (cheese on the cabinet) is the pairing at risk.** 1i's D3 was −0.08 [−0.17, −0.02]. Predicted D3 for N3: −0.05
+    ± 0.05, with the CI containing 0 about half the time. The other five pairings' CIs contain 0.
+- **New layout:**
+  - **L is predicted at 0.79 ± 0.06 (1i: 0.79 [0.64, 0.98]), so C1 is a coin flip at the point.** The lower bound ≥ 0.6
+    probably holds.
+  - C2 fails (1i: 0.67).
+  - 3F at risk on N1 and N6.
+  - C4 holds.
+- **Expected verdict:** "familiar: compositional" or "familiar: not compositional (fails: 3F)", and "new layout: not
+  compositional (fails: C2, ...)". Confirmation in both layouts is not expected.
+
+**Budget.** 0.3 A40-h (3 models). CPU: 6 rollout jobs, about 4.5 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost

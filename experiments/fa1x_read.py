@@ -33,13 +33,14 @@ ROLLDIR = {"Hb": "a1b_roll", "Rb": "a1b_roll", "Ab": "a1b_roll", "Ab_cmd": "a1b_
 
 
 class Read:
-    def __init__(self, A, abl, refs, H="Hb", R="Rb", layout="familiar"):
+    def __init__(self, A, abl, refs, H="Hb", R="Rb", layout="familiar", a_seeds=SEEDS):
         """A: the factored arm (3 seeds); abl: its seed-0 ablations; refs: earlier arms shown beside it, as (name, seeds).
         H, R: the holistic and role-routed baselines (stage 1g on: retrained on the same data as A); layout: N2's familiar or new
-        cells.  The defaults are stages 1b-1f's read, unchanged."""
+        cells; a_seeds: A's seeds (stage 1j's confirmatory read uses fresh seeds 3-5).  The defaults are stages 1b-1f's read."""
         self.A, self.abl, self.H, self.R, self.layout = A, tuple(abl), H, R, layout
         self.main = (H, R, A)
-        self.runs = [(m, s) for m in self.main for s in SEEDS] + [(m, 0) for m in self.abl]
+        self.seeds = {H: SEEDS, R: SEEDS, A: tuple(a_seeds)}
+        self.runs = [(m, s) for m in self.main for s in self.seeds[m]] + [(m, 0) for m in self.abl]
         self.refs = list(refs)
         self.all_runs = self.runs + [(m, s) for m, ss in self.refs for s in ss if (m, s) not in self.runs]
 
@@ -129,11 +130,11 @@ def run(rd, out_name):
         for x in ("S", "G", "R"):
             assert np.isfinite(v[x]).all(), (k, x)
     A, HB, RB = rd.A, rd.H, rd.R
-    groups = {m: SEEDS for m in rd.main}
+    groups = {m: rd.seeds[m] for m in rd.main}
     groups.update({m: (0,) for m in rd.abl})
     groups.update({m: tuple(ss) for m, ss in rd.refs})
     for m in rd.main:
-        for s in SEEDS:
+        for s in rd.seeds[m]:
             groups[f"{m}_s{s}"] = (s,)
 
     Ps = {}
