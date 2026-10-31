@@ -1847,6 +1847,64 @@ Stage 2 (vision slots on pi0.5 features, 5.5's plan) stays gated on C1-C4 holdin
 
 **Total cost of rounds 1b-1e.** 1.73 A40-h (training only), plus 18.8 CPU-job-h of rollouts.
 
+### 5.11 Stage 1f: confirmatory run of the size-free place term, three-factor law primary (protocol fixed 2026-10-31, before any stage-1f rollout; m3_prereg tag pa1f)
+
+**Measured weakness (5.9).** Ae's shared place term read the target's hand-set size, and the size fixed one release height per
+target (plate 0.02, bowl 0.05, sites 0). K1 (bowl on plate) fell to 0.73 strict while its relaxed placement stayed at 0.95-1.00.
+The one-seed ablation without size, Ae_nosize, had the best s(new) of any model (0.60, ratio 0.97 [0.62, 1.63]). One seed decides
+nothing, so this round repeats it with three fresh seeds.
+
+**Principle.** (B), no bypass, applied to the place term. The hand-set size is a per-target constant, so it acts as a coarse
+target identity. Without it, the place term reads only the foot in the canonical frame, the last command and the drawer opening.
+The release then has to come from the geometry the term sees, which is the same for every target.
+
+**The change.** None to the architecture: arm Ae_nosize of 5.9, retrained with seeds 0, 1 and 2 under tag f
+(`experiments/fa1c_train.py --tag f --arms Ae_nosize`, recipe unchanged; 5.9's seed-0 model is not reused, because it has been
+read). H = Hb and R = Rb as in 5.6. Ae (5.9) and Ad (5.8) are shown beside them.
+
+**Rollouts.** `experiments/fa1f_roll.py`, with 5.8's episode unchanged. Each model runs all 16 familiar tasks in one job on one
+node, so the grasp-identity check never compares across CPU types (5.9's break). The rollout file records the host.
+
+**Swap test** (`experiments/fa1e_swap.py` with FA1_SWAP_MODELS, training states, -> results/flawed/a1f_swap.json). Every seed
+must show 0 on T1-T3, T5 and T6, and round-off (at most 1e-4) on T4.
+- Result before the rollouts: all three seeds give 0 on T1-T3, T5 and T6, and at most 2.5e-5 on T4.
+- Training: 30,000 steps per seed, final train loss 0.133-0.136, 197-324 s per seed.
+
+**Primary read, one verdict** (`experiments/fa1f_read.py`).
+- (a) C1-C4 as in 5.6, with A = Ae_nosize (engine `experiments/fa1x_read.py`; estimators, CIs and thresholds unchanged).
+- (b) **3F, the three-factor law**, s(o, t) = h_o · a_o · q_t.
+  - h_o = P(hold | o), from o's known tasks.
+  - a_o = P(arrived | hold, o), from o's known tasks.
+  - q_t = P(success | arrived, t), from t's known tasks.
+  - Arrival means the held object comes within the pair's relaxed radius max(RAD_t, calibrated dxy_rest + 0.03) (5.9).
+  - Seeds are pooled; the 20 states are resampled, 2,000 draws, seed 0.
+  - **3F holds iff the 95% CI of D3 = s_obs − h_o · a_o · q_t contains 0 on every one of N1-N6.**
+- **Verdict mapping:**
+  - s_H(known) < 0.5: "uninformative";
+  - C1-C4 and 3F hold: "compositional; three-factor law holds";
+  - C1-C4 hold, 3F fails: "compositional by C1-C4; three-factor law fails";
+  - otherwise: "not compositional (fails: ...)", listing the failing members of C1, C2, C3, C4, 3F in that order.
+
+**N6 stays in.** N6 (bottle → bowl) could be excluded as a physics-sufficiency case only if known-task evidence that predates the
+read justified it. No such evidence exists:
+- No known task puts the bottle, or any tall object, in the bowl. The bowl's only known task carries the cheese, and the bottle's
+  known tasks go to other targets.
+- Every sign that the bottle fails in the bowl after arrival comes from N6 itself, in the 1d and 1e reads (5.8, 5.9). Those are
+  new-pairing outcomes, and excluding a cell because it failed before would be tuning on an evaluation cell.
+
+So N6 counts in C3 and in 3F. A failure there is recorded as a failure of (Suff) that the known tasks could not have revealed.
+
+**Predictions.**
+- Role locality and target-blind grasping stay exact (swap test; grasp identity with no cross-CPU breaks).
+- K1 recovers towards Ad's 0.97, since the place term no longer reads a release height per target, and C1 holds.
+- s(new) stays near the one-seed value (0.5-0.6). C2 is uncertain: its point estimate may clear 0.8, but its CI lower bound
+  needs ≥ 0.6, which no round has reached.
+- Two-factor C3 fails on at least one pairing ((Suff) of the cheese or the bottle).
+- 3F holds on N1-N5 and is at risk on N6. The expected verdict is therefore "not compositional (fails: C3, 3F)", with C2 open.
+- C4 holds.
+
+**Budget.** 0.5 A40-h.
+
 ---
 
 ## 6. Experiments, order and cost

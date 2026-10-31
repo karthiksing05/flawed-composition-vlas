@@ -25,6 +25,12 @@ from lifelong_ood.policy import factored_flow as FF                         # no
 
 N, OBJS = 4000, list(range(4))
 MODELS = [("e_s0", "Ae"), ("e_s0", "Ae_nosize"), ("d_s0", "Ad")]
+# stage 1f+ (5.11): FA1_SWAP_MODELS="f_s0:Ae_nosize+f_s1:Ae_nosize" and FA1_SWAP_OUT=a1f_swap.json; results then keyed "<ckpt>/<arm>".
+# Unset, the script is stage 1e's, unchanged.
+ENV_MODELS = os.environ.get("FA1_SWAP_MODELS")
+if ENV_MODELS:
+    MODELS = [tuple(x.split(":")) for x in ENV_MODELS.split("+")]
+OUT_NAME = os.environ.get("FA1_SWAP_OUT", "a1e_swap.json")
 
 
 def main():
@@ -128,9 +134,9 @@ def main():
                 out.append((sample(m, bb, 6) - b0).abs().amax((1, 2)))
         m.size.copy_(size0)
         r["T6"] = summ(torch.cat(out), base)
-        res[arm] = r
-        print(f"[fa1e] swap {arm}: {json.dumps({k: (round(v['mean'], 6), round(v['max'], 6)) for k, v in r.items()})}", flush=True)
-    with open(os.path.join(ROOT, "results", "flawed", "a1e_swap.json"), "w", encoding="utf-8") as fh:
+        res[f"{ck}/{arm}" if ENV_MODELS else arm] = r
+        print(f"[fa1e] swap {ck}/{arm}: {json.dumps({k: (round(v['mean'], 6), round(v['max'], 6)) for k, v in r.items()})}", flush=True)
+    with open(os.path.join(ROOT, "results", "flawed", OUT_NAME), "w", encoding="utf-8") as fh:
         json.dump(dict(models=MODELS, n=N, tests=res), fh, indent=1)
 
 
