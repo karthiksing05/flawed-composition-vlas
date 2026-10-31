@@ -1905,6 +1905,51 @@ So N6 counts in C3 and in 3F. A failure there is recorded as a failure of (Suff)
 
 **Budget.** 0.5 A40-h.
 
+**Results (2026-10-31; ledger fc_a1f tag a1f; results/flawed/a1f_read.json)**
+
+- 320 episodes per model, 3 models, no episode errors. Each model's 16 tasks ran on one node (bmo).
+- **Grasp identity holds exactly:** 52 of 52, 42 of 42 and 41 of 41 groups, with no cross-CPU breaks. Hb and Rb: 0 of 55-60.
+
+| arm | s known | s new | g known | g new | p_s known | p_s new | p_r new | ratio |
+|---|---|---|---|---|---|---|---|---|
+| Ae_nosize (1f, 3 seeds) | 0.60 [0.35, 0.84] | 0.43 [0.30, 0.58] | 0.87 [0.71, 0.98] | 0.72 [0.54, 0.86] | 0.69 [0.45, 0.87] | 0.60 [0.45, 0.79] | 0.70 [0.57, 0.84] | 0.73 [0.44, 1.30] |
+| Ae (5.9) | 0.63 | 0.44 | 0.88 | 0.73 | 0.72 | 0.61 | 0.69 | 0.70 |
+| Ad (5.8) | 0.69 | 0.50 | 0.88 | 0.70 | 0.79 | 0.72 | 0.76 | 0.72 |
+| Hb / Rb (5.6) | 0.67 / 0.77 | 0.01 / 0.01 | 0.88 / 0.91 | 0.18 / 0.16 | 0.76 / 0.84 | 0.03 / 0.03 | 0.05 / 0.07 | 0.01 / 0.01 |
+
+- Per seed, s(known) is 0.66, 0.53 and 0.60, and s(new) 0.57, 0.37 and 0.36. The one-seed value of 5.9 (0.60) was the top
+  of the seed spread, not the arm's level.
+
+**Criteria.**
+- **C1 holds:** −0.08 [−0.24, 0.08].
+- **C2 fails:** 0.73 [0.44, 1.30].
+- **C3 holds, for the first time in any round.** Every CI of D = s − g_o · p_t contains 0: N1 −0.02 [−0.14, 0.10], N2 −0.07
+  [−0.21, 0.05], N3 −0.04 [−0.15, 0.09], N4 −0.10 [−0.24, 0.07], N5 −0.12 [−0.27, 0.02], N6 −0.06 [−0.24, 0.12].
+- **C4 holds:** +0.43 [0.30, 0.58] against Hb and +0.43 [0.29, 0.58] against Rb.
+- **3F fails.** The CI of D3 contains 0 on N4 (+0.02 [−0.11, 0.15]), N5 (+0.04 [−0.01, 0.09]) and N6 (−0.11 [−0.30, 0.06]).
+  It lies above 0 on the cheese pairings: N1 +0.09 [0.03, 0.17], N2 +0.08 [0.03, 0.14] and N3 +0.06 [0.01, 0.11].
+
+**Verdict (pre-registered mapping): "not compositional (fails: C2, 3F)".**
+
+**What the read shows (descriptive).**
+- **The confirmatory run does not reproduce the one-seed advantage.** Ae_nosize − Ae on s(new) is −0.01 [−0.08, 0.06], and
+  Ae_nosize − Ad is −0.07 [−0.18, 0.03]. Dropping the size changes nothing measurable. K1 did not recover: it is 0.62 (seeds
+  0.70, 0.40, 0.75), against the prediction of Ad's 0.97.
+- **3F fails because the cheese's known task is worse than its new pairings.** The cheese's factors come from its only known
+  task, K6 (cheese in the bowl), whose success is 0.15-0.30. Arrival while held is 0.69 there (a_o) but 0.78-0.81 on N1-N3.
+  So h_o · a_o · q_t under-predicts every cheese pairing. Carrying the cheese into a movable bowl is harder than carrying it to a
+  plate or a site. The arrival factor is not purely the object's: it depends on the target too. This is the same (Suff)
+  coupling, seen from the object side.
+- **C2 fails on the known side as much as on the new side.** The known cells K5 (bottle on the rack, 0.20) and K6 (0.23) are
+  low in every factored arm since 5.8. That keeps s(known) at 0.60 and widens the ratio's CI: lower bound 0.44.
+- **N6 kept in.** Its D3 contains 0 here (−0.11 [−0.30, 0.06]), so keeping it in did not decide the verdict.
+
+**Deviations.** None to the protocol. The read engine and fa1c_train.py stayed at their registered hashes for this read. The
+1g changes to the engine were made after it.
+
+**Cost.** 0.25 A40-h (training, 3 × 3-6 min plus start-up). CPU: rollouts 2.1 CPU-job-h (3 jobs); swap, read and pre-registration
+under 0.05 h.
+
 ---
 
 ## 6. Experiments, order and cost
