@@ -1674,6 +1674,57 @@ tools. No computation ran there. It was edited afterwards with the edit tools, b
 
 **Cost.** 0.42 A40-h (training). CPU: rollouts 3.70 CPU-job-h (10 jobs); proxy, regression, swap and read about 0.1 h.
 
+### 5.9 Stage 1e: one place term shared by every target (protocol fixed 2026-10-31, before any stage-1e rollout; m3_prereg tag pa1e)
+
+**Measured weakness (5.8).** The largest remaining deficit, N4 (−0.21), is the out-of-support carry that 5.7 predicted. Each
+target's place term was fit only on the carries made to it, from one object's location. The plate saw carries of 0.12-0.17 m,
+and N4 needs 0.26 m. The target identity one-hot lets the place term keep a separate function per target, so no target borrows
+another's support.
+
+**Principle.** The support condition of 3.4 (Wiedemer's compositional support), met by sharing instead of by data. If the place
+stage reads the target only through its geometry, one function serves every target. Its support over the foot's position
+relative to the target is then the union of every target's training carries. The target's identity is not geometry: it is a
+symbolic proxy that partitions the support.
+
+**The change (one, structural).** Arm Ae is Ad without the target identity one-hot in the target term. The target term reads:
+- the foot, in the canonical frame;
+- the last command;
+- the target's hand-set size (radius, height);
+- the drawer opening.
+
+**Support prediction** (5.7's table; trained carry distances pooled over all targets: 0.115-0.171 and 0.217-0.325 m, with no
+training carries between 0.171 and 0.217):
+- N4 (0.27) moves into support.
+- N2 (0.23), N5 (0.26) and N6 (0.14) stay in support.
+- N1 (0.18) lies 0.01 from support.
+- N3 (0.39) stays 0.065 out.
+
+**Predictions.**
+- N4 improves.
+- The cheese pairings stay bound to the cheese's own task. That limit is (Suff), not support (5.8), so two-factor C3 is expected
+  to keep failing on them.
+- C1 is at risk (Proposition 2). Release heights now come from size alone: plate 0.02, bowl 0.05, sites 0.
+
+**Arms.**
+- Ae with seeds 0, 1 and 2.
+- Ablation Ae_nosize (no target size), seed 0.
+- H = Hb and R = Rb as in 5.6. Ad (5.8) and Ac (5.7) are shown beside them.
+- Training: `experiments/fa1c_train.py --tag e`, recipe unchanged.
+- Rollouts: `experiments/fa1e_roll.py`, which reuses 5.8's episode unchanged.
+- Read: `experiments/fa1e_read.py` on the engine. C1-C4, classes, CIs and verdict order are 5.6's, with A = Ae.
+
+**Swap test** (`experiments/fa1e_swap.py`, training states): T1-T5 as in 5.8, plus T6. T6 replaces the target's identity with
+another entity given the target's pose and size, in the place phase. Ae must show 0 on T1-T3, T5 and T6, and round-off on T4.
+- Result before the rollouts (results/flawed/a1e_swap.json): Ae and Ae_nosize give 0 on T1-T3, T5 and T6, and at most 1.1e-5
+  on T4.
+- Ad changes by a mean of 0.65 (max 3.68) on T6. It did use the target identity.
+
+**Descriptive, pre-registered: the three-factor split with a corrected arrival test.** For each pair the arrival radius is the
+relaxed test's horizontal radius, max(RAD_t, calibrated dxy_rest + 0.03). 5.8's fixed 3 cm never fired at the cabinet and rack
+sites. The split is computed for Ae and, from its logged rollouts, for Ad.
+
+**Budget.** 1 A40-h.
+
 ---
 
 ## 6. Experiments, order and cost

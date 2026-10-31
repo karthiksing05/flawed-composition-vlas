@@ -47,6 +47,12 @@ foot (canonical frame), the last command and the target slot's identity / size /
   Ad_tilt   Ad + the end effector's tilt                                                    (ablates the tilt cut)
   Ad_fing   Ad + the finger positions                                                       (ablates the finger cut)
 
+Stage 1e arms (section 5.9; ARMS_E): Ad's target term without the target's IDENTITY one-hot: one place term shared by every target,
+reading the target only through its geometry (hand-set size, drawer opening) and the foot's position relative to it, so its support
+over carry distances pools over all targets' training carries.
+  Ae        foot, last command, target size, drawer opening
+  Ae_nosize Ae without the target size                                                      (ablates the target geometry)
+
 Rectified flow: x_t = (1 - t) x0 + t x1, target x1 - x0, t ~ U(0, 1); sampling = Euler from N(0, I).  Works in torch 1.11 (the
 LIBERO venv, rollouts on CPU) and 2.x (training).  Weights travel as npz (save / load).
 """
@@ -65,13 +71,16 @@ ARMS = ("H", "R", "A", "A_noframe", "A_nogate", "A_nosum")
 ARMS_B = ("Hb", "Rb", "Ab", "Ab_cmd", "Ab_nooff", "Ab_nosum")
 ARMS_C = ("Ac", "Ac_nobear", "Ac_noft")
 ARMS_D = ("Ad", "Ad_tilt", "Ad_fing")
+ARMS_E = ("Ae", "Ae_nosize")
 BASE = {"Hb": "H", "Rb": "R", "Ab": "A", "Ab_cmd": "A", "Ab_nooff": "A", "Ab_nosum": "A_nosum", "Ac": "A", "Ac_nobear": "A", "Ac_noft": "A",
-        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A"}
+        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A"}
 WIDTH = {"H": 512, "R": 512, "A": 352, "A_noframe": 352, "A_nogate": 352, "A_nosum": 512,
          "Hb": 512, "Rb": 512, "Ab": 352, "Ab_cmd": 352, "Ab_nooff": 352, "Ab_nosum": 512, "Ac": 352, "Ac_nobear": 352, "Ac_noft": 352,
-         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352}
-# the canonical target term's optional inputs per arm: (end-effector tilt, full end-effector rotation, finger positions)
-CANON_IN = {"Ac": (1, 0, 1), "Ac_nobear": (0, 1, 1), "Ac_noft": (1, 0, 1), "Ad": (0, 0, 0), "Ad_tilt": (1, 0, 0), "Ad_fing": (0, 0, 1)}
+         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352}
+# the canonical target term's optional inputs per arm: (end-effector tilt, full end-effector rotation, finger positions, target
+# identity one-hot, target size)
+CANON_IN = {"Ac": (1, 0, 1, 1, 1), "Ac_nobear": (0, 1, 1, 1, 1), "Ac_noft": (1, 0, 1, 1, 1), "Ad": (0, 0, 0, 1, 1), "Ad_tilt": (1, 0, 0, 1, 1),
+            "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0)}
 TABLE = 8                                                   # slot whose height is the table surface (main_table_stove_front_region)
 
 
@@ -119,9 +128,9 @@ def chunk_from(Q, x):
 class FactoredFlow(nn.Module):
     def __init__(self, arm, horizon=8, center=(0.0, 0.0, 0.0), size=None):
         super().__init__()
-        assert arm in ARMS + ARMS_B + ARMS_C + ARMS_D, arm
+        assert arm in ARMS + ARMS_B + ARMS_C + ARMS_D + ARMS_E, arm
         self.arm, self.H = arm, horizon
-        self.c = arm in ARMS_C + ARMS_D                         # stage 1c / 1d: canonical place frame
+        self.c = arm in ARMS_C + ARMS_D + ARMS_E                # stage 1c / 1d / 1e: canonical place frame
         self.b = arm in ARMS_B or self.c                        # stage 1b: contact flag and grasp offset available
         self.base = BASE.get(arm, arm)
         self.gate_contact = arm in ("Ab", "Ab_nooff", "Ab_nosum") or self.c
@@ -144,8 +153,8 @@ class FactoredFlow(nn.Module):
             self.net = mlp(2 * (dprop + dslot) + dhold + 1 + 2 * da + dt, da, w)
         elif self.c:
             self.obj = mlp(dprop + dslot + da + dt, da, w)
-            tilt, rot6, fing = CANON_IN[self.arm]
-            self.tgt = mlp(3 + 3 * tilt + 6 * rot6 + 2 * fing + 1 + (2 + N_ENT + 1) + da + dt, da, w)
+            tilt, rot6, fing, ident, tsize = CANON_IN[self.arm]
+            self.tgt = mlp(3 + 3 * tilt + 6 * rot6 + 2 * fing + 1 + (2 * tsize + N_ENT * ident + 1) + da + dt, da, w)
         else:
             self.obj = mlp(dprop + dslot + da + dt, da, w)
             self.tgt = mlp(dprop + dslot + dhold + da + dt, da, w)
@@ -202,7 +211,7 @@ class FactoredFlow(nn.Module):
             p = b["pos"][idx, b["oi"]].clone()
             p[:, 2] = p[:, 2] - b["zrest"] + b["pos"][:, TABLE, 2]
         pr = torch.einsum("bij,bj->bi", QT, p - pt) * POS_SCALE
-        tilt, rot6, fing = CANON_IN[self.arm]
+        tilt, rot6, fing, ident, tsize = CANON_IN[self.arm]
         parts = [pr]
         if rot6:
             parts.append(torch.einsum("bij,bjk->bik", QT, b["ee_rot"])[:, :, :2].reshape(-1, 6))
@@ -212,7 +221,12 @@ class FactoredFlow(nn.Module):
             parts.append(b["grip"] * GRIP_SCALE)
         e = b["ti"]
         aux = b["drawer"] * (e == DRAWER).float()
-        ctx = torch.cat(parts + [b["prev"][:, None], self.size[e], self.onehot[e], aux[:, None] * 10.0], -1)
+        parts.append(b["prev"][:, None])
+        if tsize:
+            parts.append(self.size[e])
+        if ident:
+            parts.append(self.onehot[e])
+        ctx = torch.cat(parts + [aux[:, None] * 10.0], -1)
         return Q, ctx
 
     def _gate(self, b):

@@ -1,0 +1,235 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: FLAWED_COMPOSITION 5.9 prototype A stage 1e",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4395838",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "f5ba23a8b0f49905c50119da659694dea23a8d13",
+  "short": "f5ba23a8"
+ },
+ "keys": {},
+ "metrics": {
+  "baselines": "H = Hb, R = Rb: stage 1b's runs (a1b_roll, 3 seeds each)",
+  "change": "Ad's target term without the target identity one-hot: reads foot (canonical), last command, target size, drawer opening; one place function shared by every target",
+  "checkpoints_sha256": {
+   "Ae_nosize_s0": "5459ca659d2af61e9f6b7d1da93e5835f854c6959880906ef2731e9320c18f07",
+   "Ae_s0": "f735ea20083dd986ce3aa5ae733574a96e67a23ead902e52c7c3f8b6877b8aeb",
+   "Ae_s1": "7ec4bc4cbcd855a0b31b6eb5df8e0d9c3c03237a7b77b8df5363fa134088c060",
+   "Ae_s2": "570990fa6a20f5cebe67576b328445b966566888200f1bcb6f574d43179f30f2"
+  },
+  "criteria": "C1-C4 and verdict order of section 5.6 (fa1b_read.py), A = Ae",
+  "data_sha256": {
+   "demos.npz": "5ee10822a5ade1537cddde2dd8421280a10a1bd432f90b0c1172516d023906dc",
+   "demos_b.npz": "6b12c14d98588886e0a4899e409bd1a2f7f1ec84d72b7a57c268b110c9388635"
+  },
+  "descriptive": "three-factor split s3 = h_o a_o q_t with the arrival radius max(RAD[t], calibrated dxy_rest + 0.03) per pair, for Ae and Ad; never changes the verdict",
+  "files_sha256": {
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fa1_read.py": "3bbe5c26150c527f0bdc77ef137a2ce123a7b87fddb6825a9b1e655d141cab18",
+   "experiments/fa1b_common.py": "ddf11055f9a15658b771a2922d6b9003d18a4600256262d9306252c4cb749758",
+   "experiments/fa1c_common.py": "54de91cd1e5c2508164b9eb25cad2fcb40f322696e89d3f628df5a1aae677374",
+   "experiments/fa1c_train.py": "e870dcb7123f6e8f62f82a43551a820b202ad199251917e0c800529c922008a8",
+   "experiments/fa1d_roll.py": "8a4c63f7923b7568d06519ca303287a28bb2ed80eb94f1fe9dd244694a00b7ed",
+   "experiments/fa1e_read.py": "b0feed311b4d3e68e21f805406bdb40411cf0c20b4b82e26caf5de2e584a5a5f",
+   "experiments/fa1e_roll.py": "e561f5211b81c9cfe10448f68620f744b2640c058167db2ef31e3955f9f1ff8c",
+   "experiments/fa1e_swap.py": "61ed6cbd2c3bc69bfc0d70c56798790fd944588ccfe745b33f5cb5bda2dc3809",
+   "experiments/fa1x_read.py": "c4a673041f9f9ede17639fd9430eec82fa398d8ec033824d2e1de4a1bb2b1a6d",
+   "lifelong_ood/policy/factored_flow.py": "3032209e60b9391f1e121442814c4b28c980c272d38e49723acd2ff7e8d22fc0",
+   "results/flawed/a1_calib.json": "c8b45b87ae94776dfd5e6b3afabbc300c3c4f64d98d916d19c4d0b093385adde",
+   "results/flawed/a1c_support.json": "a55e41be77e465f69e8862bdf842398e945bea578ffd9a3d6deb51f787e786dc",
+   "results/flawed/a1c_train_e_s0.json": "f5b44e6a33d5d451d087eb8b4e79d8dd1d46f9d2003b6d22209369d94c407f6f",
+   "results/flawed/a1c_train_e_s1.json": "3ca4e8eca7cd074ef56db70f0072c01b58fad301cb49ab99e522652ae9a85515",
+   "results/flawed/a1c_train_e_s2.json": "6a770b43ea51c47544d02ee3558738660b295e7ba2ff718e240fc2bfc764d78f",
+   "results/flawed/a1d_read.json": "1fa3fc96c83ccca5ecde7d5805c10242c11dcc35f51d39bc6f67f913dd6986e4",
+   "results/flawed/a1e_swap.json": "f9dfe0959167a9b5e44f037fb45999c731ef97af4584effc0e0681b3fe74a751",
+   "results/flawed/n2_bddl/K1.bddl": "4a95d6bc0f51aa1178f7565d3aa766d8e82b5e84069761b43df3e93e6671f969",
+   "results/flawed/n2_bddl/K2.bddl": "1a91a6c3e0038debcccc2f406ccb2f5763df14fbac806d48d3acee588d77ee7c",
+   "results/flawed/n2_bddl/K3.bddl": "d94f7671cc78be2d54972929206a73f6fc8496e0ccfbd6c5c319896f527da083",
+   "results/flawed/n2_bddl/K4.bddl": "3671152ddd1d676fef54451bf7c7d1b2059ef6bcd10c7185fab44be8da8e8716",
+   "results/flawed/n2_bddl/K5.bddl": "122268fde5ceb4eb4688d1a476a8479aa64711b6b27e9d6842cd0d07b2e586aa",
+   "results/flawed/n2_bddl/K6.bddl": "3e35ce6478ad167b1e1f1c5a81e27706d97bc10291dca9d2c3d3a1c02d68008a",
+   "results/flawed/n2_bddl/K7.bddl": "81072421a01040ed047e8460385d8848a621b243b79a12de07147dc32c7b8077",
+   "results/flawed/n2_bddl/K8.bddl": "c01171f1ab2643cb59f65ee132d595730ba4e480a66a7b3c69218b3d57cb9026",
+   "results/flawed/n2_bddl/N1.bddl": "ea669246017a3474bf7773b71803fcb3972bac1364b87c8d01527fab2e53acde",
+   "results/flawed/n2_bddl/N2.bddl": "056fb9652763bc469707c160acfe5be857a88a58fb0370c3a309b2684114326f",
+   "results/flawed/n2_bddl/N3.bddl": "449ac1938f75fb63dd7a6ea9768ba1d6b1dc0fa7b09bb196b2d117877f62c0ef",
+   "results/flawed/n2_bddl/N4.bddl": "6089cb6644e2e3ea89cf35155da7bbe17c7ed9b53f766687d7b2a562f809f359",
+   "results/flawed/n2_bddl/N5.bddl": "584b70aee9cb352ebe059a36ea6842cb74ffdaebe8be037113f233cb42e471d4",
+   "results/flawed/n2_bddl/N6.bddl": "6915915bb0310fffbdee4f8a6ac584e56dfd6b40ce82c08d4bb282ce5bf1c87b",
+   "results/flawed/n2_bddl/N7.bddl": "862af94435cfd1f7bdbf551baba6c32e42937e69fa7ef1df678a2a11d9f85848",
+   "results/flawed/n2_bddl/N8.bddl": "bd7884d815d497e3e5d5c2314e3c1061b71cf73cfc4c9740df0c1c15701346e6",
+   "results/flawed/n2_branches_main.json": "764e9e0473120f744c65893707612d2c01d5ba7dc3a52a4ecb20aa9d5f2ceb5f",
+   "results/flawed/n2_states/n2_goal_0.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_10.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_12.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_14.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_16.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_18.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_2.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_20.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_22.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_24.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_26.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_28.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_30.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_4.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_6.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_8.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_tasks.json": "8f7cd36af15424334081bb45c1649bb34adf849081320187ee24c10f0b194bd4"
+  },
+  "predictions": "pooled carry-distance support: N4 moves in, N1 ~0.01 out, N3 0.065 out, N2 / N5 / N6 in; N4 improves; cheese pairings stay bound to the cheese's own task ((Suff)), so two-factor C3 is expected to keep failing there; C1 at risk (release heights from size alone)",
+  "runs": {
+   "Ae_nosize_s0": {
+    "params": 859696
+   },
+   "Ae_s0": {
+    "params": 860400
+   },
+   "Ae_s1": {
+    "params": 860400
+   },
+   "Ae_s2": {
+    "params": 860400
+   }
+  },
+  "section_5_9_protocol_sha256": "8db81ed8ea78c8bf677532e7029df98fdea1e96f03f1806d083c7e576f40f9a4",
+  "status": "PRE-REGISTERED A1e (FLAWED_COMPOSITION 5.9, shared place term, oracle state, familiar layout)",
+  "swap_test_before_rollouts": {
+   "Ad": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.27140575647354126
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.31124147772789
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.2880389988422394
+    },
+    "T4": {
+     "max": 9.559094905853271e-06,
+     "mean": 4.58551880910818e-07,
+     "mean_abs_action": 0.3105364441871643
+    },
+    "T5": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.30936145782470703
+    },
+    "T6": {
+     "max": 3.675069570541382,
+     "mean": 0.6450536251068115,
+     "mean_abs_action": 0.30936145782470703
+    }
+   },
+   "Ae": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.27141502499580383
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.31147149205207825
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.2882707715034485
+    },
+    "T4": {
+     "max": 1.0251998901367188e-05,
+     "mean": 4.3448386577438214e-07,
+     "mean_abs_action": 0.31196528673171997
+    },
+    "T5": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.31049713492393494
+    },
+    "T6": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.31049713492393494
+    }
+   },
+   "Ae_nosize": {
+    "T1": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.27143028378486633
+    },
+    "T2": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3114127516746521
+    },
+    "T3": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.2882327437400818
+    },
+    "T4": {
+     "max": 1.1265277862548828e-05,
+     "mean": 4.405746096836083e-07,
+     "mean_abs_action": 0.31153956055641174
+    },
+    "T5": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3099989891052246
+    },
+    "T6": {
+     "max": 0.0,
+     "mean": 0.0,
+     "mean_abs_action": 0.3099989891052246
+    }
+   }
+  },
+  "training": {
+   "batch": 512,
+   "horizon": 8,
+   "lr": 0.0003,
+   "n_train": 52204,
+   "steps": 30000
+  },
+  "written_before": "any stage-1e rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pa1e__s0__f5ba23a8",
+ "schema": 1,
+ "script": "experiments/prereg/pa1e.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-10-31T07:37:45+00:00",
+ "stream": null,
+ "tag": "pa1e"
+}
