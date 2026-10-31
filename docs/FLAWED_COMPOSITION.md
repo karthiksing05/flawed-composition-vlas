@@ -1074,7 +1074,119 @@ jointly across arms).
     translation-relative, not in-distribution: the end effector starts at a relative offset never seen in training.
   - 8 compounds per status.
 
-**Results** (pending: smoke and main not yet run).
+**Results (2026-10-30; ledger fc_a1 tag a1; results/flawed/a1_read.json, a1_smoke.json)**
+
+- **Smoke gate passed.** Known / familiar smoke success (32 episodes per arm) was H 0.53, R 0.53, A 0.375, A_noframe 0.375,
+  A_nogate 0.69 and A_nosum 0.53.
+- **Main run.** 640 episodes per arm (32 tasks × 20 states), with no episode errors.
+
+**Cell table** (95% CIs; p_s = s given g, strict; p_r = r given g, relaxed).
+
+| arm | compound / layout | s | g | p_s | p_r |
+|---|---|---|---|---|---|
+| H | known / fam | 0.54 [0.34, 0.75] | 0.75 [0.56, 0.92] | 0.72 [0.52, 0.89] | 0.78 [0.61, 0.92] |
+| H | known / new | 0.00 [0.00, 0.00] | 0.01 [0.00, 0.05] | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] |
+| H | new / fam | 0.00 [0.00, 0.00] | 0.12 [0.01, 0.30] | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] |
+| H | new / new | 0.00 [0.00, 0.00] | 0.01 [0.00, 0.06] | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] |
+| R | known / fam | 0.56 [0.33, 0.80] | 0.73 [0.49, 0.94] | 0.77 [0.54, 0.93] | 0.83 [0.66, 0.95] |
+| R | known / new | 0.01 [0.00, 0.05] | 0.11 [0.02, 0.23] | 0.12 [0.00, 0.40] | 0.12 [0.00, 0.40] |
+| R | new / fam | 0.01 [0.00, 0.04] | 0.06 [0.00, 0.17] | 0.10 [0.00, 0.67] | 0.10 [0.00, 0.67] |
+| R | new / new | 0.01 [0.00, 0.04] | 0.06 [0.01, 0.13] | 0.11 [0.00, 0.44] | 0.11 [0.00, 0.44] |
+| A | known / fam | 0.34 [0.15, 0.56] | 0.62 [0.40, 0.83] | 0.54 [0.27, 0.80] | 0.62 [0.35, 0.85] |
+| A | known / new | 0.10 [0.00, 0.26] | 0.31 [0.14, 0.48] | 0.33 [0.00, 0.71] | 0.37 [0.04, 0.75] |
+| A | new / fam | 0.10 [0.01, 0.24] | 0.55 [0.36, 0.72] | 0.18 [0.01, 0.40] | 0.22 [0.04, 0.43] |
+| A | new / new | 0.08 [0.00, 0.21] | 0.34 [0.20, 0.50] | 0.24 [0.00, 0.51] | 0.25 [0.02, 0.52] |
+| A_noframe | known / fam | 0.39 [0.17, 0.63] | 0.69 [0.48, 0.87] | 0.57 [0.27, 0.85] | 0.62 [0.32, 0.89] |
+| A_noframe | known / new | 0.04 [0.00, 0.11] | 0.32 [0.17, 0.50] | 0.14 [0.00, 0.30] | 0.14 [0.00, 0.30] |
+| A_noframe | new / fam | 0.18 [0.05, 0.36] | 0.66 [0.50, 0.81] | 0.27 [0.07, 0.54] | 0.33 [0.12, 0.61] |
+| A_noframe | new / new | 0.04 [0.00, 0.10] | 0.29 [0.12, 0.47] | 0.13 [0.00, 0.34] | 0.13 [0.00, 0.34] |
+| A_nogate | known / fam | 0.72 [0.48, 0.92] | 0.80 [0.55, 1.00] | 0.90 [0.77, 0.98] | 0.92 [0.80, 1.00] |
+| A_nogate | known / new | 0.04 [0.00, 0.12] | 0.08 [0.01, 0.18] | 0.54 [0.00, 1.00] | 0.54 [0.00, 1.00] |
+| A_nogate | new / fam | 0.05 [0.00, 0.17] | 0.06 [0.00, 0.21] | 0.80 [0.00, 1.00] | 0.80 [0.00, 1.00] |
+| A_nogate | new / new | 0.03 [0.00, 0.09] | 0.10 [0.03, 0.19] | 0.31 [0.00, 0.72] | 0.31 [0.00, 0.72] |
+| A_nosum | known / fam | 0.62 [0.41, 0.82] | 0.78 [0.53, 0.97] | 0.80 [0.65, 0.92] | 0.85 [0.74, 0.94] |
+| A_nosum | known / new | 0.07 [0.01, 0.15] | 0.19 [0.07, 0.33] | 0.37 [0.10, 0.64] | 0.37 [0.10, 0.64] |
+| A_nosum | new / fam | 0.00 [0.00, 0.00] | 0.09 [0.00, 0.23] | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] |
+| A_nosum | new / new | 0.00 [0.00, 0.00] | 0.11 [0.01, 0.24] | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] |
+
+**Pre-registered predictions.**
+- **A1 (parity) fails.** s_A − s_H on known / familiar is −0.21 [−0.39, −0.03], below the −0.10 bar.
+- **A2 (placement) fails.** A's p_r on new / familiar beats H's by 0.22 [0.04, 0.43], but not R's: +0.12 [−0.49, 0.40]. R grasps
+  the right object in only 6% of these episodes, so its p rests on few episodes.
+- **A3 (layout) fails.** L_g(H) − L_g(A) = 0.16 [−0.02, 0.35] and L_g(R) − L_g(A) = 0.05 [−0.12, 0.23]. The L_g values are H 0.42,
+  R 0.32 and A 0.26.
+- **A4 (relocation) holds.** With oracle slots, H and R still lose placement on new pairings: p_r falls from known to new by
+  0.78 [0.61, 0.92] for H and 0.73 [0.17, 0.94] for R.
+- **A5 (descriptive).**
+  - Only A_nosum's contrast clears 0: A's p_r on new / familiar exceeds A_nosum's by 0.22 [0.04, 0.44]. With a learned joint
+    head, A_nosum reaches 0 placements on new pairings.
+  - The frame (A − A_noframe: −0.11 [−0.40, 0.15]) and the gate (−0.58 [−0.90, 0.33]) carry nothing measurable on p_r. No
+    ablation carries A3.
+  - A_nogate is the strongest known / familiar arm: it exceeds A by 0.38 [0.23, 0.55]. On new pairings, though, it fails at the
+    grasp (g 0.06).
+
+**Verdict (pre-registered order): "A1 fails: A is a worse policy".** On known tasks in the training layout, the factored,
+gated, frame-local motor solves 0.34 to H's 0.54. Per the pre-registration, the comparison stops here. The two sections below are
+descriptive.
+
+**What the cells show (descriptive, not tested).**
+- **Oracle perception does not make a holistic head compose (A4).**
+  - With ground-truth slots, H and R fall to s ≤ 0.01 in every cell other than known / familiar.
+  - Unlike pi0.5 and GR00T in N2, they lose the grasp on new pairings (g 0.12 and 0.06, against 0.79 and 0.86 in N2). In
+    0.88 of H's new / familiar episodes, the first object moved with the gripper closed is not the named object, or no object
+    moves at all.
+- **The role-local object term keeps the grasp.**
+  - A grasps the named object in 0.55 of new / familiar episodes, and A_noframe in 0.66. Every arm with a joint head (H, R,
+    A_nogate, A_nosum) stays at or below 0.12.
+  - That is the clearest effect of the factorisation. The grasp transfers when the term that drives it reads only the object's
+    slot.
+- **The place after that grasp mostly fails.**
+  - A's p_r on new / familiar is 0.22. In the habit view (72 g = 1, s = 0 episodes), 0.76 end elsewhere, 0.11 at one of the
+    object's trained targets, 0.08 at another target and 0.04 relaxed-instructed.
+  - The failure is not habit capture. The target term, trained with one or two held objects per target, does not carry an
+    unseen held object to the target.
+- **Layout.**
+  - Every arm loses most of its success on the new layout. The best new-layout cell is A's known / new at s 0.10.
+  - The translation-and-yaw frame does not make the approach transfer. The end effector starts at relative offsets the 2 cm
+    training spread never covered.
+- **Where A1 is lost.** On known / familiar, A trails H most on K5 (rack, 0.10 vs 0.40), K7 (drawer, 0.00 vs 0.15) and K8 (push,
+  0.00 vs 0.45). K7 and K8 are in the listed factorisation violations. On the pick-and-place pairs alone, A1 is −0.17 [−0.38, 0.03].
+- **The listed violations, per compound.**
+  - N8 (push the bowl) is A's best new compound (s 0.50), where every other arm scores at most 0.10.
+  - N7 is 0 for every arm.
+- **Strict p agrees.** A − H on new / familiar is 0.18 [0.01, 0.40].
+
+**Caveats.**
+- One seed per arm.
+- 8 compounds per status, so the compound contrasts have wide CIs. R's new-pairing p rests on very few grasps.
+- The training layout barely varies, so the layout factor tests extrapolation for every arm.
+- The relaxed predicate is calibrated by teleport. The drawer has no relaxed test.
+- The habit classes are this section's own. N2 had no formal habit test.
+- A's held-object features carry geometry only, by design. A variant with identity was not run.
+
+**Deviations.**
+- An empty `python3` heredoc (no statements) was run on the login node by mistake. It computed nothing.
+- The first pre-registration job failed because section 5.5 lacked its results marker. The marker was added and the job rerun.
+  No row was written before that, and no rollout existed.
+
+**Cost.** 0.61 A40-h (GPU only for training: dev 0.32, final 0.28, render-equivalence check 0.005). Rollouts and data ran on CPU
+nodes: data and calibration about 0.15 h, dev rollouts 0.4 h, smoke 0.4 h, main 6.9 CPU-job-h (24 jobs of 2 cores).
+
+**Stage-2 plan (vision slots on pi0.5 features; not run).**
+1. Do not start stage 2 until a stage-1b closes A1 on oracle state. The factored motor's in-distribution competence, not
+   perception, is the current bottleneck.
+   - Candidate levers, each tied to a measured weakness:
+     - the target term's held-object generalisation, by training it on carry segments re-expressed per held object;
+     - layout variation in the start states, needed by every arm;
+     - a bounded, measured cross-role residual for the articulated and push tasks.
+   - Each lever needs its own pre-registration.
+2. If stage 1b passes, replace the oracle slots with BindVLA-style slots read from frozen pi0.5 features.
+   - Slot positions come from the slot mask back-projected through depth (frame = the estimated translation; yaw dropped).
+   - Identity and shape features come from the slot embedding. Roles first from the same template parse, then induced from
+     contact events (5.3).
+3. Keep the arms (H, R, A and the ablations), N2's 32 tasks, states, seeds and read. Add binding accuracy per role.
+4. Prediction to register: A's success ≈ (stage-1b A success) × (role-binding accuracy), against H's fall.
+5. Budget: the pi0.5 feature cache plus training at about 3 A40-h, and rollouts on GPU nodes (rendering) at about 4 A40-h.
 
 ---
 
