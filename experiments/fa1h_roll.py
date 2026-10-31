@@ -115,7 +115,7 @@ def episode(model, bddl, state, lang, seed_base):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arm", required=True, choices=FF.ARMS_H)
+    ap.add_argument("--arm", required=True, choices=FF.ARMS_H + FF.ARMS_I)
     ap.add_argument("--name", required=True)
     ap.add_argument("--ckpt", required=True)
     ap.add_argument("--outdir", required=True)

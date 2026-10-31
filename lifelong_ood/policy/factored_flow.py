@@ -81,16 +81,20 @@ ARMS_E = ("Ae", "Ae_nosize")
 #   Ah      drot + off
 #   Ah_rot  drot only                                                                   (ablates the offset)
 ARMS_H = ("Ah", "Ah_rot")
-GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0)}
+# Stage 1i arm (section 5.16; ARMS_I): Ah_rot with the TARGET's role description restored in the target term (its identity one-hot
+# and hand-set size, as Ad read them): target-role information, never the held object's (5.15's diagnosis: without it the shared
+# place term cannot tell the rack from the cabinet or the bowl from the plate).
+ARMS_I = ("Ai",)
+GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0), "Ai": (1, 0)}
 BASE = {"Hb": "H", "Rb": "R", "Ab": "A", "Ab_cmd": "A", "Ab_nooff": "A", "Ab_nosum": "A_nosum", "Ac": "A", "Ac_nobear": "A", "Ac_noft": "A",
-        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A"}
+        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A", "Ai": "A"}
 WIDTH = {"H": 512, "R": 512, "A": 352, "A_noframe": 352, "A_nogate": 352, "A_nosum": 512,
          "Hb": 512, "Rb": 512, "Ab": 352, "Ab_cmd": 352, "Ab_nooff": 352, "Ab_nosum": 512, "Ac": 352, "Ac_nobear": 352, "Ac_noft": 352,
-         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352}
+         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352, "Ai": 352}
 # the canonical target term's optional inputs per arm: (end-effector tilt, full end-effector rotation, finger positions, target
 # identity one-hot, target size)
 CANON_IN = {"Ac": (1, 0, 1, 1, 1), "Ac_nobear": (0, 1, 1, 1, 1), "Ac_noft": (1, 0, 1, 1, 1), "Ad": (0, 0, 0, 1, 1), "Ad_tilt": (1, 0, 0, 1, 1),
-            "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0), "Ah": (0, 0, 0, 0, 0), "Ah_rot": (0, 0, 0, 0, 0)}
+            "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0), "Ah": (0, 0, 0, 0, 0), "Ah_rot": (0, 0, 0, 0, 0), "Ai": (0, 0, 0, 1, 1)}
 TABLE = 8                                                   # slot whose height is the table surface (main_table_stove_front_region)
 
 
@@ -138,9 +142,9 @@ def chunk_from(Q, x):
 class FactoredFlow(nn.Module):
     def __init__(self, arm, horizon=8, center=(0.0, 0.0, 0.0), size=None):
         super().__init__()
-        assert arm in ARMS + ARMS_B + ARMS_C + ARMS_D + ARMS_E + ARMS_H, arm
+        assert arm in ARMS + ARMS_B + ARMS_C + ARMS_D + ARMS_E + ARMS_H + ARMS_I, arm
         self.arm, self.H = arm, horizon
-        self.c = arm in ARMS_C + ARMS_D + ARMS_E + ARMS_H       # stage 1c / 1d / 1e / 1h: canonical place frame
+        self.c = arm in ARMS_C + ARMS_D + ARMS_E + ARMS_H + ARMS_I   # stage 1c / 1d / 1e / 1h / 1i: canonical place frame
         self.b = arm in ARMS_B or self.c                        # stage 1b: contact flag and grasp offset available
         self.base = BASE.get(arm, arm)
         self.gate_contact = arm in ("Ab", "Ab_nooff", "Ab_nosum") or self.c

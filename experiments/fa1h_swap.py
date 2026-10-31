@@ -146,7 +146,7 @@ def main():
         r["T6"] = summ(torch.cat(out), base)
         res[f"{ck}/{arm}"] = r
         print(f"[fa1h] swap {ck}/{arm}: {json.dumps({k: (round(v['mean'], 6), round(v['max'], 6)) for k, v in r.items()})}", flush=True)
-    with open(os.path.join(ROOT, "results", "flawed", "a1h_swap.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(ROOT, "results", "flawed", os.environ.get("FA1H_OUT", "a1h_swap.json")), "w", encoding="utf-8") as fh:
         json.dump(dict(models=MODELS, n=N, tests=res), fh, indent=1)
 
 

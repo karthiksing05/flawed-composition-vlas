@@ -2274,6 +2274,112 @@ layout: not compositional (fails: C1, C2, C3)".**
 **Cost.** 0.31 A40-h (training: 7.0 + 3.5 + 6.0 min, plus 2 × 1.1 min for the cancelled jobs). Running total for rounds 1b-1h:
 2.91 A40-h. CPU: rollouts 6.2 CPU-job-h (8 jobs), probe, swap, regression and read under 0.1 h.
 
+**Criterion change approved by the user (2026-10-31, after the 1h read).** This applies to future rounds only; 1h's verdict
+stays on record.
+- On the familiar layout, C1 is unchanged: s_A(known) − 0.672 ≥ −0.10.
+- On the new layout, C1 becomes **layout invariance**, in C2's style. Let L = s_A(known, new layout) / s_A(known, familiar).
+  C1 holds iff L ≥ 0.8 (point) and the lower bound of L's CI is ≥ 0.6. The CI comes from the engine's bootstrap: compounds
+  within status and the 20 states, resampled jointly across the two layouts.
+- The next pre-registration fixes this before any rollout.
+
+### 5.15 Diagnostic: how K5 and K6 fail (descriptive; 2026-10-31; results/flawed/a1i_diag.json)
+
+**Method.** Every registered K5 and K6 familiar-layout episode is re-run with a per-step trace (`experiments/fa1i_trace.py`):
+same model, start state and noise seeds; a fresh, re-seeded env per episode; stage 1h's episode logic. This covers Hb (1b),
+Ae_nosize (1f), Ag (1g) and Ah_rot (1h), with 3 seeds each, 60 episodes per model group and task.
+- The re-run reproduces the registered success in 0.93-1.00 of episodes.
+- `experiments/fa1i_diag.py` classifies each episode. r is the relaxed radius; rest dz is the calibrated resting height.
+- Release height is the held object's height at the last release, minus its calibrated rest height on the target.
+
+| group | task | success | never held | dropped in transit | released, tipped | released, resting | release tilt | release dxy (m) | release height above rest (m) |
+|---|---|---|---|---|---|---|---|---|---|
+| Hb | K5 | 0.45 | 0.23 | 0.05 | 0.25 | 0.02 | **70°** | 0.071 | 0.25 |
+| Ae_nosize | K5 | 0.18 | 0.32 | 0.07 | 0.28 | 0.10 | 38° | 0.069 | 0.23 |
+| Ag | K5 | 0.15 | 0.22 | 0.08 | 0.45 | 0.08 | 31° | 0.065 | 0.21 |
+| Ah_rot | K5 | 0.07 | 0.25 | 0.08 | **0.52** | 0.08 | 35° | 0.068 | 0.21 |
+| Hb | K6 | 0.43 | 0.13 | 0.17 | 0.10 | 0.15 | 12° | **0.039** | +0.04 |
+| Ae_nosize | K6 | 0.22 | 0.47 | 0.25 | 0.02 | 0.05 | 25° | 0.068 | −0.01 |
+| Ag | K6 | 0.20 | 0.27 | **0.35** | 0.02 | 0.02 | 25° | 0.086 | −0.01 |
+| Ah_rot | K6 | 0.30 | 0.25 | 0.32 | 0.02 | 0.02 | 28° | 0.085 | −0.01 |
+
+Three further classes are rare: still held at the end, 0.00-0.10; released and fell off, 0.00-0.05.
+
+**What it shows.**
+- **K5: the factored arms reach the rack and release the bottle at the right place and height, but without the turn.**
+  - Release dxy (0.065-0.069 against 0.071) and release height (0.21-0.23 against 0.25) match Hb's.
+  - The tilt at release does not: 31-38° against Hb's 70°. The bottle then tips (0.28-0.52 of episodes).
+  - Hb lays the bottle into the rack. The factored arms stop partway through the turn. Seeing the turn since the grasp (1h) did
+    not change this.
+- **K6: the factored arms release the cheese off the bowl's centre.**
+  - Release dxy is 0.068-0.086 m against Hb's 0.039, so it lands outside the bowl or on its rim (dropped in transit, 0.25-0.35).
+  - The factored arms also release it about 1 cm below rest, against Hb's 4 cm above, and they grasp it less often (never held
+    0.25-0.47 against 0.13).
+- **One cause fits both.** Since 1e/1f the target term reads no target identity and no target size. One place function serves
+  every target, and its only target-specific input is the foot's position relative to the target reference.
+  - So it cannot tell the rack (lay the bottle down) from the cabinet top (stand it up). The bottle's two known targets get one
+    averaged turn: about 35°, between 0° and 70°.
+  - Nor can it tell the small bowl (centre precisely, release above the rim) from the large plate.
+  - This is (Suff) on the **target** side: target-role information that 1e/1f removed to pool support.
+- **Why that removal is no longer needed.** 1e removed the target identity because each target's support came from one layout.
+  Since 1g, the generated carries give every target its own varied support. The reason for the removal is gone, and the cost
+  of the removal is now the largest known-cell deficit.
+
+### 5.16 Stage 1i: restore the target's role description (protocol fixed 2026-10-31, before any stage-1i rollout; m3_prereg tag pa1i)
+
+**Measured weakness (5.15).** K5 and K6 fail through target-side insufficiency. The shared place term cannot tell which target
+it serves: the rack's turn is averaged with the cabinet's, and the bowl's centring with the plate's.
+
+**Principle.** (S) for the target role, with (P) and (B) intact. The target's identity and size describe the target role.
+They carry nothing about the held object, so reading them in the target term opens no object bypass. Role locality (T1-T3,
+T5', T7) is unaffected, and so is the held-object identity check (1h's route is unchanged; a1h_probe.json). (Supp) per target
+comes from 1g's generated carries; 1e's pooling was its substitute.
+
+**The change (one).** Arm **Ai** = Ah_rot (the registered 1h arm) plus the target's identity one-hot and hand-set size in the
+target term, as Ad read them (`factored_flow.ARMS_I`, CANON_IN (0, 0, 0, 1, 1), GEO_IN (1, 0)).
+- Trained on demos plus 1g's generated carries: `experiments/fa1g_train.py --tag i --arms Ai`, seeds 0, 1, 2.
+- Recipe unchanged.
+
+**Baselines and references.**
+- C4 against Hg and Rg (1g).
+- Floor and familiar C1 against 0.672 (5.13).
+- New-layout C1 = layout invariance (5.14's approved change).
+- Ah_rot (1h) and Ag (1g) shown beside.
+
+**Swap test** (`experiments/fa1h_swap.py`, FA1H_MODELS, -> results/flawed/a1i_swap.json). Every seed must show 0 on T1-T3 and
+T7, and at most 1e-4 on T4 and T5'; this is asserted in the pre-registration. **T6 (target identity swapped, geometry kept) is
+expected to be non-zero** and is reported descriptively: the target term now reads the target identity by design. Grasp
+identity must stay exact.
+- Result before the rollouts: all three seeds give 0 on T1-T3 and T7, at most 1.6e-5 on T4 and at most 1.3e-5 on T5'.
+- T6 changes by a mean of 0.62-0.66 (as expected; Ad's was 0.65).
+- Training: 5.3-5.9 min per seed.
+
+**Rollouts.** `experiments/fa1h_roll.py --arm Ai` (1h's episode). One job per model and layout.
+
+**Read** (`experiments/fa1i_read.py`). Per layout:
+- floor against 0.672;
+- C1: familiar s_A(known) − 0.672 ≥ −0.10; new layout L = s_A(known, new) / s_A(known, familiar) ≥ 0.8 with CI lower bound
+  ≥ 0.6 (joint bootstrap over known compounds and states);
+- C2, C3 and C4 (engine) and 3F as before.
+
+The mapping is 5.11's. Verdict = "familiar: <v> | new layout: <v>". The guarantee holds iff both layouts read "compositional;
+three-factor law holds". N6 stays in.
+
+**Predictions.**
+- K5 rises towards Hb's 0.45, with the release tilt towards 70°. K6 rises towards 0.43, with release dxy towards 0.04.
+- Familiar s(known) rises to about 0.70.
+- New pairings: N1-N3 (cheese on plate, stove, cabinet) and N4-N6 (bottle on plate, stove, bowl) use each target's own term,
+  learned with other objects. Ad, the same target inputs without generated data, had s(new) 0.50. So s(new) is expected at
+  Ag's level or above (0.52-0.58).
+- C2: point about 0.8. The lower bound rises if K5 and K6 rise, but reaching 0.6 is uncertain.
+- C3: the bottle-to-bowl pairing N6 is at risk. The bowl's term has seen only the cheese, so (Suff) for a tall object in a bowl
+  is unchanged.
+- 3F: the cheese bias shrinks if K6's arrival rises.
+- New-layout C1 (L): Ag's L was 0.90 and Ah_rot's 0.87, so it is expected to hold at the point. The lower bound ≥ 0.6 is likely.
+- Expected verdict: "familiar: not compositional (fails: C2 and/or 3F) | new layout: not compositional (fails: C2, C3)". A pass
+  of C2 on the familiar layout is possible but not expected.
+
+**Budget.** 0.35 A40-h (3 models). CPU: 6 rollout jobs, about 4.5 CPU-job-h. Diagnostic: 12 trace jobs, about 1.2 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost
