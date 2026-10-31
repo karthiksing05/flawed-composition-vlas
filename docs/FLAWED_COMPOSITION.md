@@ -1536,6 +1536,73 @@ On a new held object those inputs are off-support. This is condition (B): a bypa
 
 **Cost.** 0.40 A40-h (training). CPU: rollouts 3.75 CPU-job-h (10 jobs); support, swap, read and diagnosis about 0.15 h.
 
+### 5.8 Stage 1d: cut the held-object bypass (protocol fixed 2026-10-31, before any stage-1d rollout; m3_prereg tag pa1d)
+
+**Measured weakness (5.7).** With the onset in support, the place term still fails with an unseen held object. The bottle
+overshoots or is never released. On training states (`experiments/fa1d_proxy.py`, results/flawed/a1d_proxy.json), two of Ac's
+target-term inputs decode the held object (nearest-centroid accuracy on held demo rows, demos 40-49 held out; chance 0.44):
+- the end-effector tilt: 0.82;
+- the finger positions: 0.81;
+- the canonical foot: 0.62. Its trajectory differs by task.
+- the last command: 0.42.
+
+On a new held object, the tilt and finger inputs take values never paired with that target. For example, the bottle is grasped
+about 28° tilted, and grip widths are 0.002 (bowl), 0.009 (bottle) and 0.021 (cheese).
+
+**Principle.** Condition (B). No input to the place stage may carry the held object's identity beyond what its declared role
+message carries, and the declared message is the foot. Proposition 2 names the risk: if the place term needs what those inputs
+carried, cutting them moves the debt into insufficiency, and that would show in C1.
+
+**The change (one, structural).** Arm Ad is Ac with the end-effector tilt and the finger positions removed from the target term.
+The target term now reads only:
+- the foot, in the canonical frame;
+- the last command;
+- the target slot's identity, size and drawer opening.
+
+The object term, the contact gate and the frame are unchanged.
+
+**Proposition 3 for Ad.**
+- (i)-(ii) as before, and (i) gains: in the place phase the chunk does not depend on the end-effector rotation or the finger
+  positions.
+- (iv) now needs (Supp), which is the carry distance (5.7), and (Suff), which is physics only, because no input of the place
+  stage is an identity proxy any more.
+- The remaining object-specific term is physical: whether the object stays in the hand during the carry. 5.7 measured it for the
+  cheese, on its known task as well.
+
+**Arms.**
+- Ad with seeds 0, 1 and 2.
+- Ablations, seed 0:
+  - Ad_tilt: Ad plus the tilt;
+  - Ad_fing: Ad plus the fingers.
+- H = Hb and R = Rb are 5.6's runs. Ac (5.7) and Ab (5.6) are shown beside them.
+- Trained with `experiments/fa1c_train.py --tag d`, recipe unchanged and not tuned. Rollouts use `experiments/fa1d_roll.py`,
+  which is 5.7's protocol plus one logged field: the closest the held object comes to the target while held.
+- The read is `experiments/fa1d_read.py`, using the 5.6 / 5.7 engine. C1-C4, the classes, the CIs and the verdict order are
+  5.6's, with A = Ad.
+
+**Swap test** (`experiments/fa1d_swap.py`, training states): T1-T4 as in 5.7, plus T5. T5 replaces the end-effector rotation
+and finger positions with those of a held row with another object. Ad must show 0 on T1-T3 and T5, and round-off on T4.
+- Result before the rollouts (results/flawed/a1d_swap.json): Ad gives 0 on T1-T3 and T5, and at most 7e-6 on T4.
+- On T5, Ac changes by a mean of 0.34 (max 2.35), Ad_tilt by 0.24 (2.59) and Ad_fing by 0.17 (2.05).
+
+**Descriptive, never changing the verdict: the three-factor split** of Proposition 3 (iii). For each new pairing, the predicted
+s3 is h_o · a_o · q_t, each factor taken from the known tasks:
+- h_o = P(a hold is reached | o);
+- a_o = P(the held object comes within 3 cm of the target while held | hold, o), measured on o's known tasks;
+- q_t = P(success | arrived, t), measured on t's known tasks.
+
+It is reported against the observed s, with a start-state CI. This version moves the carry's object-specific physics into the
+object factor, where (Suff) says it belongs.
+
+**Predictions.**
+- If the bypass caused the bottle failures, the bottle pairings N4-N6 improve. N4 stays limited by its carry distance, which is
+  out of support.
+- The cheese pairings stay limited by the cheese's hold (5.7). So two-factor C3 is expected to keep failing where p_t was
+  measured with a secure-hold object, while D3 may contain 0.
+- C1 is at risk: this is Proposition 2's relocation warning.
+
+**Budget.** 1 A40-h.
+
 ---
 
 ## 6. Experiments, order and cost
