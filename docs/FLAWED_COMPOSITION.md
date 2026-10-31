@@ -2509,6 +2509,66 @@ carries) and recipe.
 
 **Budget.** 0.3 A40-h (3 models). CPU: 6 rollout jobs, about 4.5 CPU-job-h.
 
+**Results (2026-10-31; ledger fc_a1j tag a1j; results/flawed/a1j_read.json, a1j_read_familiar.json, a1j_read_new.json)**
+
+- 320 episodes per model and layout, 3 fresh models, no episode errors.
+- **Grasp identity is exact:** 44/44, 54/54 and 51/51 familiar; 40/40, 45/45 and 43/43 new.
+
+**Verdict (pre-registered mapping): "familiar: not compositional (fails: 3F) | new layout: not compositional (fails: C2)".
+Not confirmed.** Each layout fails exactly one binding criterion, and each layout passes the other's failing one.
+
+| layout | arm | s known | s new | g new | p_s new | ratio |
+|---|---|---|---|---|---|---|
+| familiar | **Aj (Ai, seeds 3-5)** | 0.71 [0.49, 0.91] | 0.65 [0.52, 0.77] | 0.82 | 0.79 | **0.91 [0.66, 1.31]** |
+| familiar | Ai (seeds 0-2, 1i) | 0.75 | 0.66 | 0.81 | 0.81 | 0.87 [0.63, 1.27] |
+| new | **Aj** | 0.61 [0.40, 0.80] | 0.35 [0.22, 0.47] | 0.69 | 0.51 | 0.58 [0.36, 0.89] |
+| new | Ai (1i) | 0.59 | 0.40 | 0.66 | 0.61 | 0.67 [0.46, 0.98] |
+| both | Hg / Rg | familiar 0.48 / 0.75, new 0.02 / 0.28 (known); 0.00-0.04 (new pairings) | | | | |
+
+**Familiar layout:**
+- C1 holds: 0.71 − 0.672 = +0.04.
+- C2 holds: 0.91 [0.66, 1.31].
+- C4 holds: +0.64 [0.51, 0.75] against Hg and +0.61 [0.48, 0.74] against Rg.
+- **3F fails on N1 alone, in the positive direction.** Cheese on the plate does better than its factors predict: D3 +0.05
+  [0.01, 0.10]. The other five CIs contain 0:
+  - **N3 (the registered risk): 0.00 [−0.05, 0.05], so the prediction of −0.05 ± 0.05 was too pessimistic;**
+  - N2 +0.01, N4 +0.00, N5 +0.01, N6 −0.05 [−0.18, 0.08].
+
+**New layout:**
+- **C1, layout invariance, holds:** L = 0.85 [0.64, 1.10]. The prediction was 0.79 ± 0.06, so the point came out 0.06 higher.
+- **3F holds on all six pairings:** N1 +0.04, N2 −0.00, N3 −0.05, N4 +0.00, N5 −0.04, N6 −0.09 [−0.19, 0.00].
+- C4 holds: +0.35 [0.22, 0.47] and +0.31 [0.17, 0.45].
+- **C2 fails:** 0.58 [0.36, 0.89].
+
+**C3 (descriptive):** it fails in both layouts, again one-signed (familiar −0.03 to −0.15; new −0.12 to −0.29 except N6).
+
+**K5 and K6** (familiar; seeds 3-5): K5 0.20, 0.30, 0.20 (Ai 0.25); K6 0.40, 0.70, 0.70 (Ai 0.55).
+
+**What the read shows (descriptive).**
+- **The structural guarantees replicate exactly on fresh seeds.** Role locality (swap tests) and grasp identity hold.
+- **The success law replicates.** The three-factor law predicts every new pairing within CI in the new layout and 5 of 6 in
+  the familiar layout. The exception, N1, beats its prediction by 0.05.
+- **New-layout C2 fails because of which objects the new pairings use, not because composition fails there.**
+  - On the new layout the factored arm composes exactly as its factors predict (3F 6/6).
+  - The new pairings carry only the cheese and the bottle. Three of the six known tasks carry the bowl, the easiest object to
+    hold.
+  - On relocated layouts the cheese's factors fall: h_o 0.55 (familiar 0.78) and a_o 0.61 (familiar 0.81). The bottle's hold
+    falls to 0.60 (familiar 0.73).
+  - So s(new)/s(known) is low because the new pairings' objects are held and carried worse on relocated layouts. 3F predicts
+    exactly that.
+- **What this means for C2, as a question for the user.** C2 asks that new pairings succeed nearly as often as known tasks. When
+  the new pairings systematically use the harder objects, C2 conflates object difficulty with compositional failure. An
+  object-matched C2 would compare each new pairing with its own object's known tasks, which is what 3F's h_o · a_o factor
+  does.
+  - Whether C2 should stay as defined is **a criterion question for the user**, not decided here.
+  - The architectural lever, under C2 as defined, is the object-side grasp-and-carry on relocated layouts (cheese h_o 0.55).
+    That is the measured weakness for a next round.
+
+**Deviations.** None to the protocol.
+
+**Cost.** 0.18 A40-h (training, 3.2-4.0 min per seed). Running total for rounds 1b-1j: 3.37 A40-h. CPU: rollouts 4.4 CPU-job-h
+(6 jobs), swap, regression, pre-registration and read under 0.1 h.
+
 ---
 
 ## 6. Experiments, order and cost
