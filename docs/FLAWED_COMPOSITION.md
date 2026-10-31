@@ -1296,6 +1296,99 @@ H = Hb, R = Rb; success s is LIBERO's strict check; values pooled over 3 seeds).
   - C2 is expected to fail, because (Supp) fails.
 - Budget: 1 A40-h for this round.
 
+**Results (2026-10-31; ledger fc_a1b tag a1b; results/flawed/a1b_read.json, a1b_swap.json, a1b_diag.json, a1b_diag2.json)**
+
+- 320 episodes per model (16 familiar tasks × 20 states), 12 models, no episode errors. The floor holds (s_Hb(known) = 0.67).
+- **Swap test (Proposition 3 (i)), training states, 4,000 steps per test.**
+  - Ab changes by exactly 0 on all three tests, and so does Ab_nooff.
+  - Hb changes by a mean of 0.80 (max 3.10) on T1, 1.02 (3.37) on T2 and 0.18 (2.16) on T3, against a mean |action| of 0.27-0.31.
+  - Rb changes by 1.31 on T1 and 0.46 on T2, and by 0 on T3, since it reads only the role slots.
+  - Ab_nosum changes by 1.32 on T1 and 0.81 on T2.
+  - Ab_cmd changes by 0.33 on T1 (max 5.74), because its command gate disagrees with contact on some steps.
+- **Closed-loop grasp identity (Proposition 3 (ii)).** Groups are (object, start state) pairs where at least one task reaches a
+  hold. In those groups, Ab's first held step and the end-effector position there are identical across every familiar task with
+  that object: 49 of 49 groups (seed 0), 43 of 43 (seed 1), 42 of 42 (seed 2). For Hb, Rb, Ab_cmd and Ab_nosum the count is 0
+  of 47 to 60.
+
+**Cell table, pick-and-place pairs** (95% CIs; 3 seeds pooled for Hb, Rb, Ab; seed 0 for the ablations; "A (1)" is stage 1's A
+on the same cells).
+
+| arm | s known | s new | g known | g new | p_s known | p_s new | p_r new |
+|---|---|---|---|---|---|---|---|
+| Hb | 0.67 [0.49, 0.85] | 0.01 [0.00, 0.03] | 0.88 [0.80, 0.96] | 0.18 [0.06, 0.31] | 0.76 [0.59, 0.90] | 0.03 [0.00, 0.12] | 0.05 [0.00, 0.15] |
+| Rb | 0.77 [0.56, 0.95] | 0.01 [0.00, 0.02] | 0.91 [0.80, 0.99] | 0.16 [0.07, 0.26] | 0.84 [0.67, 0.96] | 0.03 [0.00, 0.15] | 0.07 [0.00, 0.23] |
+| Ab | 0.72 [0.51, 0.91] | 0.26 [0.09, 0.46] | 0.88 [0.70, 0.99] | 0.69 [0.53, 0.83] | 0.82 [0.67, 0.93] | 0.37 [0.13, 0.64] | 0.48 [0.25, 0.73] |
+| Ab_cmd | 0.51 [0.31, 0.71] | 0.17 [0.05, 0.34] | 0.68 [0.53, 0.83] | 0.48 [0.32, 0.63] | 0.74 [0.51, 0.93] | 0.36 [0.09, 0.70] | 0.38 [0.11, 0.71] |
+| Ab_nooff | 0.81 [0.62, 0.95] | 0.33 [0.11, 0.57] | 0.90 [0.72, 1.00] | 0.69 [0.46, 0.88] | 0.90 [0.78, 0.98] | 0.47 [0.17, 0.81] | 0.59 [0.30, 0.92] |
+| Ab_nosum | 0.79 [0.60, 0.94] | 0.00 [0.00, 0.00] | 0.92 [0.78, 1.00] | 0.07 [0.00, 0.17] | 0.86 [0.73, 0.96] | 0.00 [0.00, 0.00] | 0.00 [0.00, 0.00] |
+| A (1) | 0.45 [0.25, 0.67] | 0.05 [0.00, 0.13] | 0.68 [0.49, 0.86] | 0.50 [0.31, 0.68] | 0.66 [0.44, 0.85] | 0.10 [0.00, 0.31] | 0.15 [0.02, 0.40] |
+
+- Per seed, Ab's s(known) is 0.75, 0.72 and 0.68, and its s(new) 0.28, 0.21 and 0.28.
+
+**Criteria.**
+- **C1 holds:** s_Ab(known) − s_Hb(known) = +0.04 [−0.10, 0.19]. The contact gate closes stage 1's parity gap (A1 was −0.21).
+- **C2 fails:** s_Ab(new) / s_Ab(known) = 0.36 [0.13, 0.69].
+- **C3 fails** on 5 of 6 pairings. In the table below, D = s − g_o · p_t, and only N3's CI contains 0.
+- **C4 holds:** s_Ab(new) − s_Hb(new) = 0.25 [0.08, 0.45] and s_Ab(new) − s_Rb(new) = 0.25 [0.08, 0.46].
+
+| pairing | g_o (known) | g (observed) | p_t (known) | p (observed) | predicted s | observed s | D |
+|---|---|---|---|---|---|---|---|
+| N1 cheese → plate | 0.52 | 0.53 | 0.92 | 0.16 | 0.47 | 0.08 | −0.39 [−0.54, −0.25] |
+| N2 cheese → stove | 0.52 | 0.55 | 0.97 | 0.55 | 0.50 | 0.30 | −0.20 [−0.33, −0.07] |
+| N3 cheese → cabinet | 0.52 | 0.57 | 0.85 | 0.71 | 0.44 | 0.40 | −0.04 [−0.15, 0.07] |
+| N4 bottle → plate | 0.87 | 0.87 | 0.92 | 0.13 | 0.79 | 0.12 | −0.68 [−0.79, −0.56] |
+| N5 bottle → stove | 0.87 | 0.87 | 0.97 | 0.73 | 0.84 | 0.63 | −0.20 [−0.32, −0.08] |
+| N6 bottle → bowl | 0.87 | 0.75 | 0.65 | 0.00 | 0.56 | 0.00 | −0.56 [−0.72, −0.40] |
+
+**Verdict (pre-registered order): "not compositional (fails: C2, C3)".**
+
+**What the cells show (descriptive).**
+- **The grasp factor transfers, as Proposition 3 (ii) requires.** Ab's grasp on a new pairing equals its grasp on the known tasks
+  with that object: cheese 0.53-0.57 against 0.52, bottle 0.87 against 0.87.
+  - The exception is N6 (0.75), even though the held-step identity holds there too. g is the bind track (the first object
+    displaced more than 3 cm while the gripper is closed), which is not the hold. Why it differs there was not checked.
+- **The whole C3 deficit is in the place factor.** On new pairings p falls below its target's known p_t, most on the movable
+  targets (plate 0.13-0.16 against 0.92; bowl 0.00 against 0.65).
+- **Where the places fail** (`experiments/fa1b_diag.py`). After a grasp, every failed new-pairing place ends with the object
+  released more than 3 cm from the target (93-100% of failures), at a median 8-39 cm. Releases within 3 cm: 0%. The carry ends
+  in the wrong place.
+- **Why: (Supp) fails in two parts** (`experiments/fa1b_diag2.py`).
+  - *Start gap.* At the grasp onset, in the target frame, the end effector lies a median 7-25 cm from the nearest training onset
+    for that target (N6, 25 cm, has p = 0). On the known tasks the gap is 1-2 cm.
+  - *Offset gap.* The new held object's grasp offset lies 4-9 cm from those trained with the target (under 1 cm on the known
+    tasks).
+  - Each target was trained from one object's location, so a new pairing starts its carry from a place the target term never
+    saw. This is the layout confound of 3.4, met inside one layout.
+- **Ablations.**
+  - *The contact gate carries parity and the grasp:* Ab − Ab_cmd is +0.21 [0.03, 0.40] on s(known) and +0.21 [0.05, 0.37] on
+    g(new).
+  - *The offset buys nothing:* Ab − Ab_nooff is −0.09 [−0.21, 0.02] on s(known) and −0.07 [−0.18, 0.03] on s(new). With one
+    held object per target, the offset never varies in training.
+  - *The joint head again fails to compose:* Ab − Ab_nosum is +0.26 [0.09, 0.46] on s(new) and +0.62 [0.42, 0.79] on g(new).
+  - *Against stage 1's A:* +0.27 [0.10, 0.43] on s(known) and +0.21 [0.06, 0.39] on s(new).
+- **Descriptive class.**
+  - K7 (drawer): Ab grasps the bowl in 0.95-1.00 of episodes and never opens the drawer (s = 0); Hb reaches 0.25-0.30.
+  - K8 (push): Ab 0.00-0.05, Hb 0.30-0.45. The plate is never lifted, so the contact gate never hands over, and the object term
+    must push alone.
+  - N7: 0 for every model.
+  - N8: Ab 0 (relaxed 0-0.30). Ab_cmd reaches 0.60, because the command gate lets the target term run.
+
+**Caveats.**
+- Seeds are pooled, not resampled.
+- Hb and Rb receive the contact flag and offset as inputs. They still fail the grasp on new pairings (g 0.16-0.18).
+- No new-layout cells were run.
+
+**Deviations.**
+- The swap test was rerun twice before the pre-registration. The first run crashed (targets can be movable objects), and the
+  second had a noise-draw bug in T2 (the perturbed sub-batch drew different noise). The registered numbers are the third run.
+  No rollout existed then.
+- Some job files were written with shell redirection on the login node (sed, printf and cp into the job directory), not with
+  the edit tools. No computation ran there.
+- Two job waiters overlapped for a few seconds once.
+
+**Cost.** 0.61 A40-h (training: 3 jobs, 37 min). CPU: rollouts 8.45 CPU-job-h (24 jobs); contact labels, swap test, read and
+diagnoses about 0.1 h.
+
 ---
 
 ## 6. Experiments, order and cost
