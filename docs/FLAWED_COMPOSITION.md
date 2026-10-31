@@ -2206,6 +2206,74 @@ as in 5.11. The mapping is 5.11's. Verdict = "familiar: <v> | new layout: <v>". 
 
 **Budget.** 0.7 A40-h (4 models). CPU: 8 rollout jobs, about 6.5 CPU-job-h.
 
+**Results (2026-10-31; ledger fc_a1h tag a1h; results/flawed/a1h_read.json, a1h_read_familiar.json, a1h_read_new.json)**
+
+- 320 episodes per model and layout, 4 models, no episode errors.
+- **Grasp identity is exact for every model in both layouts:** familiar 49/49, 47/47, 53/53 and 52/52 (Ah); new 44/44,
+  36/36, 40/40 and 41/41.
+
+**Verdict (pre-registered mapping, with the approved reference): "familiar: not compositional (fails: C2, C3, 3F) | new
+layout: not compositional (fails: C1, C2, C3)".**
+
+| layout | arm | s known | s new | g new | p_s new | ratio |
+|---|---|---|---|---|---|---|
+| familiar | Ah_rot | 0.62 [0.34, 0.88] | 0.54 [0.41, 0.68] | 0.77 | 0.71 | 0.88 [0.57, 1.68] |
+| familiar | Ah (offset, 1 seed) | 0.71 [0.42, 0.95] | 0.49 [0.33, 0.67] | 0.79 | 0.62 | 0.69 [0.42, 1.27] |
+| familiar | Ag (1g) | 0.62 | 0.52 | 0.78 | 0.67 | 0.84 [0.54, 1.53] |
+| familiar | Hg / Rg | 0.48 / 0.75 | 0.01 / 0.04 | 0.09 / 0.17 | 0.15 / 0.21 | 0.03 / 0.05 |
+| new | Ah_rot | 0.54 [0.33, 0.76] | 0.34 [0.23, 0.45] | 0.63 | 0.53 | 0.63 [0.38, 1.03] |
+| new | Ah (1 seed) | 0.57 | 0.30 | 0.64 | 0.47 | 0.53 [0.24, 1.02] |
+| new | Ag (1g) | 0.56 | 0.38 | 0.66 | 0.57 | 0.68 [0.43, 1.16] |
+| new | Hg / Rg | 0.02 / 0.28 | 0.00 / 0.04 | 0.06 / 0.26 | 0.00 / 0.15 | 0.00 / 0.14 |
+
+**Criteria for Ah_rot.**
+- **Familiar layout:**
+  - C1 holds: 0.62 − 0.672 = −0.06.
+  - **C2 fails, at its best lower bound so far:** 0.88 [0.57, 1.68].
+  - **C3 fails** on N5 alone: −0.12 [−0.23, −0.02]. The other five CIs contain 0.
+  - C4 holds: +0.53 [0.41, 0.65] against Hg and +0.51 [0.37, 0.65] against Rg.
+  - **3F fails** on N1 (+0.15), N2 (+0.15) and N4 (+0.13), all CIs above 0. It holds on N3, N5 and N6.
+- **New layout:**
+  - **C1 fails:** 0.54 − 0.672 = −0.14.
+  - C2 fails: 0.63 [0.38, 1.03].
+  - C3 fails on N2 (−0.23) and N3 (−0.25).
+  - C4 holds: +0.34 and +0.30.
+  - **3F holds on all six pairings** (as for Ag in 5.12).
+
+**K5 and K6** (per seed; Ah_rot s0, s1, s2 | Ah s0 | Ag s0, s1, s2):
+
+| cell | familiar | new layout |
+|---|---|---|
+| K5 bottle → rack | 0.15, 0.05, 0.00 \| 0.10 \| 0.25, 0.05, 0.20 | 0.25, 0.10, 0.35 \| 0.15 \| 0.25, 0.15, 0.45 |
+| K6 cheese → bowl | 0.25, 0.20, 0.30 \| 0.45 \| 0.20, 0.25, 0.25 | 0.35, 0.30, 0.20 \| 0.30 \| 0.20, 0.20, 0.25 |
+
+**What the round shows (descriptive).**
+- **The K5 prediction is falsified.** K5 did not rise: it is 0.07 on the familiar layout, against Ag's 0.17, and 0.23 on the
+  new one, against Ag's 0.28. The prediction was a rise towards 0.45.
+  - Making the hand's turn since the grasp visible to the place term does not fix the bottle on the rack.
+  - So the rack failure is not an unobservable rotation. The (Suff) diagnosis of 5.13 for K5 was wrong in this form.
+  - K6 is unchanged (0.25 against 0.23), as predicted.
+- **The offset ablation shows the bypass signature predicted for it** (one seed; it decides nothing).
+  - K6 rose to 0.45 and familiar s(known) to 0.71, the only factored model above the 0.672 reference.
+  - New-pairing success fell to 0.49 (familiar) and 0.30 (new), and its ratio to 0.69 and 0.53.
+  - The offset carries known-task skill that does not transfer, which is what an identity code (0.97 decodable) would do.
+- **Against Ag, Ah_rot changes nothing within CI.** Familiar s(new) is 0.54 against 0.52, and the C2 point estimate 0.88
+  against 0.84.
+- **Layout.** The factored arms keep 0.87-0.90 of their known success on relocated layouts, against Hg's 0.04. But no factored
+  arm reaches 0.572 there, so with the fixed reference C1 fails on the new layout in every round that read it.
+
+**Deviations.**
+- The registered arm changed from Ah to Ah_rot before any rollout, because of the identity probe (protocol above). Seeds 1 and 2
+  of Ah were cancelled about 1 min in.
+- The identity probe ran before the doc's protocol text was written. Its thresholds were fixed in the script beforehand, and the
+  pre-registration hashes both.
+- The T5' tolerance of 1e-4 was set after T5' first ran (round-off), before any rollout. The first T7 draft crashed and was
+  rewritten (protocol above).
+- I computed the 1b reference file's sha256 once with sha256sum on the login node, to cite it.
+
+**Cost.** 0.31 A40-h (training: 7.0 + 3.5 + 6.0 min, plus 2 × 1.1 min for the cancelled jobs). Running total for rounds 1b-1h:
+2.91 A40-h. CPU: rollouts 6.2 CPU-job-h (8 jobs), probe, swap, regression and read under 0.1 h.
+
 ---
 
 ## 6. Experiments, order and cost
