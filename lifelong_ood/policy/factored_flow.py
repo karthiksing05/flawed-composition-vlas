@@ -93,20 +93,24 @@ ARMS_I = ("Ai",)
 # frame); per sector, the nearest clearance among entities within OCC_R (as (OCC_R - clearance) / OCC_R, 0 if none) and the tallest
 # such entity's top above the object (0 if none).  An entity farther than OCC_R cannot change the input (5.23: Ao's object term
 # reacted to far geometry as much as to near obstacles).
-ARMS_O = ("Ao", "Ap")
+# Stage 1n arm Aq (section 5.26): Ap whose object term also reads the end effector's position relative to the object in the
+# OBJECT'S OWN UNITS: R_o^T (ee - p_o) / (radius, radius, height), clipped to [-NORM_CLIP, NORM_CLIP] (5.25: missed cheese grasps
+# close 0.3-1.8 cm higher than successful ones; at POS_SCALE a centimetre is 0.05 of input, a third of the cheese's height is 1.0 here).
+ARMS_O = ("Ao", "Ap", "Aq")
 OCC_K = 5
 N_SECT, OCC_R = 8, 0.08
-GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0), "Ai": (1, 0), "Ao": (1, 0), "Ap": (1, 0)}
+NORM_CLIP = 3.0
+GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0), "Ai": (1, 0), "Ao": (1, 0), "Ap": (1, 0), "Aq": (1, 0)}
 BASE = {"Hb": "H", "Rb": "R", "Ab": "A", "Ab_cmd": "A", "Ab_nooff": "A", "Ab_nosum": "A_nosum", "Ac": "A", "Ac_nobear": "A", "Ac_noft": "A",
-        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A", "Ai": "A", "Ao": "A", "Ap": "A"}
+        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A", "Ai": "A", "Ao": "A", "Ap": "A", "Aq": "A"}
 WIDTH = {"H": 512, "R": 512, "A": 352, "A_noframe": 352, "A_nogate": 352, "A_nosum": 512,
          "Hb": 512, "Rb": 512, "Ab": 352, "Ab_cmd": 352, "Ab_nooff": 352, "Ab_nosum": 512, "Ac": 352, "Ac_nobear": 352, "Ac_noft": 352,
-         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352, "Ai": 352, "Ao": 352, "Ap": 352}
+         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352, "Ai": 352, "Ao": 352, "Ap": 352, "Aq": 352}
 # the canonical target term's optional inputs per arm: (end-effector tilt, full end-effector rotation, finger positions, target
 # identity one-hot, target size)
 CANON_IN = {"Ac": (1, 0, 1, 1, 1), "Ac_nobear": (0, 1, 1, 1, 1), "Ac_noft": (1, 0, 1, 1, 1), "Ad": (0, 0, 0, 1, 1), "Ad_tilt": (1, 0, 0, 1, 1),
             "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0), "Ah": (0, 0, 0, 0, 0), "Ah_rot": (0, 0, 0, 0, 0), "Ai": (0, 0, 0, 1, 1),
-            "Ao": (0, 0, 0, 1, 1), "Ap": (0, 0, 0, 1, 1)}
+            "Ao": (0, 0, 0, 1, 1), "Ap": (0, 0, 0, 1, 1), "Aq": (0, 0, 0, 1, 1)}
 TABLE = 8                                                   # slot whose height is the table surface (main_table_stove_front_region)
 
 
@@ -179,7 +183,7 @@ class FactoredFlow(nn.Module):
         elif arm == "A_nosum":
             self.net = mlp(2 * (dprop + dslot) + dhold + 1 + 2 * da + dt, da, w)
         elif self.c:
-            docc = (2 * N_SECT if self.arm == "Ap" else 6 * OCC_K) if self.occ else 0
+            docc = ({"Ap": 2 * N_SECT, "Aq": 2 * N_SECT + 3}.get(self.arm, 6 * OCC_K)) if self.occ else 0
             self.obj = mlp(dprop + dslot + docc + da + dt, da, w)
             tilt, rot6, fing, ident, tsize = CANON_IN[self.arm]
             drot, goff = GEO_IN.get(self.arm, (0, 0))
@@ -342,7 +346,12 @@ class FactoredFlow(nn.Module):
             return chunk_from(Q, v)
         if self.c:
             Qo, oo, yo = self._frame(b, b["oi"], False)
-            occ = [] if not self.occ else [self._free(b, Qo, oo, b["oi"]) if self.arm == "Ap" else self._occ(b, Qo, oo, b["oi"])]
+            occ = [] if not self.occ else [self._free(b, Qo, oo, b["oi"]) if self.arm in ("Ap", "Aq") else self._occ(b, Qo, oo, b["oi"])]
+            if self.arm == "Aq":
+                sz = self.size[b["oi"]]                                                     # [B, 2] radius, height
+                unit = torch.stack([sz[:, 0], sz[:, 0], sz[:, 1]], -1).clamp(min=1e-3)
+                rel = torch.einsum("bij,bj->bi", Qo.transpose(1, 2), b["ee_pos"] - oo)
+                occ.append((rel / unit).clamp(-NORM_CLIP, NORM_CLIP))
             co = torch.cat([self._prop(b, Qo, oo), self._slot(b, b["oi"], Qo, oo, yo)] + occ, -1)
             Qc, ct = self._canon(b)
             vo = chunk_from(Qo, self.obj(torch.cat([co, flat(chunk_to(Qo, x)), te], -1)).reshape(B, self.H, 7))

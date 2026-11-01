@@ -3076,6 +3076,127 @@ reach.
 **Budget.** About 0.25 A40-h (3 models). Running total before this round: 4.21 A40-h; about 1.7 A40-h would remain, enough for
 a confirmatory read. CPU: 6 rollout jobs, about 5 CPU-job-h.
 
+**Results (2026-11-01; ledger fc_a1m tag a1m; results/flawed/a1m_read.json, a1m_read_familiar.json, a1m_read_new.json)**
+
+**Verdict (pre-registered mapping): "familiar: not compositional (fails: 3F) | new layout: not compositional (fails: C1,
+C2)". Not confirmed.**
+
+| layout | s known | s new | C1 | C2 ratio | 3F in CI | C4 vs Hg / Rg |
+|---|---|---|---|---|---|---|
+| familiar | 0.73 [0.53, 0.92] | 0.62 [0.46, 0.76] | +0.06 (holds) | 0.85 [0.60, 1.22] (holds) | **5/6 (N3 −0.08 [−0.15, −0.03])** | +0.61 / +0.59 |
+| new | 0.54 [0.37, 0.70] | 0.42 [0.24, 0.62] | **L 0.73 [0.55, 0.99]** | **0.77 [0.43, 1.29]** | 6/6 | +0.42 / +0.38 |
+
+- **The relocated collapse is undone; the cheese is back at Ak's level, not above it.**
+  - New-layout cheese hold factor 0.42 (predicted 0.55 ± 0.10; Al 0.20, Ak 0.42). The bottle reaches 0.75 (predicted
+    0.68 ± 0.08), the best yet.
+  - Against Al on the new layout: s known +0.15 [0.04, 0.25], s new +0.11 [−0.01, 0.22].
+  - Against Ak: s known −0.07 [−0.24, 0.10], s new +0.05 [−0.10, 0.23].
+  - By the registered mechanism test, the cheese stayed at 0.42 and did not fall below it, so 5.23's locality reading
+    survives: the far-geometry response was what broke Ao. But locality alone does not raise the cheese.
+- **The familiar cheese got worse:** hold factor 0.53 (Al 0.87, Ak 0.75); K6 familiar 0.30, 0.50, 0.45 per seed. This puts
+  N3 out of its 3F CI (observed 0.43 against predicted 0.52).
+- The bowl's relocated known tasks are back to 0.65-0.90 (K1-K3, all seeds).
+- Grasp identity is exact; 0 episode errors.
+
+**Deviations (disclosed).**
+- `fa1l_idprobe.py` gained `--arm` and `--out` options; its defaults reproduce 1l's call.
+- `t_swap.sh` was edited while its job was pending, to add the probe; it had not started.
+- The read's ledger row carries `dirty=true`, because uncommitted files of other sessions sit in the working tree.
+
+**Cost.** 0.23 A40-h (3.7-5.6 min per seed). Running total for rounds 1b-1m: about 4.44 A40-h. CPU: rollouts about 5 CPU-job-h.
+
+### 5.25 Diagnostic: missed cheese grasps close too high, in every model (descriptive; 2026-11-01; results/flawed/a1m_miss.json, a1m_modes.json)
+
+**Method.**
+- `fa1m_miss.py` reads every traced cheese and bowl episode (5.18, 5.20, 5.23, plus Am seeds 15-17 on K6 and N1 in both
+  layouts). It compares missed grasps (closed without a hold) with successful ones, using:
+  - the finger contacts at the first close command;
+  - the end effector's height above the object in the object frame at that step.
+- `fa1m_modes.py` compares the training grasp pose per object and source (demos, gen_k, gen_lc's new carries).
+
+**Results.**
+- **In every model, missed cheese grasps close higher than successful ones.**
+
+| model | layout | missed: median z at close (cm) | successful: median z (cm) |
+|---|---|---|---|
+| Ai | familiar / new | 2.1 / 1.1 | 0.6 / 0.4 |
+| Aj | familiar / new | 1.5 / 0.8 | 0.7 / 0.6 |
+| Ak | familiar / new | 1.2 / 2.0 | 0.6 / 0.4 |
+| Al | familiar / new | 1.1 / 1.9 | 0.8 / 0.1 |
+| Am | familiar / new | 1.2 / 1.6 | 0.6 / 0.2 |
+| Hb | familiar | 3.3 | 0.4 |
+
+- **At the close, no finger touches the cheese in most episodes, missed or not** (0.56-0.93). So the miss is decided by
+  *where* the hand closes, not by a bad contact.
+- **xy error separates misses less:** 1.6-1.8 cm for both outcomes in Am, familiar. The difference is in height.
+- **The training grasps are one mode per object.**
+  - Cheese, end effector minus object at the first close, object frame: demos −1.3, +0.3, +1.0 cm; generated −0.9 to −1.1,
+    +0.2 to +0.3, +0.4 to +0.5 cm.
+  - The xy standard deviation is about 1 cm.
+  - So the policy is not averaging two grasp styles.
+- **Why height precision is the bottleneck for the cheese.** The cheese is 3 cm tall and must be closed on within about 1 cm
+  of its centre height.
+  - The object term reads the end effector in the object frame at POS_SCALE = 5, so 1 cm is 0.05 of input. The bowl, grasped
+    at its rim, tolerates several centimetres.
+  - The required precision scales with the object's own size, but the input scale is the same for every object.
+
+### 5.26 Stage 1n: the grasp height in the object's own units (protocol fixed 2026-11-01, before any stage-1n rollout; m3_prereg tag pa1n)
+
+**Measured weakness** (5.25): missed cheese grasps close 0.3-1.8 cm higher than successful ones (Hb 3.0 cm), in every model
+and both layouts.
+
+**Principle: sufficiency (Suff) at the object's scale.** The object role's sufficient description must resolve the hand's
+position relative to the object at the resolution the grasp needs, and that resolution is set by the object's own size. A
+size-normalized object frame is the canonical object frame of the object role. It is not specific to this dataset or object;
+every object is normalized by its own hand-set footprint radius and height.
+
+**The change (one: an extra object-term input; data, recipe, target term and criteria unchanged).**
+- Arm **Aq** = Ap whose object term also reads R_o^T (ee − p_o) divided by (radius, radius, height) of the object, clipped to
+  ±3.
+- For the cheese, a third of its height is 1.0 of input, against 0.05 per cm before.
+- It uses only the object's own slot (already read by the object term) and the end effector, so role locality, the
+  target-blind grasp and the beyond-radius invariance are unchanged.
+- Aq on demos plus gen_lc.npz, fresh seeds 18, 19, 20 (tag n). Rollouts: `fa1h_roll.py --arm Aq --name An` ->
+  results/flawed/a1n_roll.
+- Descriptive: Am (1m) and Ak (1k) beside; Hl and Rl; the post-hoc object-matched C2.
+
+**Checks before the rollouts** (asserted in the pre-registration):
+- swap test: T1, T2, T7 and T3_place exactly 0; T4 and T5' at most 1e-4;
+- beyond-radius invariance exactly 0 (`fa1m_sens.py`);
+- training on gen_lc.npz.
+- The identity probe of the scene input is 1m's (a1m_idprobe.json: +0.014), because Aq's scene part is Ap's unchanged. The
+  new part reads only the object itself.
+- **Results before the rollouts** (results/flawed/a1n_swap.json, a1n_sens.json):
+  - Swap test: T1, T2, T7 and T3_place are exactly 0 for all three seeds. T4 is at most 1.0e-5 and T5' at most 1.4e-5.
+  - Beyond-radius invariance is exactly 0. Responses: near 0.25-0.27, far 0.03.
+  - Aq has 872,368 parameters and took 4.5-6.5 min per seed.
+
+**Binding criteria, one verdict** (`experiments/fa1n_read.py`; the frozen criteria, exactly 1j's to 1m's):
+- **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
+  contains 0; C4: against Hg and Rg, both differences > 0 with CIs excluding 0.
+- **New layout:** C1 = layout invariance L ≥ 0.8 (point) with CI lower bound ≥ 0.6; C2, 3F and C4 as above on the new-layout
+  cells.
+- C3 descriptive only. N6 stays in.
+- **Mapping per layout:** "uninformative" if 0.672 < 0.5; "compositional" if C1, C2, 3F and C4 all hold; otherwise "not
+  compositional (fails: ...)", listing the failing members of C1, C2, 3F, C4 in that order.
+- **Verdict = "familiar: <v> | new layout: <v>". CONFIRMED iff both layouts read "compositional".**
+
+**Predictions** (from 1m and 5.25; fresh seeds vary by about ±0.1 per cell):
+- **Hold rates:**
+  - cheese familiar 0.75 ± 0.08 (Am 0.53); cheese new 0.55 ± 0.10 (Am 0.42);
+  - bottle familiar 0.85 ± 0.06, new 0.75 ± 0.08 (Am 0.85 / 0.75).
+  - The median height at close of missed cheese grasps falls toward 1 cm.
+- **Familiar layout:** C1, C2 and C4 hold; 3F holds 6/6 with N3 back in CI (Am −0.08). N6 stays at risk.
+- **New layout:**
+  - s_known 0.60 ± 0.07, s_new 0.48 ± 0.08, so C2 ratio 0.80 ± 0.12. C2's point is a coin flip and its lower bound is more
+    likely to fail.
+  - L 0.80 ± 0.08 (coin flip). 3F at risk on N4-N6. C4 holds.
+- **Expected verdict:** "familiar: compositional | new layout: not compositional (fails: C2, ...)". If the cheese's hold
+  rates do not rise in both layouts, the height-resolution account (5.25) is wrong.
+
+**Budget.** About 0.25 A40-h (3 models). Running total before: 4.44; about 1.5 would remain, enough for a confirmatory read.
+CPU: 6 rollout jobs, about 5 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost

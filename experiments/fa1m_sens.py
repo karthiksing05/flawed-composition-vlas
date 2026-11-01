@@ -98,7 +98,7 @@ def main():
         out["models"][f"{ck}/{arm}"] = r
         print(f"[fa1m] sens {ck}/{arm}: {json.dumps({k: (round(v, 4) if isinstance(v, float) else v) for k, v in r.items()})}", flush=True)
     print(f"[fa1m] near share {out['share_rows_with_near']}", flush=True)
-    with open(os.path.join(ROOT, "results", "flawed", "a1m_sens.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(ROOT, "results", "flawed", os.environ.get("FA1M_OUT", "a1m_sens.json")), "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=1)
 
 
