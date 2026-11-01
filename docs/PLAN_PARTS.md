@@ -224,7 +224,7 @@ each is reported as such.
 
 - **Layers 1-2 in the N2 scene:** about 8-11 A40-h.
 - **With phase 2 and the ladder:** about 20-30 A40-h.
-- **Budget.** The 6.2 A40-h prototype cap has 0.93 left, so this plan needs a new budget.
+- **Budget.** The 6.2 A40-h prototype cap is retired; the user set no cap for this plan (§10).
 - **Rollout CPU** stays on tail-lab or overcap, as before.
 
 ## 8. Novelty and prior work
@@ -256,9 +256,11 @@ each is reported as such.
 - **Rungs L2-L3 depend on pi0.5 features localising objects.** Earlier work found VLAs under-use language, but not vision.
   F1's vision-token profile tells us early.
 
-## 10. Open decisions for the user
+## 10. Decisions (user, 2026-11-01)
 
-1. **A new GPU budget** for Layers 1-2 (about 8-11 A40-h), and whether to commit to phase 2 and the ladder now.
-2. **The part size cap and the k grid** in S3 (proposed: rank-8 adapters; k ∈ {1, 5, 10, 50}).
-3. **Whether the DMPEL/CLARE-style library baseline is required** in S4, or only the holistic, LoRA and R foils.
-4. **Whether phase 2 uses LIBERO-90-C or CALVIN-C** (already split) for the wider atom set.
+1. **Budget:** no fixed cap; use overcap as needed. Phase 2 and the ladder are committed.
+2. **Part size and k grid:** rank-8 adapters; k ∈ {1, 5, 10, 50}. One larger part size stays a secondary arm (§9).
+3. **The DMPEL/CLARE-style library baseline is required** in S4.
+4. **Phase 2 uses LIBERO-90-C.**
+
+The plan is adopted. Each layer is still pre-registered before its first read (§6).
