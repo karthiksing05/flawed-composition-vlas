@@ -1,5 +1,5 @@
-"""PRE-REGISTRATION ROW of PLAN_PARTS Layer 2 (docs/PARTS_RESULTS.md section 4): P-build, S1-S4.  Written after the builds and
-creations (training only), BEFORE any S1 read and any Layer-2 rollout.
+"""PRE-REGISTRATION ROW of PLAN_PARTS Layer 2 (docs/PARTS_RESULTS.md section 4): P-build, S1-S4.  Written after the builds
+(training only; the part creations still training), BEFORE any S1 read and any Layer-2 rollout.
 
     python experiments/prereg/pp_l2.py
 """
