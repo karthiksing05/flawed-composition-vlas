@@ -3470,6 +3470,24 @@ architecture's own radius, and no evaluation state.
 - beyond-radius invariance exactly 0;
 - identity probe of the scene part on gen_lp at most +0.05 over the object identity alone;
 - training on gen_lp.npz; gen_lp contains gen_lo unchanged as its first rows.
+- **Generation results (written after the predictions, before training; results/flawed/a1p_sgen.json):**
+
+| task (object) | kept of 120 attempts | kept per bin [0.02, 0.04) / [0.04, 0.06) / [0.06, 0.08) |
+|---|---|---|
+| K1 (bowl) | 120 | 40 / 40 / 40 |
+| K2 (bowl) | 104 | 30 / 35 / 39 |
+| K3 (bowl) | 119 | 40 / 39 / 40 |
+| K4 (bottle) | 101 | 31 / 35 / 35 |
+| K5 (bottle) | 116 | 38 / 39 / 39 |
+| K6 (cheese) | 84 | 24 / 24 / 36 |
+
+  - gen_lp.npz has 155,662 rows (gen_lo 95,642).
+  - The cheese is the hardest object to grasp near a fixture: 84 of 120 kept, the fewest of the six tasks.
+- **Results before the rollouts** (results/flawed/a1p_swap.json, a1p_sens.json, a1p_idprobe.json):
+  - Swap test: T1, T2, T7 and T3_place are exactly 0 for all three seeds. T4 is at most 1.6e-5 and T5' at most 1.3e-5.
+  - Beyond-radius invariance is exactly 0. Responses: near 0.19-0.21, far 0.02-0.03.
+  - Identity probe of the scene part on gen_lp: −0.013 (test accuracy 0.558 with it, 0.571 without).
+  - Training: 207,866 rows (155,662 generated), 6.6-6.8 min per seed, 0.34 A40-h in all.
 
 **Binding criteria, one verdict** (`experiments/fa1p_read.py`; the frozen criteria, exactly 1j's to 1o's):
 - **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
