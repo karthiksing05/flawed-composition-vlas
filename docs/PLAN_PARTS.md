@@ -1,6 +1,6 @@
 # Plan: isolate the flaw architecturally, resolve it by sparse structural composition
 
-Draft for the user's review (2026-11-01). Nothing in this plan is registered or run.
+Adopted by the user 2026-11-01 (decisions in §10). Each layer is pre-registered before its first read.
 It supersedes the prototype-A round loop of FLAWED_COMPOSITION.md §5.5-5.32. Those rounds stay on record.
 
 ## 0. Why a new plan
