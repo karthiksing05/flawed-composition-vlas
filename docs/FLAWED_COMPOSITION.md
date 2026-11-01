@@ -2946,6 +2946,136 @@ approach beside the wine rack or the cabinet, and the descent is blocked.
 **Budget.** About 0.4 A40-h (3 main and 2 ablation Ao models, plus Hl and Rl), leaving about 2.1 A40-h, enough for a
 confirmatory read. CPU: generation 6 jobs (about 3 CPU-job-h), 14 rollout jobs (about 11 CPU-job-h).
 
+**Results (2026-11-01; ledger fc_a1l tag a1l; results/flawed/a1l_read.json, a1l_read_familiar.json, a1l_read_new.json)**
+
+**Verdict (pre-registered mapping): "familiar: compositional | new layout: not compositional (fails: C1, C2, 3F)". Not
+confirmed.**
+
+| layout | s known | s new | C1 | C2 ratio | 3F in CI | C4 vs Hg / Rg |
+|---|---|---|---|---|---|---|
+| familiar | 0.79 [0.62, 0.93] | 0.74 [0.65, 0.83] | +0.12 (holds) | **0.94 [0.77, 1.18]** (holds) | 6/6 | +0.73 / +0.71 |
+| new | 0.39 [0.22, 0.56] | 0.31 [0.10, 0.55] | **L 0.49 [0.27, 0.75]** | 0.80 [0.26, 1.80] (lower bound fails) | **5/6 (N5 +0.07 [0.02, 0.13])** | +0.31 / +0.27 |
+
+- **Familiar layout:** the strongest read so far. C2's lower bound is 0.77 (1k: 0.60), and the cheese's hold factor is 0.87
+  (1k 0.75). Against Ak, s new is +0.11 [−0.03, 0.25].
+- **New layout: the cheese collapses.**
+  - Cheese hold factor 0.20 against the predicted 0.60 ± 0.08 (1k 0.42). **The prediction failed.**
+  - K6 new is 0.05, 0.00 and 0.10 per seed; N1-N3 are 0.00-0.05.
+  - The bowl's known tasks also fall (K1-K3 new 0.20-0.55 against Ak 0.60-0.95). Against Ak, s known (new layout) is −0.23
+    [−0.39, −0.05].
+  - **The bottle improves as predicted:** hold factor 0.68 (predicted 0.70 ± 0.08; 1k 0.62), with N4-N6 at 0.40-0.70.
+- **Ablation Alk (Ao on 1k's data) behaves like Al:** cheese K6 new 0.05 and 0.10, and Al − Alk is within ±0.05 on every
+  contrast. So the occupancy input, not the new data, drives both the familiar gain and the relocated collapse.
+- Descriptive: Hl and Rl on the same data score 0.00 and 0.03 on new pairings (new layout). The post-hoc object-matched C2 on
+  the new layout is cheese 0.78, bottle 1.07.
+- Grasp identity is exact; 0 episode errors.
+
+**Deviation (disclosed).** The first read job crashed on an engine bug: `fa1x_read.run` stripped a model's per-seed suffix
+with `name[:-3]`, which assumes one-digit seeds, and 1l's seeds are 12-14.
+- The fix (`name.rsplit("_s", 1)[0]`) was made after the pre-registration, in a hashed file.
+- A regression job re-ran the 1k read with the fixed engine and reproduced all three 1k output files exactly. Then the 1l read
+  ran.
+- No value can depend on the fix for one-digit seeds.
+
+**Cost.** About 0.53 A40-h (Ao main 4-5 min per seed, ablation 5-6 min, Hl and Rl 3-4 min, overhead). Running total for
+rounds 1b-1l: about 4.21 A40-h. CPU: generation about 3 CPU-job-h, smoke tests about 0.5, rollouts about 12 CPU-job-h.
+
+### 5.23 Diagnostic: the occupancy input keys on geometry that cannot constrain the grasp (descriptive; 2026-11-01; results/flawed/a1m_sens.json)
+
+**Method.**
+- **Sensitivity** (`experiments/fa1m_sens.py`): on 3,000 approach rows of K1-K6 (demos plus gen_lc), the object term's action
+  chunk (fixed noise) is compared before and after moving entities by 5 cm. The moved entities are either every **far**
+  entity (footprint clearance to the object above 0.10 m) or every **near** one, keeping the object.
+- **Traces:** Al seeds 12 and 13 on K6 (both layouts), N1 new and K1 (both layouts) (`fa1k_trace.py`, as in 5.18).
+
+**Results.**
+- **The object term reacts to far geometry as much as to near obstacles.**
+  - Mean change in the action chunk: far 0.19-0.22, against near 0.15-0.16, for a mean absolute action of 0.34-0.35. This holds
+    for Al seeds 12 and 13 and for the ablation Alk seed 12.
+  - Far entities are, by definition, more than 10 cm from the object: they cannot block the hand.
+  - Generated layouts are all different, so the far geometry identifies the episode. The term can then fit each generated
+    episode by its scene signature, instead of learning what an obstacle does.
+- **On relocated layouts the cheese grasp now misses almost always.**
+  - Al cheese, new layout: miss 0.93 (Ak 0.53), success 0.05. Missed grasps close 2.6 cm off in x and 3.1 cm high in the
+    object frame.
+  - The miss rate is high whatever the local planner yield or clearance: 0.80-1.00 in every tercile.
+  - Familiar: miss 0.12 (Ak 0.25).
+  - The bowl's relocated miss rises to 0.30 (Ak 0.05).
+- **Reading.** A relocated layout presents occupancy signatures absent from training. A term that reads the far geometry is
+  then off-support everywhere on the new layout, not only beside fixtures. The familiar layout, whose signature is constant
+  and heavily trained, improves.
+  - This is a purity failure of the new input (P): it carries more than the free space the grasp needs.
+  - The fix is to make the input *local*, so that entities beyond the reach of the hand cannot change it.
+
+### 5.24 Stage 1m: local free space instead of nearest entities (protocol fixed 2026-11-01, before any stage-1m rollout; m3_prereg tag pa1m)
+
+**Measured weakness** (5.23): Ao's object term reacts to entities more than 10 cm away as strongly as to near obstacles. On
+relocated layouts its input is off-support, and the cheese grasp collapses (miss 0.93).
+
+**Principle: purity (P) of the object role's sufficient input.** The object role needs the *free space around the object*,
+which far entities cannot change. The input should therefore be invariant, by construction, to anything beyond the hand's
+reach.
+
+**The change (one: the occupancy's representation; data, recipe, target term and criteria unchanged).**
+- Arm **Ap** (`factored_flow.py`, `_free`) uses 8 angular sectors around the object, in the object's frame.
+- Per sector, two values:
+  - the nearest clearance among entities closer than OCC_R = 0.08 m, as (OCC_R − clearance) / OCC_R;
+  - the tallest such entity's top above the object.
+  - Both are 0 when no entity is within OCC_R.
+- The object and the table reference slot are excluded. There is no identity and no role flag.
+- An entity farther than 0.08 m cannot change the input.
+- Ap has 871,312 parameters (Ao 876,240).
+- Training is Ap on demos plus gen_lc.npz (1l's data, unchanged), on fresh seeds 15, 16, 17 (tag m). Rollouts:
+  `fa1h_roll.py --arm Ap --name Am` -> results/flawed/a1m_roll.
+- Descriptive only: Al (1l) and Ak (1k) beside; Hl and Rl (1l's same-data baselines); the post-hoc object-matched C2.
+
+**Checks before the rollouts** (asserted in the pre-registration):
+- swap test: T1, T2, T7 and T3_place exactly 0; T4 and T5' at most 1e-4; T3_approach and T6 descriptive;
+- **beyond-radius invariance** (`fa1m_sens.py`): moving entities that stay farther than 0.08 m from the object, before and
+  after the move, changes the action by exactly 0;
+- identity probe (`fa1l_idprobe.py --arm Ap`): the free-space input adds at most 0.05 target-identity accuracy over the
+  object identity alone;
+- training on gen_lc.npz.
+- A 300-step smoke model already gave exactly 0 on every one of these.
+- **Results before the rollouts** (results/flawed/a1m_swap.json, a1m_sens.json, a1m_idprobe.json):
+  - **Swap test.** T1, T2, T7 and T3_place are exactly 0 for all three seeds. T4 is at most 2.1e-5 and T5' at most 1.3e-5.
+    T3_approach has a mean of 0.25-0.28, and T6 0.60-0.64.
+  - **Beyond-radius invariance: exactly 0** for all three seeds (Ao seed 12: mean 0.20, max 2.1).
+    - Ap responds to near entities by a mean of 0.26-0.27.
+    - It responds to far entities (beyond 0.10 m before the move) by only 0.03, which comes from entities that the move brings
+      inside 0.08 m. Ao responded by 0.19.
+  - **Identity probe:** +0.014 target-identity accuracy over the object identity alone (0.630 against 0.616 on held-out
+    episodes), within 0.05.
+  - **Training:** 135,732 rows, 3.7-5.6 min per seed.
+
+**Binding criteria, one verdict** (`experiments/fa1m_read.py`; the frozen criteria, exactly 1j's to 1l's):
+- **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
+  contains 0; C4: against Hg and Rg, both differences > 0 with CIs excluding 0.
+- **New layout:** C1 = layout invariance L ≥ 0.8 (point) with CI lower bound ≥ 0.6; C2, 3F and C4 as above on the new-layout
+  cells.
+- C3 descriptive only. N6 stays in.
+- **Mapping per layout:** "uninformative" if 0.672 < 0.5; "compositional" if C1, C2, 3F and C4 all hold; otherwise "not
+  compositional (fails: ...)", listing the failing members of C1, C2, 3F, C4 in that order.
+- **Verdict = "familiar: <v> | new layout: <v>". CONFIRMED iff both layouts read "compositional".**
+
+**Predictions** (from 1k, 1l and 5.23; fresh seeds vary by about ±0.1 per cell):
+- **New-layout hold rates:** cheese **0.55 ± 0.10** (Al 0.20, Ak 0.42); bottle **0.68 ± 0.08** (Al 0.68). The bowl's
+  relocated known tasks return to Ak's level (K1-K3 0.6-0.9).
+- **New layout:**
+  - s_known 0.63 ± 0.07 and s_new 0.46 ± 0.08, so **C2 ratio 0.73 ± 0.12**. C2 is more likely to fail (lower bound).
+  - L 0.80 ± 0.08: C1 is a coin flip.
+  - 3F at risk on N5 and N6 (Al: N5 +0.07, N6 −0.13). C4 holds.
+- **Familiar layout:**
+  - cheese hold 0.80 ± 0.07 (Ak 0.75, Al 0.87);
+  - C1, C2 and C4 hold;
+  - 3F: N1 is re-read at D3 +0.01 ± 0.04 (Al +0.01 [−0.01, 0.04]); N6 at risk (Al −0.11 [−0.24, 0.02]).
+- **Expected verdict:** "familiar: compositional" and "new layout: not compositional (fails: C2, ...)".
+- **The mechanism test:** if the new-layout cheese hold stays below Ak's 0.42, locality is not what broke Ao, and 5.23's
+  reading is wrong.
+
+**Budget.** About 0.25 A40-h (3 models). Running total before this round: 4.21 A40-h; about 1.7 A40-h would remain, enough for
+a confirmatory read. CPU: 6 rollout jobs, about 5 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost

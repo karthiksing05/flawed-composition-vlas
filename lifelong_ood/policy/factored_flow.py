@@ -89,19 +89,24 @@ ARMS_I = ("Ai",)
 # the object's frame: the OCC_K other entities nearest to the object (by footprint clearance = xy distance minus footprint radius;
 # the object itself excluded), each as (relative position, footprint radius, hand-set height, clearance).  No identity one-hot and no
 # role flag: which entity is the target never enters, so a target swap cannot change the object term (Proposition 3 (ii)).
-ARMS_O = ("Ao",)
+# Stage 1m arm Ap (section 5.24): Ao with the occupancy restricted to LOCAL FREE SPACE: N_SECT angular sectors around the object (its
+# frame); per sector, the nearest clearance among entities within OCC_R (as (OCC_R - clearance) / OCC_R, 0 if none) and the tallest
+# such entity's top above the object (0 if none).  An entity farther than OCC_R cannot change the input (5.23: Ao's object term
+# reacted to far geometry as much as to near obstacles).
+ARMS_O = ("Ao", "Ap")
 OCC_K = 5
-GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0), "Ai": (1, 0), "Ao": (1, 0)}
+N_SECT, OCC_R = 8, 0.08
+GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0), "Ai": (1, 0), "Ao": (1, 0), "Ap": (1, 0)}
 BASE = {"Hb": "H", "Rb": "R", "Ab": "A", "Ab_cmd": "A", "Ab_nooff": "A", "Ab_nosum": "A_nosum", "Ac": "A", "Ac_nobear": "A", "Ac_noft": "A",
-        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A", "Ai": "A", "Ao": "A"}
+        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A", "Ai": "A", "Ao": "A", "Ap": "A"}
 WIDTH = {"H": 512, "R": 512, "A": 352, "A_noframe": 352, "A_nogate": 352, "A_nosum": 512,
          "Hb": 512, "Rb": 512, "Ab": 352, "Ab_cmd": 352, "Ab_nooff": 352, "Ab_nosum": 512, "Ac": 352, "Ac_nobear": 352, "Ac_noft": 352,
-         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352, "Ai": 352, "Ao": 352}
+         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352, "Ai": 352, "Ao": 352, "Ap": 352}
 # the canonical target term's optional inputs per arm: (end-effector tilt, full end-effector rotation, finger positions, target
 # identity one-hot, target size)
 CANON_IN = {"Ac": (1, 0, 1, 1, 1), "Ac_nobear": (0, 1, 1, 1, 1), "Ac_noft": (1, 0, 1, 1, 1), "Ad": (0, 0, 0, 1, 1), "Ad_tilt": (1, 0, 0, 1, 1),
             "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0), "Ah": (0, 0, 0, 0, 0), "Ah_rot": (0, 0, 0, 0, 0), "Ai": (0, 0, 0, 1, 1),
-            "Ao": (0, 0, 0, 1, 1)}
+            "Ao": (0, 0, 0, 1, 1), "Ap": (0, 0, 0, 1, 1)}
 TABLE = 8                                                   # slot whose height is the table surface (main_table_stove_front_region)
 
 
@@ -174,7 +179,8 @@ class FactoredFlow(nn.Module):
         elif arm == "A_nosum":
             self.net = mlp(2 * (dprop + dslot) + dhold + 1 + 2 * da + dt, da, w)
         elif self.c:
-            self.obj = mlp(dprop + dslot + (6 * OCC_K if self.occ else 0) + da + dt, da, w)
+            docc = (2 * N_SECT if self.arm == "Ap" else 6 * OCC_K) if self.occ else 0
+            self.obj = mlp(dprop + dslot + docc + da + dt, da, w)
             tilt, rot6, fing, ident, tsize = CANON_IN[self.arm]
             drot, goff = GEO_IN.get(self.arm, (0, 0))
             self.tgt = mlp(3 + 3 * tilt + 6 * rot6 + 2 * fing + 1 + (2 * tsize + N_ENT * ident + 1) + 6 * drot + 3 * goff + da + dt, da, w)
@@ -218,6 +224,30 @@ class FactoredFlow(nn.Module):
         relk = torch.gather(rel, 1, order[..., None].expand(-1, -1, 3))
         f = torch.cat([relk * POS_SCALE, g(rad)[..., None] * POS_SCALE, g(hgt)[..., None] * POS_SCALE, g(clr)[..., None] * POS_SCALE], -1)
         return f.reshape(B, -1)
+
+    def _free(self, b, Q, o, e):
+        """Stage 1m (Ap): local free space around slot e [B] in the frame (Q, o).  Per angular sector (N_SECT, by the entity centre's
+        bearing in the object frame): (OCC_R - min clearance) / OCC_R over entities with clearance < OCC_R, and the tallest such
+        entity's top above the object (relative height of its slot point plus its hand-set height, clipped at 0), scaled; 0 when a
+        sector holds no entity within OCC_R.  The object and the table reference slot are excluded; no identity, no role."""
+        B = len(e)
+        idx = torch.arange(B, device=e.device)
+        QT = Q.transpose(1, 2)
+        rel = torch.einsum("bij,bkj->bki", QT, b["pos"] - o[:, None, :])                     # [B, N, 3]
+        rad, hgt = self.size[:, 0][None].expand(B, -1), self.size[:, 1][None].expand(B, -1)
+        clr = torch.linalg.norm(rel[..., :2], dim=-1) - rad
+        valid = torch.ones_like(clr, dtype=torch.bool)
+        valid[idx, e] = False
+        valid[:, TABLE] = False
+        near = valid & (clr < OCC_R)
+        sect = torch.floor((torch.atan2(rel[..., 1], rel[..., 0]) + math.pi) / (2 * math.pi) * N_SECT).long().clamp(0, N_SECT - 1)
+        oneh = torch.nn.functional.one_hot(sect, N_SECT).bool() & near[..., None]           # [B, N, S]
+        close = ((OCC_R - clr) / OCC_R).clamp(0, 1)[..., None].expand(-1, -1, N_SECT)
+        top = (rel[..., 2] + hgt).clamp(min=0)[..., None].expand(-1, -1, N_SECT)
+        zero = torch.zeros_like(close)
+        c = torch.where(oneh, close, zero).amax(1)
+        h = torch.where(oneh, top, zero).amax(1) * POS_SCALE
+        return torch.cat([c, h], -1)
 
     def _frame(self, b, e, world):
         B = len(e)
@@ -312,7 +342,8 @@ class FactoredFlow(nn.Module):
             return chunk_from(Q, v)
         if self.c:
             Qo, oo, yo = self._frame(b, b["oi"], False)
-            co = torch.cat([self._prop(b, Qo, oo), self._slot(b, b["oi"], Qo, oo, yo)] + ([self._occ(b, Qo, oo, b["oi"])] if self.occ else []), -1)
+            occ = [] if not self.occ else [self._free(b, Qo, oo, b["oi"]) if self.arm == "Ap" else self._occ(b, Qo, oo, b["oi"])]
+            co = torch.cat([self._prop(b, Qo, oo), self._slot(b, b["oi"], Qo, oo, yo)] + occ, -1)
             Qc, ct = self._canon(b)
             vo = chunk_from(Qo, self.obj(torch.cat([co, flat(chunk_to(Qo, x)), te], -1)).reshape(B, self.H, 7))
             vt = chunk_from(Qc, self.tgt(torch.cat([ct, flat(chunk_to(Qc, x)), te], -1)).reshape(B, self.H, 7))

@@ -44,6 +44,8 @@ def fit(Xtr, ytr, Xte, yte, ncls, epochs=400):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--gen", default="gen_lc.npz")
+    ap.add_argument("--arm", default="Ao", help="Ao (1l occupancy) or Ap (1m local free space)")
+    ap.add_argument("--out", default="a1l_idprobe.json")
     a = ap.parse_args()
     D = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
     Db = dict(np.load(os.path.join(FC.DATA, "demos_b.npz")))
@@ -59,13 +61,13 @@ def main():
     keep = (task <= 5) & ~held
     oi = np.array([FC.ENT.index(rl[t][0]) for t in task])
     ti = np.array([FC.ENT.index(rl[t][1]) for t in task])
-    m = FF.FactoredFlow("Ao", size=np.array([FC.SIZE[e] for e in FC.ENT], np.float32))
+    m = FF.FactoredFlow(a.arm, size=np.array([FC.SIZE[e] for e in FC.ENT], np.float32))
     j = np.nonzero(keep)[0]
     with torch.no_grad():
         P, Y, E = torch.tensor(pos[j]), torch.tensor(yaw[j]), torch.tensor(oi[j])
         idx = torch.arange(len(j))
         Q, o = FF.rz(Y[idx, E]), P[idx, E]
-        occ = m._occ(dict(pos=P), Q, o, E).numpy()
+        occ = (m._free if a.arm == "Ap" else m._occ)(dict(pos=P), Q, o, E).numpy()
     one = np.eye(FF.N_ENT, dtype=np.float32)[oi[j]]
     ep = task[j] * 1000 + demo[j]
     rng = np.random.default_rng(0)
@@ -73,13 +75,13 @@ def main():
     te_ep = set(rng.choice(ue, max(1, len(ue) // 5), replace=False).tolist())
     te = np.array([e in te_ep for e in ep])
     y = ti[j]
-    out = dict(rows=int(len(j)), episodes=int(len(ue)), gen_file=a.gen, majority=float(np.mean(y[te] == np.bincount(y[~te]).argmax())))
+    out = dict(rows=int(len(j)), episodes=int(len(ue)), gen_file=a.gen, arm=a.arm, majority=float(np.mean(y[te] == np.bincount(y[~te]).argmax())))
     for name, X in (("base", one), ("occ", np.c_[one, occ])):
         tr_acc, te_acc = fit(X[~te], y[~te], X[te], y[te], FF.N_ENT)
         out[name] = dict(train=tr_acc, test=te_acc)
     out["occ_minus_base_test"] = out["occ"]["test"] - out["base"]["test"]
     print("[fa1l] idprobe", json.dumps(out), flush=True)
-    with open(os.path.join(ROOT, "results", "flawed", "a1l_idprobe.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(ROOT, "results", "flawed", a.out), "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=1)
 
 

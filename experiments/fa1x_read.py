@@ -142,7 +142,7 @@ def run(rd, out_name):
         if name in rd.main or name in rd.abl or name in dict(rd.refs):
             Ps[name] = pool(X, name, groups[name])
         else:
-            Ps[name] = pool(X, name[:-3], groups[name])
+            Ps[name] = pool(X, name.rsplit("_s", 1)[0], groups[name])      # 1l fix: name[:-3] assumed one-digit seeds
 
     def evaluate(kn, nw, kk):
         st = {m: arm_stats(Ps[m], kn, nw, kk) for m in Ps}
