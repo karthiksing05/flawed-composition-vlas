@@ -3519,6 +3519,107 @@ architecture's own radius, and no evaluation state.
 **Budget.** About 0.25 A40-h (3 models). Running total before: 4.93; about 1.0 would remain, enough for a confirmatory read.
 CPU: generation about 12 CPU-job-h (36 jobs); 6 rollout jobs, about 5 CPU-job-h.
 
+**Results (2026-11-01; ledger fc_a1p tag a1p; results/flawed/a1p_read.json, a1p_read_familiar.json, a1p_read_new.json,
+a1p_cover.json, a1p_which.json)**
+
+**Verdict (pre-registered mapping): "familiar: compositional | new layout: not compositional (fails: C2, 3F)". Not confirmed.**
+
+| layout | s known | s new | C1 | C2 ratio | 3F in CI | C4 vs Hg / Rg |
+|---|---|---|---|---|---|---|
+| familiar | 0.78 [0.58, 0.94] | 0.73 [0.58, 0.86] | +0.11 (holds) | 0.93 [0.72, 1.24] (holds) | 6/6 | +0.71 / +0.69 |
+| new | 0.68 [0.47, 0.86] | 0.49 [0.30, 0.69] | L 0.87 [0.62, 1.13] (holds) | **0.73 [0.42, 1.16]** | **5/6 (N5 +0.08 [0.01, 0.17])** | +0.49 / +0.45 |
+
+- **The registered falsification fired: the near-rack cheese stays at the floor.**
+  - Over the 9 near-rack new-layout states: 1 of 27 on K6 and 1 of 27 on N1 (Ao1: 0 and 0). Both are at or below the
+    registered 0.05.
+  - Elsewhere: 17 of 33 on K6 and 16 of 33 on N1 (Ao1: 20 and 21).
+  - So the coverage account of 5.29 is wrong as a cause, at this scale of coverage.
+  - The stratification did reach the rack: 37 of K6's 120 stratified attempts lay within 0.10 m of it, and 18 of those were
+    kept. That doubles the near-rack cheese carries (19 to 37).
+- **Hold rates:** cheese familiar 0.92 (predicted 0.85 ± 0.08), new 0.48 (predicted 0.60 ± 0.12; Ao1 0.50); bottle familiar
+  0.68, new 0.82.
+- **Against Ao1 (same arm, gen_lo):** no cell moved. Familiar: s known −0.02 [−0.12, 0.07], s new −0.03 [−0.15, 0.09]. New: s
+  known +0.01 [−0.06, 0.07], s new −0.03 [−0.14, 0.08].
+- **3F fails on N5** (bottle on the new layout, observed above the factor prediction). N6 is at −0.09 [−0.22, 0.00].
+- Post-hoc object-matched C2 (descriptive only): new layout cheese 0.96, bottle 1.10; familiar cheese 1.01, bottle 1.23.
+- Swap test, beyond-radius invariance and identity probe as above; grasp identity exact; 0 episode errors.
+
+**Deviations (disclosed).**
+- The read's ledger row carries `dirty=true` (other sessions' uncommitted files).
+- `fa1p_sgen.py`'s merge function gained the per-bin counts while the generation jobs were queued. The generation code they ran
+  was unchanged.
+- `fa1o_cover.py` gained `--name`, `--roll`, `--seeds` and `--out` options; its defaults reproduce 5.29's call.
+- One extra `wait.sh` process was started as a shell background job beside the tracked waiter. It only polled `squeue`.
+
+**Cost.** 0.34 A40-h (6.6-6.8 min per seed). Running total for rounds 1b-1p: about 5.27 A40-h; 0.93 remain under the 6.2 cap.
+CPU: generation about 3.2 CPU-job-h (36 jobs, 3.6-10.6 min each); rollouts about 4 CPU-job-h.
+
+### 5.31 Diagnostic: beside the rack, the policy wanders and the data's grasp is a sparse mixture chosen by trial (descriptive; 2026-11-01; results/flawed/a1p_near.json, a1p_opts.json)
+
+**Question.** Doubling the near-rack cheese carries left the near-rack cheese at 2 of 54. What does the policy do there, and what
+does the data teach?
+
+**Method.**
+- `fa1p_near.py`: Ap1 traces (seeds 24-26, K6 and N1 new layout) and Ao1's, split by the state's cheese-rack clearance (below
+  0.10 m = near). It reads the hold classes and the hand relative to the cheese at the first close.
+- `fa1p_opts.py`: every K6 attempt of 1l and 1p with the cheese within 0.08 m of a fixture. It reads which grasp option the
+  generator kept, by nearest fixture and the fixture's bearing in 45° sectors.
+
+**Results.**
+- **Beside the rack, the policy wanders and then closes off the cheese.**
+
+| model | states | first close (step, median) | hand above cheese at close (cm) | hand off-centre in xy (cm) | successes | closed without hold |
+|---|---|---|---|---|---|---|
+| Ap1 | near | 144 | 2.6 | 3.4 | 2 / 54 | 38 |
+| Ap1 | far | 37 | 0.8 | 1.9 | 33 / 66 | 24 |
+| Ao1 | near | 160 | 1.6 | 3.9 | 0 / 54 | 40 |
+| Ao1 | far | 37 | 0.8 | 1.8 | 37 / 66 | 10 |
+
+  - The generated near-rack carries close 0.2 cm above and 1.7 cm off the cheese. The policy does not reproduce them.
+- **The near-rack grasp the data teaches is a sparse mixture.**
+  - In the rack's nearer sector (35 attempts in all), 16 attempts had no holding option.
+  - In the sector holding 21 of those attempts, the 14 kept carries use six different options; the commonest has 4.
+  - Beside the stove and the cabinet, the default (0, 0) held first in 38 of 45 and 29 of 40 attempts.
+  - Over all near-fixture cheese carries, 102 of 131 use (0, 0).
+  - The generator picks the first option whose simulated grasp test holds. That is a choice made by trial in the simulator,
+    and nothing in the policy's input determines it. Where (0, 0) works the label is unimodal; beside the rack it is not.
+- **Reading.** The near-rack failure is a learnability limit of the teaching signal, not a coverage gap alone:
+  - the executor solves the near-rack grasp in about half the layouts;
+  - it does so with a different option from layout to layout;
+  - it chooses by trial;
+  - 37 carries spread over six modes do not teach a flow policy a grasp it can select from its input.
+
+### 5.32 Proposal (not registered, not run): a hand-back at the near-rack grasp
+
+**Where prototype A stands (rounds 1o and 1p).**
+- The familiar layout reads "compositional" in two consecutive rounds on fresh seeds: 1o seeds 21-23, C2 0.95 [0.75, 1.23];
+  1p seeds 24-26, C2 0.93 [0.72, 1.24]. 1p's read was not a pre-registered confirmatory read of 1o, since the data changed.
+- On the new layout, C1 (layout invariance) holds in both rounds: L 0.84 and 0.87, lower bounds 0.64 and 0.62.
+- On the new layout, C2 fails in both: 0.77 [0.49, 1.14] and 0.73 [0.42, 1.16]. The object-matched ratios are 0.96-1.12, so
+  within each object the new pairings run at the known rate. The pooled shortfall is the cheese: in the 9 of the 20 new-layout
+  states that put it within 0.10 m of the wine rack, it succeeds in 2 of 108 episodes over both rounds.
+
+**Why I stop here (rule 4).**
+- The remaining failure is a single skill: grasping a 3 cm object beside a tall fixture.
+- The only executor the rules allow (the scripted planner; demos are fitted only) solves that grasp in about half the layouts,
+  with a different option each time, chosen by simulator trial.
+- One principled data round (coverage, 1p) did not move it.
+- The next changes are design decisions for the user, not one-change rounds:
+  - **(a) A realizable teacher for obstructed grasps.** Run every grasp option per attempt and keep, among those that hold, the
+    one picked by a fixed rule on geometry the policy sees. For example: the option whose finger axis is most nearly parallel to
+    the nearest fixture's face. The label would become a function of the input. This is one change (generator, CPU only, about
+    0.34 A40-h to train). The risk is that the data stays thin: 18 kept near-rack carries in 1p's 37 near-rack attempts.
+  - **(b) A stronger executor:** a collision-checked grasp sampler or motion planner in place of the 8 fixed options. It is
+    larger engineering, and it changes what "generated" means.
+  - **(c) Accept the near-rack grasp as outside this prototype's executor.** Report the object-matched C2 as descriptive
+    beside the frozen C2, as now.
+- **Concerns noted only (criteria stay frozen):**
+  - The frozen C2 pools objects, and the new pairings are cheese-heavy (N1-N3 cheese, N4-N6 bottle), while the known pairings
+    are bowl-heavy. So one hard object sets the pooled ratio.
+  - With 3 seeds × 20 states, the new-layout C2 interval is about ±0.35. Its lower bound reaches 0.6 only with a point near 0.95.
+  - The 20 evaluation states hold 9 near-rack cheese states (45%), against 23% of the same sampler's draws in 1k's generator.
+- **Budget.** 5.27 of 6.2 A40-h used; 0.93 remain, enough for (a) plus one confirmatory read.
+
 ---
 
 ## 6. Experiments, order and cost
