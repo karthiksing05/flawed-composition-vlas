@@ -3347,6 +3347,44 @@ it removes the very interval the gate depends on. This is generic: it applies to
 **Budget.** About 0.3 A40-h (3 models). Running total before: 4.72; about 1.2 would remain, enough for a confirmatory read.
 CPU: 6 rollout jobs, about 5 CPU-job-h; close-window traces about 1 CPU-job-h.
 
+**Results (2026-11-01; ledger fc_a1o tag a1o; results/flawed/a1o_read.json, a1o_read_familiar.json, a1o_read_new.json)**
+
+**Verdict (pre-registered mapping): "familiar: compositional | new layout: not compositional (fails: C2)". Not confirmed.**
+This is the predicted verdict.
+
+| layout | s known | s new | C1 | C2 ratio | 3F in CI | C4 vs Hg / Rg |
+|---|---|---|---|---|---|---|
+| familiar | 0.80 [0.63, 0.95] | 0.76 [0.65, 0.87] | +0.13 (holds) | 0.95 [0.75, 1.23] (holds) | 6/6 | +0.75 / +0.72 |
+| new | 0.67 [0.48, 0.84] | 0.52 [0.35, 0.68] | L 0.84 [0.64, 1.02] (holds) | **0.77 [0.49, 1.14]** | 6/6 | +0.52 / +0.48 |
+
+- **The registered falsification did not fire: the cheese's hold rates rose in both layouts.**
+  - Cheese hold factor: familiar 0.87 (predicted 0.70 ± 0.12; An 0.42, Ak 0.75), new 0.50 (predicted 0.55 ± 0.12; An 0.33).
+  - K6 familiar per seed: 0.65, 0.80, 0.85 (An 0.40, 0.30, 0.25).
+  - Bottle: familiar 0.73, new 0.80 (predicted 0.85 / 0.75).
+- **Against An (same arm, same recipe, only the data merge differs):**
+  - familiar: s known +0.08 [−0.06, 0.26], s new +0.26 [−0.00, 0.53];
+  - new: s known +0.13 [0.03, 0.23], s new +0.17 [0.06, 0.30].
+  - On new pairings in the new layout, the gain is in success given a grasp (p +0.24 [0.05, 0.49]) and in release given a
+    grasp (prel +0.23 [0.04, 0.48]). The grasp rate itself is unchanged (g +0.01 [−0.11, 0.11]).
+- **New-layout C1 holds for the first time since 1k** (L 0.84, lower bound 0.64).
+- **The only failing member is the new-layout C2.** Its point is 0.77 and its lower bound 0.49.
+  - Post-hoc object-matched C2 (descriptive only): new layout cheese 1.12 (known 0.33, new 0.37), bottle 1.09; familiar cheese
+    1.09, bottle 1.17.
+  - Within each object, the new pairings run at the known pairings' rate. The pooled ratio is below 0.8 because the cheese
+    stays the weakest object on the new layout: K6 new 0.35, 0.30, 0.35 per seed.
+- **Close window (descriptive):** the hand still rises 6-9 cm over the 20 steps after the close (median), so the registered
+  "below 5 cm" was wrong. The window is longer than the 12-step dwell, and the lift follows it.
+  - What changed is the hold. Both fingers touch in 0.89 of the familiar successes. Familiar misses fell to 8 of 60 (An 34).
+  - The new-layout misses (27 of 60) close late: median first close at step 137 against 33 for successes, and only 0.19
+    reach both fingers. So the cheese's remaining new-layout failure lies before the close, in reaching it.
+- Swap test, beyond-radius invariance and identity probe as above; grasp identity exact; 0 episode errors.
+
+**Deviations (disclosed).** The read's ledger row carries `dirty=true` (other sessions' uncommitted files). The close-window
+traces of the new models ran beside the rollouts; they are descriptive and enter no criterion.
+
+**Cost.** 0.21 A40-h (3.6-4.9 min per seed). Running total for rounds 1b-1o: about 4.93 A40-h; 1.27 remain under the 6.2 cap.
+CPU: rollouts about 4.1 CPU-job-h; diagnostics (5.27) about 2 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost
