@@ -1,0 +1,61 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS Layer 2 (P-build, S1 locality, S2 multiplicativity, S3 creation, S4 baselines)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4451835",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ee3019e27bf38e8d87d2a06871346490ca8a4abf",
+  "short": "ee3019e2"
+ },
+ "keys": {},
+ "metrics": {
+  "S1": "holds iff swap tests exactly 0 (every seed) and every tg component exactly 0 on every frame",
+  "S2": "holds iff in both layouts 3F (every N1-N6 D3 CI contains 0) and object-matched ratio >= 0.8 with CI lower bound >= 0.6",
+  "S3_layer3_go": "S1 and S2 hold and, for bottle and plate, both layouts, every k in {1, 5, 10}: transfer ratio >= 0.8 with CI lower bound >= 0.6",
+  "S4": "descriptive: s_train, s_unseen, ratio, P - baseline on unseen partners, forgetting",
+  "files_sha256": {
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "05d3f51919da90ae8be6e47d7648746c13644b11e1b8237304dca28dc05f2291",
+   "experiments/pp_baselines.py": "3f1ae3aa6f562d974d7b101810d7b01a3dc0fff28c20d568755e7b8683c50b19",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_p_roll.py": "09dba3252300b3a5cf6be5120d3590129455ee665140399fd1667c94630c9dc6",
+   "experiments/pp_p_train.py": "c696f224e441758ecd9d7b89b9c3166e3135cce37a5dfe33c92479952aa45951",
+   "experiments/pp_s1_mix.py": "3dccb185c263dec9111deb065fbda5f1e4b86fb81d279138909ade37373dc0e6",
+   "lifelong_ood/policy/parts_flow.py": "35374e62a73e62877ced9cd4dee3c97c0d46f4addaba0ea66fbc46aec648814a"
+  },
+  "section_4_protocol_sha256": "7d17d484ab6ba9c8ae51c23d0017e77fd9fc9f76c734fac4a4fb89423a77c79d",
+  "status": "PRE-REGISTERED PLAN_PARTS Layer 2 (docs/PARTS_RESULTS.md section 4)",
+  "written_before": "any S1 read and any Layer-2 rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_l2__s0__ee3019e2",
+ "schema": 1,
+ "script": "experiments/prereg/pp_l2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-01T22:01:04+00:00",
+ "stream": null,
+ "tag": "pp_l2"
+}
