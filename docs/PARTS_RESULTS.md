@@ -190,3 +190,78 @@ place cells per model. CIs are 95% compound bootstraps.
 - F3, the causal test, still runs as registered.
 
 **Cost.** About 0.45 A40-h: frames 0.08, pi0.5 0.30, GR00T 0.12. Smokes are excluded.
+
+## 4. Layer 2 protocol: P-build, S1-S4 (fixed 2026-11-01, before any Layer-2 rollout; m3_prereg tag pp_l2)
+
+Layer 2 starts because pp_f123's mapping returned GO on pi0.5 (F1 holds, F2 ties). F3's closed loop was still running when this
+protocol was fixed, so this protocol does not depend on F3's outcome.
+
+**Architecture P** (`lifelong_ood/policy/parts_flow.py`).
+- **Base.** Stage 1i's arm Ai: the object term in the object's frame and the canonical target term with the rotation since
+  onset. Every atom-identity input is removed from both backbones.
+- **Parts.** Each atom of a role has a part: a 16-dim slot embedding (a backbone input) and a rank-8 LoRA on the backbone's
+  four hidden Linear layers.
+- **Sparsity.** A task activates its object's part and its target's part, nothing else.
+- **Combination.** Φ = (1 − held)·T_o⁻¹v_o + held·T_c⁻¹v_t, fixed.
+- **Not carried over:** occupancy, free space, clearance strata, grasp-option teachers, the object-unit end-effector input
+  (1l-1p). The oracle slots, frames and contact gate stay.
+- **Build** (`experiments/pp_p_train.py build`).
+  - Demos only (demos.npz + demos_b.npz, fitted, never executed). No generated carries; the generated-data ablation arm is not
+    run in this pass.
+  - Prototype A's recipe (30,000 steps, AdamW 3e-4, batch 512, EMA 0.999), seeds 0-2.
+  - Libraries: full (all 8 known tasks), nobottle (without K4, K5) and noplate (without K1).
+  - Secondary arm (§9 of the plan): rank-32 parts, nobottle_r32 and noplate_r32.
+- **Creation** (`pp_p_train.py create`).
+  - The held-out atom's part is re-initialised and trained alone on the first k demos of one task: bottle from K4, plate from
+    K1. k ∈ {1, 5, 10, 50}, the build's seed.
+  - 4,000 steps, AdamW 3e-4, no decay, batch 256, no EMA.
+  - Every other parameter gets a zero gradient. It is asserted bitwise unchanged after creation.
+- **Choices this pass makes that the plan leaves open.**
+  - The held-out atoms: bottle, because its removal leaves every other object atom trained; plate, the target of a single known
+    task.
+  - The creation tasks K4 and K1: the lowest-index known task of each atom.
+  - The creation recipe.
+  - Removing K4, K5 also removes the rack (K5's only target), so the rack is not read in the bottle condition.
+
+**S1 (locality)** (`experiments/pp_s1_mix.py` on the full library, seeds 0-2).
+- Swap tests on every F1 frame:
+  - the object term's output under a target-atom change;
+  - the target term's output when the object's part is replaced by another atom's.
+- F1's mixing profile on P (pp_f1_oracle's frames, pairs and d).
+- **S1 holds** iff both swap tests are exactly 0 for every seed and every target-into-grasp component is exactly 0 on every frame.
+- Object-into-place is reported. P keeps A's foot route, where the role binding locates the held body.
+
+**S2 (multiplicativity on held-out pairings).** Rollouts of the full library (seeds 0-2) on all 32 N2 task-cells, states 4-23,
+prototype A's episode (`experiments/pp_p_roll.py` -> results/flawed/pp_s2_roll, name P2). Per layout:
+- 3F: every N1-N6 CI of D3 contains 0 (fa1g_read.three_factor, unchanged).
+- OM: the object-matched ratio r = mean over N1-N6 of s / mean over N1-N6 of s(the known tasks of the same object; cheese K6,
+  bottle K4 and K5). It holds iff r ≥ 0.8 with a state-bootstrap CI lower bound ≥ 0.6.
+- **S2 holds** iff 3F and OM hold in both layouts. Pooled success is reported as competence.
+
+**S3 (creation).**
+- The created part (bottle: base nobottle; plate: base noplate) is read with the training partner (K4 / K1) and every unseen
+  partner (bottle: N4, N5, N6; plate: N1, N4), both layouts, 3 seeds × 20 states (results/flawed/pp_s3_roll).
+- Transfer ratio = s_unseen / s_train, with a state-bootstrap CI.
+- Old tasks change by exactly 0 (bitwise parameters). Parameters added, demos and GPU-seconds to ready are reported from the
+  creation files.
+- **Layer-3 GO** (plan §4.3) iff S1 holds, S2 holds, and for both atoms, both layouts and every k ∈ {1, 5, 10}, the ratio is
+  ≥ 0.8 with CI lower bound ≥ 0.6.
+- The plan's "kill or revise K3 if created parts transfer only to their training partner" has no numeric form in the plan. It is
+  judged descriptively from the ratios, and no extra criterion is added.
+
+**S4 (baselines on S3's protocol)** (`experiments/pp_baselines.py`). Same base tasks, same k demos of the same task, same
+adaptation recipe:
+- HF: holistic (Hb) fine-tuned.
+- HL: holistic with a rank-8 per-task LoRA, switched on for every task containing the new atom.
+- RF: role-routed (Rb) fine-tuned.
+- LIB: a DMPEL/CLARE-style library. Rank-8 LoRA experts on the holistic backbone are mixed by a learned router; one expert per
+  base task is trained jointly; for the new atom one expert is added, and it is trained together with the router.
+- Reported for each: s_train, s_unseen, the ratio, and P − baseline on unseen partners (state-bootstrap CI).
+- Forgetting on the old pick-and-place tasks (familiar layout; rollouts results/flawed/pp_s4_old) for HF, RF, LIB. HL and P
+  are exactly 0 by construction.
+- S4 carries no verdict.
+
+**Read:** `experiments/pp_l2_read.py` -> results/flawed/pp_l2_read.json.
+
+**Statistics.** Development reads only: 3 seeds × 20 states, 95% CIs, no Holm correction. The S-conf fresh-seed read needs
+the user's approval and is not run.
