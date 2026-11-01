@@ -2569,6 +2569,133 @@ Not confirmed.** Each layout fails exactly one binding criterion, and each layou
 **Cost.** 0.18 A40-h (training, 3.2-4.0 min per seed). Running total for rounds 1b-1j: 3.37 A40-h. CPU: rollouts 4.4 CPU-job-h
 (6 jobs), swap, regression, pre-registration and read under 0.1 h.
 
+**The user's decision on C2 (2026-10-31, option (a)).** C2 stays exactly as defined. The criteria are now **frozen**: familiar
+C1 (within 0.10 of 0.672), C2, 3F and C4; new-layout C1 = layout invariance, C2, 3F and C4; C3 descriptive. An object-matched
+C2 may appear only as a descriptive, post-hoc analysis, labelled as such. The next lever is architectural: the object-side
+grasp and carry of the cheese and the bottle on relocated layouts (section 5.18).
+
+### 5.18 Diagnostic: grasp and carry of the cheese and the bottle on relocated layouts (descriptive; 2026-10-31; results/flawed/a1k_diag.json)
+
+**Method.** Every registered episode of the bowl (K1-K3), bottle (K4, K5, N4-N6) and cheese (K6, N1-N3) tasks is re-run with a
+per-step trace in both layouts (`experiments/fa1k_trace.py`; same model, state and noise seeds; fresh, re-seeded env; 1h's
+episode logic). Models: Ai (seeds 0-2), Aj (Ai on seeds 3-5) and Hb (1b, demo-only; its new-layout episodes have no registered
+file, so no reproduction check). `experiments/fa1k_diag.py` pools seeds and tasks per object and layout and reports:
+- hold classes: never closed, closed without a hold (grasp missed), slipped (hold lost far from the target while closed),
+  released far (hold lost far from the target after an open command), carried to the target (failed later), success;
+- the grasp pose error: end effector minus object in the object frame at the first close, minus the median over that object's
+  training episodes (demos plus generated);
+- support: the start object position against the training starts of that object (nearest-neighbour distance above the 95th
+  percentile of the training starts' own) and the start yaw against the training yaws (more than 0.2 rad from every one, mod pi).
+
+Traced tasks: bowl K1-K3 (tids 0/1, 2/3, 4/5), bottle K4, K5, N4-N6 (6/7, 8/9, 22/23, 24/25, 26/27), cheese K6, N1-N3 (10/11,
+16/17, 18/19, 20/21). 20 episodes per task, seed and layout. Re-runs reproduce the registered success in 0.97-1.00 of episodes.
+A first pass listed tids 28/29 (N7) by mistake and stopped there; a second pass traced the missing tasks with the corrected tids.
+Nothing else changed.
+
+**Results** (task success = full pick and place; "miss" = closed without a hold; grasp error = xy distance from the training
+median grasp pose in the object frame, median over failures | successes; out of support = share of starts beyond the training
+spacing, with success inside | outside support):
+
+| model | object | layout | success | miss | slipped | grasp err fail / ok (cm) | out of support | success in / out |
+|---|---|---|---|---|---|---|---|---|
+| Ai | bowl | familiar | 0.97 | 0.00 | 0.01 | 5.5 / 2.7 | 0.00 | — |
+| Ai | bowl | new | 0.81 | 0.05 | 0.06 | 2.4 / 2.7 | 0.00 | — |
+| Ai | bottle | familiar | 0.65 | 0.18 | 0.05 | 3.5 / 2.7 | 0.00 | — |
+| Ai | bottle | new | 0.43 | **0.43** | 0.06 | 3.7 / 2.3 | 0.15 | 0.42 / 0.49 |
+| Ai | cheese | familiar | 0.56 | 0.28 | 0.13 | 2.7 / 2.0 | 0.00 | — |
+| Ai | cheese | new | 0.35 | **0.55** | 0.06 | 4.0 / 2.6 | **0.55** | **0.50 / 0.23** |
+| Aj | bowl | familiar | 0.92 | 0.03 | 0.02 | 3.6 / 2.3 | 0.00 | — |
+| Aj | bowl | new | 0.82 | 0.03 | 0.05 | 1.8 / 2.7 | 0.00 | — |
+| Aj | bottle | familiar | 0.59 | 0.25 | 0.06 | 2.4 / 2.3 | 0.00 | — |
+| Aj | bottle | new | 0.41 | **0.41** | 0.04 | 3.4 / 2.1 | 0.15 | 0.43 / 0.31 |
+| Aj | cheese | familiar | 0.62 | 0.22 | 0.14 | 2.6 / 1.8 | 0.00 | — |
+| Aj | cheese | new | 0.30 | **0.45** | 0.21 | 4.2 / 2.2 | **0.55** | **0.44 / 0.19** |
+| Hb | bowl | familiar | 0.83 | 0.06 | 0.02 | 3.1 / 2.2 | 0.00 | — |
+| Hb | bowl | new | 0.02 | 0.41 (never closed 0.55) | 0.02 | 14.6 / 7.4 | 0.00 | — |
+| Hb | bottle | familiar | 0.22 | 0.52 | 0.02 | 7.0 / 2.3 | 0.00 | — |
+| Hb | bottle | new | 0.00 | 0.43 (never closed 0.57) | 0.00 | 31.8 / — | 0.15 | 0.00 / 0.00 |
+| Hb | cheese | familiar | 0.11 | 0.78 | 0.03 | 8.8 / 2.2 | 0.00 | — |
+| Hb | cheese | new | 0.00 | 0.53 (never closed 0.47) | 0.00 | 23.9 / — | 0.55 | 0.00 / 0.00 |
+
+Training support per object (start positions, demos + generated): bowl 200 demo + 150 generated starts (K1-K3; K7 demos); bottle
+100 + 100 (K4, K5); cheese 50 + **50** (K6 only). Start yaws are constant per object in the demos, the generated carries and both
+N2 layouts (both samplers move only x, y), so yaw is never outside support. Median nearest-training-start distance on the new
+layout: bowl 0.9 cm, bottle 1.4 cm, cheese **4.8 cm**.
+
+**What it shows.**
+- **The relocated-layout loss is a grasp loss, not a carry loss.** For the cheese and the bottle the "missed" share doubles from
+  familiar to new (cheese 0.22-0.28 → 0.45-0.55; bottle 0.18-0.25 → 0.41-0.43). Slips and far releases barely change. Failed
+  grasps sit 3.4-4.2 cm from the training grasp pose, against 2.1-2.6 cm for successful ones: the gripper closes beside the object.
+- **The cheese's relocated starts fall outside its support.** 0.55 of them are farther from every training start than the
+  training starts are from each other, and there success halves (0.44-0.50 inside, 0.19-0.23 outside). The cheese has a third of
+  the bowl's generated starts (50 against 150): it is carried by one known task, K6.
+- **The bottle is in between.** 100 generated starts, 0.15 out of support, and its miss rate also doubles inside support. Its
+  grasp, high on a tall object with a 0.11 m vertical offset, is less forgiving than the bowl's rim grasp.
+- **The bowl, with the densest support, keeps its grasp on the new layout** (miss 0.03-0.05).
+- **Hb (demo-only) cannot grasp on relocated layouts at all** (never closes in about half the episodes, misses the rest), and
+  misses the cheese even on the familiar layout (0.78). The factored arm's grasp is target-blind and placed in the object frame;
+  with generated support it transfers, and how well it transfers follows how much support each object has.
+- **Diagnosis: (Supp) on the object side.** The object term's support is uneven across objects because generated support was
+  allotted per known task, and the cheese has one known task. This explains the cheese's factor drop on relocated layouts
+  (h_o 0.55 against 0.78) and part of the bottle's (0.60 against 0.73).
+
+### 5.19 Stage 1k: equal object-side support (protocol fixed 2026-10-31, before any stage-1k rollout; m3_prereg tag pa1k)
+
+**Measured weakness** (5.18): the object term misses the cheese and the bottle on relocated layouts. The cheese's relocated
+starts lie outside its support, and its generated support is a third of the bowl's.
+
+**Principle: (Supp) on the object side.** The object term is target-blind: one grasp function per object, trained on every
+known task that carries the object. Proposition 3's success law needs each object's grasp to be supported where the object
+starts. 1g allotted generated carries per known task (50 each), so an object's support grew with its number of known tasks:
+bowl 150, bottle 100, cheese 50. The change allots them per **object** instead, equal for every carried object.
+
+**The change (data only; architecture, recipe and criteria unchanged).**
+- `experiments/fa1k_plan.py`: 1g's planner, keypoints, layout sampler and acceptance rule, unchanged, on a new seed block
+  (900500 + 1000 · task + k, k < 500; never 1g's or N2's seeds). Kept: K1 17, K2 17, K3 16, K4 50, K5 50, K6 150 new successful
+  carries (yields 0.44-1.00).
+- `DATA/gen_k.npz` = gen_g.npz plus these, labelled generated (gen = 1, demo ids 150+): **200 generated carries per object**
+  (bowl, bottle, cheese), 51,147 generated rows. Only known pairings K1-K6 are generated. No new pairing and no demo action is
+  executed or replayed.
+- Role locality, the target-blind grasp and the absence of an identity bypass are architectural and therefore unchanged. The
+  swap test re-checks them on the new models.
+- Ai on demos plus gen_k, fresh seeds 6, 7, 8 (tag k): `experiments/fa1g_train.py --tag k --seed s --arms Ai --gen gen_k.npz`.
+  Rollouts: `experiments/fa1h_roll.py --arm Ai --name Ak` -> results/flawed/a1k_roll.
+- Descriptive only: Hk and Rk, the Hb and Rb architectures on the same data (seed 6, `fa1g_roll.py`). Aj (1j) is shown beside.
+  The **post-hoc** object-matched C2 (per object, new-pairing over known-task success) is reported, labelled post hoc, and is
+  not part of the verdict.
+
+**Checks before the rollouts** (asserted in the pre-registration): swap test 0 on T1-T3 and T7, at most 1e-4 on T4 and T5'
+(T6 descriptive); training on gen_k.npz; 200 generated carries for each of the three objects.
+- Result before the rollouts: the swap test gives 0 on T1-T3 and T7, at most 1.2e-5 on T4 and at most 1.4e-5 on T5'. T6
+  changes by a mean of 0.61-0.64. Training: 103,351 rows (51,147 generated), 3-6 min per Ai seed; Hk and Rk 2-4 min.
+
+**Binding criteria, one verdict** (`experiments/fa1k_read.py`; the frozen criteria, exactly 1j's):
+- **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
+  contains 0; C4: against Hg and Rg, both differences > 0 with CIs excluding 0.
+- **New layout:** C1 = layout invariance L ≥ 0.8 (point) with CI lower bound ≥ 0.6; C2, 3F and C4 as above on the new-layout
+  cells.
+- C3 descriptive only. N6 stays in.
+- **Mapping per layout:** "uninformative" if 0.672 < 0.5; "compositional" if C1, C2, 3F and C4 all hold; otherwise "not
+  compositional (fails: ...)", listing the failing members of C1, C2, 3F, C4 in that order.
+- **Verdict = "familiar: <v> | new layout: <v>". CONFIRMED iff both layouts read "compositional".**
+
+**Predictions** (from 1j and 5.18; fresh seeds vary by about ±0.1 per cell):
+- **New layout.** The cheese's relocated starts move inside support. If its success reaches 5.18's in-support level (0.44-0.50
+  against 0.30-0.35), cheese tasks gain about +0.13 and bottle tasks about +0.05.
+  - s_new 0.45 ± 0.07 (1j 0.35); s_known 0.65 ± 0.06 (1j 0.61); **C2 ratio 0.69 ± 0.10**: C2 is more likely to fail than
+    hold at the point.
+  - L 0.88 ± 0.08 (1j 0.85): C1 holds. 3F holds (1j 6/6). C4 holds.
+  - Cheese h_o rises from 0.55 to 0.65-0.75.
+- **Familiar layout.** C1 holds (1j +0.04), C2 holds at the point (1j 0.91), C4 holds.
+  - **3F: N1 re-read.** 1j's N1 D3 was +0.05 [0.01, 0.10], beating its prediction. With the cheese's h_o and a_o now also fed
+    by more relocated carries, N1's D3 is predicted at +0.02 ± 0.04, with its CI containing 0 about two times in three. The other
+    five pairings' CIs contain 0.
+- **Expected verdict:** "familiar: compositional" (or "fails: 3F" on N1) and "new layout: not compositional (fails: C2)".
+  Confirmation in both layouts is possible but not expected. If C2 on the new layout rises without passing, the dose response
+  points at further object-side support, the next round.
+
+**Budget.** About 0.35 A40-h (3 Ai models plus Hk and Rk at seed 6). CPU: 10 rollout jobs, about 7 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost
