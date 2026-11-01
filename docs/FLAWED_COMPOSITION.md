@@ -3197,6 +3197,151 @@ every object is normalized by its own hand-set footprint radius and height.
 **Budget.** About 0.25 A40-h (3 models). Running total before: 4.44; about 1.5 would remain, enough for a confirmatory read.
 CPU: 6 rollout jobs, about 5 CPU-job-h.
 
+**Results (2026-11-01; ledger fc_a1n tag a1n; results/flawed/a1n_read.json, a1n_read_familiar.json, a1n_read_new.json)**
+
+**Verdict (pre-registered mapping): "familiar: not compositional (fails: C2) | new layout: not compositional (fails: C1,
+C2)". Not confirmed.**
+
+| layout | s known | s new | C1 | C2 ratio | 3F in CI | C4 vs Hg / Rg |
+|---|---|---|---|---|---|---|
+| familiar | 0.73 [0.47, 0.95] | 0.50 [0.30, 0.68] | +0.06 (holds) | **0.69 [0.41, 1.12]** | 6/6 | +0.49 / +0.47 |
+| new | 0.54 [0.33, 0.74] | 0.34 [0.16, 0.54] | **L 0.75 [0.60, 0.91]** | **0.63 [0.29, 1.21]** | 6/6 | +0.34 / +0.31 |
+
+- **The registered falsification fired: the cheese's hold rates fell in both layouts.**
+  - Cheese hold factor: familiar 0.42 (predicted 0.75 ± 0.08; Am 0.53, Ak 0.75), new 0.33 (predicted 0.55 ± 0.10; Am 0.42).
+  - Bottle: familiar 0.78, new 0.67 (Am 0.85 / 0.75).
+  - So the height-resolution account of 5.25 is wrong as a cause: giving the object term the height at the object's own
+    scale did not raise the cheese grasp.
+- Against Am: s known −0.01 [−0.10, 0.08] (familiar), +0.01 [−0.12, 0.15] (new); s new −0.12 [−0.26, 0.00] (familiar),
+  −0.07 [−0.16, 0.01] (new). Against Ak: s new −0.13 [−0.29, 0.03] (familiar), −0.02 [−0.17, 0.14] (new).
+- 3F holds 6/6 in both layouts. N3 is back in its CI (+0.02 [0.00, 0.05]), but only because the cheese's hold factor is now
+  low in both the predicted and the observed cell. N6 familiar −0.12 [−0.27, 0.00].
+- Post-hoc object-matched C2 (descriptive only): familiar cheese 0.96, bottle 1.24; new cheese 1.44 (known 0.10), bottle 1.04.
+  Within an object, new pairings run at the known rate; the C2 shortfall is again the cheese's low hold rate weighted into
+  the new cells.
+- Swap test and beyond-radius invariance exact (above); grasp identity exact; 0 episode errors.
+
+**Deviations (disclosed).** The read's ledger row carries `dirty=true` (other sessions' uncommitted files).
+
+**Cost.** 0.28 A40-h (4.7-6.7 min per seed). Running total for rounds 1b-1n: about 4.72 A40-h; 1.48 remain under the 6.2 cap.
+CPU: rollouts about 4.4 CPU-job-h.
+
+### 5.27 Diagnostic: the generated grasps lift without waiting for the fingers, because the merge dropped the planner's dwell (descriptive; 2026-11-01; results/flawed/a1o_close.json, a1o_rows_gen_lc.json, a1o_rows_gen_lo.json, a1o_merge*.json)
+
+**Question.** 5.26 refuted the height account: An's missed cheese grasps close at 0.9 cm against 0.4 cm for the successful ones
+(`fa1m_miss.py` on An's new traces, K6 and N1 both layouts), with overlapping spreads, and no finger touches at the close in
+either. So the miss is decided after the close command.
+
+**Method.**
+- `fa1o_close.py` re-runs every registered K6 episode (both layouts; fa1k_trace's protocol, same states and noise seeds) for An
+  (seeds 18-20), Ak (6-8) and Al (12-14). It records the 20 steps after the first close command.
+  `fa1o_close_sum.py` summarises them.
+- `fa1o_rows.py` reads what the object term is taught between the close command and the contact hold, per object and source.
+  The object term trains on every row with held = 0, so these closed-not-held rows are its only teaching for that interval.
+- `fa1o_peek.py` prints the rows around the first close for a few demos and generated carries.
+
+**Results.**
+- **In every model and both layouts, the hand rises 7-10 cm in the 20 steps after the close command, whether or not it has the
+  object.**
+
+| model | layout | outcome (n) | hand rise (cm) | object moved (cm) | both fingers ever touch | hand above object at window end (cm) |
+|---|---|---|---|---|---|---|
+| An | familiar | miss (34) / success (19) | 8.4 / 9.0 | 0.0 / 9.5 | 0.21 / 0.84 | 9.1 / 0.7 |
+| An | new | miss (39) / success (5) | 9.1 / 11.5 | 0.5 / 9.7 | 0.15 / 0.80 | 10.4 / 1.0 |
+| Ak | familiar | miss (16) / success (30) | 8.9 / 9.8 | 0.5 / 8.5 | 0.31 / 0.73 | 10.3 / 0.5 |
+| Ak | new | miss (34) / success (17) | 8.2 / 10.1 | 0.2 / 9.3 | 0.12 / 0.65 | 10.1 / 0.9 |
+| Al | familiar | miss (9) / success (44) | 7.5 / 8.5 | 0.8 / 8.0 | 0.44 / 0.82 | 8.7 / 0.5 |
+| Al | new | miss (48) / success (3) | 10.1 / 12.6 | 0.0 / 10.7 | 0.00 / 0.67 | 12.7 / 0.9 |
+
+  - So a miss is the hand lifting away before both fingers have closed on the cheese. A success is the same lift with the
+    fingers already closed.
+- **The demos wait; the generated carries do not.**
+
+| source | object | close command to contact hold (steps, median) | chunk z action over the closed-not-held rows (median) | rows |
+|---|---|---|---|---|
+| demos | cheese / bowl / bottle | 10 / 13 / 11 | 3.2 / 2.8 / 2.2 | 588 / 2,989 / 1,271 |
+| gen_lc (trained in 1l-1n) | cheese / bowl / bottle | **2 / 2 / 2** | **7.9 / 7.9 / 7.9** | 704 / 1,031 / 661 |
+| gen_lo (rebuilt, below) | cheese / bowl / bottle | 13 / 13 / 13 | 3.0 / 3.0 / 3.0 | 4,230 / 4,714 / 4,225 |
+
+  - A generated carry in gen_lc is one row with the gripper command switched to closed, then at once the full-speed lift (dz
+    +1.0 per step).
+  - The demos close over about 10 steps while the hand settles, and only then rise.
+  - For the cheese, the generated rows outnumber the demo rows (322 carries against 50 demos), so the object term learned the
+    generated schedule.
+- **Cause: a merge bug, present since stage 1g.**
+  - The scripted planner closes in place for 12 steps (phase 2: arm action 0, gripper closed) and opens in place for 12 steps
+    (phase 6).
+  - Every merge (`fa1g_plan.py`, `fa1k_plan.py` and `fa1l_cgen.py`) then dropped no-op steps with `fa1_data.noop_mask`, "as for
+    the demos". The planner's only no-op steps are exactly these dwells.
+  - So the training data lost 12,114 executed rows: 3,567 from gen_g, 3,858 from gen_k and 4,689 from gen_lc. With them went
+    the wait for the fingers.
+  - The demos' no-op steps are teleoperation idle frames. The planner's dwell is part of what it executed.
+- **The fix reproduces the old data exactly when the filter is kept.**
+  - `fa1o_merge.py --noop` rebuilds gen_lc.npz bit for bit (83,528 rows, every field equal).
+  - Without the filter it writes gen_lo.npz (95,642 rows). Its close-to-hold schedule matches the demos' (table above).
+- **This also explains 5.25.** Missed grasps "closed too high" because the hand was already rising when the fingers met the
+  cheese. The bowl, grasped at its rim, and the bottle tolerate a closing hand that rises; the 3 cm cheese does not.
+- **Scope.** All earlier rounds trained on dwell-free generated data: 1g-1n, every arm and every baseline that used gen_g, gen_k
+  or gen_lc. Hg and Rg (the frozen C4 comparators) train on the demos plus gen_g, so they carry the same defect. The criteria do
+  not change (frozen); this is noted here only.
+
+### 5.28 Stage 1o: generated carries keep the planner's dwell (protocol fixed 2026-11-01, before any stage-1o rollout; m3_prereg tag pa1o)
+
+**Measured weakness** (5.27): the object term lifts within about 2 steps of commanding the gripper closed, before the fingers
+close. It learned this from generated carries whose 12-step close dwell the merge deleted. Missed cheese grasps are hands that
+rise away empty.
+
+**Principle: role sufficiency at the gate (Suff), applied to the data.** The object role ends at the contact hold; that is the
+gate. So the object term's data must show what the executor did between the close command and the hold. A data pipeline may not
+delete executed steps of a role's segment. The no-op filter is a teleoperation-data convention; applied to a scripted executor,
+it removes the very interval the gate depends on. This is generic: it applies to any executor, object or dataset.
+
+**The change (one: the data merge; arm, recipe, inputs and criteria unchanged).**
+- Generated data **gen_lo.npz** = the same three merges as gen_lc.npz with no no-op filter (`fa1o_merge.py`).
+  - The raw planner runs, demo ids, hold, offset and lift fields are recomputed exactly as before.
+  - Regression: with the filter it reproduces gen_lc.npz exactly.
+  - The release dwell (phase 6) comes back by the same change.
+- The demos are untouched. Generated data stays labelled as generated (gen = 1, demo ids 100-999). No demo action is executed or
+  replayed.
+- Arm **Aq** (1n's architecture) on demos plus gen_lo.npz, fresh seeds 21, 22, 23 (tag o). Rollouts:
+  `fa1h_roll.py --arm Aq --name Ao1 --outdir a1o_roll`.
+  - The rollout name is Ao1 because "Ao" is an arm name.
+- Descriptive: An (1n, same arm on gen_lc) beside, as the same-architecture contrast; Am and Ak too; the post-hoc object-matched
+  C2; the close-window summary of the new models (`fa1o_close.py`).
+
+**Checks before the rollouts** (asserted in the pre-registration):
+- swap test: T1, T2, T7 and T3_place exactly 0; T4 and T5' at most 1e-4;
+- beyond-radius invariance exactly 0;
+- identity probe of the scene part (Ap's) on gen_lo at most +0.05 over the object identity alone;
+- training on gen_lo.npz; the regression (a1o_merge_noop.json: reproduces_gen_lc true).
+
+**Binding criteria, one verdict** (`experiments/fa1o_read.py`; the frozen criteria, exactly 1j's to 1n's):
+- **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
+  contains 0; C4: against Hg and Rg, both differences > 0 with CIs excluding 0.
+- **New layout:** C1 = layout invariance L ≥ 0.8 (point) with CI lower bound ≥ 0.6; C2, 3F and C4 as above on the new-layout
+  cells.
+- C3 descriptive only. N6 stays in.
+- **Mapping per layout:** "uninformative" if 0.672 < 0.5; "compositional" if C1, C2, 3F and C4 all hold; otherwise "not
+  compositional (fails: ...)", listing the failing members of C1, C2, 3F, C4 in that order.
+- **Verdict = "familiar: <v> | new layout: <v>". CONFIRMED iff both layouts read "compositional".**
+
+**Predictions** (from 5.27 and 1k-1n; fresh seeds vary by about ±0.1 per cell):
+- **Hold rates:**
+  - cheese familiar 0.70 ± 0.12 (An 0.42); cheese new 0.55 ± 0.12 (An 0.33);
+  - bottle familiar 0.85 ± 0.07, new 0.75 ± 0.08 (An 0.78 / 0.67).
+- **Close window:** the hand's rise over the 20 steps after the close falls below 5 cm (median, all outcomes).
+- **Familiar layout:** C1, C2 and C4 hold; 3F holds 6/6, with N6 at risk.
+- **New layout:**
+  - s_known 0.62 ± 0.08, s_new 0.48 ± 0.08, so the C2 ratio is 0.78 ± 0.12. The C2 lower bound most likely fails, since no
+    new-layout read has reached 0.6 (best 0.43).
+  - L 0.82 ± 0.08. 3F at risk on N4-N6. C4 holds.
+- **Expected verdict:** "familiar: compositional | new layout: not compositional (fails: C2)".
+- **Falsification:** if the cheese's hold rates do not rise above An's in both layouts, the dwell account (5.27) is wrong as a
+  cause.
+
+**Budget.** About 0.3 A40-h (3 models). Running total before: 4.72; about 1.2 would remain, enough for a confirmatory read.
+CPU: 6 rollout jobs, about 5 CPU-job-h; close-window traces about 1 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost
