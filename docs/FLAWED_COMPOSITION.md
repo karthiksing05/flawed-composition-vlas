@@ -3385,6 +3385,122 @@ traces of the new models ran beside the rollouts; they are descriptive and enter
 **Cost.** 0.21 A40-h (3.6-4.9 min per seed). Running total for rounds 1b-1o: about 4.93 A40-h; 1.27 remain under the 6.2 cap.
 CPU: rollouts about 4.1 CPU-job-h; diagnostics (5.27) about 2 CPU-job-h.
 
+### 5.29 Diagnostic: the new-layout cheese fails beside a fixture, where the generated data has almost no carries (descriptive; 2026-11-01; results/flawed/a1o_geom.json, a1o_cover.json, a1o_gfail.json)
+
+**Question.** In 1o the only failing member is the new-layout C2. Within each object the new pairings match the known ones
+(object-matched ratio ≥ 1.09); the pooled ratio is low because the cheese stays the weakest object on the new layout (hold 0.50,
+K6 new 0.30-0.35). Where does it fail?
+
+**Method.**
+- `fa1o_geom.py`: Ao1 traces (`fa1k_trace.py`, K6 and N1 in both layouts, seeds 21-23) plus An and Ak, per episode start. It
+  reads the cheese's xy clearance to every other entity and the nearest one.
+- `fa1o_cover.py`: the same in the layout frame of n2_tasks.json: the cheese's clearance to the wine rack, over
+  - the 20 new-layout evaluation states with Ao1's outcome;
+  - every K6 generator attempt of 1g, 1k and 1l, kept or not.
+- `fa1o_gfail.py`: for 10 K6 generator layouts with the cheese within 6 cm of the rack and 10 beyond 20 cm, every grasp option
+  of `fa1l_cgen.py` as a grasp test. Nothing is recorded into any data file.
+
+**Results.**
+- **Every new-layout cheese failure state is a fixture-adjacent state.**
+
+| cheese-rack clearance (m) | evaluation states | Ao1 successes, K6 (tid 11) | Ao1 successes, N1 (tid 17) |
+|---|---|---|---|
+| below 0.03 | 4 | 0 / 12 | 0 / 12 |
+| 0.03-0.06 | 3 | 0 / 9 | 0 / 9 |
+| 0.06-0.10 | 2 | 0 / 6 | 0 / 6 |
+| 0.10-0.20 | 7 | 13 / 21 | 13 / 21 |
+| 0.20 and beyond | 4 | 7 / 12 | 8 / 12 |
+
+  - 9 of the 20 new-layout states put the cheese within 0.10 m of the wine rack. Ao1 succeeds in none of their 54 episodes, and
+    in 41 of 66 elsewhere (0.62).
+  - Over the traces, the wine rack is the cheese's nearest entity in 50 of Ao1's 83 new-layout failures and in 4 of its 37
+    successes. All 6 never-closed episodes start within 3 cm of it.
+  - An shows the same pattern: the rack is nearest in 52 of 108 failures and 2 of 12 successes. Ak shows a weaker one: 87 of
+    167 against 21 of 73.
+- **The generated data almost never covers these states.**
+
+| generator (K6) | attempts with rack clearance < 0.10 m | kept carries there | kept carries elsewhere |
+|---|---|---|---|
+| 1g (gen_g) | 9 | 1 | 49 |
+| 1k (gen_k) | 68 | 10 | 140 |
+| 1l (gen_lc) | 17 | 8 | 114 |
+
+  - So 19 of the 322 generated cheese carries lie within 0.10 m of the rack, against 9 of the 20 evaluation states.
+  - In the 50 demos, the cheese's nearest entity is always the plate or the bowl, never a fixture.
+  - The sampler is the same for generation and evaluation. 23% of 1k's attempts lie within 0.10 m of the rack (68 of 299), and
+    only 10 of those 68 were kept. The evaluation's 20 states happen to hold more (45%).
+- **Beside the rack, the planner's default grasp is blocked, and the others work in half the layouts.**
+  - Option (0, 0), the demos' grasp, closes 8.3-12.4 cm above the cheese in all 10 near layouts: the descent stops on the rack.
+  - Over all options, the hand closes a median 1.2 cm above the cheese near the rack and 1.0 cm far from it. At least one option
+    holds in 5 of 10 near layouts and in 10 of 10 far layouts. The per-run hold rate is 0.20 near and 0.24 far.
+  - So the near-rack grasp is feasible for the planner in about half the layouts. It is rare in the data because the sampler
+    rarely places the cheese there, and half of those attempts are lost.
+- **Why this is the object term's problem.** Ap's free-space input (5.24) reads the entities within OCC_R = 0.08 m of the object
+  and is zero elsewhere. A fixture-adjacent start is where that input is non-zero and where the default grasp is blocked. Few
+  cheese carries show what to do there.
+
+### 5.30 Stage 1p: generated carries stratified by clearance to the nearest fixture (protocol fixed 2026-11-01, before any stage-1p rollout; m3_prereg tag pa1p)
+
+**Measured weakness** (5.29): the object term fails wherever the carried object starts within OCC_R of a fixture: 0 of 54
+near-rack cheese episodes. The data holds 19 such cheese carries, because the uniform layout sampler rarely puts an object there.
+
+**Principle: sufficiency of the data for the role's input (Suff).** The object term's free-space input distinguishes
+configurations by the entities within OCC_R. The data must therefore cover each object across the range of that input, not only
+where it is zero. Uniform layout sampling under-covers it by construction: the volume within OCC_R of a fixture is small. Stratifying
+generation by clearance to the nearest fixture is generic. It uses only the sampler's own fixture list and radii, the
+architecture's own radius, and no evaluation state.
+
+**The change (one: what the generator samples; arm, recipe, criteria and planner unchanged).**
+- `fa1p_sgen.py` gives each known task K1-K6 extra attempts in three clearance bins inside OCC_R: [0.02, 0.04), [0.04, 0.06) and
+  [0.06, 0.08) m, by rejection over fresh layout seeds (from 2,000,000).
+  - The clearance is that of the carried object to the nearest fixture: layout-frame distance minus fa1g_plan's MOVR and FIXR.
+    0.02 m is the sampler's own gap.
+  - 40 attempts per task and bin: 720 in all.
+  - Everything else is `fa1l_cgen.py`'s: the same sampler, grasp options, recorded episode and role-wise acceptance.
+- Generated data **gen_lp.npz** = gen_lo.npz plus the kept stratified carries.
+  - Rows are kept as executed (no no-op filter, as 1o). Hold, offset and lift are recomputed as in `fa1o_merge.py`.
+  - The new carries take demo ids 800 + j per task and stay labelled as generated. No demo action is executed or replayed.
+- Arm **Aq** on demos plus gen_lp.npz, fresh seeds 24, 25, 26 (tag p). Rollouts: `fa1h_roll.py --arm Aq --name Ap1 --outdir
+  a1p_roll`.
+- Descriptive: Ao1 (1o, same arm on gen_lo) beside as the same-architecture contrast; An and Ak too; the post-hoc
+  object-matched C2; Ao1's outcome split by the cheese's clearance to the rack, repeated for Ap1 (`fa1o_cover.py` logic).
+
+**Checks before the rollouts** (asserted in the pre-registration):
+- swap test: T1, T2, T7 and T3_place exactly 0; T4 and T5' at most 1e-4;
+- beyond-radius invariance exactly 0;
+- identity probe of the scene part on gen_lp at most +0.05 over the object identity alone;
+- training on gen_lp.npz; gen_lp contains gen_lo unchanged as its first rows.
+
+**Binding criteria, one verdict** (`experiments/fa1p_read.py`; the frozen criteria, exactly 1j's to 1o's):
+- **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
+  contains 0; C4: against Hg and Rg, both differences > 0 with CIs excluding 0.
+- **New layout:** C1 = layout invariance L ≥ 0.8 (point) with CI lower bound ≥ 0.6; C2, 3F and C4 as above on the new-layout
+  cells.
+- C3 descriptive only. N6 stays in.
+- **Mapping per layout:** "uninformative" if 0.672 < 0.5; "compositional" if C1, C2, 3F and C4 all hold; otherwise "not
+  compositional (fails: ...)", listing the failing members of C1, C2, 3F, C4 in that order.
+- **Verdict = "familiar: <v> | new layout: <v>". CONFIRMED iff both layouts read "compositional".**
+
+**Predictions** (from 5.29 and 1o; fresh seeds vary by about ±0.1 per cell):
+- **Coverage:** about half the stratified cheese attempts are kept (5.29: 5 of 10 near layouts have a holding option), so about
+  60 near-fixture cheese carries (gen_lo: 19 within 0.10 m of the rack).
+- **Near-rack cheese:** the success rate over the 9 near-rack new-layout states rises from 0 of 54 (Ao1) to 0.25 ± 0.15 on K6 and
+  on N1.
+- **Hold rates:** cheese familiar 0.85 ± 0.08 (Ao1 0.87), new 0.60 ± 0.12 (Ao1 0.50); bottle familiar 0.80 ± 0.08, new
+  0.80 ± 0.08.
+- **Familiar layout:** C1, C2 and C4 hold; 3F holds 6/6. Expected "compositional".
+- **New layout:**
+  - s_known 0.70 ± 0.08, s_new 0.58 ± 0.08, so the C2 ratio is 0.83 ± 0.12; the point most likely passes, the lower bound (Ao1
+    0.49) most likely stays below 0.6.
+  - L 0.85 ± 0.08 (holds). 3F at risk on N4-N6. C4 holds.
+- **Expected verdict:** "familiar: compositional | new layout: not compositional (fails: C2)". A confirmed verdict needs the C2
+  lower bound to pass, which I put at about one in three.
+- **Falsification:** if the near-rack cheese success stays at or below 0.05 on both K6 and N1, the coverage account (5.29) is
+  wrong as a cause.
+
+**Budget.** About 0.25 A40-h (3 models). Running total before: 4.93; about 1.0 would remain, enough for a confirmatory read.
+CPU: generation about 12 CPU-job-h (36 jobs); 6 rollout jobs, about 5 CPU-job-h.
+
 ---
 
 ## 6. Experiments, order and cost
