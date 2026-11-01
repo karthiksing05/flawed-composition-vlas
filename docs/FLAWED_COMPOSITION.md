@@ -2696,6 +2696,56 @@ bowl 150, bottle 100, cheese 50. The change allots them per **object** instead, 
 
 **Budget.** About 0.35 A40-h (3 Ai models plus Hk and Rk at seed 6). CPU: 10 rollout jobs, about 7 CPU-job-h.
 
+**Results (2026-10-31; ledger fc_a1k tag a1k; results/flawed/a1k_read.json, a1k_read_familiar.json, a1k_read_new.json)**
+
+**Verdict (pre-registered mapping): "familiar: compositional | new layout: not compositional (fails: C2, 3F)". Not
+confirmed.** For the first time one layout passes every binding criterion. The new layout fails C2 and, on N6, 3F.
+
+| layout | s known | s new | C1 | C2 ratio | 3F in CI | C4 vs Hg / Rg |
+|---|---|---|---|---|---|---|
+| familiar | 0.76 [0.54, 0.94] | 0.63 [0.49, 0.76] | +0.08 (holds) | 0.83 [0.60, 1.15] (holds, lower bound at the 0.60 edge) | 6/6 | +0.62 / +0.59 |
+| new | 0.61 [0.42, 0.79] | 0.36 [0.24, 0.51] | L 0.81 [0.66, 0.98] (holds) | **0.60 [0.37, 0.91]** | **5/6 (N6 −0.17 [−0.27, −0.08])** | +0.36 / +0.32 |
+
+Against Aj (1j, demos plus gen_g): s known +0.04 [−0.06, 0.14] familiar, +0.01 [−0.06, 0.08] new; s new −0.02 [−0.14, 0.12]
+familiar, +0.01 [−0.09, 0.12] new. Grasp identity is exact; swap tests as above; 0 episode errors.
+
+**Familiar 3F:** all six CIs contain 0. N1 D3 +0.02 [0.00, 0.05], as predicted (+0.02 ± 0.04).
+
+**New layout, by object** (3F factors):
+- **Cheese: h_o 0.42** (1j 0.55), a_o 0.72. K6 new 0.20, 0.20, 0.50 per seed. Tripling the cheese's generated support did
+  not raise its relocated grasp. If anything it fell.
+- Bottle: h_o 0.62 (1j 0.60), a_o 0.95 (1j 0.85). The carry improved; the grasp did not.
+- **N6 (bottle into the bowl):** observed 0.42 against predicted 0.58. Its target factor is estimated from the cheese into the
+  bowl (K6, q_t 1.00), and the bottle stays in the bowl less often (q_obs 0.76). N6 was the pairing at risk in every earlier
+  read, and it stays in.
+
+**Descriptive, not part of the verdict.**
+- Same-data baselines (seed 6): Hk s known/new 0.44/0.00 familiar, 0.03/0.00 new; Rk 0.65/0.01 familiar, 0.34/0.03 new. Ak
+  exceeds both by +0.33 to +0.63 on s new. More generated data does not give the holistic or role-routed baselines composition.
+- **Post-hoc object-matched C2** (labelled post hoc): new-pairing over same-object known-task success. Familiar: cheese 1.13,
+  bottle 1.23. New: cheese 0.89, bottle 0.89.
+
+**What the read shows.**
+- **The prediction about the mechanism was wrong.** Equal per-object support was predicted to raise the cheese's relocated
+  grasp (h_o 0.55 → 0.65-0.75). It did not (0.42). So density of successful generated carries is not what limits the cheese's
+  grasp on relocated layouts. The support measure of 5.18 counted only kept, successful carries. The planner itself succeeds on
+  only half of the cheese's relocated attempts (K6 yield 150 of 299), against 0.94 for the bowl (K1-K3, 50 of 54). If the
+  planner fails in the same places as the policy, the kept carries cover only the easy cheese positions, however many are
+  kept. That is the next diagnostic (5.20).
+- **The familiar layout passes; the known cells moved within noise.** The change is data only, so the guarantees (role locality,
+  target-blind grasp, exact grasp identity) hold by construction. Familiar C2's lower bound sits exactly at 0.60, and familiar
+  3F holds 6/6. These are this read's values, not yet confirmed on fresh seeds.
+- **Criterion note** (not a request; the criteria stay frozen): N6's target factor q_t for the bowl comes from one known
+  pairing, the cheese. 3F then tests whether the bowl holds a tall bottle as well as a flat cheese, which is a property of the
+  pair, not only of each role. This is recorded here as an observation about 3F's estimator. The work continues on the
+  architecture.
+
+**Deviations.** None to the protocol. The read and the record ran as registered.
+
+**Cost.** 0.31 A40-h (Ai 3-6 min per seed; Hk and Rk 2-4 min; queue and loading overhead). Running total for rounds 1b-1k:
+3.68 A40-h. CPU: diagnostic traces 36 jobs (about 8 CPU-job-h, including a first pass that stopped on a mislisted tid);
+generation 6 jobs (about 2 CPU-job-h); rollouts 10 jobs (about 8 CPU-job-h).
+
 ---
 
 ## 6. Experiments, order and cost
