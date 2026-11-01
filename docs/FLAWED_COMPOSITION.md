@@ -3314,6 +3314,11 @@ it removes the very interval the gate depends on. This is generic: it applies to
 - beyond-radius invariance exactly 0;
 - identity probe of the scene part (Ap's) on gen_lo at most +0.05 over the object identity alone;
 - training on gen_lo.npz; the regression (a1o_merge_noop.json: reproduces_gen_lc true).
+- **Results before the rollouts** (results/flawed/a1o_swap.json, a1o_sens.json, a1o_idprobe.json):
+  - Swap test: T1, T2, T7 and T3_place are exactly 0 for all three seeds. T4 is at most 1.3e-5 and T5' at most 1.6e-5.
+  - Beyond-radius invariance is exactly 0. Responses: near 0.21-0.22, far 0.02-0.03.
+  - Identity probe of the scene part on gen_lo: −0.018 (test accuracy 0.614 with it, 0.632 without).
+  - Training: 147,846 rows (95,642 generated), 3.6-4.9 min per seed.
 
 **Binding criteria, one verdict** (`experiments/fa1o_read.py`; the frozen criteria, exactly 1j's to 1n's):
 - **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
