@@ -80,7 +80,7 @@ def main():
     full = dict(ee_pos=T(D["ee_pos"]), ee_rot=T(D["ee_rot"]), grip=T(D["grip"]), prev=T(D["prev_grip"]), pos=T(D["pos"]),
                 yaw=T(D["yaw"]), drawer=T(D["drawer"]), oi=T(oi, torch.long), ti=T(ti, torch.long), held=T(Db["held"]), off=T(Db["off"]),
                 zrest=T(zr), cyaw=T(cy))
-    if any(x in FF.ARMS_H + FF.ARMS_I for x in a.arms.split("+")):           # stage 1h / 1i only; 1g's runs are unchanged
+    if any(x in FF.ARMS_H + FF.ARMS_I + FF.ARMS_O for x in a.arms.split("+")):   # stage 1h / 1i / 1l only; 1g's runs are unchanged
         full["rot0"] = T(rot0_rows(D, Db["held"]))
     act = T(np.clip(X, -1, 1))
     tr_idx = np.arange(len(D["action"]))

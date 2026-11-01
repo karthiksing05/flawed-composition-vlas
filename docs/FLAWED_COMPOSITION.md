@@ -2822,7 +2822,7 @@ must use the same approach everywhere.
     nothing to learn from, because 1g's planner hits the fixture.
 - This is more than one change and needs a new, collision-aware generator. It is proposed, not run (section 5.21).
 
-### 5.21 Proposed stage 1l: an obstacle-aware object term (NOT registered, NOT run; 2026-11-01)
+### 5.21 Proposal for stage 1l: an obstacle-aware object term (2026-11-01; approved by the user the same day)
 
 **Measured weakness** (5.20): on relocated layouts the cheese, and less often the bottle, sits beside the wine rack or the
 cabinet. There the translation-invariant object term repeats the demo-fitted top-down approach, and the hand hits the fixture.
@@ -2837,32 +2837,81 @@ cabinet. There the translation-invariant object term repeats the demo-fitted top
     target.
 - **Data (missing support).** A collision-aware variant of 1g's planner. It tries the demo-fitted grasp and, when the descent
   is blocked, a grasp rotated about z (and, if needed, tilted away from the obstacle). It keeps each grasp segment by the grasp's
-  own outcome (role-wise acceptance, drafted below as `fa1l_plan.py`), labelled generated.
-- **Why it is proposed and not run:** it is a new generator plus a new input, so it exceeds this round's one-change rule. The
-  user should see it before it is registered.
+  own outcome (role-wise acceptance), labelled generated.
+- **Why it was proposed and not run:** it is a new generator plus a new input, so it exceeded the one-change rule. The user
+  approved it on 2026-11-01 as one round with an ablation arm (5.22).
 
-**Drafted earlier and superseded (kept for the record, never registered or trained):** role-wise acceptance alone.
-`experiments/fa1l_plan.py`, `fa1l_read.py`, `fa1l_record.py` and `prereg/pa1l.py` exist; `DATA/gen_l.npz` holds 102 grasp
-segments. Section 5.20 explains why this alone cannot fill the blocked starts. Its draft protocol follows, unchanged except
-that it is marked superseded:
+**Drafted earlier and superseded** (never registered, trained or rolled out): role-wise acceptance alone
+(`experiments/fa1l_plan.py`, `DATA/gen_l.npz` with 102 grasp segments). Its draft read, record and pre-registration scripts
+were replaced by 5.22's. The draft text is in commit 24de47b1.
 
-**The superseded change (data only; architecture, recipe and criteria unchanged).**
-- `experiments/fa1l_plan.py` re-runs every **failed** generated attempt of 1g and 1k: same task, same seed, and 1g's planner,
-  keypoints and layout sampler unchanged. It stops at the end of the lift (planner phase 3).
-- It keeps the **grasp segment** (all rows from the first step to the end of the lift) when the hold is on at that point:
-  both fingers touching and the object lifted (fa1b_common.Held).
-- Nothing after the lift is kept, so no failed placement enters training. Only known pairings are run; no demo action is
-  executed or replayed.
-- `DATA/gen_l.npz` = gen_k.npz plus the segments, labelled generated (gen = 1, seg = 1, demo ids 400+).
-- Known side effect (disclosed): a segment's last 7 rows get chunks padded with zero motion and a closed gripper, the
-  training's rule at every episode end. That is about 7 rows per segment, a few per cent of all rows.
-- Ai on demos plus gen_l, fresh seeds 9, 10, 11 (tag l): `experiments/fa1g_train.py --tag l --seed s --arms Ai --gen
-  gen_l.npz`. Rollouts: `experiments/fa1h_roll.py --arm Ai --name Al` -> results/flawed/a1l_roll.
-- Descriptive only: Hl and Rl (the Hb and Rb architectures on the same data, seed 9), Ak (1k) beside, and the post-hoc
+### 5.22 Stage 1l: obstacle-aware object term with collision-aware generated grasps (protocol fixed 2026-11-01, before any stage-1l rollout; m3_prereg tag pa1l)
+
+**Measured weakness** (5.20): on relocated layouts the translation-invariant object term repeats the demo-fitted top-down
+approach beside the wine rack or the cabinet, and the descent is blocked.
+
+**Why the two halves are coupled** (5.20, user-approved as one round):
+- The occupancy input alone has nothing to learn from: 1g's planner offers no grasp that differs beside a fixture.
+- The new grasps alone cannot be selected by a term that does not perceive the fixture.
+- The ablation arm tests the first half (input on 1k's data).
+
+**The change.**
+- **Architecture: arm Ao** (`lifelong_ood/policy/factored_flow.py`, ARMS_O) is Ai whose **object term** also reads a
+  role-symmetric occupancy in the object's frame:
+  - the OCC_K = 5 other entities nearest to the object by footprint clearance (xy distance minus footprint radius; the object
+    itself excluded);
+  - each as relative position, footprint radius, hand-set height and clearance, sorted by clearance;
+  - no identity one-hot and no role flag.
+  - The target term is unchanged (Ai's).
+  - 876,240 parameters (Ai: 865,680).
+- **Data** (`experiments/fa1l_cgen.py`): a collision-aware variant of 1g's scripted planner on 1g's layout sampler, for known
+  pairings K1-K6 only (seeds 910000 + 1000 · task + k).
+  - Attempts: 150 per object (bowl K1-K3 50 each, bottle K4 and K5 75 each, cheese K6 150).
+  - Per attempt, grasp options are tried from the start state: yaw offsets 0, +90, +45, −45°, then 0 and +90° tilted 25° and
+    40° away from the nearest fixture. The first option whose hold is on after the lift is used for the recorded episode.
+  - The approach timeout is 80 steps (1g: 40), so that the hand settles above the grasp point.
+  - Role-wise acceptance: the whole episode if LIBERO's predicate fires; otherwise the grasp segment (up to the end of the lift)
+    if the hold was on after the lift.
+  - `DATA/gen_lc.npz` = gen_k.npz plus these, labelled generated (gen = 1, seg flag, demo ids 400+). No demo action is executed
+    or replayed.
+  - A 30-attempt cheese smoke run (seeds 915000-915029, the first K6 seeds) held after the lift in 24 of 29 laid-out attempts:
+    23 with the default pose, 1 with the 90° yaw and 25° tilt. 5 stayed blocked under every option.
+- **Main arm:** Ao on demos plus gen_lc, fresh seeds 12, 13, 14 (tag l). Rollouts: `fa1h_roll.py --arm Ao --name Al` ->
+  results/flawed/a1l_roll.
+- **Ablation arm (descriptive):** Ao on demos plus gen_k (1k's data), seeds 12 and 13 (tag lk), rollouts named Alk.
+- Also descriptive: Hl and Rl (the Hb and Rb architectures on gen_lc, seed 12), Ak (1k) beside, and the post-hoc
   object-matched C2.
 
-**Checks before the rollouts** (asserted in the pre-registration): swap test 0 on T1-T3 and T7, at most 1e-4 on T4 and T5'
-(T6 descriptive); training on gen_l.npz; grasp segments present for all three objects.
+**Checks before the rollouts** (asserted in the pre-registration):
+- **Swap test.** T1, T2, T7 exactly 0; T4 and T5' at most 1e-4; T6 descriptive.
+- **T3 is split by phase** (a correction to the 5.21 proposal, which wrongly said T3 stays 0). T3 moves the non-role entities,
+  which the occupancy input reads by design:
+  - **T3_place** (hold on; only the target term acts) must be exactly 0;
+  - **T3_approach** is descriptive, like T6.
+  - Role locality in Proposition 3 (i) is therefore kept for the target term. The object term now depends on the scene's
+    geometry but on no role assignment, which T1 (target-role swap, approach phase) checks exactly. T1 is also the
+    pre-rollout grasp-identity check: the object term's action is unchanged when the target changes.
+- **Identity probe** on the new input (`experiments/fa1l_idprobe.py`): on approach rows of K1-K6 (demos plus gen_lc), the
+  target identity is predicted from the object identity alone and from the object identity plus the occupancy, on
+  held-out episodes. Registered requirement: occupancy adds at most 0.05 accuracy over the object identity alone (a larger
+  gain would be a target bypass through the scene).
+- Training on gen_lc.npz (main) and gen_k.npz (ablation).
+- **Results before the rollouts.**
+  - **Generation** (results/flawed/a1l_cgen.json).
+    - Kept: bowl 118 episodes plus 22 grasp segments; bottle 110 plus 15; cheese 95 plus 27.
+    - Of the cheese's laid-out attempts, 122 of 142 held after the lift, 11 of them with a non-default grasp option. The bottle
+      used a non-default option in 45 of its 125 held attempts.
+    - The planner found no hold under any option in 39 attempts: cheese 20, bottle 16, bowl 3.
+    - gen_lc.npz has 83,528 generated rows.
+  - **Identity probe** (results/flawed/a1l_idprobe.json): 60,194 approach rows, 1,287 episodes. Target identity on held-out
+    episodes is 0.616 from the object identity alone and 0.644 with the occupancy (majority 0.264). The gain is **+0.029**,
+    within the registered 0.05.
+  - **Swap test** (results/flawed/a1l_swap.json; all five Ao models):
+    - T1, T2, T7 and T3_place are exactly 0. T4 is at most 2.0e-5 and T5' at most 1.5e-5.
+    - T3_approach changes the action by a mean of 0.22-0.25 (max 2.2): the object term reads the occupancy strongly.
+    - T6 changes it by a mean of 0.59-0.62.
+  - **Training:** 135,732 rows (83,528 generated) for the main arm, 4-5 min per seed; the ablation 103,351 rows, 5-6 min; Hl
+    and Rl 3-4 min.
 
 **Binding criteria, one verdict** (`experiments/fa1l_read.py`; the frozen criteria, exactly 1j's and 1k's):
 - **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
@@ -2874,22 +2923,28 @@ that it is marked superseded:
   compositional (fails: ...)", listing the failing members of C1, C2, 3F, C4 in that order.
 - **Verdict = "familiar: <v> | new layout: <v>". CONFIRMED iff both layouts read "compositional".**
 
-**Predictions** (from 1k and 5.20; fresh seeds vary by about ±0.1 per cell):
+**Predictions** (from 1k, 5.20 and the generator smoke; fresh seeds vary by about ±0.1 per cell):
+- **New-layout hold rates (3F's h_o).**
+  - **Cheese: 0.60 ± 0.08** (1k 0.42). The generator holds about 0.8 of relocated cheese starts, and the policy's familiar
+    hold is 0.75.
+  - **Bottle: 0.70 ± 0.08** (1k 0.62).
+  - Ablation Alk (input without the new data): cheese 0.45 ± 0.08, bottle 0.62 ± 0.08, about 1k's level. The input alone has
+    nothing to learn.
 - **New layout.**
-  - The cheese's miss share falls from 0.53 toward its high-yield level (0.27-0.33): cheese h_o 0.42 → 0.55-0.65.
-  - The bottle's miss falls less (0.38 → 0.30).
-  - s_new 0.44 ± 0.07 (1k 0.36); s_known 0.66 ± 0.06 (1k 0.61); **C2 ratio 0.67 ± 0.10**: C2 is still more likely to fail at
-    the point.
+  - s_new 0.48 ± 0.07 (1k 0.36); s_known 0.66 ± 0.06 (1k 0.61); **C2 ratio 0.73 ± 0.10**. C2 is more likely to fail than
+    hold: the point may reach 0.8, but the lower bound ≥ 0.6 is unlikely at this CI width (1k: ±0.27).
   - L 0.85 ± 0.08: C1 holds. C4 holds.
-  - 3F: N6 at risk again (1k −0.17), others in CI.
-- **Familiar layout.** Little change (the familiar starts already sit at local yield 0.87).
+  - 3F: N6 is the pairing at risk (1k −0.17 [−0.27, −0.08]); the other five are predicted in CI.
+- **Familiar layout.** Little change: the familiar starts are not blocked.
   - C1 holds and C4 holds.
   - C2 holds at the point (1k 0.83), with its lower bound near 0.6 either side.
   - 3F: N1 is re-read, predicted D3 +0.02 ± 0.04 (1k +0.02 [0.00, 0.05]). The other five are in CI.
 - **Expected verdict:** "familiar: compositional" (or "fails: C2" on the lower bound) and "new layout: not compositional
-  (fails: C2, ...)". If the cheese's relocated miss share does not fall, the local-yield explanation is wrong.
+  (fails: C2, ...)". If the cheese's new-layout hold rate does not rise above 0.50, the blocked-grasp account (5.20) is wrong
+  or incomplete.
 
-**Budget.** About 0.35 A40-h. CPU: generation 6 jobs (about 1.5 CPU-job-h), 10 rollout jobs (about 8 CPU-job-h).
+**Budget.** About 0.4 A40-h (3 main and 2 ablation Ao models, plus Hl and Rl), leaving about 2.1 A40-h, enough for a
+confirmatory read. CPU: generation 6 jobs (about 3 CPU-job-h), 14 rollout jobs (about 11 CPU-job-h).
 
 ---
 

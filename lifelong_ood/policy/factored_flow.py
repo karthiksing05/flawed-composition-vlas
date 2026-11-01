@@ -85,16 +85,23 @@ ARMS_H = ("Ah", "Ah_rot")
 # and hand-set size, as Ad read them): target-role information, never the held object's (5.15's diagnosis: without it the shared
 # place term cannot tell the rack from the cabinet or the bowl from the plate).
 ARMS_I = ("Ai",)
-GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0), "Ai": (1, 0)}
+# Stage 1l arm (section 5.21; ARMS_O): Ai whose OBJECT term also reads a ROLE-SYMMETRIC OCCUPANCY of the scene around the object, in
+# the object's frame: the OCC_K other entities nearest to the object (by footprint clearance = xy distance minus footprint radius;
+# the object itself excluded), each as (relative position, footprint radius, hand-set height, clearance).  No identity one-hot and no
+# role flag: which entity is the target never enters, so a target swap cannot change the object term (Proposition 3 (ii)).
+ARMS_O = ("Ao",)
+OCC_K = 5
+GEO_IN = {"Ah": (1, 1), "Ah_rot": (1, 0), "Ai": (1, 0), "Ao": (1, 0)}
 BASE = {"Hb": "H", "Rb": "R", "Ab": "A", "Ab_cmd": "A", "Ab_nooff": "A", "Ab_nosum": "A_nosum", "Ac": "A", "Ac_nobear": "A", "Ac_noft": "A",
-        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A", "Ai": "A"}
+        "Ad": "A", "Ad_tilt": "A", "Ad_fing": "A", "Ae": "A", "Ae_nosize": "A", "Ah": "A", "Ah_rot": "A", "Ai": "A", "Ao": "A"}
 WIDTH = {"H": 512, "R": 512, "A": 352, "A_noframe": 352, "A_nogate": 352, "A_nosum": 512,
          "Hb": 512, "Rb": 512, "Ab": 352, "Ab_cmd": 352, "Ab_nooff": 352, "Ab_nosum": 512, "Ac": 352, "Ac_nobear": 352, "Ac_noft": 352,
-         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352, "Ai": 352}
+         "Ad": 352, "Ad_tilt": 352, "Ad_fing": 352, "Ae": 352, "Ae_nosize": 352, "Ah": 352, "Ah_rot": 352, "Ai": 352, "Ao": 352}
 # the canonical target term's optional inputs per arm: (end-effector tilt, full end-effector rotation, finger positions, target
 # identity one-hot, target size)
 CANON_IN = {"Ac": (1, 0, 1, 1, 1), "Ac_nobear": (0, 1, 1, 1, 1), "Ac_noft": (1, 0, 1, 1, 1), "Ad": (0, 0, 0, 1, 1), "Ad_tilt": (1, 0, 0, 1, 1),
-            "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0), "Ah": (0, 0, 0, 0, 0), "Ah_rot": (0, 0, 0, 0, 0), "Ai": (0, 0, 0, 1, 1)}
+            "Ad_fing": (0, 0, 1, 1, 1), "Ae": (0, 0, 0, 0, 1), "Ae_nosize": (0, 0, 0, 0, 0), "Ah": (0, 0, 0, 0, 0), "Ah_rot": (0, 0, 0, 0, 0), "Ai": (0, 0, 0, 1, 1),
+            "Ao": (0, 0, 0, 1, 1)}
 TABLE = 8                                                   # slot whose height is the table surface (main_table_stove_front_region)
 
 
@@ -142,9 +149,10 @@ def chunk_from(Q, x):
 class FactoredFlow(nn.Module):
     def __init__(self, arm, horizon=8, center=(0.0, 0.0, 0.0), size=None):
         super().__init__()
-        assert arm in ARMS + ARMS_B + ARMS_C + ARMS_D + ARMS_E + ARMS_H + ARMS_I, arm
+        assert arm in ARMS + ARMS_B + ARMS_C + ARMS_D + ARMS_E + ARMS_H + ARMS_I + ARMS_O, arm
         self.arm, self.H = arm, horizon
-        self.c = arm in ARMS_C + ARMS_D + ARMS_E + ARMS_H + ARMS_I   # stage 1c / 1d / 1e / 1h / 1i: canonical place frame
+        self.c = arm in ARMS_C + ARMS_D + ARMS_E + ARMS_H + ARMS_I + ARMS_O   # stage 1c-1l: canonical place frame
+        self.occ = arm in ARMS_O                                # stage 1l: the object term reads the role-symmetric occupancy
         self.b = arm in ARMS_B or self.c                        # stage 1b: contact flag and grasp offset available
         self.base = BASE.get(arm, arm)
         self.gate_contact = arm in ("Ab", "Ab_nooff", "Ab_nosum") or self.c
@@ -166,7 +174,7 @@ class FactoredFlow(nn.Module):
         elif arm == "A_nosum":
             self.net = mlp(2 * (dprop + dslot) + dhold + 1 + 2 * da + dt, da, w)
         elif self.c:
-            self.obj = mlp(dprop + dslot + da + dt, da, w)
+            self.obj = mlp(dprop + dslot + (6 * OCC_K if self.occ else 0) + da + dt, da, w)
             tilt, rot6, fing, ident, tsize = CANON_IN[self.arm]
             drot, goff = GEO_IN.get(self.arm, (0, 0))
             self.tgt = mlp(3 + 3 * tilt + 6 * rot6 + 2 * fing + 1 + (2 * tsize + N_ENT * ident + 1) + 6 * drot + 3 * goff + da + dt, da, w)
@@ -193,6 +201,23 @@ class FactoredFlow(nn.Module):
         dy = b["yaw"][idx, e] - yaw0
         aux = b["drawer"] * (e == DRAWER).float()
         return torch.cat([pr, torch.sin(dy)[:, None], torch.cos(dy)[:, None], self.size[e], self.onehot[e], aux[:, None] * 10.0], -1)
+
+    def _occ(self, b, Q, o, e):
+        """Stage 1l: the OCC_K entities nearest to slot e [B] (clearance = xy distance minus footprint radius; e excluded), in the frame
+        (Q, o), each (relative position, footprint radius, hand-set height, clearance), sorted by clearance; no identity, no role."""
+        B = len(e)
+        idx = torch.arange(B, device=e.device)
+        QT = Q.transpose(1, 2)
+        rel = torch.einsum("bij,bkj->bki", QT, b["pos"] - o[:, None, :])                     # [B, N, 3]
+        rad, hgt = self.size[:, 0][None].expand(B, -1), self.size[:, 1][None].expand(B, -1)
+        clr = torch.linalg.norm(rel[..., :2], dim=-1) - rad
+        clr = clr.clone()
+        clr[idx, e] = float("inf")
+        order = torch.argsort(clr, dim=1)[:, :OCC_K]
+        g = lambda z: torch.gather(z, 1, order)                                             # noqa: E731
+        relk = torch.gather(rel, 1, order[..., None].expand(-1, -1, 3))
+        f = torch.cat([relk * POS_SCALE, g(rad)[..., None] * POS_SCALE, g(hgt)[..., None] * POS_SCALE, g(clr)[..., None] * POS_SCALE], -1)
+        return f.reshape(B, -1)
 
     def _frame(self, b, e, world):
         B = len(e)
@@ -287,7 +312,7 @@ class FactoredFlow(nn.Module):
             return chunk_from(Q, v)
         if self.c:
             Qo, oo, yo = self._frame(b, b["oi"], False)
-            co = torch.cat([self._prop(b, Qo, oo), self._slot(b, b["oi"], Qo, oo, yo)], -1)
+            co = torch.cat([self._prop(b, Qo, oo), self._slot(b, b["oi"], Qo, oo, yo)] + ([self._occ(b, Qo, oo, b["oi"])] if self.occ else []), -1)
             Qc, ct = self._canon(b)
             vo = chunk_from(Qo, self.obj(torch.cat([co, flat(chunk_to(Qo, x)), te], -1)).reshape(B, self.H, 7))
             vt = chunk_from(Qc, self.tgt(torch.cat([ct, flat(chunk_to(Qc, x)), te], -1)).reshape(B, self.H, 7))

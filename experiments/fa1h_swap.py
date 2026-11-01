@@ -95,7 +95,11 @@ def main():
         keep[ii, oi[j]] = True
         keep[ii, ti[j]] = True
         keep[:, FK.TABLE] = True
-        r["T3"] = summ((sample(m, batch(j, pos=D["pos"][j] + np.where(keep[..., None], 0.0, sh)), 3) - base).abs().amax((1, 2)), base)
+        d3 = (sample(m, batch(j, pos=D["pos"][j] + np.where(keep[..., None], 0.0, sh)), 3) - base).abs().amax((1, 2))
+        r["T3"] = summ(d3, base)
+        hj = torch.as_tensor(held[j])                                # stage 1l: T3 split by phase (the object term reads occupancy)
+        r["T3_place"] = summ(d3[hj], base[hj])
+        r["T3_approach"] = summ(d3[~hj], base[~hj])
         j = rows["T4"]
         ii = np.arange(len(j))
         th = rng.uniform(-np.pi, np.pi, len(j))
