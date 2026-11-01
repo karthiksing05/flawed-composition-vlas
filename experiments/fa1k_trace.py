@@ -71,7 +71,7 @@ def episode(model, bddl, state, lang, seed_base):
                     h_on, off, zr, cy = track()
                     rot0 = FC.scene(env, obs, dj)["ee_rot"].copy() if h_on else None
                     sc = FC.scene(env, obs, dj)
-                    start = dict(obj=sc["pos"][oi].tolist(), yaw=float(sc["yaw"][oi]),
+                    start = dict(obj=sc["pos"][oi].tolist(), yaw=float(sc["yaw"][oi]), all=sc["pos"].tolist(), ee=sc["ee_pos"].tolist(),
                                  ee_obj=objframe(sc["ee_pos"] - sc["pos"][oi], float(sc["yaw"][oi])))
                 continue
             if not plan:

@@ -2746,6 +2746,151 @@ familiar, +0.01 [−0.09, 0.12] new. Grasp identity is exact; swap tests as abov
 3.68 A40-h. CPU: diagnostic traces 36 jobs (about 8 CPU-job-h, including a first pass that stopped on a mislisted tid);
 generation 6 jobs (about 2 CPU-job-h); rollouts 10 jobs (about 8 CPU-job-h).
 
+### 5.20 Diagnostic: where the generator's kept carries leave the grasp unsupported (descriptive; 2026-10-31; results/flawed/a1l_diag.json)
+
+**Method** (`experiments/fa1l_diag.py`).
+- **Planner:** every generated attempt of 1g and 1k (1,031 attempts): success, the phase reached, and the object's position
+  and clearance.
+- **Policy:** the traced episodes of 5.18, plus Ak (seeds 6-8) traced in both layouts by `fa1k_trace.py`, which now also
+  records every entity's start position.
+- Each policy episode is scored against the **local planner yield** at its start: the share of successful attempts among the 15
+  attempts nearest the object's start position.
+
+**Results.**
+- **Planner failures.** All 431 failed attempts reached phase 7 (retreat). This was first read as "every failure is a placement
+  failure". **That reading was wrong:** the planner's phases also advance on a 40-step timeout, so reaching phase 7 says nothing
+  about the grasp. Re-running the failed attempts up to the end of the lift (`fa1l_plan.py`, below) shows that most never hold
+  the object: the hold is on after the lift in 27 of 48 bowl, 25 of 212 bottle and 50 of 171 cheese failures. So the
+  planner's failures are mostly **grasp** failures.
+  - Yield: bowl 0.81, bottle 0.49, cheese 0.54.
+  - The cheese's yield falls to 0.31 in the lowest third of y, against 0.63-0.67 elsewhere. The bottle's falls to 0.24 in the
+    highest third of y.
+- **The policy misses the grasp where the planner's placement fails.** On the new layout, the cheese miss share by the
+  local-yield tercile (low, mid, high) is:
+  - Ai 0.86, 0.46, 0.27;
+  - Aj 0.71, 0.33, 0.27;
+  - Ak 0.67, 0.54, 0.33.
+  - The bottle shows the same pattern (Aj 0.70, 0.23, 0.33; Ak 0.62, 0.27, 0.22).
+  - The bowl, with yield 0.81 everywhere, has no low-yield region and misses 0.03-0.05.
+  - The median local yield at the cheese's relocated starts is 0.30, against 0.87 at its familiar starts.
+- Clearance to the nearest other entity does not explain the misses (Ak cheese, new: 0.44, 0.50, 0.62 by clearance tercile,
+  rising with clearance).
+- Missed grasps close 1-2 cm off in the object frame (Ak cheese, new: mean −1.5, −0.4, +3.0 cm against −0.7, +0.2, +0.7 cm
+  for successful ones). The gripper closes beside and above the cheese.
+
+**What it shows (corrected).**
+- **The policy misses the grasp exactly where the scripted planner misses it.** Generated support exists only where the
+  scripted grasp works. In regions where it fails (the cheese at low y), no grasp is supervised, however many carries are kept.
+  That is why tripling the kept cheese carries (1k) did not help: the new carries again came only from the regions where the
+  scripted grasp works.
+- A first remedy was drafted before the correction: role-wise acceptance, keeping the grasp segment of every attempt whose hold
+  is on after the lift, whatever the placement does.
+  - It was tested only on data, never registered, trained or rolled out.
+  - It recovers only 102 grasp segments (bowl 27, bottle 25, cheese 50; `results/flawed/a1l_gen.json`), because most failed
+    attempts never held the object.
+  - It stays a valid principle, but it cannot fill the regions where the scripted grasp itself fails.
+**Why the scripted grasp fails there** (`experiments/fa1l_probe.py`; results/flawed/a1l_probe_K4/K5/K6.json and
+a1l_probe_K4/K6_contacts.json). The probe re-runs the planner's approach, descent, close and lift on every failed seed (contacts:
+60 per task) and on 40 successful seeds per task.
+- **The descent is blocked; the object is not pushed and the rotation tracks.** Missed cheese grasps (121):
+  - the descent times out in 0.79 of them, against 0.13 for held grasps;
+  - the gripper stops 7.1 cm short of the grasp point, almost all in height (+5.7 cm), and closes 8.3 cm above the cheese
+    (held grasps: 0.3-0.7 cm);
+  - the rotation error is 2.1° (held: 0.4-0.8°), and the cheese moves 0.0 cm.
+  - Missed bottle grasps (K4, 143) time out in 0.61 of them and stop 2.7 cm off in x.
+- **It is blocked by the tall fixtures.** During the blocked cheese descents, the gripper body touches the wine rack in 0.36 of
+  them, the robot's wrist link in 0.17 and a finger in 0.14. The cabinet base appears in 0.12. Fingers touch the cheese's top in
+  0.07-0.12. In held grasps, the only contacts are the table, the stove burner and the bowl, never the rack or the cabinet.
+  - Missed bottle grasps (K4, 59) show the same pattern: the gripper touches the wine rack in 0.17 of them, the cabinet base in
+    0.15 and the cabinet top in 0.15. Held bottle grasps touch only the bottle (0.68) and, in 0.05, the cabinet top.
+- **So, on relocated layouts, the cheese often sits next to the wine rack or the cabinet.** There the demo-fitted top-down grasp
+  is physically blocked: the hand must reach low for a flat object, and its body hits the fixture. The bowl is grasped at its
+  rim, higher, so it is not blocked (yield 0.81).
+
+**What this means for the architecture.** The object term is **translation-invariant by design** (5.5). It reads only the
+object's slot and the proprioception in the object's frame. So it does not perceive the fixtures beside the object, and it
+must use the same approach everywhere.
+- No amount of generated data can teach it to grasp differently beside a rack: it cannot tell it is beside one.
+- Both the 1k change (more carries) and the drafted role-wise acceptance were therefore bound to fail on these starts.
+- This is a (Suff) gap on the object side. The object role's sufficient description includes the **free space around the
+  object**, not only the object.
+- **Fixing it needs two coupled things:**
+  - an object-term input that encodes nearby obstacles in the object frame. To keep the target-blind grasp and role locality,
+    it must be symmetric in role: an unordered occupancy of all other entities, with no identity and no role flag, so a target
+    swap cannot change it;
+  - generated grasps that avoid the obstacle (for example a rotated or tilted approach). Without them the new input has
+    nothing to learn from, because 1g's planner hits the fixture.
+- This is more than one change and needs a new, collision-aware generator. It is proposed, not run (section 5.21).
+
+### 5.21 Proposed stage 1l: an obstacle-aware object term (NOT registered, NOT run; 2026-11-01)
+
+**Measured weakness** (5.20): on relocated layouts the cheese, and less often the bottle, sits beside the wine rack or the
+cabinet. There the translation-invariant object term repeats the demo-fitted top-down approach, and the hand hits the fixture.
+
+**Proposed change (architecture; one principle, with the data it needs):**
+- **(Suff) on the object side.** The object term additionally reads a role-symmetric occupancy of the other entities in the
+  object's frame. One option is the k nearest entity footprints (relative position, footprint radius and height), sorted by
+  distance, with no identity and no role flag.
+  - Because it is symmetric in role, a target swap cannot change it. T1-T3 and T7 stay exactly 0 by construction; the swap
+    test checks it.
+  - The grasp stays target-blind in the sense of Proposition 3: it depends on where things are, never on which one is the
+    target.
+- **Data (missing support).** A collision-aware variant of 1g's planner. It tries the demo-fitted grasp and, when the descent
+  is blocked, a grasp rotated about z (and, if needed, tilted away from the obstacle). It keeps each grasp segment by the grasp's
+  own outcome (role-wise acceptance, drafted below as `fa1l_plan.py`), labelled generated.
+- **Why it is proposed and not run:** it is a new generator plus a new input, so it exceeds this round's one-change rule. The
+  user should see it before it is registered.
+
+**Drafted earlier and superseded (kept for the record, never registered or trained):** role-wise acceptance alone.
+`experiments/fa1l_plan.py`, `fa1l_read.py`, `fa1l_record.py` and `prereg/pa1l.py` exist; `DATA/gen_l.npz` holds 102 grasp
+segments. Section 5.20 explains why this alone cannot fill the blocked starts. Its draft protocol follows, unchanged except
+that it is marked superseded:
+
+**The superseded change (data only; architecture, recipe and criteria unchanged).**
+- `experiments/fa1l_plan.py` re-runs every **failed** generated attempt of 1g and 1k: same task, same seed, and 1g's planner,
+  keypoints and layout sampler unchanged. It stops at the end of the lift (planner phase 3).
+- It keeps the **grasp segment** (all rows from the first step to the end of the lift) when the hold is on at that point:
+  both fingers touching and the object lifted (fa1b_common.Held).
+- Nothing after the lift is kept, so no failed placement enters training. Only known pairings are run; no demo action is
+  executed or replayed.
+- `DATA/gen_l.npz` = gen_k.npz plus the segments, labelled generated (gen = 1, seg = 1, demo ids 400+).
+- Known side effect (disclosed): a segment's last 7 rows get chunks padded with zero motion and a closed gripper, the
+  training's rule at every episode end. That is about 7 rows per segment, a few per cent of all rows.
+- Ai on demos plus gen_l, fresh seeds 9, 10, 11 (tag l): `experiments/fa1g_train.py --tag l --seed s --arms Ai --gen
+  gen_l.npz`. Rollouts: `experiments/fa1h_roll.py --arm Ai --name Al` -> results/flawed/a1l_roll.
+- Descriptive only: Hl and Rl (the Hb and Rb architectures on the same data, seed 9), Ak (1k) beside, and the post-hoc
+  object-matched C2.
+
+**Checks before the rollouts** (asserted in the pre-registration): swap test 0 on T1-T3 and T7, at most 1e-4 on T4 and T5'
+(T6 descriptive); training on gen_l.npz; grasp segments present for all three objects.
+
+**Binding criteria, one verdict** (`experiments/fa1l_read.py`; the frozen criteria, exactly 1j's and 1k's):
+- **Familiar layout:** C1: s_A(known) − 0.672 ≥ −0.10; C2: ratio ≥ 0.8 with CI lower bound ≥ 0.6; 3F: every N1-N6 CI of D3
+  contains 0; C4: against Hg and Rg, both differences > 0 with CIs excluding 0.
+- **New layout:** C1 = layout invariance L ≥ 0.8 (point) with CI lower bound ≥ 0.6; C2, 3F and C4 as above on the new-layout
+  cells.
+- C3 descriptive only. N6 stays in.
+- **Mapping per layout:** "uninformative" if 0.672 < 0.5; "compositional" if C1, C2, 3F and C4 all hold; otherwise "not
+  compositional (fails: ...)", listing the failing members of C1, C2, 3F, C4 in that order.
+- **Verdict = "familiar: <v> | new layout: <v>". CONFIRMED iff both layouts read "compositional".**
+
+**Predictions** (from 1k and 5.20; fresh seeds vary by about ±0.1 per cell):
+- **New layout.**
+  - The cheese's miss share falls from 0.53 toward its high-yield level (0.27-0.33): cheese h_o 0.42 → 0.55-0.65.
+  - The bottle's miss falls less (0.38 → 0.30).
+  - s_new 0.44 ± 0.07 (1k 0.36); s_known 0.66 ± 0.06 (1k 0.61); **C2 ratio 0.67 ± 0.10**: C2 is still more likely to fail at
+    the point.
+  - L 0.85 ± 0.08: C1 holds. C4 holds.
+  - 3F: N6 at risk again (1k −0.17), others in CI.
+- **Familiar layout.** Little change (the familiar starts already sit at local yield 0.87).
+  - C1 holds and C4 holds.
+  - C2 holds at the point (1k 0.83), with its lower bound near 0.6 either side.
+  - 3F: N1 is re-read, predicted D3 +0.02 ± 0.04 (1k +0.02 [0.00, 0.05]). The other five are in CI.
+- **Expected verdict:** "familiar: compositional" (or "fails: C2" on the lower bound) and "new layout: not compositional
+  (fails: C2, ...)". If the cheese's relocated miss share does not fall, the local-yield explanation is wrong.
+
+**Budget.** About 0.35 A40-h. CPU: generation 6 jobs (about 1.5 CPU-job-h), 10 rollout jobs (about 8 CPU-job-h).
+
 ---
 
 ## 6. Experiments, order and cost
