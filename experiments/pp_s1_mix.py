@@ -43,6 +43,7 @@ def main():
     # P's LoRA layers take (x, atom): the pre-hook must keep the atom argument
     orig = O.sample
 
+    @torch.no_grad()
     def sample(m, b, seed, patch=None, steps=10):
         if patch is not None and patch[1] == "pre":
             mod, kind, bp = patch

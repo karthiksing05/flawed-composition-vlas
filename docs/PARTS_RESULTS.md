@@ -191,6 +191,48 @@ place cells per model. CIs are 95% compound bootstraps.
 
 **Cost.** About 0.45 A40-h: frames 0.08, pi0.5 0.30, GR00T 0.12. Smokes are excluded.
 
+## 3. F3 results (2026-11-01; m3_prereg pp_f123 + pp_f3; results/flawed/pp_f3_read.json, pp_f3_open_pi05.json, pp_f3_open_groot.json)
+
+F3 purified the components F1 located, k*_op: pi0.5 KV_14, GR00T Q_6.
+- Closed loop: N1-N6, states 4-13, 10 episodes per task and layout, with an intact re-run and the purified run on N2's branch
+  seeds.
+- The intact re-run reproduced N2's recorded episodes exactly: s and g agree on every episode in both models and layouts.
+- No episode errors. Jobs 4451480 (pi0.5) and 4451481 (GR00T).
+
+| model | layout | intact s / g / p | purified s / g / p | Δp [95% CI] | Δs | Δg |
+|---|---|---|---|---|---|---|
+| pi0.5 (KV_14) | familiar (primary) | 0.48 / 0.95 / 0.51 | 0.08 / 0.18 / 0.45 | **−0.05 [−0.83, 0.48]** | −0.40 [−0.78, −0.03] | −0.77 [−0.97, −0.53] |
+| pi0.5 (KV_14) | new | 0.32 / 0.63 / 0.50 | 0.17 / 0.32 / 0.53 | +0.03 [−0.31, 0.40] | −0.15 [−0.35, 0.00] | −0.32 [−0.57, −0.07] |
+| GR00T (Q_6) | familiar (primary) | 0.20 / 0.98 / 0.20 | 0.27 / 1.00 / 0.27 | **+0.06 [−0.07, 0.25]** | +0.07 [−0.07, 0.25] | +0.02 [0.00, 0.10] |
+| GR00T (Q_6) | new | 0.08 / 0.37 / 0.23 | 0.05 / 0.45 / 0.11 | −0.12 [−0.35, 0.11] | −0.03 [−0.15, 0.07] | +0.08 [−0.10, 0.27] |
+
+**Verdict: F3 does not tie in either model.**
+
+- **pi0.5.**
+  - Purifying layer 14's KV destroys the grasp: g falls from 0.95 to 0.18, and N4-N6 (the bottle) lose every grasp.
+  - Layer 14 carries the object role as well as the target role. The registered purification gives that layer B's values
+    everywhere except the object words, and B is a known task with another object. So it also hands the grasp B's object.
+  - The located component is a mixed carrier of both roles, not a target-only message that can be swapped for a pure one.
+- **GR00T.** Purifying Q_6 changes little: the familiar p moves from 0.20 to 0.27, with a CI that includes 0. GR00T places the
+  bottle on the plate, stove or in the bowl 0 of 30 times either way.
+- **Open loop (descriptive).**
+  - The cosine between the chunk's translation and the direction to the target, on place frames: pi0.5 0.10 intact against
+    0.16 purified; GR00T 0.05 against 0.06.
+  - Toward the object on grasp frames: pi0.5 0.33 against 0.29 (familiar) and 0.52 against 0.48 (new); GR00T unchanged.
+
+**Layer 1 go/kill (pp_f123 mapping): GO, through pi0.5 alone, and fragile.**
+- pi0.5: F1 holds and F2 ties (ρ_p 0.59 [0.01, 0.93]); F3 does not tie.
+- GR00T: F1 holds; F2's "ties" rests on 2 cells (§2) and is not interpretable; F3 does not tie.
+- Without that one correlation, whose lower bound is 0.01 and which mostly separates known from new pairings, the mapping would
+  return KILL.
+- The causal test, which the plan treats as the architectural isolation, failed in both models. K1's "causes" part is not
+  supported.
+
+**Deviations.**
+- The pi0.5 F3 job was pre-empted on overcap once and requeued. Task files already written were kept. The task in progress
+  re-ran from its first episode on the same seeds.
+- Mid-run, I read client log lines that print episode outcomes (the criteria were registered).
+
 ## 4. Layer 2 protocol: P-build, S1-S4 (fixed 2026-11-01, before any Layer-2 rollout; m3_prereg tag pp_l2)
 
 Layer 2 starts because pp_f123's mapping returned GO on pi0.5 (F1 holds, F2 ties). F3's closed loop was still running when this
@@ -265,3 +307,113 @@ adaptation recipe:
 
 **Statistics.** Development reads only: 3 seeds × 20 states, 95% CIs, no Holm correction. The S-conf fresh-seed read needs
 the user's approval and is not run.
+
+## 5. Layer 2 results (2026-11-01; m3_prereg pp_l2; results/flawed/pp_l2_read.json, pp_s1_mix_full.json, pp_train_*.json, pp_create_*.json, pp_bl_*.json; rollouts pp_s2_roll, pp_s3_roll, pp_s4_old)
+
+**Verdict (pp_l2 mapping): Layer-3 GO = false.**
+- S1 holds.
+- **S2 fails:** 3F fails on N4 in the familiar layout. The object-matched ratio holds in both layouts.
+- **S3's transfer criterion fails** in 9 of 12 cells (atom × layout × k ≤ 10).
+- No rollout had an episode error.
+
+**P-build.**
+- Size: 1,098,136 parameters per library. The role backbones have 436,536 (object) and 434,072 (target) parameters. A part has
+  20,720 (object) or 20,664 (target) parameters, so a part adds about 2.4% of a backbone.
+- The rank-32 secondary arm has 82,832 and 82,608 parameters per part.
+- A build takes 30,000 steps in about 14 min on an A40.
+- Every creation left every other parameter bitwise unchanged (asserted; 48 creations). Parts take 38-68 GPU-s to ready.
+- Demo rows at k = 1, 5, 10, 50: 92, 537, 1,066, 5,389 for the bottle (K4) and 90, 444, 904, 4,662 for the plate (K1).
+
+**S1 (holds).**
+- Both swap tests are exactly 0.0 for all three seeds.
+- Every target-into-grasp component is exactly 0 on every frame.
+- Object-into-place: the object term's components are 0. The target term's components reach m = 111.5 through the foot route
+  (the role binding locates the held body), as in A (§2).
+
+**S2 (fails).** Full library, 3 seeds × 20 states, all 32 cells.
+
+| layout | s known | s new | object-matched ratio [95% CI] | 3F |
+|---|---|---|---|---|
+| familiar | 0.80 | 0.72 | 1.05 [1.00, 1.11] (holds) | fails: N4 D3 −0.34 [−0.48, −0.22] (obs 0.30, pred 0.64) |
+| new | 0.21 | 0.22 | 0.99 [0.76, 1.42] (holds) | holds (every N1-N6 CI contains 0) |
+
+- Familiar per pairing: N1 0.92, N2 0.97, N3 0.92, N4 0.30, N5 0.67, N6 0.57. Known pairings: K1 0.98, K2 1.00, K3 0.98,
+  K4 0.67, K5 0.28, K6 0.90.
+- N4 (bottle on plate) is the only pairing far below its factor prediction. The bottle's hold factor (0.75) and arrival (0.87)
+  and the plate's place-on-arrival (0.98) predict 0.64.
+- Competence: without the generated carries, demos alone do not carry the new layout (s known 0.21, against 0.68 for 1p's Aq
+  on generated data). Within that low competence, composition holds: OM 0.99, 3F holds.
+
+**S3 (creation; transfer ratio = s_unseen / s_train, 3 seeds × 20 states, state-bootstrap 95% CI).**
+
+| atom | k | familiar: s_train / s_unseen / ratio | new: s_train / s_unseen / ratio |
+|---|---|---|---|
+| bottle (from K4) | 1 | 0.98 / 0.78 / 0.80 [0.74, 0.85] | 0.53 / 0.42 / 0.78 [0.69, 0.90] |
+| bottle | 5 | 0.80 / 0.64 / 0.80 [0.75, 0.86] | 0.20 / 0.13 / 0.64 [0.45, 0.85] |
+| bottle | 10 | 0.88 / 0.68 / 0.77 [0.71, 0.83] | 0.32 / 0.25 / 0.79 [0.65, 1.00] |
+| bottle | 50 | 0.92 / 0.71 / 0.78 [0.71, 0.85] | 0.27 / 0.17 / 0.62 [0.48, 0.86] |
+| plate (from K1) | 1 | 0.95 / 0.78 / **0.82 [0.73, 0.91]** | 0.20 / 0.23 / 1.17 [0.55, 3.50] |
+| plate | 5 | 0.93 / 0.72 / 0.78 [0.70, 0.87] | 0.13 / 0.23 / **1.75 [0.82, 5.17]** |
+| plate | 10 | 0.93 / 0.72 / 0.77 [0.69, 0.85] | 0.12 / 0.23 / **1.93 [0.95, 5.67]** |
+| plate | 50 | 0.93 / 0.68 / 0.73 [0.65, 0.82] | 0.22 / 0.23 / 1.04 [0.50, 2.70] |
+
+- Bold marks the cells that meet the criterion (ratio ≥ 0.8, lower bound ≥ 0.6). 3 of the 12 k ≤ 10 cells meet it; the
+  bottle meets it in none.
+- **Every shortfall comes from one unseen pairing, bottle on plate (N4).**
+  - Bottle part (familiar, k = 1 / 5 / 10 / 50): N4 0.55 / 0.48 / 0.48 / 0.45, N5 0.98 / 0.80 / 0.88 / 0.95, N6 0.82 / 0.63 /
+    0.68 / 0.73.
+  - Plate part (familiar): N1 0.97 / 0.98 / 0.98 / 0.97, N4 0.58 / 0.47 / 0.45 / 0.40.
+  - N5 and N1 run at the training partner's rate. A created part transfers to most partners at its own rate. The plan's
+    "transfers only to its training partner" (kill K3) does not describe this.
+- New layout: the training partner itself mostly fails (s_train 0.12-0.53), so the ratios are wide.
+- One demo already gives the familiar rate. k changes little; bottle s_train is 0.98 at k = 1 and 0.80-0.92 above it.
+- Rank 32 (secondary arm, descriptive): bottle familiar ratios 0.84, 0.83, 0.83, 0.80 (k = 1-50), with lower bounds
+  0.75-0.78. Plate familiar 0.88, 0.81, 0.79, 0.81, with lower bounds 0.67-0.79. New layout 0.69-1.90, wide. N4 stays at
+  0.43-0.57.
+- Old tasks: exactly 0 change (bitwise).
+
+**S4 (baselines; same base tasks, same k demos, same adaptation recipe). Descriptive.**
+
+| method | bottle familiar: s_train (k = 1 / 5 / 10 / 50) | bottle s_unseen | plate familiar: s_train | plate s_unseen | new layout | forgetting on old tasks (familiar) |
+|---|---|---|---|---|---|---|
+| **P** | 0.98 / 0.80 / 0.88 / 0.92 | 0.78 / 0.64 / 0.68 / 0.71 | 0.95 / 0.93 / 0.93 / 0.93 | 0.78 / 0.72 / 0.72 / 0.68 | s_unseen 0.13-0.42 | exactly 0 |
+| HF (holistic fine-tune) | 0.72 / 0.80 / 0.83 / 0.87 | 0.00-0.01 | 0.57 / 0.82 / 0.70 / 0.75 | 0.00 | 0.00 everywhere | 0.82 → 0.00 (bottle), 0.67 → 0.00 (plate), every k |
+| HL (per-task LoRA) | 0.48 / 0.77 / 0.68 / 0.68 | 0.00-0.01 | 0.33 / 0.62 / 0.55 / 0.57 | 0.00-0.02 | 0.00 | exactly 0 (off on old tasks) |
+| RF (role-routed fine-tune) | 0.95 / 0.92 / 0.88 / 0.98 | 0.00-0.05 | 0.00 / 0.90 / 0.92 / 0.95 | 0.00 | 0.00-0.07 | 0.85 → 0.00, 0.76 → 0.00, every k |
+| LIB (DMPEL/CLARE-style router) | 0.65 / 0.60 / 0.67 / 0.75 | 0.00-0.04 | 0.45 / 0.62 / 0.65 / 0.78 | 0.02-0.09 | 0.00 | 0.83 → 0.00; 0.74 → 0.01-0.04 |
+
+- P − each baseline on unseen partners, familiar: +0.59 to +0.78 in every cell (lower bounds 0.52-0.72). New layout: +0.13 to
+  +0.42 (lower bounds 0.04-0.30).
+- Every baseline learns the training pairing from the k demos. None reaches the unseen pairings: at most 0.09 (LIB, plate,
+  k = 50).
+- The fine-tuned baselines (HF, RF) and the learned-router library (LIB) lose the old tasks completely at every k. Their 4,000
+  steps on one task's demos overwrite the shared weights, or, for LIB, the router.
+- The adaptation recipe was fixed before the read and is the same for every method. A replay or smaller-step recipe might
+  forget less. That was not tested.
+- Trainable parameters per adaptation: P 20,720 / 20,664; HL 31,016; HF 967,224; RF 888,376.
+- LIB trains 499,280 parameters: all expert slots are in its optimiser, but only the new expert's rows and the router's 3,024
+  parameters receive gradient.
+- GPU-s to ready: P 38-68, HF 30-34, HL 38-43, RF 16-17, LIB 37-41.
+
+**Reading.**
+- On the N2 scene, with oracle slots, frames and the contact gate, a part created from one demo of one task works with
+  partners it never saw, at its own rate, except on one pairing. Old tasks stay exactly unchanged.
+- No baseline, the learned-router library included, composes the new atom at all.
+- The pre-registered bars are not met. Bottle on plate (N4) runs at 0.30-0.58 wherever it appears (S2 and both S3 atoms). That
+  pulls the pooled ratios to 0.73-0.80 in the familiar layout.
+- Is N4 a part-competence limit (a tall bottle stood on a low plate under LIBERO's strict On) or a combination failure?
+  - S2's 3F says combination: N4's observed 0.30 is below its own factor prediction 0.64.
+  - S3's plate part puts the plate's place-on-arrival with the trained bottle part, and gives 0.40-0.58 in N4 too.
+  - I report it, and I do not patch it (rule 10).
+- Demos alone do not cover the new layout: the competence there is 0.1-0.5. The plan's claim that layout generalization comes
+  from frame equivariance does not hold at that level of competence.
+
+**Deviations.**
+- `experiments/pp_s1_mix.py` was hashed in pp_l2 and then edited once. Its first run crashed (a tensor needing grad), and
+  `torch.no_grad()` was added to its pre-hook sampler. No estimator or criterion changed.
+- Smoke artifacts from code checks, never read for outcomes, stay untracked: results/flawed/pp_*smoke*, pp_smoke_roll,
+  pp_s1_tmp_full.
+- The generated-data ablation arm of P (§4.1 of the plan) was not run.
+
+**Cost.** GPU: builds 5.0 A40-h, creations about 1.9 A40-h. CPU: 246 rollout jobs, 74.6 CPU-job-h, together with S1 and the
+oracle F1 run.
