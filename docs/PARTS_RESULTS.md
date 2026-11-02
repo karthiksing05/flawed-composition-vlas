@@ -675,3 +675,80 @@ This planner is a diagnostic data source only. It is not part of any architectur
 **What follows.**
 - On combination: the next round targets the failing interface (for example, what the place part conditions on at the handoff).
 - On competence: N4 becomes a recorded competence caveat, and the next round moves to new-layout competence.
+
+## 11. Round 1 results: the N4 diagnostic (2026-11-02; m3_prereg pp_n4d; results/flawed/pp_n4d_read.json, pp_n4d_gen.json; rollouts pp_n4d_roll)
+
+**The mechanical verdict is "competence" (Δ = −0.18 [−0.30, −0.07]), but the instrument failed its controls, so the verdict
+is not interpretable.** The single-task fit (a) also fails on the two control tasks, where P succeeds.
+
+| arm | task | s [95% CI] | hold | arrival | place-on-arrival | release xy error (m) |
+|---|---|---|---|---|---|---|
+| (a) single-task fit | N4 | 0.03 [0.00, 0.08] | 0.03 | 1.00 | 1.00 | 0.253 |
+| (a) control | K4 | 0.00 [0.00, 0.00] | 0.02 | 0.00 | 0.00 | — |
+| (a) control | K1 | 0.00 [0.00, 0.00] | 0.13 | 0.00 | 0.00 | 0.145 |
+| (b) P, rank 32 | N4 | 0.22 [0.10, 0.35] | 0.70 | 0.90 | **0.34** | **0.093** |
+| (b) P, rank 32 | K4 | 0.63 [0.50, 0.77] | 0.70 | 0.90 | 0.95 | — |
+| (b) P, rank 32 | K1 | 0.97 [0.90, 1.00] | 0.97 | 1.00 | 1.00 | 0.011 |
+| (o) oracle planner | N4 | 0.65 [0.45, 0.85] | 0.75 | 1.00 | 0.87 | 0.027 |
+| (o) oracle planner | K4 | 0.75 [0.55, 0.90] | 0.75 | 1.00 | 1.00 | — |
+| (o) oracle planner | K1 | 0.95 [0.85, 1.00] | 1.00 | 1.00 | 0.95 | 0.017 |
+
+- **The single-task fits do not grasp.** Each was trained on 50 generated carries of one task. Their losses converged (0.14-0.16
+  at 30,000 steps, against P's 0.12), yet they hold the object in 0-13% of episodes, on the known controls as well. Fifty
+  planner carries of one task, without the demos, do not train this class into a working policy.
+- So (a) is not a valid "trained directly on N4" reference. The mapping's "competence" rests on an arm that fails everywhere, as
+  GR00T's F2 "ties" did (§2). I do not count it.
+- **The descriptive evidence points to the place handoff.**
+  - The composed-keypoint planner succeeds on N4 0.65 of the time, and on 0.87 of arrivals. N4 is physically feasible.
+  - P reaches the plate with the bottle as often as it reaches the cabinet (hold 0.70, arrival 0.90). It then places on only
+    0.34 of arrivals, against 0.95 for the bottle on the cabinet and 1.00 for the bowl on the plate.
+  - P's final bottle position is 0.093 m from the demos' release site (the bowl in K1: 0.011 m; the planner on N4: 0.027 m).
+    The final height above the plate is 0.019 m against the planner's 0.005 m. Both fit a bottle released and tipped over,
+    though the episode records no tilt to confirm it.
+- The generator kept 50 of 258 N4 attempts (stage 1g kept 50 of 142 for K4 and 50 of 85 for K1).
+
+**Decision.** The mapping's branch rests on an invalid arm. I take the measured weakness instead: P's place-on-arrival on N4
+(0.34, against the planner's 0.87). Round 2 targets the place interface. This choice is mine, not the pre-registered mapping's,
+and is reported as such.
+
+**Deviation.** On the login node I ran `grep` on two results files (results/flawed/a1g_gen_K4.json, a1g_gen_K1.json) to read
+their kept and attempt counts.
+
+**Cost.** 9 single-task fits, about 2.1 A40-h. CPU: generation 3.7 h, plus 15 rollout and oracle jobs.
+
+## 12. Round 2 design note and protocol: the held object's geometry at the place interface (fixed 2026-11-02, before any code of this round; m3_prereg tag pp_r2)
+
+**Weakness (measured, §11).** On N4, P's place-on-arrival is 0.34, against 0.95-1.00 on its known placements and 0.87 for
+the planner. The released bottle ends 0.093 m from the demo release site.
+
+**Interface diagnosis.**
+- Φ hands off at the contact gate. After the handoff, the target term v_t alone moves the held object. It reads the foot's
+  position in the target's frame, the last command, the target's size and opening, and the rotation since onset.
+- It does not read anything about the held object. Releasing a 0.28 m-tall bottle on a plate needs a different descent and
+  release than a 0.05 m bowl: the place outcome depends jointly on the held object's geometry and the target.
+- The plate's part saw only the bowl. So the place behaviour it learned is the bowl's, and nothing in its input says that
+  the bottle differs.
+- Under the composition theory this is a missing interface condition (B, the boundary condition the place part needs from
+  the object role). The place term must condition on the held object's physical extent, not on its identity.
+
+**Change (one, structural).**
+- The target term's input gains the held object's hand-set size: footprint radius and height, from the same FC.SIZE table
+  the object term already reads for its own slot.
+- No identity, part or teacher is added, and the combination Φ is unchanged.
+- The backbone is shared across targets, and the cabinet's known tasks place both the bowl and the bottle. So the
+  size-to-release relation is learnable across atoms and can reach the plate's part.
+- Everything else is P at rank 32, the registered arm of §6: recipes, atoms, k.
+
+**Arm.** P_sz (rank 32) at seeds 10-12. Reference: P (rank 32) at seeds 10-12 on the same dev states.
+
+**Reads (dev states 4-23, N2's seeds; pp_l2's estimators and its frozen mapping).**
+- S1: the swap tests and the profile, on full_sz.
+- S2: full_sz on all 32 cells.
+- S3: nobottle_sz and noplate_sz, k ∈ {1, 5, 10, 50}.
+- Reference P (rank 32), seeds 10-12, on dev states: S2 on all 32 cells. S3's dev reference is pp_l2's rank-32 secondary arm
+  (seeds 0-2).
+
+**Pre-registered round verdict.**
+- **improves** iff N4's S2 familiar success with P_sz minus P's is > 0.10, with its state-bootstrap CI lower bound > 0.
+- The Layer-2 GO for P_sz uses pp_l2's mapping, unchanged.
+- If GO holds on dev, the single confirmatory read follows on fresh seeds (20-22) and fresh states.
