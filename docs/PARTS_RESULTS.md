@@ -985,3 +985,58 @@ still score 0.00 on K1 and 0.00 on K4 (P: 0.97 and 0.63). The gate fails.
   gate re-run.
 - If the gate still fails, the instrument is declared unrepairable within this design. I report that and do not pre-register
   N4 on it.
+
+## 20. Step 2 diagnostic: which input leaves the training distribution (2026-11-02; `experiments/pp_ood_diag.py`; results/flawed/pp_ood_diag.json)
+
+**Method.**
+- For each checkpoint (seed 10) and each known pick-and-place task, the training cloud is the object term's own input
+  features on every not-held demo row of that task.
+- The probe is the same features at the episode start of dev states 4-23, computed through the rollout's own path.
+- Per input group, the table gives the standardized nearest-training-row distance (median over states). Inside the cloud,
+  values are about 0.1-0.4.
+
+| model | layout | ee position | ee rotation | gripper / last command / slot | start offset (m) |
+|---|---|---|---|---|---|
+| P | familiar | 0.06-0.09 | 0.01-0.03 | 0.00 | 0.05-0.20 |
+| P | new | **1.7-5.6** | 0.01-0.03 | 0.00 | 0.12-0.31 |
+| P_af | new | **1.9-6.8**, except K6 0.09 | 0.01-0.03 | 0.00 | 0.12-0.31 |
+| P_af2 | new | 0.1-6.8 | **0.8-9.6** | slot yaw up to 7.1 | 0.12-0.31 |
+
+**Findings.**
+- **Only one input leaves the distribution: the end effector's position relative to the object.** Rotation, gripper, last
+  command, slot and the Φ gate input (held, which is 0 at every start) all stay inside.
+- The demos' horizontal start offsets reach at most 0.15 m (K1-K3), 0.11-0.15 m (bottle) and 0.23 m (cheese). The new
+  layout's start offsets are 0.31 m (bowl), 0.22 m (bottle) and 0.12 m (cheese).
+- The approach frame (P_af) removes the bearing part of the gap. On K6, where the new start distance is inside the demo
+  range, it brings the position input fully inside (1.68 → 0.09). Where the distance itself is larger than any demo's, the
+  gap stays.
+- P_af2's collapse (round 4) has a measured cause: it pushes the rotation input and the slot yaw out of the distribution.
+
+## 21. Round 5 design note and protocol: radial relocation of the approach state (fixed 2026-11-02, before any code of this round; m3_prereg tag pp_r5)
+
+**Weakness (measured, §20).** In the new layout the object term's position input is out of distribution because the start
+distance (up to 0.31 m) exceeds every demo's (at most 0.11-0.23 m by object). The bearing is already handled by P_af.
+
+**Principle.**
+- In the far field, the approach is a transport toward the object along the bearing, and moving along that ray is a symmetry
+  of the task.
+- A state farther out on the ray can therefore be **relocated** to the nearest state the demos cover on the same ray:
+  same bearing, same height, horizontal distance clipped to the demos' support radius r. The term acts there.
+- Its demo-covered velocity at r points inward. As the end effector closes in, the clip releases, and the term then sees the
+  true state.
+- The place frame does the same thing at the carry. It removes what the task is symmetric to and keeps what matters.
+
+**Change (one, structural; on P_af).**
+- In the object term's input, the horizontal part of the end-effector offset (in the approach frame) is clipped to radius r.
+  Height, rotations, the output frame and everything else are P_af's.
+- r is a constant fitted once per build, never per scene or task: the smallest, over the build's training objects, of the
+  99th percentile of the horizontal end-effector-to-object distance on not-held demo rows. It is stored in the checkpoint.
+- No data, teacher or per-scene input is added.
+
+**Arm.** P_rc (rank 32) at seeds 10-12. Reference: P_af (rank 32), seeds 10-12, the round-3 rollouts (pp_r3_roll), which is
+this change's base.
+
+**Reads.** Dev states 4-23, N2's seeds. S1, S2 and S3 with pp_l2's estimators and frozen GO mapping.
+
+**Pre-registered round verdict.** **improves** iff the pooled known-pairing new-layout success, P_rc minus P_af, is > 0.10
+with its state-bootstrap CI lower bound > 0.
