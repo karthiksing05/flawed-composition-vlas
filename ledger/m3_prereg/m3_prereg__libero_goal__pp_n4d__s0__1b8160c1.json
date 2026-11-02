@@ -1,0 +1,59 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS round 1, N4 diagnostic (competence vs combination)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4464265",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "1b8160c179a5ac7e4ef4d97a32cc38c05d990eee",
+  "short": "1b8160c1"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "a: single-task PartsFlow r32 on 50 generated N4 carries (seeds 0-2); P: pp_full_r32_s10-12; controls: single-task fits on generated K4 / K1; o: oracle planner.  Familiar layout, dev states 4-23",
+  "files_sha256": {
+   "experiments/fa1g_plan.py": "bc6d30bb4c1da0f3e66495b8a228246ecd15f4fa3c5224e1b06b9e0f5dd600a6",
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/pp_n4d.py": "941278f4417362dc14e993407a45296e16cd999eb5b820246fff563e2e4c1d7c",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "c696f224e441758ecd9d7b89b9c3166e3135cce37a5dfe33c92479952aa45951",
+   "lifelong_ood/policy/parts_flow.py": "35374e62a73e62877ced9cd4dee3c97c0d46f4addaba0ea66fbc46aec648814a",
+   "results/flawed/pp_n4d_gen.json": "2763a0983faa7afa6625f59e1391a48db803a7857a1e35df90a3b52f028ed957"
+  },
+  "flag": "a control's single-task fit beating P on its own task by > 0.10 with lower bound > 0 (reported, no verdict change)",
+  "mapping": "D = s_a(N4) - s_P(N4): competence iff D <= 0.10; combination iff D > 0.10 and CI lower bound > 0 (failing phase = largest P deficit among hold, arrival, place-on-arrival); else unresolved",
+  "section_10_sha256": "ec5193c00e4d7a4071f642585aa3606ad4a37c2b4980071804ff1f4e8a99e3a6",
+  "status": "PRE-REGISTERED PLAN_PARTS round 1 N4 diagnostic (docs/PARTS_RESULTS.md section 10)",
+  "written_before": "the oracle runs, any rollout of this round and its read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_n4d__s0__1b8160c1",
+ "schema": 1,
+ "script": "experiments/prereg/pp_n4d.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-02T08:43:10+00:00",
+ "stream": null,
+ "tag": "pp_n4d"
+}
