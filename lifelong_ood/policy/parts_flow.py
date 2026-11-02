@@ -75,16 +75,17 @@ class RoleNet(nn.Module):
 class PartsFlow(nn.Module):
     arm = "P"
 
-    def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK):
+    def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False):
         super().__init__()
         self.H, self.rank = horizon, rank
+        self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
         self.register_buffer("size", torch.tensor(size if size is not None else np.zeros((N_ENT, 2)), dtype=torch.float32))
         da, dt = 7 * horizon, 32
         dprop = 3 + 6 + 2 + 1
         dslot = 3 + 2 + 2 + 1                                       # position, (sin, cos) yaw, size, drawer opening: no identity
         self.obj = RoleNet(dprop + dslot + da + dt, da, len(OBJ_ATOMS), rank=rank)
-        self.tgt = RoleNet(3 + 1 + 2 + 1 + 6 + da + dt, da, len(TGT_ATOMS), rank=rank)
+        self.tgt = RoleNet(3 + 1 + 2 + 1 + 6 + 2 * self.tsize + da + dt, da, len(TGT_ATOMS), rank=rank)
         # entity index -> part index (-1: no part)
         self.register_buffer("opart", torch.tensor([OBJ_ATOMS.index(e) if e in OBJ_ATOMS else -1 for e in _ENT()], dtype=torch.long))
         self.register_buffer("tpart", torch.tensor([TGT_ATOMS.index(e) if e in TGT_ATOMS else -1 for e in _ENT()], dtype=torch.long))
@@ -115,7 +116,8 @@ class PartsFlow(nn.Module):
         r0 = b["rot0"] if "rot0" in b else b["ee_rot"]
         rel = torch.einsum("bij,bkj->bik", b["ee_rot"], r0)
         drot = torch.einsum("bij,bjk,bkl->bil", QT, rel, Q)[:, :, :2].reshape(-1, 6)
-        return Q, torch.cat([pr, b["prev"][:, None], self.size[e], aux[:, None] * 10.0, drot], -1)
+        held_geom = [self.size[b["oi"]]] if self.tsize else []                 # the held object's footprint radius and height
+        return Q, torch.cat([pr, b["prev"][:, None], self.size[e], aux[:, None] * 10.0, drot] + held_geom, -1)
 
     def velocity(self, b, x, t):
         B = x.shape[0]
@@ -149,14 +151,14 @@ class PartsFlow(nn.Module):
         return x
 
     def save(self, path, meta):
-        np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank)),
+        np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize)),
                  **{k: v.detach().cpu().numpy() for k, v in self.state_dict().items()})
 
     @classmethod
     def load(cls, path):
         z = np.load(path, allow_pickle=False)
         meta = json.loads(str(z["__meta__"]))
-        m = cls(meta["horizon"], rank=meta.get("rank", RANK))
+        m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False))
         m.load_state_dict({k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"})
         m.eval()
         return m, meta

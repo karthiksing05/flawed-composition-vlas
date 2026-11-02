@@ -101,6 +101,7 @@ def main():
     ap.add_argument("--exclude", default="")
     ap.add_argument("--steps", type=int, default=30000)
     ap.add_argument("--rank", type=int, default=PF.RANK)
+    ap.add_argument("--tsize", action="store_true")                       # PARTS_RESULTS 12: P_sz
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -112,7 +113,7 @@ def main():
     if a.mode == "build":
         tasks = [c for c in FC.KNOWN if c not in a.exclude.split("+")]
         b, act, center, size, n, _ = rows(dev, tasks)
-        m = PF.PartsFlow(8, center=center, size=size, rank=a.rank).to(dev)
+        m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize).to(dev)
         ema, curve, secs = fit(m, list(m.parameters()), b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}")
         ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps))
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
