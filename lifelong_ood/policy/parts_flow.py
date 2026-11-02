@@ -75,7 +75,8 @@ class RoleNet(nn.Module):
 class PartsFlow(nn.Module):
     arm = "P"
 
-    def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0)):
+    def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
+                 rclip=0.0):
         super().__init__()
         self.H, self.rank = horizon, rank
         self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
@@ -83,6 +84,8 @@ class PartsFlow(nn.Module):
         # PARTS_RESULTS 16 (P_af2, aframe=2): translation AND rotation in the approach frame, the object's yaw relative to it as input
         self.aframe = int(aframe)
         self.register_buffer("home", torch.tensor(home, dtype=torch.float32))
+        # PARTS_RESULTS 21 (P_rc): the object term's horizontal ee offset clipped to the demos' support radius (0: off)
+        self.register_buffer("rclip", torch.tensor(float(rclip), dtype=torch.float32))
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
         self.register_buffer("size", torch.tensor(size if size is not None else np.zeros((N_ENT, 2)), dtype=torch.float32))
         da, dt = 7 * horizon, 32
@@ -99,7 +102,11 @@ class PartsFlow(nn.Module):
         idx = torch.arange(len(b["oi"]), device=b["oi"].device)
         QT = Q.transpose(1, 2)
         QpT = QT if Qp is None else Qp.transpose(1, 2)                      # translation frame (P_af: the approach frame)
-        p = torch.einsum("bij,bj->bi", QpT, b["ee_pos"] - o) * POS_SCALE
+        d = torch.einsum("bij,bj->bi", QpT, b["ee_pos"] - o)
+        if float(self.rclip) > 0:                                               # relocate far states onto the support radius
+            r = torch.linalg.norm(d[:, :2], dim=-1, keepdim=True).clamp_min(1e-9)
+            d = torch.cat([d[:, :2] * torch.clamp(self.rclip / r, max=1.0), d[:, 2:]], -1)
+        p = d * POS_SCALE
         R = torch.einsum("bij,bjk->bik", QT, b["ee_rot"])[:, :, :2].reshape(-1, 6)
         e = b["oi"]
         dy = b["yaw"][idx, e] - yaw0
@@ -176,6 +183,7 @@ class PartsFlow(nn.Module):
         m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False), aframe=meta.get("aframe", False))
         sd = {k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
         sd.setdefault("home", torch.zeros(3))                                   # checkpoints before P_af carry no home buffer
+        sd.setdefault("rclip", torch.tensor(0.0))                               # nor before P_rc
         m.load_state_dict(sd)
         m.eval()
         return m, meta

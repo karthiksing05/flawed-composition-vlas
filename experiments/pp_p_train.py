@@ -104,6 +104,7 @@ def main():
     ap.add_argument("--tsize", action="store_true")                       # PARTS_RESULTS 12: P_sz
     ap.add_argument("--aframe", action="store_true")                      # PARTS_RESULTS 14: P_af
     ap.add_argument("--aframe2", action="store_true")                     # PARTS_RESULTS 16: P_af2
+    ap.add_argument("--rclip", action="store_true")                       # PARTS_RESULTS 21: P_rc
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -117,7 +118,14 @@ def main():
         b, act, center, size, n, _ = rows(dev, tasks)
         D0 = np.load(os.path.join(FC.DATA, "demos.npz"))
         home = D0["ee_pos"][D0["step"] == 0].mean(0).tolist()               # the demos' mean end effector at step 0 (P_af)
-        m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home).to(dev)
+        rclip = 0.0
+        if a.rclip:                                                          # P_rc: min over training objects of the 99th pct of not-held dxy
+            nh = b["held"] < 0.5
+            idx = torch.arange(len(b["oi"]), device=dev)
+            dxy = torch.linalg.norm((b["ee_pos"] - b["pos"][idx, b["oi"]])[:, :2], dim=-1)
+            rclip = float(min(torch.quantile(dxy[nh & (b["oi"] == o)], 0.99) for o in torch.unique(b["oi"][nh])))
+        m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
+                         rclip=rclip).to(dev)
         ema, curve, secs = fit(m, list(m.parameters()), b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}")
         ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps))
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
