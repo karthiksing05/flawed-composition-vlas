@@ -955,3 +955,33 @@ tipped (final tilt > 45°).
 - pp_n4d's arms and mapping, unchanged, with arm (a) and the controls trained on familiar-layout generated carries.
 - Tilt separates N4's two failure modes. A failed episode that ends tipped on or near the plate is "tipping". One that ends
   upright but off the plate region is "off-site release".
+
+## 19. Step 1 findings so far, and the second design note (instrument v2; fixed 2026-11-02, before its code)
+
+**Hypothesis 1 is rejected: the class and budget fit one task.** A single-task fit on K1's 50 human demos, through P's own
+builder (`pp_p_train.py build --exclude` of every other task, rank 32, seeds 0-2), succeeds on K1 at 1.00, 0.95 and 0.95. P
+scores 0.95-1.00 on the same states.
+
+**Hypothesis 2 is rejected: it is not coverage.** Single-task fits on 50 generated carries from **familiar-layout** starts
+still score 0.00 on K1 and 0.00 on K4 (P: 0.97 and 0.63). The gate fails.
+- The familiar generator kept 50 of 52 K1 attempts, 50 of 76 for K4 and 50 of 83 for N4.
+
+**The cause, from a trace** (`pp_trace.py` on the generated-K1 fit, familiar states 4-9).
+- The fit reaches the bowl: closest approach 1.5-2.7 cm horizontally.
+- It closes the gripper with the end effector 2.7-3.8 cm above the bowl's origin. P closes at about 1.8 cm.
+- It then never descends again, and the bowl is not lifted (lift 0.002-0.061 m).
+- The planner explains this. In its close and open phases (2 and 6) it freezes all motion (`a[:6] = 0`) for 12 steps while
+  the gripper moves. The policy learns "close and stop". With flow chunks executed 5 steps open loop, the close fires about
+  1 cm early and the freeze locks the gripper above the object.
+- Human demos keep moving while they close. So the instrument's defect is in the generator's behaviour, not in the row path:
+  the fields, chunk boundaries and held labels go through the same functions as P's.
+
+**Fix (instrument only, no architecture involved).**
+- In the generator's close and open phases, the planner keeps servoing to the grasp point (or the release point) while the
+  gripper moves, instead of freezing.
+- Everything else is stage 1g's planner unchanged: the keypoints, controller, gains, noise, waypoints, phase durations and
+  acceptance rule.
+- Familiar-layout carries for K1, K4 and N4 are regenerated with new seeds (970000 + 1000 j + k), the fits retrained, and the
+  gate re-run.
+- If the gate still fails, the instrument is declared unrepairable within this design. I report that and do not pre-register
+  N4 on it.
