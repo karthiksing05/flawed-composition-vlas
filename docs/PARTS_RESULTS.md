@@ -752,3 +752,71 @@ the planner. The released bottle ends 0.093 m from the demo release site.
 - **improves** iff N4's S2 familiar success with P_sz minus P's is > 0.10, with its state-bootstrap CI lower bound > 0.
 - The Layer-2 GO for P_sz uses pp_l2's mapping, unchanged.
 - If GO holds on dev, the single confirmatory read follows on fresh seeds (20-22) and fresh states.
+
+## 13. Round 2 results (2026-11-02; m3_prereg pp_r2; results/flawed/pp_r2_read.json; rollouts pp_r2_roll)
+
+**Round verdict: does not improve.** N4's familiar success is 0.30 with P_sz against 0.22 with P: +0.08 [−0.05, 0.22].
+**Layer-2 GO = false**: S1 holds, S2 fails, and S3 meets its criterion in 5 of 12 cells.
+
+| | P (rank 32), seeds 10-12 | P_sz (rank 32), seeds 10-12 |
+|---|---|---|
+| S2 familiar: s known / s new | 0.77 / 0.71 | 0.77 / 0.71 |
+| S2 familiar: OM | 1.06 [1.01, 1.11] | 1.02 [0.97, 1.06] |
+| S2 familiar: N4 D3 | −0.43 [−0.55, −0.32] | −0.31 [−0.45, −0.18] |
+| S2 new: s known / s new | 0.16 / 0.21 | 0.14 / 0.21 |
+| S2 new: 3F | fails (N5 +0.04 [0.01, 0.08]) | holds |
+
+- P_sz's familiar 3F also fails on N1, −0.10 [−0.20, −0.02].
+- **S3 (P_sz)** meets its criterion in these cells:
+  - bottle familiar k = 1, 5, 10: 0.82 [0.76, 0.88], 0.81 [0.75, 0.86], 0.85 [0.80, 0.90];
+  - bottle new k = 1: 0.81 [0.72, 0.93];
+  - plate familiar k = 1: 0.85 [0.75, 0.96].
+- It fails elsewhere: plate familiar k = 5, 10 (0.72, 0.74); the bottle new layout at k = 5, 10 (0.67, 0.59); the plate new
+  layout on its lower bounds (0.39-0.53).
+- In S3, the bottle part puts N4 at 0.40-0.62 (rank 32 without the size input: 0.37-0.41, §9). N4 stays the lowest pairing
+  everywhere.
+- Reading the held object's size moves N4 in the right direction, but by less than the registered bar. It is not enough
+  to close the place handoff.
+- **New-layout competence is lower at these seeds than the development read showed:** s known 0.14-0.16 against 0.21 at
+  seeds 0-2 (§5). It now limits S2 and S3 more than N4 does.
+
+**Cost.** P_sz builds and creations: 2.4 A40-h. CPU: 48 rollout jobs, plus S1.
+
+## 14. Round 3 design note and protocol: an approach frame for the object term (fixed 2026-11-02, before any code of this round; m3_prereg tag pp_r3)
+
+**Weakness (measured on dev data; `experiments/pp_phase_diag.py` on P, rank 32, seeds 10-12).**
+- In the new layout, P fails before the grasp.
+  - Hold: 0.15-0.45 on the known pairings (familiar: 0.70-0.97).
+  - In 55-80% of new-layout episodes no object moves at all.
+- Once the object is held, arrival (0.67-0.92) and place-on-arrival (0.33-1.00) are close to their familiar values.
+- So new-layout competence is lost in the object term, the approach and grasp.
+
+**Diagnosis.**
+- The object term works in the object's frame: origin the object, axes the object's yaw. The robot always starts at the
+  same home pose.
+- In the demos, the object sits within about 1 cm of one spot. So the home-to-object offset, expressed in the object frame,
+  is nearly one vector.
+- In a new layout, the object is 0.10 m or more from its spot. The start offset then changes in both bearing and distance,
+  and the approach starts outside everything the demos cover.
+- The target term had the same gap at the carry, and stage 1c closed it with the canonical place frame. Its x-axis is the
+  bearing from the held object to the target, frozen at the hold's onset. Arrival in the new layout works today because of
+  that frame.
+
+**Change (one, structural; the place frame's principle applied to the approach).**
+- The object term's **translation** (its position input and the translational action dims) is expressed in an approach frame:
+  - origin: the object;
+  - x-axis: the bearing from the robot's home end-effector position to the object.
+  - The home position is the demos' mean end-effector position at step 0. It is a constant: every episode starts there, so
+    this bearing is the bearing frozen at the approach's onset, the counterpart of cyaw.
+- Rotations (the end-effector rotation input and the rotational action dims) stay in the object's yaw frame, because the
+  grasp orientation is defined relative to the object.
+- Under this frame, a new layout changes only the start distance, not the start bearing.
+- No data, teacher or per-scene input is added. Φ, the target term and the parts are unchanged.
+
+**Arm.** P_af (rank 32) at seeds 10-12. Reference: P (rank 32) at seeds 10-12, the same dev rollouts as round 2 (pp_r2_roll).
+
+**Reads.** Dev states 4-23, N2's seeds. S1, S2 (all 32 cells) and S3 (k ∈ {1, 5, 10, 50}), with pp_l2's estimators and its
+frozen GO mapping.
+
+**Pre-registered round verdict.** **improves** iff the pooled known-pairing (K1-K6) success in the new layout, P_af minus P, is
+> 0.10 with its state-bootstrap CI lower bound > 0.

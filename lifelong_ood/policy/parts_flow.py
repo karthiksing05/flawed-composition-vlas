@@ -75,10 +75,12 @@ class RoleNet(nn.Module):
 class PartsFlow(nn.Module):
     arm = "P"
 
-    def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False):
+    def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0)):
         super().__init__()
         self.H, self.rank = horizon, rank
         self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
+        self.aframe = bool(aframe)                                  # PARTS_RESULTS 14 (P_af): the object term's translation in the approach frame
+        self.register_buffer("home", torch.tensor(home, dtype=torch.float32))
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
         self.register_buffer("size", torch.tensor(size if size is not None else np.zeros((N_ENT, 2)), dtype=torch.float32))
         da, dt = 7 * horizon, 32
@@ -91,10 +93,11 @@ class PartsFlow(nn.Module):
         self.register_buffer("tpart", torch.tensor([TGT_ATOMS.index(e) if e in TGT_ATOMS else -1 for e in _ENT()], dtype=torch.long))
 
     # ---- features (stage 1i's, identity removed) ---------------------------------------------------------------------------------
-    def _obj_in(self, b, Q, o, yaw0):
+    def _obj_in(self, b, Q, o, yaw0, Qp=None):
         idx = torch.arange(len(b["oi"]), device=b["oi"].device)
         QT = Q.transpose(1, 2)
-        p = torch.einsum("bij,bj->bi", QT, b["ee_pos"] - o) * POS_SCALE
+        QpT = QT if Qp is None else Qp.transpose(1, 2)                      # translation frame (P_af: the approach frame)
+        p = torch.einsum("bij,bj->bi", QpT, b["ee_pos"] - o) * POS_SCALE
         R = torch.einsum("bij,bjk->bik", QT, b["ee_rot"])[:, :, :2].reshape(-1, 6)
         e = b["oi"]
         dy = b["yaw"][idx, e] - yaw0
@@ -125,11 +128,16 @@ class PartsFlow(nn.Module):
         flat = lambda z: z.reshape(B, -1)                                       # noqa: E731
         idx = torch.arange(B, device=x.device)
         Qo, oo, yo = rz(b["yaw"][idx, b["oi"]]), b["pos"][idx, b["oi"]], b["yaw"][idx, b["oi"]]
-        co = self._obj_in(b, Qo, oo, yo)
+        if self.aframe:                                             # x-axis: the bearing from the home end effector to the object
+            Qa = rz(torch.atan2(oo[:, 1] - self.home[1], oo[:, 0] - self.home[0]))
+            co = self._obj_in(b, Qo, oo, yo, Qp=Qa)
+        else:
+            Qa = Qo
+            co = self._obj_in(b, Qo, oo, yo)
         Qc, ct = self._canon(b)
         po, pt = self.opart[b["oi"]], self.tpart[b["ti"]]
         assert bool((po >= 0).all()) and bool((pt >= 0).all()), "an atom without a part"
-        vo = chunk_from(Qo, self.obj(torch.cat([co, flat(chunk_to(Qo, x)), te], -1), po).reshape(B, self.H, 7))
+        vo = _from2(Qa, Qo, self.obj(torch.cat([co, flat(_to2(Qa, Qo, x)), te], -1), po).reshape(B, self.H, 7))
         vt = chunk_from(Qc, self.tgt(torch.cat([ct, flat(chunk_to(Qc, x)), te], -1), pt).reshape(B, self.H, 7))
         g = b["held"][:, None, None]
         return (1 - g) * vo + g * vt
@@ -151,17 +159,32 @@ class PartsFlow(nn.Module):
         return x
 
     def save(self, path, meta):
-        np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize)),
+        np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize, aframe=self.aframe)),
                  **{k: v.detach().cpu().numpy() for k, v in self.state_dict().items()})
 
     @classmethod
     def load(cls, path):
         z = np.load(path, allow_pickle=False)
         meta = json.loads(str(z["__meta__"]))
-        m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False))
-        m.load_state_dict({k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"})
+        m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False), aframe=meta.get("aframe", False))
+        sd = {k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
+        sd.setdefault("home", torch.zeros(3))                                   # checkpoints before P_af carry no home buffer
+        m.load_state_dict(sd)
         m.eval()
         return m, meta
+
+
+def _to2(Qp, Qr, x):
+    """A world-frame chunk in a frame whose translation axes are Qp and rotation axes Qr (Qp = Qr: chunk_to)."""
+    p = torch.einsum("bij,bhj->bhi", Qp.transpose(1, 2), x[..., 0:3])
+    r = torch.einsum("bij,bhj->bhi", Qr.transpose(1, 2), x[..., 3:6])
+    return torch.cat([p, r, x[..., 6:7]], -1)
+
+
+def _from2(Qp, Qr, x):
+    p = torch.einsum("bij,bhj->bhi", Qp, x[..., 0:3])
+    r = torch.einsum("bij,bhj->bhi", Qr, x[..., 3:6])
+    return torch.cat([p, r, x[..., 6:7]], -1)
 
 
 def _ENT():
