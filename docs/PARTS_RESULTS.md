@@ -820,3 +820,64 @@ frozen GO mapping.
 
 **Pre-registered round verdict.** **improves** iff the pooled known-pairing (K1-K6) success in the new layout, P_af minus P, is
 > 0.10 with its state-bootstrap CI lower bound > 0.
+
+## 15. Round 3 results (2026-11-02; m3_prereg pp_r3; results/flawed/pp_r3_read.json; rollouts pp_r3_roll)
+
+**Round verdict: does not improve.** New-layout known-pairing success is 0.16 with P_af against 0.16 with P: +0.00
+[−0.07, 0.06]. **Layer-2 GO = false**: S1 holds, S2 fails, and S3 meets its criterion in 7 of 12 cells.
+
+- **S2 familiar.**
+  - s known 0.79, s new 0.76; OM 1.11 [1.00, 1.25].
+  - 3F fails on N4, −0.28 [−0.42, −0.14], and on N5 and N6, whose observed success is above the prediction.
+- **S2 new.** s known 0.16, s new 0.19; 3F holds, OM 1.18 [0.76, 1.96]. The OM criterion fails on its lower bound.
+- **S3.**
+  - Familiar: bottle 0.82-0.86, every cell passes. Plate 0.86 / 0.81 / 0.73 at k = 1 / 5 / 10.
+  - New layout: the plate passes at k = 5 and 10 only on wide CIs. The bottle's training pairing almost never succeeds
+    there (s_train 0.00-0.10).
+  - N4 in S3: 0.53-0.70.
+- Turning the approach into a bearing frame does not move new-layout competence. The approach's bearing is not what fails.
+
+**Cost.** P_af builds and creations: 1.7 A40-h. CPU: 36 rollout jobs, plus S1.
+
+**Consecutive principled rounds without improvement: 2 (rounds 2 and 3).**
+
+**Trace diagnostic** (descriptive; `experiments/pp_trace.py`; P and P_af seed 10; K1 and K6, states 4-11, both layouts).
+- **P, new layout.** When the object starts far from home (0.31-0.39 m away horizontally, against 0.10-0.22 m in the demos),
+  the end effector never moves toward it: the closest approach is the start distance. This held in 6 of 6 such K1 episodes
+  and 1 of 1 such K6 episode. Close objects are grasped.
+- **P_af, new layout.**
+  - The approach frame removes that freeze: every far K1 object is reached and held (8 of 8).
+  - But K1 then succeeds only 3 of 8 times. The bowl is lifted 0.10-0.40 m (familiar: about 0.12 m).
+  - On K6, 4 of 8 episodes stop 0.18-0.21 m above the cheese and never descend.
+- The approach frame acts on the bearing, as designed. The new-layout failures move to the descent and grasp and to the
+  carry that follows.
+
+## 16. Round 4 design note and protocol: one consistent approach frame (fixed 2026-11-02, before any code of this round; m3_prereg tag pp_r4)
+
+**Weakness (measured, §15 trace).** With P_af, in the new layout the end effector reaches far objects but then stalls above
+the cheese (4 of 8) or lifts the bowl 0.3-0.4 m. Known-pairing new-layout success stays 0.16.
+
+**Diagnosis.**
+- P_af expresses the object term's translation in the approach frame and its rotation in the object's yaw frame.
+- A new layout rotates the approach bearing. The translations then look like the demos', but the rotations do not. The
+  term sees a combination of rotation and position that no demo produced.
+- The canonical place frame (stage 1c), which carries the bottle and bowl to new targets, has no such split. Its rotation
+  input is expressed in the same bearing frame as its positions.
+
+**Change (one, structural): one frame for the whole object term.**
+- Positions, the end-effector rotation input, and both the translational and rotational action dims are all expressed in the
+  approach frame (origin the object; x-axis the bearing from home to the object).
+- The object's own yaw enters as an input relative to that frame: sin and cos of (object yaw − bearing). In P and P_af this
+  slot is always 0.
+- The object term is then equivariant to rotating the object's configuration about its vertical axis, as the place term is
+  about the target's.
+- Nothing else changes: P (rank 32), Φ, the target term, the parts, the data.
+
+**Arm.** P_af2 (rank 32) at seeds 10-12. Reference: P (rank 32) at seeds 10-12 (pp_r2_roll), as in round 3.
+
+**Reads.** Dev states 4-23, N2's seeds. S1, S2, S3 with pp_l2's estimators and frozen GO mapping.
+
+**Pre-registered round verdict.** **improves** iff the pooled known-pairing new-layout success, P_af2 minus P, is > 0.10 with
+its state-bootstrap CI lower bound > 0.
+
+**Stop rule.** If this round fails too, three consecutive principled rounds have failed, and the mandate stops here.

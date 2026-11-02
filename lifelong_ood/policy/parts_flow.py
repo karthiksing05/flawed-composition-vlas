@@ -79,7 +79,9 @@ class PartsFlow(nn.Module):
         super().__init__()
         self.H, self.rank = horizon, rank
         self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
-        self.aframe = bool(aframe)                                  # PARTS_RESULTS 14 (P_af): the object term's translation in the approach frame
+        # PARTS_RESULTS 14 (P_af, aframe=1): the object term's translation in the approach frame;
+        # PARTS_RESULTS 16 (P_af2, aframe=2): translation AND rotation in the approach frame, the object's yaw relative to it as input
+        self.aframe = int(aframe)
         self.register_buffer("home", torch.tensor(home, dtype=torch.float32))
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
         self.register_buffer("size", torch.tensor(size if size is not None else np.zeros((N_ENT, 2)), dtype=torch.float32))
@@ -128,7 +130,12 @@ class PartsFlow(nn.Module):
         flat = lambda z: z.reshape(B, -1)                                       # noqa: E731
         idx = torch.arange(B, device=x.device)
         Qo, oo, yo = rz(b["yaw"][idx, b["oi"]]), b["pos"][idx, b["oi"]], b["yaw"][idx, b["oi"]]
-        if self.aframe:                                             # x-axis: the bearing from the home end effector to the object
+        if self.aframe == 2:                                        # one frame: positions, rotations and yaw relative to the bearing
+            ay = torch.atan2(oo[:, 1] - self.home[1], oo[:, 0] - self.home[0])
+            Qa = rz(ay)
+            co = self._obj_in(b, Qa, oo, ay)
+            Qo = Qa
+        elif self.aframe:                                           # x-axis: the bearing from the home end effector to the object
             Qa = rz(torch.atan2(oo[:, 1] - self.home[1], oo[:, 0] - self.home[0]))
             co = self._obj_in(b, Qo, oo, yo, Qp=Qa)
         else:
