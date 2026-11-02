@@ -1,0 +1,74 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS Layer 2 confirmatory read, rank-32 parts (POST-HOC re-registration)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4454954",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "26ec5b46424bd9c02585c8def1a1fa4ad04c7092",
+  "short": "26ec5b46"
+ },
+ "keys": {},
+ "metrics": {
+  "S1": "pp_l2's: holds iff swap tests exactly 0 (every seed) and every tg component exactly 0 on every frame",
+  "S2": "pp_l2's: holds iff in both layouts 3F (every N1-N6 D3 CI contains 0) and object-matched ratio >= 0.8 with CI lower bound >= 0.6",
+  "S3_layer3_go": "pp_l2's: S1 and S2 hold and, for bottle and plate, both layouts, every k in {1, 5, 10}: transfer ratio >= 0.8 with CI lower bound >= 0.6",
+  "S4": "descriptive: HF, HL, RF, LIB exactly as pp_l2 (rank 8), at seeds 10-12 on the same fresh states",
+  "architecture": "P with rank-32 parts (parts_flow.PartsFlow rank=32); build recipe and creation recipe of pp_l2 (30,000 steps AdamW 3e-4 batch 512 EMA 0.999; creation 4,000 steps AdamW 3e-4 batch 256 no EMA)",
+  "files_sha256": {
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "05d3f51919da90ae8be6e47d7648746c13644b11e1b8237304dca28dc05f2291",
+   "experiments/pp_baselines.py": "3f1ae3aa6f562d974d7b101810d7b01a3dc0fff28c20d568755e7b8683c50b19",
+   "experiments/pp_conf_states.py": "ccea69c98df9e1dd80f01131347da78c546b3438cfc383686c36c4dce1146d3d",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "c696f224e441758ecd9d7b89b9c3166e3135cce37a5dfe33c92479952aa45951",
+   "experiments/pp_s1_mix.py": "8ae310147b698daec08206c097a4bebf821a45d86a80cc10dc65c34ffa1de513",
+   "lifelong_ood/policy/parts_flow.py": "35374e62a73e62877ced9cd4dee3c97c0d46f4addaba0ea66fbc46aec648814a",
+   "results/flawed/pp_conf_branches.json": "23752e26094292d75262f5b1a4a032d4cac5944692fd5ea3a5b93c6d3ea3a37b",
+   "results/flawed/pp_conf_states.json": "77300ef44dbc1e60d8a717f7b89b12e11390e64fac4e6dd632a001c2facfdcf9"
+  },
+  "held_out": "bottle (obj, created from K4), plate (tgt, created from K1); k in {1, 5, 10, 50}",
+  "multiplicity": "95% CIs as pp_l2; Layer-3 GO is an intersection-union test (every cell must pass), so no Holm adjustment is applied",
+  "section_6_protocol_sha256": "05b9538c3c050a19a020636c50b8168fc09f448015715d0c286fac03204c833e",
+  "seeds": [
+   10,
+   11,
+   12
+  ],
+  "states": "pp_conf_states: 50 fresh start states per layout (familiar seeds 9100000+k, new 9200000+k, noise 23000000+1000k), never used by any earlier read",
+  "status": "PRE-REGISTERED PLAN_PARTS Layer 2 confirmatory read (docs/PARTS_RESULTS.md section 6); POST-HOC: rank 32 chosen after seeing pp_l2's rank-8 and rank-32 development results",
+  "written_before": "the S1 read and any rollout of this read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_l2r32__s10__26ec5b46",
+ "schema": 1,
+ "script": "experiments/prereg/pp_l2r32.py",
+ "seconds": null,
+ "seed": 10,
+ "source_commit": null,
+ "started": "2026-11-02T01:36:32+00:00",
+ "stream": null,
+ "tag": "pp_l2r32"
+}
