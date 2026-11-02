@@ -1,0 +1,64 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS improvement round pp_r2 (docs/PARTS_RESULTS.md section 12)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4464425",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "3683c1505eecb2583546e9f79e5d5de1c84582b3",
+  "short": "3683c150"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "P_sz_rank32_target_reads_held_size_seeds_10-12",
+  "files_sha256": {
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "05d3f51919da90ae8be6e47d7648746c13644b11e1b8237304dca28dc05f2291",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "85014c2405bdfe28677956585088d9041b9cc7a62d32f2f9298425d187b61a6b",
+   "experiments/pp_round_read.py": "4bb191751e551a436ba66a4d9e939cef82c03ed4b2664583742ff459059cc3e5",
+   "experiments/pp_s1_mix.py": "8ae310147b698daec08206c097a4bebf821a45d86a80cc10dc65c34ffa1de513",
+   "lifelong_ood/policy/parts_flow.py": "9056a25f3c1d231076f4bdf8509e5611ebe9b4c4270ec2c4b97a84821cc48479"
+  },
+  "layer2_go": "pp_l2's mapping, unchanged (S1 exact; S2 3F + OM in both layouts; S3 ratio >= 0.8, LB >= 0.6, both atoms, both layouts, k in {1, 5, 10})",
+  "metric": "n4_fam",
+  "reference": "P_rank32_seeds_10-12",
+  "round_verdict": "improves iff candidate - reference > 0.10 with state-bootstrap CI lower bound > 0",
+  "section_sha256": "94791596a7133dccf7752b95d68c644b547d7f02467d8238322b3d68514f1f6d",
+  "states": "dev: N2 main states 4-23, N2 seeds",
+  "status": "PRE-REGISTERED PLAN_PARTS improvement round pp_r2 (docs/PARTS_RESULTS.md section 12)",
+  "written_before": "the round's S1 read and any of its rollouts"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_r2__s0__3683c150",
+ "schema": 1,
+ "script": "experiments/prereg/pp_round.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-02T09:56:13+00:00",
+ "stream": null,
+ "tag": "pp_r2"
+}
