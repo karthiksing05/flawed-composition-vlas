@@ -714,7 +714,7 @@ and is reported as such.
 **Deviation.** On the login node I ran `grep` on two results files (results/flawed/a1g_gen_K4.json, a1g_gen_K1.json) to read
 their kept and attempt counts.
 
-**Cost.** 9 single-task fits, about 2.1 A40-h. CPU: generation 3.7 h, plus 15 rollout and oracle jobs.
+**Cost.** 9 single-task fits, 1.7 A40-h. CPU: generation 3.7 h, plus 15 rollout and oracle jobs.
 
 ## 12. Round 2 design note and protocol: the held object's geometry at the place interface (fixed 2026-11-02, before any code of this round; m3_prereg tag pp_r2)
 
@@ -881,3 +881,47 @@ the cheese (4 of 8) or lifts the bowl 0.3-0.4 m. Known-pairing new-layout succes
 its state-bootstrap CI lower bound > 0.
 
 **Stop rule.** If this round fails too, three consecutive principled rounds have failed, and the mandate stops here.
+
+## 17. Round 4 results and the stop (2026-11-02; m3_prereg pp_r4; results/flawed/pp_r4_read.json; rollouts pp_r4_roll)
+
+**Round verdict: does not improve. It makes new-layout competence worse.** Known-pairing new-layout success is 0.01 with
+P_af2 against 0.16 with P: −0.15 [−0.21, −0.10]. **Layer-2 GO = false.**
+- S1 holds.
+- **S2 fails.** In the familiar layout 3F fails on N4, −0.64 [−0.75, −0.53], with observed 0.12 against predicted 0.76.
+  OM is 0.98 [0.90, 1.06]. In the new layout almost nothing succeeds.
+- **S3 passes in all 6 familiar cells.**
+  - Bottle 0.88 / 0.86 / 0.85 at k = 1 / 5 / 10, lower bounds 0.80-0.84.
+  - Plate 1.02 / 0.94 / 0.89, lower bounds 0.74-0.92.
+  - It fails in all 6 new-layout cells: the training pairing succeeds at most 0.05 of the time there.
+- Putting the object's rotation into the bearing frame breaks the new layout. Under it the demos' grasp rotations become
+  bearing-dependent, so a new bearing presents rotations no demo produced. Of the two frame choices, the split one (round 3)
+  is the better.
+- In the familiar layout, P_af2 is the best variant so far: s known 0.82, every familiar S3 cell passes, and N4's created
+  plate part reaches 0.55-0.88. That is descriptive and carries no verdict.
+
+**Stop: three consecutive principled rounds (2, 3, 4) failed to improve their targeted weakness** (mandate stop rule ii).
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 1 | N4 (bottle on plate) | diagnostic only | pp_n4d | "competence" on an arm that failed its controls: not interpretable | — |
+| 2 | N4 place-on-arrival | target term reads the held object's size | pp_r2 | +0.08 [−0.05, 0.22]: does not improve | false |
+| 3 | new-layout competence | object-term translation in the approach frame | pp_r3 | +0.00 [−0.07, 0.06]: does not improve | false |
+| 4 | new-layout stall after the approach | the whole object term in the approach frame | pp_r4 | −0.15 [−0.21, −0.10]: worse | false |
+
+**Where the program stands.**
+- Familiar layout:
+  - The sparse part library composes created atoms at their training partner's rate.
+  - P_af2 passes every familiar S3 cell.
+  - N4 remains below its factor prediction in every variant. It is a place-handoff failure: the planner shows N4 is
+    feasible, and P drops the bottle off the release site.
+- New layout:
+  - Demos alone leave competence at 0.01-0.16 at seeds 10-12.
+  - Frame changes moved the failure from "never leaves home" (P) to "stalls above or over-lifts" (P_af). They did not raise
+    success.
+  - Layout generalization does not come from frame equivariance at this demo coverage. That is the plan's §4.1 claim, and
+    it fails here.
+- Layer-2 GO was not reached, so Layer 3 did not start.
+
+**Cost of the mandate.**
+- GPU: 7.8 A40-h. N4 fits 1.7, P_sz 2.4, P_af 1.7, P_af2 2.0.
+- CPU: 146 rollout, oracle, generation, trace and S1 jobs, 48.1 CPU-job-h, plus pre-registration and read jobs.
