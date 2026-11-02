@@ -627,3 +627,51 @@ pre-empted and requeued twice; finished task files were kept) and 4454485 (R). N
   - targeted F3 1.6 (T 0.83 over three segments, R 0.58, fit, open loop and smokes 0.14);
   - fresh states 0.51 over three segments (any GPU, for EGL).
 - CPU: 223 jobs (222 rollouts and S1), 155.7 CPU-job-h.
+
+## 10. Round 1 design note and protocol: the N4 diagnostic (fixed 2026-11-01, before any of its reads; m3_prereg tag pp_n4d)
+
+**Weakness.** Bottle on plate (N4) runs at 0.28-0.41 in every P configuration (S2, both S3 atoms, ranks 8 and 32). Every other
+pairing runs near its factor prediction.
+
+**Question.** Is N4 hard in itself (competence) or only when composed (combination)?
+
+**No demo of N4 exists.** LIBERO-Goal has no bottle-on-plate task, and no holistic checkpoint saw N4. So the arm "trained
+directly on N4" needs N4 carries from somewhere. They come from stage 1g's scripted oracle-state planner (`fa1g_plan.py`). The
+keypoints are composed from the demos by the relocation rule, with the object rigid in the hand:
+- grasp offset, grasp rotation, carry height and release rotation from the bottle's task K4;
+- release offset = K4's grasp offset + (K1's release offset − K1's grasp offset). That is, the bottle's hand offset plus
+  the plate task's object-to-target offset at release.
+
+This planner is a diagnostic data source only. It is not part of any architecture.
+
+**Arms** (familiar layout, dev states 4-23, N2's seeds; `experiments/pp_n4d.py`).
+- **(a) single-task fit.** P's class (PartsFlow, rank 32), trained only on 50 generated N4 carries. The recipe and budget are
+  P's (30,000 steps, AdamW 3e-4, batch 512, EMA 0.999). Seeds 0-2.
+- **(b) P.** The rank-32 full library pp_full_r32_s10-12, on dev states. These seeds were trained for §6 and never read on dev
+  states.
+- **Controls.** The same single-task fit on stage 1g's generated K4 and K1 carries, read on K4 and K1. They separate a
+  single-task or generated-data advantage from a combination effect.
+- **(o) oracle planner.** The composed-keypoint planner itself on N4, and its own keypoints on K4 and K1, from the same dev states.
+  Descriptive: it measures how hard the task is physically.
+
+**Measures.**
+- Success, plus a per-phase breakdown:
+  - hold: the object held;
+  - arrival: held within the pair's calibrated radius of the target (a1_calib);
+  - place-on-arrival: success given arrival.
+- Release-site error: the object's final xy relative to the plate, against the demos' release sites. The reference is the
+  median object-minus-plate xy at the first open command after the grasp, over K1's 50 demos (scored from recorded demo
+  states only). The final object height above the plate is also reported.
+- CIs: 2,000-draw percentile bootstrap over states, seeds pooled.
+
+**Mapping** (pre-registered; Δ = s_a(N4) − s_P(N4)).
+- **competence** iff Δ ≤ 0.10.
+- **combination** iff Δ > 0.10 and its CI lower bound > 0. The failing phase is the phase where P's rate falls furthest
+  below (a)'s.
+- Otherwise (Δ > 0.10 with lower bound ≤ 0): **unresolved**.
+- Flag, reported alongside and not changing the verdict: if a control's single-task fit beats P on its own task by more than
+  0.10 with lower bound > 0, a "combination" verdict may reflect the data source.
+
+**What follows.**
+- On combination: the next round targets the failing interface (for example, what the place part conditions on at the handoff).
+- On competence: N4 becomes a recorded competence caveat, and the next round moves to new-layout competence.
