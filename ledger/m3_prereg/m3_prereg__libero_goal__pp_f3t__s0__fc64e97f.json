@@ -1,0 +1,62 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS targeted F3 (pi0.5 KV_14 target-identity subspace; POST-HOC follow-up of pp_f3)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4454458",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "fc64e97f27bef4a612e00c9d5d877839204c3345",
+  "short": "fc64e97f"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "T = target subspace, source B (shares the target); R = random 16-dim subspace, source B (control); TA = target subspace, source A (open loop only)",
+  "closed_loop": "N1-N6, familiar (primary) and new, N2 states 4-13, N2 seeds, 10 episodes per task and layout; intact = pp_f3's intact re-run",
+  "estimator": "top-16 right singular vectors of within-object target contrasts (bowl K1-K2, K1-K3, K2-K3; bottle K4-K5) of layer-14 keys (de-rotated) and values at aligned valid positions, on the F1 frames",
+  "files_sha256": {
+   "experiments/pp_f1_mix.py": "709519bea70dde09b9d7b6d14aa7cdf67c6a72e74ded0d6d41f2fc928ed89d78",
+   "experiments/pp_f3t.py": "fefa45077966184b7b1277f93fa35317497788d56d065b3076812344abfbfffc",
+   "experiments/pp_f3t_read.py": "a0edc587f758be2e337da6a151941d3f8b855e53810a66e65d0ad15bae2db129",
+   "experiments/pp_f3t_roll.sh": "f5a24f388d8a0d6b62b7bc3bc9f0aa54da2d476847b29562f1d0d5157d1c9395",
+   "experiments/pp_purify.py": "8571fa9f5cfb6854b2971544bbd1ea6cf4fbc49016daba366aa382bc6f43e88f",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "results/flawed/pp_f3_branches.json": "894939ea7189cddff63be7adeb45da1d57f413ee491825d6b2fb950b995e9037"
+  },
+  "groot": "not run in this pass",
+  "rank": 16,
+  "section_7_protocol_sha256": "e25f4dd3e1227990c4f971da171213431a08c2bf658edca60aa2b17356232e61",
+  "status": "PRE-REGISTERED PLAN_PARTS targeted F3 (docs/PARTS_RESULTS.md section 7); POST-HOC follow-up of pp_f3",
+  "verdict": "TIES iff dp_T > 0 with CI excluding 0, dg_T >= -0.10 (point), and dp_T - dp_R > 0 with CI excluding 0 (familiar layout; 2,000-draw paired bootstrap over tasks and states)",
+  "written_before": "the subspace fit, the open-loop read and any closed-loop rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_f3t__s0__fc64e97f",
+ "schema": 1,
+ "script": "experiments/prereg/pp_f3t.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-02T00:59:09+00:00",
+ "stream": null,
+ "tag": "pp_f3t"
+}
