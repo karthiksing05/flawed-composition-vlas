@@ -43,21 +43,23 @@ def main():
     ap.add_argument("--name", required=True)
     ap.add_argument("--outdir", required=True)
     ap.add_argument("--tids", required=True)
+    ap.add_argument("--phase", default="main", choices=("main", "conf"))   # conf: pp_conf_states.py's fresh states and seeds
     a = ap.parse_args()
+    sdir, bfile = ("n2_states", "n2_branches_main.json") if a.phase == "main" else ("pp_conf_states", "pp_conf_branches.json")
     torch.set_num_threads(1)
     model, meta = load_any(os.path.join(FC.DATA, "ckpt", a.ckpt))
     od = os.path.join(OUT, a.outdir)
     os.makedirs(od, exist_ok=True)
     n2 = json.load(open(os.path.join(OUT, "n2_tasks.json"), encoding="utf-8"))
-    br = json.load(open(os.path.join(OUT, "n2_branches_main.json"), encoding="utf-8"))
+    br = json.load(open(os.path.join(OUT, bfile), encoding="utf-8"))
     for tid in [int(x) for x in a.tids.split("+")]:
-        out = os.path.join(od, f"{a.name}_s{meta['seed']}_main_{tid}.json")
+        out = os.path.join(od, f"{a.name}_s{meta['seed']}_{a.phase}_{tid}.json")
         if os.path.exists(out):
             print(f"[pp_roll] {out} exists", flush=True)
             continue
         t = n2["tasks"][tid]
         assert t["tid"] == tid
-        S = np.load(os.path.join(OUT, "n2_states", f"n2_goal_{tid}.npy"))
+        S = np.load(os.path.join(OUT, sdir, f"n2_goal_{tid}.npy"))
         eps = []
         for b in br:
             e = episode(model, os.path.join(ROOT, t["bddl"]), S[int(b["trial"])], t["language"], b["seed_base"])
@@ -65,7 +67,7 @@ def main():
             eps.append(e)
         print(f"[pp_roll] {a.name} s{meta['seed']} task {tid} {t['key']}: success {np.mean([e['success'] for e in eps]):.2f} "
               f"errors {sum(e['error'] is not None for e in eps)}", flush=True)
-        res = dict(ckpt=a.ckpt, name=a.name, ckpt_meta=meta, phase="main", host=os.uname().nodename,
+        res = dict(ckpt=a.ckpt, name=a.name, ckpt_meta=meta, phase=a.phase, host=os.uname().nodename,
                    tasks={str(tid): dict(language=t["language"], success_rate=float(np.mean([e["success"] for e in eps])), episodes=eps)})
         with open(out, "w", encoding="utf-8") as fh:
             json.dump(res, fh, indent=1)

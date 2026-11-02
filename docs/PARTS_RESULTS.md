@@ -417,3 +417,74 @@ the user's approval and is not run.
 
 **Cost.** GPU: builds 5.0 A40-h, creations about 1.9 A40-h. CPU: 246 rollout jobs, 74.6 CPU-job-h, together with S1 and the
 oracle F1 run.
+
+## 6. Layer 2 confirmatory protocol: rank-32 parts, fresh seeds (fixed 2026-11-01, before its S1 read and any of its rollouts; m3_prereg tag pp_l2r32)
+
+**This is a post-hoc re-registration.** Rank 32 was chosen after seeing pp_l2's results: the rank-8 primary arm and the
+rank-32 secondary arm, both on the development data (seeds 0-2, N2 states 4-23). The user approved this one fresh-seed
+confirmatory read (the plan's S-conf, §6 of the plan). The approval covers this read only.
+
+**Frozen before any read.**
+- Architecture: P (§4) with rank-32 parts. 82,832 (object) and 82,608 (target) parameters per part.
+- Recipes: pp_l2's build recipe (30,000 steps, AdamW 3e-4, batch 512, EMA 0.999) and creation recipe (4,000 steps, AdamW 3e-4,
+  batch 256, no EMA, every other parameter asserted bitwise unchanged).
+- Held-out atoms: bottle (object, created from K4) and plate (target, created from K1). k ∈ {1, 5, 10, 50}.
+- Libraries: full_r32 (S1, S2), nobottle_r32 and noplate_r32 (S3).
+- Criteria: pp_l2's S1, S2 and S3 criteria and its Layer-3 GO mapping, unchanged (§4).
+- S4: HF, HL, RF and LIB exactly as in pp_l2 (rank 8), descriptive.
+
+**Fresh data.**
+- Seeds 10, 11 and 12 for every build and creation. No earlier run used them.
+- Start states: 50 per layout from `experiments/pp_conf_states.py` (results/flawed/pp_conf_states/). N2's generator rules are
+  unchanged; only the seed bases are new: familiar 9100000 + k, new layout 9200000 + k, episode noise 23000000 + 1000 k
+  (N2: 600000, 700000, 13000000). No earlier read used these states.
+- 3 seeds × 50 states per cell (the plan's confirmatory size).
+- Rollouts: `pp_p_roll.py --phase conf` into results/flawed/pp_s2c_roll (S2), pp_s3c_roll (S3, S4) and pp_s4c_old (forgetting).
+- Read: `experiments/pp_l2r32_read.py` -> results/flawed/pp_l2r32_read.json. It runs pp_l2_read's estimators. Its `--check`
+  reproduces pp_l2_read.json from the development data, and it was run before registration.
+
+**Statistics.** 95% CIs, as in pp_l2. The plan asks for Holm over at most 6 confirmatory hypotheses. Layer-3 GO is an
+intersection-union test: every cell must pass. Such a test needs no multiplicity adjustment, so none is applied.
+
+**Reported whichever way it falls.** If N4 (bottle on plate) stays low, it is reported as competence and not patched.
+
+## 7. Targeted F3 protocol: the target-identity subspace of pi0.5 KV_14 (fixed 2026-11-01, before the subspace fit and any read; m3_prereg tag pp_f3t)
+
+**This is a post-hoc follow-up.** pp_f3 replaced pi0.5's layer-14 KV wholesale with B's, and the grasp collapsed (§3). This
+arm replaces only a target-identity subspace and keeps the orthogonal complement.
+
+**Subspace estimator** (`experiments/pp_f3t.py fit`; known tasks only, no rollout, no outcome).
+- Contrasts: pairs of known tasks that share the object and differ in the target: bowl K1-K2, K1-K3, K2-K3; bottle K4-K5.
+- Frames: the 20 grasp frames of both layouts and the object's own 10 place frames (pp_f1_frames).
+- At every aligned valid position, take the difference between the two runs' layer-14 keys and values. Aligned positions are
+  every image token, plus every instruction token outside the span where the two instructions differ.
+- Keys are compared before RoPE: each key is de-rotated at its own position.
+- U_K and U_V are the top 16 right singular vectors of the stacked key and value contrasts. The rank, 16, is fixed here.
+- Control: a random 16-dimensional subspace of each (QR of a Gaussian).
+- Diagnostic: the share of contrast energy each subspace captures, both in-sample and on odd frames when fit on even frames.
+
+**Targeted purification** of a new-pairing run, at layer 14 only:
+- u' = u + P_U(u_S − u) and v' = v + P_V(v_S − v), at aligned positions.
+- The key is re-rotated at the base run's own position.
+- Arms:
+  - **T** (primary): target subspace, source S = B, the known task that shares the target.
+  - **R** (control): random subspace, source B.
+  - **TA** (open loop only, descriptive): target subspace, source A, the known task that shares the object.
+- Why B is the source: every known task that shares the object has a different target. Its target-subspace component would
+  install the wrong target. The literal "source shares the object" reading is kept as arm TA, in open loop.
+
+**Reads.**
+- Open loop first (`pp_f3t.py open` -> results/flawed/pp_f3t_open.json): pp_f3's cosines and seeds, for every arm.
+- Then closed loop: N1-N6, familiar (primary) and new, N2 states 4-13, N2's seeds, 10 episodes per task and layout, arms T
+  and R (`experiments/pp_f3t_roll.sh`).
+- Intact is pp_f3's intact re-run, which matched N2's recorded episodes exactly.
+- Read: `experiments/pp_f3t_read.py` -> results/flawed/pp_f3t_read.json.
+
+**Verdict** (familiar layout; 2,000-draw paired bootstrap over tasks and states):
+- place_up: Δp_T > 0 with its CI excluding 0.
+- grasp_kept: Δg_T ≥ −0.10 (point estimate). The tolerance is fixed here.
+- specific: Δp_T − Δp_R > 0 with its CI excluding 0.
+- **F3t ties** iff all three hold. Partial outcomes are labelled: "raises place, not specific", "raises place, costs grasp",
+  "does not raise place".
+
+**Scope.** GR00T's Q_3 / Q_6 are not run in this pass.

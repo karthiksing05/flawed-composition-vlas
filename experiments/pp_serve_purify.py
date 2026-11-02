@@ -33,7 +33,11 @@ class PurifyHooks:
             return pre
         fr = {"img": [self.obs["observation/image"]], "wimg": [self.obs["observation/wrist_image"]],
               "state8": [self.obs["observation/state"]]}
-        _, pp = PU.purified_prefix(self.M, fr, [0], self.T, c, self.comp)
+        if self.comp.startswith("f3t_"):                                    # pp_f3t: targeted arm T or R of KV_14
+            import pp_f3t
+            _, pp = pp_f3t.targeted_prefix(self.M, fr, [0], self.T, c, self.comp[4:])
+        else:
+            _, pp = PU.purified_prefix(self.M, fr, [0], self.T, c, self.comp)
         self.n += 1
         return pp
 
