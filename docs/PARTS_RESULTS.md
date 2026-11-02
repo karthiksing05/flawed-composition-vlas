@@ -925,3 +925,33 @@ P_af2 against 0.16 with P: −0.15 [−0.21, −0.10]. **Layer-2 GO = false.**
 **Cost of the mandate.**
 - GPU: 7.8 A40-h. N4 fits 1.7, P_sz 2.4, P_af 1.7, P_af2 2.0.
 - CPU: 146 rollout, oracle, generation, trace and S1 jobs, 48.1 CPU-job-h, plus pre-registration and read jobs.
+
+## 18. Step 1 design note: fixing the N4 instrument (pp_n4d2; fixed 2026-11-02, before any code of this step)
+
+**The defect (§11).** The single-task fits score 0.00 on their own K4 and K1 controls, where P scores 0.63 and 0.97. Their
+training losses converged.
+
+**Hypotheses, tested in this order.**
+1. **The class, budget or my training path cannot fit one task.** Test: a single-task fit on K1's 50 human demos, through
+   `pp_p_train.py build` (P's own row builder) with `--exclude` of every other task. If it fails, the class or budget is at
+   fault. If it works, the problem is in the generated data or in my generated-row path.
+2. **Coverage, not a bug.** pp_n4d's carries came from stage 1g's relocated-layout sampler, with objects anywhere in the box.
+   Fifty such episodes cover the familiar spot thinly, while the dev reads are on the familiar layout. Test: a single-task fit
+   on 50 generated carries from **familiar-layout** starts (N2's familiar sampler, new seeds 960000 + 1000 j + k), read on
+   the same task.
+3. **A bug in the generated-row path.** pp_n4d's train() builds rows outside P's builder. Test: route the generated rows
+   through the same function P uses (`pp_p_train.rows` logic over a demos-format dict) and compare fits on identical data.
+   If (1) passes and (2) fails, I inspect the path field by field: held, off, prev, chunk boundaries.
+
+**Validation gate (from the user).** The instrument is valid iff a single-task fit on generated K1 (or K4) carries, from
+familiar-layout starts, reaches within 0.15 of P on that task (point estimate, dev states 4-23, 3 seeds × 20 states).
+
+**Tilt.** Rollouts for this step record the instruction object's tilt at every step: the angle between its body z-axis and
+world z, from the simulator's body quaternion. The rollout wrapper is `experiments/pp_n4d2.py`, and the episode itself is
+fa1h_roll.episode, unchanged. Per episode it reports the maximum tilt while held, the final tilt, and whether the object ends
+tipped (final tilt > 45°).
+
+**Then pp_n4d2** (pre-registered after the gate passes, before any N4 re-read):
+- pp_n4d's arms and mapping, unchanged, with arm (a) and the controls trained on familiar-layout generated carries.
+- Tilt separates N4's two failure modes. A failed episode that ends tipped on or near the plate is "tipping". One that ends
+  upright but off the plate region is "off-site release".
