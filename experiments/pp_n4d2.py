@@ -28,7 +28,10 @@ import pp_n4d as N                                                          # no
 
 OUT = os.path.join(ROOT, "results", "flawed")
 RD = os.path.join(OUT, "pp_n4d2_roll")
-FAM_BASE = 960000
+# instrument v2 (PARTS_RESULTS 19): --v2 selects the servoing generator, seeds 970000 + 1000 j + k, files pp_n4d2v_*, arms N4d2v_*
+V2 = "--v2" in sys.argv
+V = "v" if V2 else ""
+FAM_BASE = 970000 if V2 else 960000
 J = {"N4": 0, "K1": 1, "K4": 2}
 TIP = 45.0
 
@@ -59,7 +62,7 @@ def genfam(task):
         env0.reset()
         s0 = env0.sim.get_state().flatten()
         rng = np.random.default_rng(seed)
-        ep, info = N.plan_episode(bddl, s0, kp, oe, te, rng)
+        ep, info = N.plan_episode(bddl, s0, kp, oe, te, rng, servo=V2)
         rep.append(dict(seed=seed, success=info["success"], phase=info["phase"]))
         if not info["success"]:
             continue
@@ -76,8 +79,8 @@ def genfam(task):
         kept += 1
     env0.close()
     out = {x: np.asarray(v, np.float32 if x not in ("task", "demo", "step") else np.int32) for x, v in cols.items()}
-    np.savez_compressed(os.path.join(FC.DATA, "gen", f"pp_n4d2_{task}.npz"), **out)
-    with open(os.path.join(OUT, f"pp_n4d2_gen_{task}.json"), "w", encoding="utf-8") as fh:
+    np.savez_compressed(os.path.join(FC.DATA, "gen", f"pp_n4d2{V}_{task}.npz"), **out)
+    with open(os.path.join(OUT, f"pp_n4d2{V}_gen_{task}.json"), "w", encoding="utf-8") as fh:
         json.dump(dict(task=task, kept=kept, attempts=k, base=FAM_BASE + 1000 * J[task], rows=int(len(out["task"])), keypoints=kp,
                        episodes=rep, note="familiar-layout starts; stage 1g planner; no demo action executed"), fh, indent=1)
     print(f"[pp_n4d2 genfam] {task}: kept {kept} of {k} ({time.time() - t0:.0f}s)", flush=True)
@@ -92,7 +95,7 @@ def train(task, seed):
     from pp_p_train import fit
     from lifelong_ood.policy import parts_flow as PF
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    G = dict(np.load(os.path.join(FC.DATA, "gen", f"pp_n4d2_{task}.npz")))
+    G = dict(np.load(os.path.join(FC.DATA, "gen", f"pp_n4d2{V}_{task}.npz")))
     n = len(G["task"])
     oe, te = N.TASKS[task]
     oi, ti = np.full(n, FC.ENT.index(oe)), np.full(n, FC.ENT.index(te))
@@ -108,16 +111,16 @@ def train(task, seed):
     size = np.array([FC.SIZE[e] for e in FC.ENT], np.float32)
     m = PF.PartsFlow(8, center=center, size=size, rank=32).to(dev)
     ema, curve, secs = fit(m, list(m.parameters()), b, T(np.clip(X, -1, 1)), 30000, 512, 3e-4, seed, 1e-4, log=f"n4d2 {task} s{seed}")
-    d = os.path.join(FC.DATA, "ckpt", f"pp_n4d2_{task}_s{seed}")
+    d = os.path.join(FC.DATA, "ckpt", f"pp_n4d2{V}_{task}_s{seed}")
     os.makedirs(d, exist_ok=True)
     ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=f"n4d2_{task}", seed=seed, tasks=[task], center=center, steps=30000, data="generated-familiar"))
-    with open(os.path.join(OUT, f"pp_n4d2_train_{task}_s{seed}.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(OUT, f"pp_n4d2{V}_train_{task}_s{seed}.json"), "w", encoding="utf-8") as fh:
         json.dump(dict(task=task, seed=seed, n_rows=n, n_episodes=int(len(np.unique(G["demo"]))), secs=secs, curve=curve), fh, indent=1)
 
 
 def stats(task):
     """Descriptive data check (no rollout): field ranges of the generated rows against the human demos of the same task."""
-    G = dict(np.load(os.path.join(FC.DATA, "gen", f"pp_n4d2_{task}.npz")))
+    G = dict(np.load(os.path.join(FC.DATA, "gen", f"pp_n4d2{V}_{task}.npz")))
     D = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
     Db = dict(np.load(os.path.join(FC.DATA, "demos_b.npz")))
     out = {}
@@ -207,7 +210,7 @@ def gate():
     res = {}
     for task in ("K1", "K4"):
         rad = radius(*N.TASKS[task], cal)
-        a = N.arrays([os.path.join(RD, f"N4d2_{task}_s{s}_main_{N.TID[task]}.json") for s in (0, 1, 2)], task, rad, np.zeros(2))[0]
+        a = N.arrays([os.path.join(RD, f"N4d2{V}_{task}_s{s}_main_{N.TID[task]}.json") for s in (0, 1, 2)], task, rad, np.zeros(2))[0]
         p = N.arrays([os.path.join(RD, f"P2r32_s{s}_main_{N.TID[task]}.json") for s in (10, 11, 12)], task, rad, np.zeros(2))[0]
         res[task] = dict(single_task=float(np.nanmean(a)), P=float(np.nanmean(p)), within_015=bool(np.nanmean(a) >= np.nanmean(p) - 0.15))
     res["valid"] = any(v["within_015"] for v in res.values() if isinstance(v, dict))
@@ -224,13 +227,13 @@ def read():
         s = orig_join(*p)
         if s.startswith(R0 + os.sep):
             base = os.path.basename(s)
-            base = base.replace("N4d_", "N4d2_").replace("oracle_N4.json", "oracle_N4_s0_main_22.json") \
+            base = base.replace("N4d_", f"N4d2{V}_").replace("oracle_N4.json", "oracle_N4_s0_main_22.json") \
                        .replace("oracle_K4.json", "oracle_K4_s0_main_6.json").replace("oracle_K1.json", "oracle_K1_s0_main_0.json")
             return orig_join(RD, base)
         if s == orig_join(OUT, "pp_n4d_read.json"):
             return orig_join(OUT, "pp_n4d2_read.json")
         if s == orig_join(OUT, "pp_n4d_gen.json"):
-            return orig_join(OUT, "pp_n4d2_gen_N4.json")
+            return orig_join(OUT, f"pp_n4d2{V}_gen_N4.json")
         return s
     os.path.join = join
     try:
@@ -241,7 +244,7 @@ def read():
     out["gate"] = gate()
     split = {}
     for arm, files in (("P", [os.path.join(RD, f"P2r32_s{s}_main_22.json") for s in (10, 11, 12)]),
-                       ("a", [os.path.join(RD, f"N4d2_N4_s{s}_main_22.json") for s in (0, 1, 2)]),
+                       ("a", [os.path.join(RD, f"N4d2{V}_N4_s{s}_main_22.json") for s in (0, 1, 2)]),
                        ("o", [os.path.join(RD, "oracle_N4_s0_main_22.json")])):
         E = [e for f in files for e in N.ep_list(f)]
         fail = [e for e in E if not e["success"] and e["held_step"] is not None]
@@ -266,6 +269,7 @@ if __name__ == "__main__":
     ap.add_argument("--name", default="")
     ap.add_argument("--tids", default="")
     ap.add_argument("--oracle", default="")
+    ap.add_argument("--v2", action="store_true")                           # read at import (V2)
     a = ap.parse_args()
     if a.mode == "genfam":
         genfam(a.task)

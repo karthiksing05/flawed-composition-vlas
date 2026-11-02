@@ -48,8 +48,10 @@ def keypoints(task):
     return out
 
 
-def plan_episode(bddl, s0, kp, oe, te, rng):
-    """fa1g_plan.gen's planner on one start state -> (rows dict, info).  Controller and phase rules unchanged."""
+def plan_episode(bddl, s0, kp, oe, te, rng, servo=False):
+    """fa1g_plan.gen's planner on one start state -> (rows dict, info).  Controller and phase rules unchanged.
+    servo=True (PARTS_RESULTS 19, instrument v2): in the close / open phases keep servoing to the grasp / release point instead of
+    freezing the motion."""
     import fa1b_common as FB
     from fa1g_plan import ctrl
     oi, ti = FC.ENT.index(oe), FC.ENT.index(te)
@@ -77,6 +79,8 @@ def plan_episode(bddl, s0, kp, oe, te, rng):
             wp, Rt, g = po + goff + [0, 0, 0.10], RG, -1.0
         elif phase == 1:
             wp, Rt, g = po + goff, RG, -1.0
+        elif phase == 2 and servo:
+            wp, Rt, g = po + goff, RG, 1.0
         elif phase == 2:
             wp, Rt, g = ep["ee_pos"][-1] if hold else sc["ee_pos"], RG, 1.0
         elif phase == 3:
@@ -85,12 +89,14 @@ def plan_episode(bddl, s0, kp, oe, te, rng):
             wp, Rt, g = np.array([pt[0] + roff[0], pt[1] + roff[1], zref + cz]), RR, 1.0
         elif phase == 5:
             wp, Rt, g = pt + roff, RR, 1.0
+        elif phase == 6 and servo:
+            wp, Rt, g = pt + roff, RR, -1.0
         elif phase == 6:
             wp, Rt, g = ep["ee_pos"][-1], RR, -1.0
         else:
             wp, Rt, g = rel_up, RR, -1.0
         a, err = ctrl(sc, wp, Rt, g, rng)
-        if phase in (2, 6):
+        if phase in (2, 6) and not servo:
             a[:6] = 0.0
         for x in ("ee_pos", "ee_rot", "grip", "pos", "yaw", "drawer"):
             ep[x].append(sc[x])
