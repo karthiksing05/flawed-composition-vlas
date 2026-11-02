@@ -488,3 +488,142 @@ arm replaces only a target-identity subspace and keeps the orthogonal complement
   "does not raise place".
 
 **Scope.** GR00T's Q_3 / Q_6 are not run in this pass.
+
+## 8. Targeted F3 results (2026-11-01; m3_prereg pp_f3t; results/flawed/pp_f3t_read.json, pp_f3t_open.json, pp_f3t_subspace.json; rollouts pp_f3t_roll)
+
+**Verdict (pp_f3t mapping): does not raise place.** place_up, grasp_kept and specific all fail. Targeted purification of
+KV_14 does not tie the located component to the place failure.
+
+**Subspace.**
+- 62,220 contrast rows. The top-16 key subspace captures 0.59 of the key contrast energy (0.58 on held-out odd frames); a random
+  16-dim subspace captures 0.06.
+- Values: 0.58 (held out 0.57), random 0.07.
+- The spectrum is spread out: the first direction carries 0.17 (keys) and 0.13 (values).
+
+**Open loop** (pooled cosine over N1-N6).
+
+| frames | intact | T | R | TA |
+|---|---|---|---|---|
+| place, toward the target | 0.10 | 0.15 | 0.10 | −0.01 |
+| grasp familiar, toward the object | 0.33 | 0.31 | 0.32 | 0.35 |
+| grasp new, toward the object | 0.52 | 0.50 | 0.52 | 0.51 |
+
+- T moves the place chunk toward the target about as much as pp_f3's wholesale purification did (0.10 to 0.16).
+- TA (target subspace from the object-sharing task) points the place chunk away from the target: it installs A's target.
+
+**Closed loop** (pi0.5, N1-N6, states 4-13, 10 episodes per task and layout; intact = pp_f3's re-run). Jobs 4454484 (T,
+pre-empted and requeued twice; finished task files were kept) and 4454485 (R). No episode errors.
+
+| layout | intact s / g / p | T s / g / p | R s / g / p | Δp_T [95% CI] | Δg_T | Δp_T − Δp_R |
+|---|---|---|---|---|---|---|
+| familiar (primary) | 0.48 / 0.95 / 0.51 | 0.17 / 0.45 / 0.37 | 0.45 / 0.93 / 0.48 | −0.14 [−0.60, 0.25] | **−0.50 [−0.82, −0.20]** | −0.11 [−0.64, 0.28] |
+| new | 0.32 / 0.63 / 0.50 | 0.20 / 0.43 / 0.46 | 0.32 / 0.60 / 0.53 | −0.04 [−0.35, 0.24] | −0.20 [−0.42, −0.02] | −0.07 [−0.39, 0.24] |
+
+- The random control changes almost nothing: Δp_R −0.03 [−0.16, 0.12], Δg_R −0.02 [−0.10, 0.00].
+- Per task, familiar (s / g, intact → T):
+
+  | task | intact | T |
+  |---|---|---|
+  | N1 cheese on plate | 0.1 / 1.0 | 0.4 / 1.0 |
+  | N2 cheese on stove | 0.1 / 1.0 | 0.3 / 0.9 |
+  | N3 cheese on cabinet | 0.4 / 0.7 | 0.1 / 0.1 |
+  | N4 bottle on plate | 0.9 / 1.0 | 0.0 / 0.0 |
+  | N5 bottle on stove | 0.9 / 1.0 | 0.2 / 0.2 |
+  | N6 bottle in bowl | 0.5 / 1.0 | 0.0 / 0.5 |
+
+**Reading.**
+- Sixteen of layer 14's 256 key and 256 value dimensions, chosen to carry the target's identity, are enough to break the
+  grasp of the bottle. The located component does not separate into a target part and a grasp part along these directions.
+- On the two cheese pairings whose grasp survives (N1, N2), place success rises from 0.1 to 0.3-0.4. That is a per-task
+  observation of 10 episodes each, not a pre-registered claim.
+- With pp_f3 (§3), neither wholesale nor targeted purification of the located component raises place success. K1's "causes"
+  part stays unsupported for pi0.5.
+
+**Deviations.**
+- `experiments/pp_serve_purify.py` (hashed in pp_f3) gained the targeted branch after F3 was read. The pp_f3 path is unchanged.
+- GR00T was not run.
+
+## 9. Layer 2 confirmatory results, rank 32 (2026-11-01; m3_prereg pp_l2r32; results/flawed/pp_l2r32_read.json, pp_s1_mix_full_r32c.json; rollouts pp_s2c_roll, pp_s3c_roll, pp_s4c_old)
+
+**Verdict (pp_l2r32 mapping, post-hoc re-registration): Layer-3 GO = false.**
+- S1 holds.
+- **S2 fails in both layouts** (3F). The object-matched ratio holds in both.
+- **S3 meets its criterion in 3 of 12 cells**: plate familiar k = 1, 5, 10. It fails for the bottle in every cell, and for the
+  plate in the new layout, on the lower bound.
+- The fresh-seed read reproduces the development read's pattern. No rollout had an episode error, and no cell has a missing
+  episode.
+
+**Build.**
+- 1,780,192 parameters per rank-32 library; parts of 82,832 (object) and 82,608 (target) parameters.
+- 24 creations, each 35-61 GPU-s to ready. Every one left every other parameter bitwise unchanged.
+
+**S1.**
+- Both swap tests are exactly 0 for seeds 10-12.
+- Every target-into-grasp component is exactly 0.
+- Object-into-place reaches m = 119.8 through the foot route, as in A and pp_l2.
+
+**S2** (full_r32, 3 seeds × 50 fresh states).
+
+| layout | s known | s new | object-matched ratio [95% CI] | 3F: pairings whose D3 CI excludes 0 |
+|---|---|---|---|---|
+| familiar | 0.79 | 0.76 | 1.08 [1.03, 1.13] (holds) | N4 −0.42 [−0.51, −0.33] (obs 0.28, pred 0.70); N3 −0.03 [−0.07, −0.01]; N5 +0.02 [0.00, 0.03] |
+| new | 0.28 | 0.30 | 1.01 [0.89, 1.15] (holds) | N4 +0.06 [0.00, 0.12]; N5 +0.13 [0.08, 0.19]; N6 +0.08 [0.02, 0.14] |
+
+- Familiar per pairing: N1 0.91, N2 0.99, N3 0.95, N4 0.28, N5 0.73, N6 0.67. Known: K1 0.96, K2 0.98, K3 0.91, K4 0.70,
+  K5 0.24, K6 0.93.
+- With 50 states, the N3 and N5 deviations are small (≤ 0.03) but their CIs exclude 0.
+- In the new layout, the bottle pairings succeed more often than their factor prediction. Competence there is low (0.1-0.5).
+
+**S3** (transfer ratio = s_unseen / s_train; 3 seeds × 50 states; state-bootstrap 95% CI).
+
+| atom | k | familiar: s_train / s_unseen / ratio | new: s_train / s_unseen / ratio |
+|---|---|---|---|
+| bottle (from K4) | 1 | 0.99 / 0.76 / 0.77 [0.74, 0.80] | 0.31 / 0.22 / 0.70 [0.61, 0.79] |
+| bottle | 5 | 0.84 / 0.66 / 0.79 [0.75, 0.82] | 0.17 / 0.12 / 0.71 [0.59, 0.91] |
+| bottle | 10 | 0.85 / 0.66 / 0.77 [0.74, 0.81] | 0.26 / 0.20 / 0.79 [0.67, 0.93] |
+| bottle | 50 | 0.91 / 0.69 / 0.76 [0.73, 0.80] | 0.33 / 0.25 / 0.76 [0.67, 0.90] |
+| plate (from K1) | 1 | 0.95 / 0.82 / **0.86 [0.80, 0.94]** | 0.34 / 0.28 / 0.83 [0.60, 1.20] |
+| plate | 5 | 0.93 / 0.79 / **0.84 [0.78, 0.91]** | 0.24 / 0.22 / 0.90 [0.57, 1.43] |
+| plate | 10 | 0.96 / 0.79 / **0.82 [0.76, 0.88]** | 0.27 / 0.23 / 0.83 [0.53, 1.31] |
+| plate | 50 | 0.95 / 0.74 / 0.78 [0.72, 0.83] | 0.34 / 0.25 / 0.72 [0.49, 1.10] |
+
+- Bold marks cells that meet the criterion. The plate's new-layout k = 1 cell misses on its lower bound (0.595 < 0.6).
+- **The N4 competence gap remains, reported as competence and not patched.**
+  - Bottle part, familiar (k = 1 / 5 / 10 / 50): N4 0.37 / 0.37 / 0.41 / 0.40, N5 0.99 / 0.85 / 0.85 / 0.90, N6 0.93 /
+    0.76 / 0.72 / 0.77.
+  - Plate part, familiar: N1 0.98 / 0.99 / 1.00 / 0.98, N4 0.65 / 0.59 / 0.57 / 0.50.
+  - Without N4, both created parts run at their training partner's rate.
+- Old tasks: exactly 0 change (bitwise).
+
+**S4** (baselines as in pp_l2, seeds 10-12, same fresh states). Descriptive.
+- Training pairing, familiar (k = 1 / 5 / 10 / 50):
+  - bottle: HF 0.78 / 0.81 / 0.89 / 0.91; HL 0.63 / 0.72 / 0.73 / 0.68; RF 0.95 / 0.91 / 0.95 / 0.97; LIB 0.62 / 0.67 / 0.81 /
+    0.79;
+  - plate: HF 0.40 / 0.89 / 0.86 / 0.85; HL 0.33 / 0.77 / 0.76 / 0.73; RF 0.04 / 0.91 / 0.93 / 0.97; LIB 0.35 / 0.65 / 0.67 /
+    0.71.
+- Unseen pairings: at most 0.06 in the familiar layout (HF bottle k = 1; LIB plate k = 50) and at most 0.01 in the new layout.
+- P − baseline on unseen pairings: familiar +0.64 to +0.82 (lower bounds 0.56-0.77); new +0.12 to +0.28 (lower bounds
+  0.07-0.20).
+- Forgetting on old tasks:
+  - HF: 0.83 → 0.00 (bottle base), 0.68 → 0.00 (plate base);
+  - RF: 0.89 → 0.00-0.03, 0.74 → 0.00-0.01;
+  - LIB: 0.86 → 0.00, 0.72 → 0.03-0.06;
+  - HL and P: exactly 0.
+
+**Reading.**
+- On fresh seeds and fresh states, rank-32 parts confirm the development picture. The sparse library composes a created atom
+  with unseen partners at close to the training partner's rate, except on bottle on plate. No baseline composes it at all.
+- The pre-registered bars are not met. Raising the part rank from 8 to 32 did not close the gap: N4 stays at 0.28 (S2) and
+  0.37-0.65 (S3).
+- 3F now fails in the new layout too. The bottle pairings there run above the factor prediction. The mapping counts that as a
+  failure, whatever its sign.
+
+**Deviations.**
+- None in the protocol. `pp_p_roll.py` gained `--phase conf` before registration. The default path is unchanged.
+
+**Cost (§6-§9).**
+- GPU, by sacct over every segment including pre-empted ones: 6.4 GPU-h, mostly A40.
+  - rank-32 builds 1.3; baseline builds 1.6; creations 1.5;
+  - targeted F3 1.6 (T 0.83 over three segments, R 0.58, fit, open loop and smokes 0.14);
+  - fresh states 0.51 over three segments (any GPU, for EGL).
+- CPU: 223 jobs (222 rollouts and S1), 155.7 CPU-job-h.
