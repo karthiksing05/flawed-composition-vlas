@@ -1461,3 +1461,30 @@ every demo row and the training data is nearly unchanged. Round 7's library-wide
 
 **Pre-registered round verdict (metric n4_fam).** Δ = N4's familiar success, P_ts − P_pp, state bootstrap with seeds pooled.
 **improves** iff the CI's lower bound is > 0, the mandate's rule as in round 8.
+
+## 34. Round 9 results (2026-11-03; m3_prereg pp_r9; results/flawed/pp_r9_read.json; rollouts pp_r9_roll)
+
+**Round verdict: improves.** N4's familiar success is 0.40 for P_ts against 0.23 for P_pp: +0.17 [0.03, 0.30]. It also clears
+rounds 2-7's stricter bar (> 0.10). **Layer-2 GO = false.** No rollout had an episode error.
+- **The place recovers.** N4's familiar place-on-arrival is 0.73 (P_pp 0.29, P_rt 0.74). K1 familiar stays at 0.95.
+- **The bottle's grasp is worse, although the object term did not change.** Familiar bottle hold is 0.62 (P_pp 0.87). The
+  episodes that move no object rise to 0.15-0.17 (P_pp 0.03). K4 familiar falls to 0.53 (P_pp 0.82). See the open point below.
+- S1 holds.
+- **S2 familiar.** s known 0.76, s new 0.70, OM 1.09 [1.03, 1.16], which passes. 3F holds on N1, N2, N3, N5 and N6. It fails on
+  N4: observed 0.40 against predicted 0.52, D3 −0.12 [−0.22, −0.03].
+- **S2 new.** s known 0.36, s new 0.25, OM 1.06 [0.86, 1.33], which passes. 3F fails on N4 (+0.13), N5 (+0.14) and N6 (+0.09),
+  where the observed rates exceed the near-zero predictions. The bottle's new-layout arrival on the rack is 0.00, which sets
+  a_o low.
+- **S3 passes all 6 familiar cells** (bottle 0.96 / 0.95 / 0.91, plate 0.94 / 0.90 / 0.94; lower bounds 0.82-0.94) **and none in
+  the new layout.**
+
+**Open point: the roles train jointly.** P_ts and P_pp have the same object term: the same inputs, the same radius and the
+same seeds. Only the target term differs. The object term's loss has no target-term input either, because Φ gates on held.
+Yet the bottle's hold differs (0.62 against 0.87). The one shared element of their training is the optimiser step:
+`clip_grad_norm_` runs over both role networks together, so a change in the target term's gradients rescales the object
+term's updates. This is a training-time coupling of the roles. The function is unaffected (S1 holds exactly). It is not
+verified here.
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 9 | N4: the bottle touches down before it arrives (§32) | carry scale frame frozen at the hold's onset | pp_r9 | +0.17 [0.03, 0.30]: improves | false |
