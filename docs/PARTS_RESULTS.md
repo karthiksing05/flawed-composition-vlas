@@ -2183,3 +2183,138 @@ all three seeds.
   diagnostic of the backbone's far-field output per object, with and without m, should come before any change.
 
 **Cost.** 3.2 A40-h (smoke 0.05; builds 2.35; creations 0.8), plus rollout CPU.
+
+## 46. Round 15 diagnostic: the m-free backbone still knows the bottle, through its size (2026-11-03; `experiments/pp_far_diag.py bbdemo` and `bb`, `pp_bb_read.py`; results/flawed/pp_bb_demo.json, pp_bb_<driver>_<task>_new.json, pp_bb_read.json)
+
+**Target.** §45: under P_nom the backbone alone climbs for both bottle tasks in the new layout, where P_rtr's m = 0 backbone
+brought the hand in.
+
+**Method.** This is descriptive, with no change to any model. Seed 10, dev states 4-23, new layout.
+- **Demos** (`bbdemo`; fitted rows, never executed). The backbone-only term's rows, that is, every not-held object row, per
+  object, task and bin of horizontal hand-object distance. Per bin: the median commanded vertical step (vz) and the median
+  commanded horizontal step toward the object (progress), each over a chunk's first 5 steps.
+- **Matched states** (`bb`). A driver policy runs `fa1h_roll.episode` unchanged. At every pre-hold call, P_rtr and P_nom each
+  give the chunk of the object backbone alone, on the same state and the same 4 noise seeds, under four m settings:
+  - built (the model's own rule: m for P_rtr, no m for P_nom);
+  - m fixed at 0;
+  - m fixed at 2;
+  - no m (one-hot input 0).
+- **Size probe.** The same chunks again, with the object's hand-set size replaced by another object's.
+- **Drivers.** For K4 and K5, P_rtr with its backbone reading m = 0 (§43's override): its hand travels in at height, so its
+  states cover the whole approach. For K1 and K6, P_rtr as built. Separately, P_nom as built on all four tasks.
+
+**1. No demo row climbs, and the bottle's far rows are almost all K5's, which stand still.** The table gives rows beyond the
+bottle's start radius (0.079 m), as n / median vz / median progress.
+
+| object (tasks) | 0.079-0.11 m | 0.11-0.14 m | 0.14-0.225 m |
+|---|---|---|---|
+| bottle, K4 | 78 / −0.56 / 0.44 | none | none |
+| bottle, K5 | 1,753 / −0.13 / 0.01 | 465 / −0.16 / 0.03 | 14 / −0.23 / 0.05 |
+| bowl, K1 | 369 / −0.06 / 0.64 | 183 / 0.0 / 0.58 | 8 / 0.0 / 0.59 |
+| cheese, K6 | 166 / −0.21 / 0.90 | 129 / −0.08 / 0.99 | 485 / 0.0 / 0.86 |
+| plate, K8 | 423 / −0.29 / 0.20 | 150 / −0.32 / 0.89 | 420 / −0.17 / 0.93 |
+
+- The bottle's rows beyond its start support outnumber K4's 28 to 1 in favour of K5, and K5's barely move toward the bottle.
+  These are the rack mode's turn, made while the hand hovers, so they belong to the grasp.
+- The other objects' rows in the same distance range are level transport toward the object.
+
+**2. At matched states, P_nom's backbone stalls for the bottle, and the bottle's size alone causes it.** The table gives the
+backbone-alone chunk at 0.14-0.225 m (the driver's own transport path), as median vz / median progress.
+
+| setting | K4 (61 calls) | K5 (52 calls) | K1 bowl (28 calls) | K6 cheese (13 calls) |
+|---|---|---|---|---|
+| P_rtr, built | 0.17 / 0.55 (m = 0) | 0.23 / −0.03 (m = 2) | 0.09 / 0.81 | 0.01 / 0.75 |
+| P_rtr, m = 2 | 0.23 / −0.03 | 0.23 / −0.03 | 0.15 / 0.18 | 0.11 / 0.10 |
+| P_rtr, no m | 0.21 / 0.38 | 0.20 / 0.38 | 0.16 / 0.60 | 0.12 / 0.54 |
+| P_nom, built (no m) | 0.32 / 0.18 | 0.32 / 0.18 | 0.15 / 0.76 | 0.07 / 0.74 |
+| P_nom, m = 0 | 0.36 / 0.23 | 0.36 / 0.24 | 0.18 / 0.83 | 0.11 / 0.81 |
+| P_nom, no m, cheese's size | 0.11 / 0.61 | 0.09 / 0.64 | 0.15 / 0.81 | (own) |
+| P_nom, no m, bowl's size | 0.11 / 0.56 | 0.09 / 0.59 | (own) | 0.07 / 0.70 |
+| P_nom, no m, bottle's size | (own) | (own) | 0.35 / 0.36 | 0.27 / 0.30 |
+
+- **The size probe reverses the stall in both directions.** With the bottle's size replaced by the cheese's or the bowl's,
+  P_nom's backbone moves toward the bottle (progress 0.18 to 0.56-0.64) and rises less (vz 0.32 to 0.09-0.11). Given the
+  bottle's size, the backbone stalls and rises at bowl and cheese states (progress 0.76 to 0.36 and 0.74 to 0.30).
+- **The backbone reads no identity input, yet the object's hand-set size identifies the atom.** In N2 each object atom has
+  its own size. So once m is removed, the bottle-sized backbone fits the bottle's far rows, and those are K5's stand-off rows.
+- **Why P_rtr's m = 0 backbone transported.** m = 0 separated K4 from K5's rows. Under P_rtr, m = 2 stalls the backbone at any
+  object (bowl progress 0.81 to 0.18). m was doing the separation that size now does in the other direction.
+- Putting m = 0 back into P_nom does not rescue it (progress 0.23). Its backbone was trained with the one-hot at 0.
+- **The climb is the stall's sequel.** On P_nom's own trajectories, 870 of the 1,094 K4 calls lie beyond the role radius at
+  height. There every backbone and setting rises (vz 0.81-1.04, P_rtr's included). These states lie off every demo, and none of
+  them climbs.
+  Driven by P_nom, K4 holds 3 of 20 and K5 1 of 20. Driven by P_rtr's m = 0 backbone, they hold 11 and 9.
+- **For reference:** beyond the role radius on the bowl's and cheese's own paths, both backbones, as built, also rise somewhat
+  (vz 0.17-0.27) while moving in (progress 0.72-0.75). A rise at the start alone does not separate the arms. Progress does.
+
+**What this shows.** The backbone-alone path is meant to hold the role-general transport (§10.6). §10.7 removed m from it. It
+still reads one atom-specific input, the slot's hand-set size. With that input it reproduces the bottle's own far rows, the
+rack mode's turn in place. That turn is grasp content, and the hierarchy puts grasp content in the part.
+
+**Cost.** CPU only: 1 demo job, 1 smoke job, 8 matched-state jobs and 1 summary (about 3.5 CPU-h). No GPU.
+
+## 47. Round 15 design note and protocol: the backbone-alone path reads no atom-specific slot attribute (fixed 2026-11-03, before any code of this round; m3_prereg tag pp_r15)
+
+**Weakness (measured, §46).** P_nom's backbone alone stalls at 0.14-0.225 m from the bottle (progress 0.18 against 0.55-0.81
+for the other objects) and then climbs. The input that causes it is the object's hand-set size, which in N2 is one value per
+object atom. Swapping it reverses the stall in both directions. P_nom's new-layout bottle hold is 0.31 (P_rtr 0.49).
+
+**Principle (§10.6 and §10.7).** The role backbone holds the role-general skill, the transport, and parts hold the
+atom-specific skill. §10.7 applied this to m. The same rule applies to every atom-specific input: such an input enters only
+where the part acts.
+- Of the object slot's inputs, the pose (position and yaw in the approach frame) is role-general.
+- The drawer opening is 0 for every object atom.
+- The hand-set size is per atom, and it is the one input that remains.
+
+**Change (one; on P_nom; default off; `pp_p_train.py --bbnosize`).**
+- On every row where the backbone acts alone, the object slot's size input (footprint radius and height) is replaced by
+  zeros. This holds in the switched field (L_Φ and at test, rows beyond the part's start radius) and in the backbone-only loss
+  term (every not-held row).
+- Rows where the part acts read the size, as in P_nom.
+- A constant input carries no information, so the backbone-alone path reads no atom attribute. The change adds no parameter, no
+  rate and no constant.
+- Everything else is P_nom's: the start radii, the hard switch, the role radius, the backbone-only term, m on part rows only,
+  Φ, the target term and the data.
+- **S1 is unaffected.** Size is the object's own attribute, not the target's, and m still comes only from the target part.
+- **No plan text is contradicted, as far as this note can tell.** §10.6 says the backbone "reads the same frame", and size is not
+  part of the frame. §4.1 keeps the oracle slots, and the part path still reads the full slot. This judgement is flagged here
+  for the user.
+- **This is not per-scene engineering.** It is one rule over every object atom, with no input about occupancy, clearance or
+  free space and no task constant.
+
+**Prediction (stated before any build).**
+- The backbone-alone path then pools every object's far rows. The level-transport rows of the bowl, cheese and plate outnumber
+  K5's stand-off rows.
+- The size probe of §46 approximates this arm: progress 0.56-0.64 at the bottle.
+- Expected effects, none of which carry a verdict:
+  - new-layout bottle hold rises above P_nom's;
+  - K5's new-layout hold is kept;
+  - the bowl's and cheese's far transport is about unchanged (their probes move progress by at most 0.06).
+- **For S3,** the nobottle backbone no longer has to extrapolate to an unseen size, so the created bottle part's transport is
+  the same as every other object's.
+
+**Arm.** P_nsz (rank 32), seeds 10-12, builds full, nobottle and noplate with the S3 creations. The object term is retrained;
+the target term is reused from <cond>_tdc. Flags: `--rank 32 --aframe --rtclip --psupport --tscale --decouple --imode
+--rtransport --bbnom --bbnosize`. Reference: P_nom (pp_r14_roll), the arm this change is made on. P_rtr (pp_r13_roll) is also
+reported.
+
+**Smoke (before the builds).**
+- With the flag off, the edited model gives P_nom's velocity bitwise.
+- With the flag on, changing an object's size leaves backbone-only rows exactly unchanged and moves part-on rows.
+- S1's swap tests are 0 with m fixed.
+
+**Reads.** Dev states 4-23, N2's seeds. S1 as restated in §10.5, S2 and S3 with pp_l2's estimators and its frozen GO mapping.
+
+**Pre-registered round verdict (metric bottle_hold_new).**
+- The metric is new-layout hold pooled over the bottle's tasks K4, K5, N4, N5 and N6, seeds pooled.
+- Δ = P_nsz − P_nom, with a 2,000-draw state bootstrap.
+- **improves** iff Δ > 0.10 and the CI's lower bound is > 0.
+
+**Reported, with no verdict.**
+- The same metric against P_rtr.
+- k5_hold_new against P_nom.
+- Familiar non-regression against P_nom, labelled "regresses" iff the CI's upper bound is < 0.
+- The GO read and the per-pairing 3F.
+- `pp_far_diag.py bb` on seed 10 (K4, K5, K1 and K6 new; the P_nsz driver).
+
+**Cost.** About 3 A40-h for the builds and creations (object term only), plus rollout CPU.
