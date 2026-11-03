@@ -1083,3 +1083,62 @@ Round 5 is the first round that raised new-layout competence. **Layer-2 GO = fal
 |---|---|---|---|---|---|
 | step 1 | single-task fits score 0 (instrument) | servoing generator (instrument only) | pp_n4d2 | gate passes; N4 = combination at place-on-arrival | — |
 | 5 | new-layout position input out of distribution (§20) | radial relocation of the approach state | pp_r5 | +0.15 [0.08, 0.21]: improves | false |
+
+## 23. Round 6 diagnostic: where N4's bottle tips (2026-11-02; `experiments/pp_tilt_trace.py`, `pp_carry_rot.py`, `pp_carry_dist.py`)
+
+**Method.** Familiar dev states 4-23, one seed each: P_rc (seed 10) on N4, K4 and K1, and N4's single-task fit (arm a, seed 0)
+on N4. Each step records the hand's and the bottle's rotations. From the lift (the object 2 cm above its start), the trace
+measures:
+- the object's tilt;
+- the hand's turn since the lift;
+- the object's slip relative to the hand.
+
+**Two failure modes, with different owners.**
+- **Tipped at the grasp.** In 7 of P_rc's 20 N4 episodes the bottle is already tilted more than 30° at the lift. The same 7
+  states tip identically in K4 under P_rc: the same lift step and the same tilt, because the bottle part acts alone until the
+  hold. Arm a tips at the grasp in 6 states. This mode belongs to the bottle part's grasp. It is not the composition.
+- **Turned at the place (N4 only).** The plate part, holding the bottle, turns the hand.
+  - Over P_rc's lifted episodes that were not tipped at the grasp, the largest hand turn has median 48° (15-170°).
+  - Five failures (states 4, 6, 13, 15, 21) tip at the plate after turns of 20-74°. The gripper often opens mid-turn.
+  - The same plate part holding the bowl (K1) turns at most 12°, with median about 5°.
+  - Arm a on N4 turns at most 20°, with median 7°. P_rc on K4 has median 16°.
+- **The demos never turn that far onto a plate.** The median largest hand turn per carry is 7° for K1 (90th percentile 13°)
+  and 13° for K4. Only K5 (bottle onto the rack) turns far, at 54°.
+
+**The plate part's input leaves its support.**
+- The horizontal object-to-target distance where the plate part's carries start is 0.14 m (median), at most 0.17 m, and 0.16
+  m at the 99th percentile of held rows.
+- In the familiar scene the bottle starts 0.19-0.28 m from the plate (median 0.25, at K4's hold onsets). Every N4 carry
+  therefore begins outside the region where the plate part was trained.
+- The target term's offset is the only object-dependent input whose range differs. It reads no hand position and no object
+  identity, and its rotation input starts at identity at every hold onset.
+- This is round 5's weakness again, now on the target term: a carry starting farther out than any of the part's demos. Inside
+  that support (the bowl) the part holds the hand still. Outside it (the bottle) the part turns the hand.
+
+## 24. Round 6 design note and protocol: radial relocation of the carry state (fixed 2026-11-02, before any code of this round; m3_prereg tag pp_r6)
+
+**Weakness (measured, §23).** N4's composed carry starts 0.19-0.28 m from the plate. The plate part's demos start within 0.17
+m. Out there the plate part turns the hand 20-74° and tips the bottle at the place.
+
+**Principle.** It is round 5's principle applied to the second term. In the canonical place frame (bearing frozen at the hold's
+onset), the far part of a carry is a transport along the bearing toward the target. Moving along that ray is a symmetry of the
+task. A held state farther out on the ray is relocated to the nearest state the demos cover on the same ray: same bearing, same
+height, horizontal distance clipped to the support radius r_t. The term acts there. Near the target the clip releases, and the
+term sees the true state.
+
+**Change (one, structural; on P_rc).**
+- In the target term's input, the horizontal part of the held object's offset from the target (canonical frame) is clipped to
+  radius r_t. The height, the rotation since the onset, every other input, the output frame and the object term stay P_rc's.
+- r_t is one constant per build, fitted by round 5's rule and never per scene or task: the smallest, over the build's training
+  targets, of the 99th percentile of the horizontal object-to-target distance on held demo rows. It is stored in the
+  checkpoint.
+- No data, teacher or per-scene input is added. Created parts inherit the base build's r_t.
+- The grasp-time tipping (§23) is the bottle part's. This change does not address it.
+
+**Arm.** P_rt (rank 32), seeds 10-12, builds full, nobottle and noplate as in every round. Reference: P_rc, seeds 10-12, the
+round-5 rollouts (pp_r5_roll).
+
+**Reads.** Dev states 4-23, N2's seeds. S1, S2 and S3 with pp_l2's estimators and frozen GO mapping.
+
+**Pre-registered round verdict.** **improves** iff N4's familiar-layout success, P_rt minus P_rc, is > 0.10 with its
+state-bootstrap CI lower bound > 0 (metric n4_fam).
