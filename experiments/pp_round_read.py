@@ -74,6 +74,16 @@ def metric(a, cand, ref):
         d = [f(np.arange(n)), *L.boot(f, n)]
         return dict(metric=a.metric, candidate=float(rate(Ha, Ra, np.arange(n))), reference=float(rate(Hb, Rb, np.arange(n))), delta=d,
                     rule="improves iff the CI lower bound > 0 (PARTS_RESULTS 30)", improves=bool(d[1] is not None and d[1] > 0))
+    if a.metric == "bottle_hold_fam":                                        # PARTS_RESULTS 38: familiar hold over the bottle's tasks
+        bt = ["K4", "K5", "N4", "N5", "N6"]
+        Ha, _ = held_arrived(cand, bt, "familiar")
+        Hb, _ = held_arrived(ref, bt, "familiar")
+        n = Ha.shape[-1]
+        f = lambda kk: float(np.nanmean(Ha[:, kk]) - np.nanmean(Hb[:, kk]))  # noqa: E731
+        d = [f(np.arange(n)), *L.boot(f, n)]
+        return dict(metric=a.metric, candidate=float(np.nanmean(Ha)), reference=float(np.nanmean(Hb)), delta=d,
+                    rule="improves iff delta > 0.10 and the CI lower bound > 0 (PARTS_RESULTS 38)",
+                    improves=bool(d[0] > 0.10 and d[1] is not None and d[1] > 0))
     if a.metric == "n4_fam":
         A = C.stack(cand, cand.s2[0], cand.s2[1], ["N4"], "familiar")[:, 0]   # [seeds, states]
         B_ = C.stack(ref, ref.s2[0], ref.s2[1], ["N4"], "familiar")[:, 0]
@@ -96,7 +106,8 @@ def main():
     ap.add_argument("--s2", required=True)
     ap.add_argument("--ref-s2", required=True)
     ap.add_argument("--s3", required=True)
-    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam"))
+    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam", "bottle_hold_fam"))
+    ap.add_argument("--s1-extra", default="")                               # PARTS_RESULTS 38: further S1 files that must all hold
     ap.add_argument("--phase", default="main", choices=("main", "conf"))
     a = ap.parse_args()
     seeds = tuple(int(x) for x in a.seeds.split("+"))
@@ -104,6 +115,12 @@ def main():
     ref = cfg_of(a, tuple(int(x) for x in a.ref_seeds.split("+")) if a.ref_seeds else seeds)
     ref.s2 = tuple(a.ref_s2.split(":"))
     out = dict(S1=C.s1(cand), S2=C.s2(cand))
+    if a.s1_extra:                                                           # S1 restated (m held fixed at each value): all must hold
+        out["S1_parts"] = {cand.s1: out["S1"]["holds"]}
+        for f in a.s1_extra.split("+"):
+            cand.s1 = f
+            out["S1_parts"][f] = C.s1(cand)["holds"]
+        out["S1"]["holds"] = bool(all(out["S1_parts"].values()))
     out["S3"], _ = C.s3s4(cand)
     out["layer3_go"] = bool(out["S1"]["holds"] and out["S2"]["holds"] and out["S3"]["all_transfer"])
     out["round_metric"] = metric(a, cand, ref)

@@ -76,7 +76,8 @@ class PartsFlow(nn.Module):
     arm = "P"
 
     def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
-                 rclip=0.0, rtclip=0.0, hscale=0.0, psupport=False, rclip_p=None, rtclip_p=None, tscale=False):
+                 rclip=0.0, rtclip=0.0, hscale=0.0, psupport=False, rclip_p=None, rtclip_p=None, tscale=False, nmode=0, tmode=None,
+                 gm=None):
         super().__init__()
         self.H, self.rank = horizon, rank
         self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
@@ -97,6 +98,13 @@ class PartsFlow(nn.Module):
         # PARTS_RESULTS 33 (P_ts): the target term in a horizontal scale frame frozen at the hold's onset,
         # s_t = min(1, r_t(part) / d_onset) (b["d0t"]); replaces the carry's radial clip.  Needs rtclip > 0 (the radii).  False: off
         self.tscale = bool(tscale)
+        # PARTS_RESULTS 38 (P_imd; PLAN_PARTS 10.5): the explicit interface.  nmode = K, the size of the grasp-mode inventory
+        # (0: off).  tmode[target part] = the value of m that part emits (fitted from its own demos); the object term reads
+        # one-hot(m).  gm = (mu, kappa, weight) of the inventory's von Mises components on the doubled grasp yaw, kept so a created
+        # target part can label its own demos.  b["m"], when present, overrides the emitted value (S1 with m held fixed).
+        self.nmode = int(nmode)
+        self.register_buffer("tmode", torch.tensor(tmode if tmode is not None else np.zeros(len(TGT_ATOMS)), dtype=torch.long))
+        self.register_buffer("gm", torch.tensor(gm if gm is not None else np.zeros((3, max(self.nmode, 1))), dtype=torch.float32))
         self.register_buffer("rclip_p", torch.tensor(rclip_p if rclip_p is not None else np.zeros(len(OBJ_ATOMS)), dtype=torch.float32))
         self.register_buffer("rtclip_p", torch.tensor(rtclip_p if rtclip_p is not None else np.zeros(len(TGT_ATOMS)), dtype=torch.float32))
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
@@ -104,7 +112,7 @@ class PartsFlow(nn.Module):
         da, dt = 7 * horizon, 32
         dprop = 3 + 6 + 2 + 1
         dslot = 3 + 2 + 2 + 1                                       # position, (sin, cos) yaw, size, drawer opening: no identity
-        self.obj = RoleNet(dprop + dslot + da + dt, da, len(OBJ_ATOMS), rank=rank)
+        self.obj = RoleNet(dprop + dslot + self.nmode + da + dt, da, len(OBJ_ATOMS), rank=rank)
         self.tgt = RoleNet(3 + 1 + 2 + 1 + 6 + 2 * self.tsize + da + dt, da, len(TGT_ATOMS), rank=rank)
         # entity index -> part index (-1: no part)
         self.register_buffer("opart", torch.tensor([OBJ_ATOMS.index(e) if e in OBJ_ATOMS else -1 for e in _ENT()], dtype=torch.long))
@@ -153,7 +161,14 @@ class PartsFlow(nn.Module):
         dy = b["yaw"][idx, e] - yaw0
         aux = b["drawer"] * (e == DRAWER).float()
         slot = torch.cat([torch.zeros_like(p), torch.sin(dy)[:, None], torch.cos(dy)[:, None], self.size[e], aux[:, None] * 10.0], -1)
-        return torch.cat([p, R, b["grip"] * GRIP_SCALE, b["prev"][:, None], slot], -1)
+        msg = [torch.nn.functional.one_hot(self.message(b), self.nmode).float()] if self.nmode > 0 else []
+        return torch.cat([p, R, b["grip"] * GRIP_SCALE, b["prev"][:, None], slot] + msg, -1)
+
+    def message(self, b):
+        """P_imd: the grasp-mode message m per row: the activated target part's fitted value (b["m"] overrides it)."""
+        if "m" in b:
+            return b["m"].long()
+        return self.tmode[self.tpart[b["ti"]].clamp_min(0)].clamp(0, max(self.nmode - 1, 0))
 
     def _canon(self, b):
         B = b["pos"].shape[0]
@@ -233,7 +248,7 @@ class PartsFlow(nn.Module):
 
     def save(self, path, meta):
         np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize, aframe=self.aframe,
-                                                psupport=self.psupport, tscale=self.tscale)),
+                                                psupport=self.psupport, tscale=self.tscale, nmode=self.nmode)),
                  **{k: v.detach().cpu().numpy() for k, v in self.state_dict().items()})
 
     @classmethod
@@ -241,8 +256,10 @@ class PartsFlow(nn.Module):
         z = np.load(path, allow_pickle=False)
         meta = json.loads(str(z["__meta__"]))
         m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False), aframe=meta.get("aframe", False),
-                psupport=meta.get("psupport", False), tscale=meta.get("tscale", False))
+                psupport=meta.get("psupport", False), tscale=meta.get("tscale", False), nmode=meta.get("nmode", 0))
         sd ={k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
+        sd.setdefault("tmode", m.tmode.clone())                                 # checkpoints before P_imd carry no interface
+        sd.setdefault("gm", m.gm.clone())
         sd.setdefault("home", torch.zeros(3))                                   # checkpoints before P_af carry no home buffer
         sd.setdefault("rclip", torch.tensor(0.0))                               # nor before P_rc
         sd.setdefault("rtclip", torch.tensor(0.0))                              # nor before P_rt

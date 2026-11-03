@@ -22,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path[:0] = [HERE, os.path.dirname(HERE)]
 import fa1_common as FC                                                     # noqa: E402
 import pp_f1_oracle as O                                                    # noqa: E402
-from pp_p_roll import load_any                                              # noqa: E402
+from pp_p_roll import load_any as _load_any                                 # noqa: E402
 
 
 def comp_modules_p(m):
@@ -38,7 +38,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--tag", required=True)
     ap.add_argument("--ckpts", required=True)
+    ap.add_argument("--fix-m", type=int, default=-1)              # PARTS_RESULTS 38: every target part emits this m (S1 restated)
     a = ap.parse_args()
+
+    def load_any(p):
+        mm, meta = _load_any(p)
+        if a.fix_m >= 0:
+            assert mm.nmode > a.fix_m, ("fix-m outside the inventory", mm.nmode)
+            mm.tmode.fill_(a.fix_m)
+        return mm, meta
     torch.set_num_threads(4)
     # P's LoRA layers take (x, atom): the pre-hook must keep the atom argument
     orig = O.sample
@@ -109,6 +117,7 @@ def main():
             ttgt = float((v1 - v0).abs().max())
         swaps[c] = dict(T_obj_target_swap=tobj, T_tgt_object_part_swap=ttgt)
     res["swap_tests"] = swaps
+    res["fix_m"] = a.fix_m
     json.dump(res, open(os.path.join(FC.ROOT, "results", "flawed", f"pp_s1_mix_{a.tag}.json"), "w", encoding="utf-8"))
     print("[pp_s1] swaps", json.dumps(swaps))
 
