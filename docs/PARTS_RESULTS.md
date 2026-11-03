@@ -1364,3 +1364,32 @@ relocates in-support states of every part whose support is larger.
 - Δ = P_pp − P_rt, with a 2,000-draw state bootstrap (the same states resampled for both arms).
 - **improves** iff the CI's lower bound is > 0. This is the mandate's rule ("the CI excludes 0 upward"). Rounds 2-7 also
   required Δ > 0.10.
+
+## 31. Round 8 results (2026-11-03; m3_prereg pp_r8; results/flawed/pp_r8_read.json; rollouts pp_r8_roll)
+
+**The fitted radii** (full build, by the pre-fixed rule). Object parts: bowl 0.173 m, cheese 0.212 m, bottle 0.124 m. Target
+parts: plate 0.160 m, stove 0.273 m, cabinet top 0.311 m, rack 0.173 m, bowl 0.162 m. The created parts fit theirs from their
+own demos: bottle (K4) 0.056 / 0.067 / 0.075 / 0.092 m at k = 1 / 5 / 10 / 50; plate (K1) 0.141 / 0.159 / 0.154 / 0.160 m.
+
+**Round verdict: improves.** Familiar cabinet arrival given hold is 0.94 for P_pp against 0.78 for P_rt: +0.16 [0.03, 0.30].
+**Layer-2 GO = false.**
+- S1 holds.
+- **S2 familiar.** s known 0.80, s new 0.79, OM 1.09 [1.00, 1.20], which passes.
+  - **3F now holds on N1, N2, N3, N5 and N6.** N3 runs at its prediction (0.97 against 0.97). N5 and N6 run within 0.02 of
+    theirs, because the bottle's a_o no longer carries the cabinet's loss.
+  - **3F fails only on N4**: observed 0.23 against predicted 0.84, D3 −0.61 [−0.75, −0.47]. The plate's place-on-arrival with the
+    bottle is 0.29.
+  - Round 6's N4 gain is lost. The plate's carry radius rose from 0.0925 m to its own 0.160 m. N4's carries (onsets 0.26-0.28 m)
+    are now relocated to the edge of the plate part's support, not deep inside it. §30 did not predict this outcome.
+- **S2 new.** s known 0.36 (P_rt 0.34), s new 0.23, OM 1.04 [0.88, 1.23], which passes. 3F fails only on N6, +0.06 [0.004, 0.14].
+  - Bowl hold in the new layout rises to 0.93 (P_rt 0.85). K2 rises to 0.75 and K3 to 0.72.
+  - K1 falls to 0.18: its place-on-arrival on the plate is 0.22. The bottle's new-layout hold is 0.13.
+- **S3 passes 7 of 12 cells**: all 6 familiar cells, and bottle-new at k = 1, 0.94 [0.89, 1.00], on low rates (0.10 and 0.09).
+  - Familiar: bottle 0.91 / 0.91 / 0.91, lower bounds 0.85-0.86; plate 0.89 / 0.89 / 0.91, lower bounds 0.80-0.81.
+  - New layout: the bottle fails at k = 5 and 10, where s_train is 0.00-0.02. The plate fails on its lower bounds (0.37-0.59).
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 8 | familiar cabinet arrival lost under the library-wide carry radius (§29) | relocation into each part's own support | pp_r8 | +0.16 [0.03, 0.30]: improves | false |
+
+The failure streak resets to 0. The familiar layout now fails 3F on N4 alone, and so does the plate's place-on-arrival.
