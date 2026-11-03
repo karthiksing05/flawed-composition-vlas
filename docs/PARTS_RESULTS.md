@@ -1569,3 +1569,65 @@ removes or merges one of them is now measurable cleanly.
 - (f) P_tdc's GO read (pp_l2's mapping) and its per-pairing 3F, against P_ts (round 9), descriptively.
 
 **Cost.** About 14 builds and 24 creations: roughly 4-5 A40-h, more if the deterministic kernels are slower.
+
+## 36. Round 10 results (2026-11-03; m3_prereg pp_r10; results/flawed/pp_r10_decouple.json, pp_r10_read.json; rollouts pp_r10_roll)
+
+**Round verdict (pre-registered mapping): "decoupled in training only".** The training part holds exactly. One paired
+episode in 1,920 differs at the hold, and a replay shows that a host-to-host simulator difference causes it, not the models.
+The round counts as a failure for the streak (streak 1).
+
+- **(a) Training decoupled: holds.** For seeds 10, 11 and 12, all 22 object-term tensors of P_pdc equal P_tdc's bitwise
+  (maximum difference 0.0). The two arms' target terms differ.
+- **(b) Per-object hold: 1 of 1,920 paired episodes disagrees.** It is K4, new layout, seed 10, state 6: P_pdc holds at step
+  106 and succeeds (rollout host oppy); P_tdc never holds (host gideon). The largest per-object hold difference is 0.025
+  (the new-layout bottle at seed 10; pp_decouple_check reports 0.01 per object-and-layout cell over all its tasks).
+- **The replay** (`experiments/pp_replay_one.py`; both checkpoints in one process on one host, bmo, twice each): both arms hold
+  at step 106 with identical pre-hold chunks (the same SHA-256 over every pre-hold call), and both succeed. The disagreement is
+  therefore a host difference in the simulator or CPU arithmetic. Fresh environments per episode do not make rollouts
+  bit-reproducible across hosts. This applies to every earlier round too: each paired arm is rolled out on whichever hosts
+  the scheduler gives.
+- **(c) Reproducibility: holds.** The repeat build of P_tdc seed 10 (a separate job, on host conroy rather than protocol)
+  equals the first bitwise in all 48 tensors.
+- **(d) Reuse: holds.** P_pdc seed 10, built with `--reuse obj:full_tdc` (target term trained alone, on host heistotron),
+  equals the jointly trained P_pdc bitwise in all 48 tensors. Later rounds can therefore train only the role they change.
+- In the 300-step GPU smoke, two joint-clip builds with different target terms already differed in their object terms by up to
+  0.53 per parameter. On GPU the joint clip and non-deterministic kernels together make the object term differ from step 1.
+
+**(e) Run-to-run variance of the per-object factors** (`pp_decouple_check.py var`; per seed 10 / 11 / 12).
+
+| factor | P_tdc (decoupled) | P_pdc (decoupled, same object term) | rounds 6-9 per arm (P_rt / P_hs / P_pp / P_ts) |
+|---|---|---|---|
+| bottle hold, familiar | 0.65 / 0.70 / 0.70 | 0.65 / 0.70 / 0.70 | 0.80-0.90 / 0.55-0.80 / 0.80-0.95 / 0.50-0.75 |
+| bottle hold, new | 0.225 / 0.45 / 0.40 | 0.25 / 0.45 / 0.40 | 0.00-0.35 / 0.15 / 0.10-0.15 / 0.20-0.40 |
+| cheese hold, new | 0.50 / 0.40 / 0.45 | identical | 0.45-0.50 / 0.25-0.40 / 0.40-0.45 / 0.35-0.45 |
+| bowl hold, new | 0.90 / 0.55 / 0.80 | identical | 0.70-0.95 / 0.70-0.75 / 0.90-0.95 / 0.85-0.95 |
+
+- Between arms that share the object term, every hold factor is identical, except the one host-difference episode. Before
+  round 10, P_pp and P_ts, with the same object-term design, differed in familiar bottle hold by up to 0.35 at the same seed.
+- **Across seeds the variance stays.** Under P_tdc, familiar bottle hold spans 0.05 and new-layout bottle hold 0.225, and
+  new-layout bowl hold spans 0.35. This is seed variance of a network trained on 50 demos per task. Decoupling cannot remove it,
+  and the state bootstrap does not cover it either.
+- Factors that read the target term (arrival given hold, place on arrival) still differ between P_tdc and P_pdc, as they
+  should. In the new layout, rack place-on-arrival is 0.00 under P_tdc at every seed and 0.50-1.00 under P_pdc, on few
+  arrivals.
+- The first-ever seed-dependent initialisation (part 2 of the change) means P_tdc is a new draw, not a re-run of P_ts.
+
+**(f) P_tdc's GO read: Layer-2 GO = false.** No rollout had an episode error.
+- S1 holds (both swap tests 0.0 on all three seeds).
+- **S2 familiar.** s known 0.80, s new 0.75, OM 1.08 [1.03, 1.14], which passes. 3F holds on N1, N2, N3, N5 and N6. It fails on
+  N4: observed 0.48 against predicted 0.61, D3 −0.13 [−0.19, −0.05]. P_ts: 0.40 against 0.52, −0.12 [−0.22, −0.03].
+- **S2 new.** s known 0.33, s new 0.31, OM 1.22 [0.98, 1.54], which passes. 3F fails on N4 (+0.20), N5 (+0.18) and N6 (+0.13),
+  where observed success exceeds the near-zero predictions. The bottle's a_o in the new layout pools K4's arrival (0.57) with
+  K5's arrival at the rack (0.05).
+- **S3 passes 7 of 12 cells**: all 6 familiar cells (bottle 0.92 / 0.89 / 0.93, plate 0.86 / 0.87 / 0.84; lower bounds
+  0.78-0.88), and bottle-new at k = 10 (2.33 on rates of 0.02 and 0.04). The other new-layout cells fail.
+- N4 familiar success, as a descriptive comparison with P_ts: 0.48 against 0.40, +0.08 [−0.08, 0.23].
+- **P_tdc is the new baseline.** GO's blockers are the same as round 9's: familiar 3F on N4, and new-layout 3F on the bottle
+  pairings.
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 10 | joint gradient clip couples the roles' training (§34) | one training per role (per-role clip, per-role seeded init, deterministic kernels; reuse) | pp_r10 | (a) exact; 1 of 1,920 holds differs from a host difference: "decoupled in training only" | false |
+
+**Cost.** 3.9 A40-h: P_tdc 3.1 (with creations), P_pdc 0.4, repeat 0.15, reuse 0.25; the smoke run is under 0.02. Under the
+deterministic kernels a build takes 8-23 min depending on the host (round 9: 14-15 min).

@@ -54,7 +54,7 @@ def episodes(d, name, seed, tid):
 def hold(a, b, seeds):
     n2 = json.load(open(os.path.join(OUT, "n2_tasks.json"), encoding="utf-8"))
     (da, na), (db, nb) = a.split(":"), b.split(":")
-    rows, total_dis, total = [], 0, 0
+    rows, total_dis, total, detail = [], 0, 0, []
     for sd in seeds:
         for lay in ("familiar", "new"):
             tasks = [t for t in n2["tasks"] if t["layout"] == lay]
@@ -68,12 +68,18 @@ def hold(a, b, seeds):
                         ha.append(x)
                         hb.append(y)
                         dis += int(x != y)
+                        if x != y:                                           # where and how a paired hold disagrees
+                            hosts = [json.load(open(os.path.join(OUT, dd, f"{nn}_s{sd}_main_{t['tid']}.json"), encoding="utf-8"))["host"]
+                                     for dd, nn in ((da, na), (db, nb))]
+                            detail.append(dict(seed=sd, tid=t["tid"], compound=t["compound"], layout=lay, trial=k, hosts=hosts,
+                                               **{f"{f}_{s}": E[k][f] for s, E in (("a", Ea), ("b", Eb))
+                                                  for f in ("held_step", "success", "bound", "bound_step", "steps", "calls", "error")}))
                 rows.append(dict(seed=sd, layout=lay, object=o, n=len(ha), hold_a=float(np.mean(ha)), hold_b=float(np.mean(hb)),
                                  delta=float(np.mean(ha) - np.mean(hb)), disagree=dis))
                 total_dis += dis
                 total += len(ha)
     return dict(a=a, b=b, seeds=list(seeds), cells=rows, episodes=total, disagreeing=total_dis,
-                max_abs_delta=max(abs(r["delta"]) for r in rows))
+                max_abs_delta=max(abs(r["delta"]) for r in rows), disagreeing_episodes=detail)
 
 
 def factors(d, name, seed, lay):
@@ -143,6 +149,8 @@ def main():
     elif a.mode == "hold":
         out[key] = hold(a.a, a.b, seeds)
         print("[dc] hold episodes", out[key]["episodes"], "disagree", out[key]["disagreeing"], "max |delta|", out[key]["max_abs_delta"], flush=True)
+        for d in out[key]["disagreeing_episodes"]:
+            print("[dc] hold disagree", json.dumps(d), flush=True)
     elif a.mode == "var":
         out[key] = var(a.arms, seeds)
         for k, row in out[key]["factors"].items():
