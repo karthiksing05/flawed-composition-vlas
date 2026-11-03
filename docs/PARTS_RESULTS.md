@@ -1482,8 +1482,20 @@ rounds 2-7's stricter bar (> 0.10). **Layer-2 GO = false.** No rollout had an ep
 same seeds. Only the target term differs. The object term's loss has no target-term input either, because Φ gates on held.
 Yet the bottle's hold differs (0.62 against 0.87). The one shared element of their training is the optimiser step:
 `clip_grad_norm_` runs over both role networks together, so a change in the target term's gradients rescales the object
-term's updates. This is a training-time coupling of the roles. The function is unaffected (S1 holds exactly). It is not
-verified here.
+term's updates. This is a training-time coupling of the roles. The function is unaffected (S1 holds exactly).
+
+**Check** (`experiments/pp_clip_diag.py`; results/flawed/pp_clip_diag.json). Two models that differ only in the target term
+(P_pp's and P_ts's) start from the same seed and train on the same batches, on CPU with deterministic algorithms.
+- With the joint clip, their object terms agree exactly for 50 steps. After 1,500 steps they differ by up to 6.5e-5 per
+  parameter.
+- With one clip per role network, they stay identical (difference 0.0) after 1,500 steps.
+- The real seed-10 checkpoints (30,000 steps on GPU) have object terms whose difference is 1.40 times the parameter norm. A
+  small early difference grows into a different network. GPU non-determinism may add to this; that was not separated.
+- **Consequence for every round so far.** A change to one role retrains the other role's term into a different network. So
+  per-object factors (the bottle's hold: 0.62-0.87 across rounds 6-9 with the same object-term design) move between arms for
+  reasons outside the change. The state bootstrap treats the networks as fixed and does not cover this variance.
+- The plan (§4.1) trains each role backbone once. One clip per role, or reusing an unchanged role's trained term, would
+  remove this coupling. That is a candidate for round 10. It is not run here.
 
 | round | weakness | change | prereg | round verdict | GO |
 |---|---|---|---|---|---|
