@@ -76,7 +76,7 @@ class PartsFlow(nn.Module):
     arm = "P"
 
     def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
-                 rclip=0.0, rtclip=0.0, hscale=0.0, psupport=False, rclip_p=None, rtclip_p=None):
+                 rclip=0.0, rtclip=0.0, hscale=0.0, psupport=False, rclip_p=None, rtclip_p=None, tscale=False):
         super().__init__()
         self.H, self.rank = horizon, rank
         self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
@@ -94,6 +94,9 @@ class PartsFlow(nn.Module):
         # PARTS_RESULTS 30 (P_pp): each part clips with its OWN support radius (per object part / per target part; 0 = the scalar
         # library-wide radius).  The clips stay switched on by rclip / rtclip > 0.  psupport False: the scalar radii, as before.
         self.psupport = bool(psupport)
+        # PARTS_RESULTS 33 (P_ts): the target term in a horizontal scale frame frozen at the hold's onset,
+        # s_t = min(1, r_t(part) / d_onset) (b["d0t"]); replaces the carry's radial clip.  Needs rtclip > 0 (the radii).  False: off
+        self.tscale = bool(tscale)
         self.register_buffer("rclip_p", torch.tensor(rclip_p if rclip_p is not None else np.zeros(len(OBJ_ATOMS)), dtype=torch.float32))
         self.register_buffer("rtclip_p", torch.tensor(rtclip_p if rtclip_p is not None else np.zeros(len(TGT_ATOMS)), dtype=torch.float32))
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
@@ -123,6 +126,16 @@ class PartsFlow(nn.Module):
         rp = per_part[part.clamp_min(0)]
         return torch.where(rp > 0, rp, scalar)[:, None]
 
+    def _tscale(self, b):
+        """P_ts: per row, the carry's horizontal scale s_t (None when off).  d_onset = b["d0t"], else the current distance."""
+        if not self.tscale:
+            return None
+        idx = torch.arange(len(b["oi"]), device=b["oi"].device)
+        d0 = b["d0t"] if "d0t" in b else torch.linalg.norm((b["pos"][idx, b["oi"]] - b["pos"][idx, b["ti"]])[:, :2], dim=-1)
+        r = self._radius(self.rtclip, self.rtclip_p, self.tpart[b["ti"]])
+        r = r[:, 0] if r.dim() == 2 else r.expand(len(d0))
+        return torch.clamp(r / d0.clamp_min(1e-9), max=1.0)
+
     def _obj_in(self, b, Q, o, yaw0, Qp=None):
         idx = torch.arange(len(b["oi"]), device=b["oi"].device)
         QT = Q.transpose(1, 2)
@@ -151,7 +164,10 @@ class PartsFlow(nn.Module):
         p = b["pos"][idx, b["oi"]].clone()
         p[:, 2] = p[:, 2] - b["zrest"] + b["pos"][:, TABLE, 2]
         pr = torch.einsum("bij,bj->bi", QT, p - pt)
-        if float(self.rtclip) > 0:                                              # relocate far carry states onto the support radius
+        st = self._tscale(b)
+        if st is not None:                                                      # P_ts: scaled, not clipped (horizontal scale commutes with Q)
+            pr = torch.cat([pr[:, :2] * st[:, None], pr[:, 2:]], -1)
+        elif float(self.rtclip) > 0:                                            # relocate far carry states onto the support radius
             r = torch.linalg.norm(pr[:, :2], dim=-1, keepdim=True).clamp_min(1e-9)
             pr = torch.cat([pr[:, :2] * torch.clamp(self._radius(self.rtclip, self.rtclip_p, self.tpart[b["ti"]]) / r, max=1.0), pr[:, 2:]], -1)
         pr = pr * POS_SCALE
@@ -188,7 +204,14 @@ class PartsFlow(nn.Module):
         vo = _from2(Qa, Qo, self.obj(torch.cat([co, flat(_to2(Qa, Qo, xo)), te], -1), po).reshape(B, self.H, 7))
         if s is not None:
             vo = torch.cat([vo[..., :2] / s[:, None, None], vo[..., 2:]], -1)
-        vt = chunk_from(Qc, self.tgt(torch.cat([ct, flat(chunk_to(Qc, x)), te], -1), pt).reshape(B, self.H, 7))
+        st = self._tscale(b)
+        xc = chunk_to(Qc, x)
+        if st is not None:                                          # P_ts: the chunk's horizontal translation in scaled units
+            xc = torch.cat([xc[..., :2] * st[:, None, None], xc[..., 2:]], -1)
+        oc = self.tgt(torch.cat([ct, flat(xc), te], -1), pt).reshape(B, self.H, 7)
+        if st is not None:
+            oc = torch.cat([oc[..., :2] / st[:, None, None], oc[..., 2:]], -1)
+        vt = chunk_from(Qc, oc)
         g = b["held"][:, None, None]
         return (1 - g) * vo + g * vt
 
@@ -210,7 +233,7 @@ class PartsFlow(nn.Module):
 
     def save(self, path, meta):
         np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize, aframe=self.aframe,
-                                                psupport=self.psupport)),
+                                                psupport=self.psupport, tscale=self.tscale)),
                  **{k: v.detach().cpu().numpy() for k, v in self.state_dict().items()})
 
     @classmethod
@@ -218,7 +241,7 @@ class PartsFlow(nn.Module):
         z = np.load(path, allow_pickle=False)
         meta = json.loads(str(z["__meta__"]))
         m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False), aframe=meta.get("aframe", False),
-                psupport=meta.get("psupport", False))
+                psupport=meta.get("psupport", False), tscale=meta.get("tscale", False))
         sd ={k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
         sd.setdefault("home", torch.zeros(3))                                   # checkpoints before P_af carry no home buffer
         sd.setdefault("rclip", torch.tensor(0.0))                               # nor before P_rc

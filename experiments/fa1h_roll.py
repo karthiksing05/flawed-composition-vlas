@@ -42,7 +42,7 @@ def episode(model, bddl, state, lang, seed_base):
     t, calls, done, err, plan = 0, 0, False, None, []
     prev, bound, bound_step, start_pos, t0 = -1.0, None, None, None, time.time()
     held_step, held_ee, onset_c, segs, h_on, off, zr, cy = None, None, None, 0, False, np.zeros(3), 0.0, 0.0
-    min_dxy, rot0 = None, None
+    min_dxy, rot0, d0t = None, None, None
 
     def tgt():
         p = FC.scene(env, obs, dj)["pos"]
@@ -52,6 +52,12 @@ def episode(model, bddl, state, lang, seed_base):
         h, o = hm.step(*con.touching(oe), con.pos(oe), obs["robot0_eef_pos"])
         z, c = cn.step(h, con.pos(oe), tgt)
         return h, o, z, c
+
+    def onset_d(h, was, d0):
+        """PARTS_RESULTS 33 (P_ts): the horizontal object-to-target distance at the hold's onset (None while not held)."""
+        if h and not was:
+            return float(np.linalg.norm(np.asarray(con.pos(oe))[:2] - np.asarray(tgt()[0])[:2]))
+        return d0 if h else None
 
     def onset_rot(h, was, r0):
         if h and not was:
@@ -66,12 +72,15 @@ def episode(model, bddl, state, lang, seed_base):
                 if t == WAIT:
                     h_on, off, zr, cy = track()
                     rot0 = onset_rot(h_on, False, None)
+                    d0t = onset_d(h_on, False, None)
                     ee0 = FC.scene(env, obs, dj)["ee_pos"].copy()        # the episode start (PARTS_RESULTS 27, P_hs)
                 continue
             if not plan:
                 b = FF.batch_from_scene(FC.scene(env, obs, dj), oi, ti, prev, held=float(h_on), off=off, zrest=zr, cyaw=cy, rot0=rot0)
                 if float(getattr(model, "hscale", 0.0)) > 0:
                     b["ee0"] = torch.tensor(np.asarray(ee0), dtype=torch.float32)[None]
+                if bool(getattr(model, "tscale", False)) and d0t is not None:   # not held: the model uses the current distance
+                    b["d0t"] = torch.tensor([d0t], dtype=torch.float32)
                 g = torch.Generator().manual_seed(int(seed_base) + calls)
                 ch = model.sample(b, generator=g)[0].numpy()
                 plan = [np.clip(x, -1.0, 1.0) for x in ch[:REPLAN]]
@@ -82,6 +91,7 @@ def episode(model, bddl, state, lang, seed_base):
             was = h_on
             h_on, off, zr, cy = track()
             rot0 = onset_rot(h_on, was, rot0)
+            d0t = onset_d(h_on, was, d0t)
             if h_on and not was:
                 segs += 1
                 if held_step is None:

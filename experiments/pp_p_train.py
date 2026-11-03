@@ -43,6 +43,26 @@ def start_rows(D):
     return D["ee_pos"][first[np.searchsorted(first, np.arange(len(key)), side="right") - 1]]
 
 
+def d0t_rows(D, held, oi, ti):
+    """PARTS_RESULTS 33 (P_ts): per row, the horizontal object-to-target distance at the onset of the current hold (the current
+    distance while not held), stepped over each episode's rows in order -- the rollout's own rule (fa1h_roll.py)."""
+    key = D["task"].astype(np.int64) * 1000 + D["demo"]
+    i = np.arange(len(key))
+    cur = np.linalg.norm(D["pos"][i, oi, :2] - D["pos"][i, ti, :2], axis=1).astype(np.float32)
+    out = cur.copy()
+    on, d0 = False, 0.0
+    for j in range(len(key)):
+        if j == 0 or key[j] != key[j - 1]:
+            on = False
+        h = bool(held[j] > 0.5)
+        if h and not on:
+            d0 = cur[j]
+        on = h
+        if h:
+            out[j] = d0
+    return out
+
+
 def rows(dev, tasks=None, k=None):
     """-> (batch dict of tensors, actions, centre, size) over the demo rows of `tasks` (compound names; None = all), first k demos."""
     D = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
@@ -65,7 +85,7 @@ def rows(dev, tasks=None, k=None):
     T = lambda v, dt=torch.float32: torch.tensor(np.asarray(v)[keep], dtype=dt, device=dev)   # noqa: E731
     b = dict(ee_pos=T(D["ee_pos"]), ee_rot=T(D["ee_rot"]), grip=T(D["grip"]), prev=T(D["prev_grip"]), pos=T(D["pos"]), yaw=T(D["yaw"]),
              drawer=T(D["drawer"]), oi=T(oi, torch.long), ti=T(ti, torch.long), held=T(Db["held"]), off=T(Db["off"]), zrest=T(zr),
-             cyaw=T(cy), rot0=T(r0), ee0=T(start_rows(D)))
+             cyaw=T(cy), rot0=T(r0), ee0=T(start_rows(D)), d0t=T(d0t_rows(D, Db["held"], oi, ti)))
     size = np.array([FC.SIZE[e] for e in FC.ENT], np.float32)
     return b, T(np.clip(X, -1, 1)), center, size, int(keep.sum()), sorted({int(x) for x in np.asarray(D["demo"])[keep]})
 
@@ -136,6 +156,7 @@ def main():
     ap.add_argument("--rtclip", action="store_true")                      # PARTS_RESULTS 24: P_rt
     ap.add_argument("--hscale", action="store_true")                      # PARTS_RESULTS 27: P_hs
     ap.add_argument("--psupport", action="store_true")                    # PARTS_RESULTS 30: P_pp (per-part support radii)
+    ap.add_argument("--tscale", action="store_true")                      # PARTS_RESULTS 33: P_ts (carry scale frame)
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -167,7 +188,7 @@ def main():
         print(f"[pp_p] rclip {rclip:.4f} rtclip {rtclip:.4f} hscale {hscale:.4f} psupport {a.psupport} "
               f"obj {None if ro is None else [round(x, 4) for x in ro]} tgt {None if rt is None else [round(x, 4) for x in rt]}", flush=True)
         m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
-                         rclip=rclip, rtclip=rtclip, hscale=hscale, psupport=a.psupport, rclip_p=ro, rtclip_p=rt).to(dev)
+                         rclip=rclip, rtclip=rtclip, hscale=hscale, psupport=a.psupport, rclip_p=ro, rtclip_p=rt, tscale=a.tscale).to(dev)
         ema, curve, secs = fit(m, list(m.parameters()), b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}")
         ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps))
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
