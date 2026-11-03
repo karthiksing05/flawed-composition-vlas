@@ -74,6 +74,16 @@ def metric(a, cand, ref):
         d = [f(np.arange(n)), *L.boot(f, n)]
         return dict(metric=a.metric, candidate=float(rate(Ha, Ra, np.arange(n))), reference=float(rate(Hb, Rb, np.arange(n))), delta=d,
                     rule="improves iff the CI lower bound > 0 (PARTS_RESULTS 30)", improves=bool(d[1] is not None and d[1] > 0))
+    if a.metric == "k5_hold_new":                                            # PARTS_RESULTS 44: K5's new-layout hold
+        Ha, _ = held_arrived(cand, ["K5"], "new")
+        Hb, _ = held_arrived(ref, ["K5"], "new")
+        n = Ha.shape[-1]
+        f = lambda kk: float(np.nanmean(Ha[:, kk]) - np.nanmean(Hb[:, kk]))  # noqa: E731
+        d = [f(np.arange(n)), *L.boot(f, n)]
+        sec = metric(argparse.Namespace(**dict(vars(a), metric="bottle_hold_new")), cand, ref)   # reported: pooled + familiar
+        return dict(metric=a.metric, candidate=float(np.nanmean(Ha)), reference=float(np.nanmean(Hb)), delta=d,
+                    rule="improves iff delta > 0.10 and the CI lower bound > 0 (PARTS_RESULTS 44)",
+                    improves=bool(d[0] > 0.10 and d[1] is not None and d[1] > 0), bottle_hold_new=sec)
     if a.metric in ("bottle_hold_fam", "bottle_hold_new"):                   # PARTS_RESULTS 38 / 41: hold over the bottle's tasks
         bt = ["K4", "K5", "N4", "N5", "N6"]
         lay = "familiar" if a.metric == "bottle_hold_fam" else "new"
@@ -116,7 +126,7 @@ def main():
     ap.add_argument("--s2", required=True)
     ap.add_argument("--ref-s2", required=True)
     ap.add_argument("--s3", required=True)
-    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam", "bottle_hold_fam", "bottle_hold_new"))
+    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam", "bottle_hold_fam", "bottle_hold_new", "k5_hold_new"))
     ap.add_argument("--s1-extra", default="")                               # PARTS_RESULTS 38: further S1 files that must all hold
     ap.add_argument("--phase", default="main", choices=("main", "conf"))
     a = ap.parse_args()

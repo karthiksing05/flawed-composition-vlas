@@ -83,8 +83,11 @@ class PartsFlow(nn.Module):
 
     def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
                  rclip=0.0, rtclip=0.0, hscale=0.0, psupport=False, rclip_p=None, rtclip_p=None, tscale=False, nmode=0, tmode=None,
-                 gm=None, rtransport=False, rs_p=None, rrole=0.0):
+                 gm=None, rtransport=False, rs_p=None, rrole=0.0, bbnom=False):
         super().__init__()
+        # PARTS_RESULTS 44 (P_nom; PLAN_PARTS 10.7): with rtransport, the backbone-alone path does not read m (its one-hot is 0)
+        self.bbnom = bool(bbnom)
+        assert not self.bbnom or rtransport, "bbnom needs rtransport"
         # PARTS_RESULTS 41 (P_rtr; PLAN_PARTS 10.6): role-level transport.  An object part acts only where the horizontal
         # hand-object distance is <= its start radius rs_p[part] (99th pct of its demos' start offsets); beyond it the object
         # backbone acts alone (part off), relocated onto the role's support radius rrole.  The per-part rclip is not used.
@@ -185,6 +188,8 @@ class PartsFlow(nn.Module):
         aux = b["drawer"] * (e == DRAWER).float()
         slot = torch.cat([torch.zeros_like(p), torch.sin(dy)[:, None], torch.cos(dy)[:, None], self.size[e], aux[:, None] * 10.0], -1)
         msg = [torch.nn.functional.one_hot(self.message(b), self.nmode).float()] if self.nmode > 0 else []
+        if msg and self.bbnom and on is not None:                               # PARTS_RESULTS 44: backbone-only rows read no m
+            msg = [msg[0] * on[:, None].to(msg[0].dtype)]
         return torch.cat([p, R, b["grip"] * GRIP_SCALE, b["prev"][:, None], slot] + msg, -1)
 
     def message(self, b):
@@ -290,7 +295,7 @@ class PartsFlow(nn.Module):
     def save(self, path, meta):
         np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize, aframe=self.aframe,
                                                 psupport=self.psupport, tscale=self.tscale, nmode=self.nmode,
-                                                rtransport=self.rtransport)),
+                                                rtransport=self.rtransport, bbnom=self.bbnom)),
                  **{k: v.detach().cpu().numpy() for k, v in self.state_dict().items()})
 
     @classmethod
@@ -299,7 +304,7 @@ class PartsFlow(nn.Module):
         meta = json.loads(str(z["__meta__"]))
         m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False), aframe=meta.get("aframe", False),
                 psupport=meta.get("psupport", False), tscale=meta.get("tscale", False), nmode=meta.get("nmode", 0),
-                rtransport=meta.get("rtransport", False))
+                rtransport=meta.get("rtransport", False), bbnom=meta.get("bbnom", False))
         sd ={k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
         sd.setdefault("rs_p", m.rs_p.clone())                                   # checkpoints before P_rtr carry no start radii
         sd.setdefault("rrole", torch.tensor(0.0))

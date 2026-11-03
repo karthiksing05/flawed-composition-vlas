@@ -156,7 +156,7 @@ def role_init(m, seed):
 
 
 ROLE_BUFFERS = dict(obj=("rclip", "rclip_p", "home", "hscale", "rs_p", "rrole"), tgt=("rtclip", "rtclip_p"))
-ROLE_FLAGS = dict(obj=("aframe", "rtransport"), tgt=("tsize", "tscale"))
+ROLE_FLAGS = dict(obj=("aframe", "rtransport", "bbnom"), tgt=("tsize", "tscale"))
 
 
 def reuse_role(m, spec, seed, steps):
@@ -329,6 +329,7 @@ def main():
     ap.add_argument("--reuse", default="")                                # PARTS_RESULTS 35: "<role>:<tag>", needs --decouple
     ap.add_argument("--imode", action="store_true")                       # PARTS_RESULTS 38: P_imd (grasp-mode message m)
     ap.add_argument("--rtransport", action="store_true")                  # PARTS_RESULTS 41: P_rtr (role-level transport)
+    ap.add_argument("--bbnom", action="store_true")                       # PARTS_RESULTS 44: P_nom (backbone-alone path reads no m)
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -374,7 +375,7 @@ def main():
             print(f"[pp_p] rtransport rs_p {[round(x, 4) for x in rs_p]} rrole {rrole:.4f}", flush=True)
         m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
                          rclip=rclip, rtclip=rtclip, hscale=hscale, psupport=a.psupport, rclip_p=ro, rtclip_p=rt, tscale=a.tscale,
-                         nmode=nmode, tmode=tmode, gm=gm, rtransport=a.rtransport, rs_p=rs_p, rrole=rrole)
+                         nmode=nmode, tmode=tmode, gm=gm, rtransport=a.rtransport, rs_p=rs_p, rrole=rrole, bbnom=a.bbnom)
         groups, reused = None, None
         if a.decouple:                                                     # PARTS_RESULTS 35
             hv = torch.unique(b["held"]).cpu().tolist()
