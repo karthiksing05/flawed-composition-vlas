@@ -36,6 +36,13 @@ CREATE_STEPS, CREATE_LR = 4000, 3e-4
 FIELDS = ("ee_pos", "ee_rot", "grip", "prev", "pos", "yaw", "drawer", "oi", "ti", "held", "off", "zrest", "cyaw", "rot0")
 
 
+def start_rows(D):
+    """PARTS_RESULTS 27 (P_hs): per row, the end effector at its demo's first row (the episode start)."""
+    key = D["task"].astype(np.int64) * 1000 + D["demo"]
+    first = np.r_[0, np.nonzero(key[1:] != key[:-1])[0] + 1]
+    return D["ee_pos"][first[np.searchsorted(first, np.arange(len(key)), side="right") - 1]]
+
+
 def rows(dev, tasks=None, k=None):
     """-> (batch dict of tensors, actions, centre, size) over the demo rows of `tasks` (compound names; None = all), first k demos."""
     D = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
@@ -58,7 +65,7 @@ def rows(dev, tasks=None, k=None):
     T = lambda v, dt=torch.float32: torch.tensor(np.asarray(v)[keep], dtype=dt, device=dev)   # noqa: E731
     b = dict(ee_pos=T(D["ee_pos"]), ee_rot=T(D["ee_rot"]), grip=T(D["grip"]), prev=T(D["prev_grip"]), pos=T(D["pos"]), yaw=T(D["yaw"]),
              drawer=T(D["drawer"]), oi=T(oi, torch.long), ti=T(ti, torch.long), held=T(Db["held"]), off=T(Db["off"]), zrest=T(zr),
-             cyaw=T(cy), rot0=T(r0))
+             cyaw=T(cy), rot0=T(r0), ee0=T(start_rows(D)))
     size = np.array([FC.SIZE[e] for e in FC.ENT], np.float32)
     return b, T(np.clip(X, -1, 1)), center, size, int(keep.sum()), sorted({int(x) for x in np.asarray(D["demo"])[keep]})
 
@@ -106,6 +113,7 @@ def main():
     ap.add_argument("--aframe2", action="store_true")                     # PARTS_RESULTS 16: P_af2
     ap.add_argument("--rclip", action="store_true")                       # PARTS_RESULTS 21: P_rc
     ap.add_argument("--rtclip", action="store_true")                      # PARTS_RESULTS 24: P_rt
+    ap.add_argument("--hscale", action="store_true")                      # PARTS_RESULTS 27: P_hs
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -119,21 +127,23 @@ def main():
         b, act, center, size, n, _ = rows(dev, tasks)
         D0 = np.load(os.path.join(FC.DATA, "demos.npz"))
         home = D0["ee_pos"][D0["step"] == 0].mean(0).tolist()               # the demos' mean end effector at step 0 (P_af)
-        rclip = 0.0
-        if a.rclip:                                                          # P_rc: min over training objects of the 99th pct of not-held dxy
+        rclip = hscale = 0.0
+        if a.rclip or a.hscale:                                                        # P_rc: min over training objects of the 99th pct of not-held dxy
             nh = b["held"] < 0.5
             idx = torch.arange(len(b["oi"]), device=dev)
             dxy = torch.linalg.norm((b["ee_pos"] - b["pos"][idx, b["oi"]])[:, :2], dim=-1)
             rclip = float(min(torch.quantile(dxy[nh & (b["oi"] == o)], 0.99) for o in torch.unique(b["oi"][nh])))
+            if a.hscale:                                                     # P_hs: the same radius, as the scale frame's support
+                rclip, hscale = 0.0, rclip
         rtclip = 0.0
         if a.rtclip:                                                         # P_rt: min over training targets of the 99th pct of held object-target dxy
             hd = b["held"] > 0.5
             idx = torch.arange(len(b["oi"]), device=dev)
             txy = torch.linalg.norm((b["pos"][idx, b["oi"]] - b["pos"][idx, b["ti"]])[:, :2], dim=-1)
             rtclip = float(min(torch.quantile(txy[hd & (b["ti"] == t)], 0.99) for t in torch.unique(b["ti"][hd])))
-        print(f"[pp_p] rclip {rclip:.4f} rtclip {rtclip:.4f}", flush=True)
+        print(f"[pp_p] rclip {rclip:.4f} rtclip {rtclip:.4f} hscale {hscale:.4f}", flush=True)
         m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
-                         rclip=rclip, rtclip=rtclip).to(dev)
+                         rclip=rclip, rtclip=rtclip, hscale=hscale).to(dev)
         ema, curve, secs = fit(m, list(m.parameters()), b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}")
         ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps))
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,

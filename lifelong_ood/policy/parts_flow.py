@@ -76,7 +76,7 @@ class PartsFlow(nn.Module):
     arm = "P"
 
     def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
-                 rclip=0.0, rtclip=0.0):
+                 rclip=0.0, rtclip=0.0, hscale=0.0):
         super().__init__()
         self.H, self.rank = horizon, rank
         self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
@@ -88,6 +88,9 @@ class PartsFlow(nn.Module):
         self.register_buffer("rclip", torch.tensor(float(rclip), dtype=torch.float32))
         # PARTS_RESULTS 24 (P_rt): the target term's horizontal object-to-target offset clipped to the demos' carry radius (0: off)
         self.register_buffer("rtclip", torch.tensor(float(rtclip), dtype=torch.float32))
+        # PARTS_RESULTS 27 (P_hs): the object term in a horizontal scale frame frozen at the episode start,
+        # s = min(1, hscale / |start offset_xy|); input offsets and chunk translations x s, output translation velocity / s (0: off)
+        self.register_buffer("hscale", torch.tensor(float(hscale), dtype=torch.float32))
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
         self.register_buffer("size", torch.tensor(size if size is not None else np.zeros((N_ENT, 2)), dtype=torch.float32))
         da, dt = 7 * horizon, 32
@@ -100,11 +103,22 @@ class PartsFlow(nn.Module):
         self.register_buffer("tpart", torch.tensor([TGT_ATOMS.index(e) if e in TGT_ATOMS else -1 for e in _ENT()], dtype=torch.long))
 
     # ---- features (stage 1i's, identity removed) ---------------------------------------------------------------------------------
+    def _scale(self, b, o):
+        """P_hs: per row, the episode's horizontal scale s (None when off).  Start = b["ee0"], else the current hand position."""
+        if float(self.hscale) <= 0:
+            return None
+        e0 = b["ee0"] if "ee0" in b else b["ee_pos"]
+        r0 = torch.linalg.norm((e0 - o)[:, :2], dim=-1).clamp_min(1e-9)
+        return torch.clamp(self.hscale / r0, max=1.0)
+
     def _obj_in(self, b, Q, o, yaw0, Qp=None):
         idx = torch.arange(len(b["oi"]), device=b["oi"].device)
         QT = Q.transpose(1, 2)
         QpT = QT if Qp is None else Qp.transpose(1, 2)                      # translation frame (P_af: the approach frame)
         d = torch.einsum("bij,bj->bi", QpT, b["ee_pos"] - o)
+        s = self._scale(b, o)
+        if s is not None:                                                       # horizontal scaling commutes with the yaw frame
+            d = torch.cat([d[:, :2] * s[:, None], d[:, 2:]], -1)
         if float(self.rclip) > 0:                                               # relocate far states onto the support radius
             r = torch.linalg.norm(d[:, :2], dim=-1, keepdim=True).clamp_min(1e-9)
             d = torch.cat([d[:, :2] * torch.clamp(self.rclip / r, max=1.0), d[:, 2:]], -1)
@@ -157,7 +171,11 @@ class PartsFlow(nn.Module):
         Qc, ct = self._canon(b)
         po, pt = self.opart[b["oi"]], self.tpart[b["ti"]]
         assert bool((po >= 0).all()) and bool((pt >= 0).all()), "an atom without a part"
-        vo = _from2(Qa, Qo, self.obj(torch.cat([co, flat(_to2(Qa, Qo, x)), te], -1), po).reshape(B, self.H, 7))
+        s = self._scale(b, oo)
+        xo = x if s is None else torch.cat([x[..., :2] * s[:, None, None], x[..., 2:]], -1)
+        vo = _from2(Qa, Qo, self.obj(torch.cat([co, flat(_to2(Qa, Qo, xo)), te], -1), po).reshape(B, self.H, 7))
+        if s is not None:
+            vo = torch.cat([vo[..., :2] / s[:, None, None], vo[..., 2:]], -1)
         vt = chunk_from(Qc, self.tgt(torch.cat([ct, flat(chunk_to(Qc, x)), te], -1), pt).reshape(B, self.H, 7))
         g = b["held"][:, None, None]
         return (1 - g) * vo + g * vt
@@ -191,6 +209,7 @@ class PartsFlow(nn.Module):
         sd.setdefault("home", torch.zeros(3))                                   # checkpoints before P_af carry no home buffer
         sd.setdefault("rclip", torch.tensor(0.0))                               # nor before P_rc
         sd.setdefault("rtclip", torch.tensor(0.0))                              # nor before P_rt
+        sd.setdefault("hscale", torch.tensor(0.0))                              # nor before P_hs
         m.load_state_dict(sd)
         m.eval()
         return m, meta

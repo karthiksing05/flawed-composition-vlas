@@ -66,9 +66,12 @@ def episode(model, bddl, state, lang, seed_base):
                 if t == WAIT:
                     h_on, off, zr, cy = track()
                     rot0 = onset_rot(h_on, False, None)
+                    ee0 = FC.scene(env, obs, dj)["ee_pos"].copy()        # the episode start (PARTS_RESULTS 27, P_hs)
                 continue
             if not plan:
                 b = FF.batch_from_scene(FC.scene(env, obs, dj), oi, ti, prev, held=float(h_on), off=off, zrest=zr, cyaw=cy, rot0=rot0)
+                if float(getattr(model, "hscale", 0.0)) > 0:
+                    b["ee0"] = torch.tensor(np.asarray(ee0), dtype=torch.float32)[None]
                 g = torch.Generator().manual_seed(int(seed_base) + calls)
                 ch = model.sample(b, generator=g)[0].numpy()
                 plan = [np.clip(x, -1.0, 1.0) for x in ch[:REPLAN]]
