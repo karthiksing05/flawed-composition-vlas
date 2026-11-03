@@ -1393,3 +1393,71 @@ own demos: bottle (K4) 0.056 / 0.067 / 0.075 / 0.092 m at k = 1 / 5 / 10 / 50; p
 | 8 | familiar cabinet arrival lost under the library-wide carry radius (§29) | relocation into each part's own support | pp_r8 | +0.16 [0.03, 0.30]: improves | false |
 
 The failure streak resets to 0. The familiar layout now fails 3F on N4 alone, and so does the plate's place-on-arrival.
+
+## 32. Round 9 diagnostic: N4's bottle touches down before it arrives (2026-11-03; `experiments/pp_carry_profile.py`, `pp_tilt_trace.py`)
+
+**Method.** P_pp and P_rt, seed 10, dev states 4-23: N4 familiar, K1 familiar and K1 new. At every held call, the held object's
+foot relative to the target, as the target term reads it before any clip: horizontal distance d and height h. The
+**touch-down distance** is d where the foot first returns below 3 cm after the lift. The reference is K1's held demo rows, the
+plate part's only training carries.
+
+**The plate part's demo profile.** The foot rises to about 9 cm by d = 0.03-0.10 m (median h 0.087-0.091 m) and comes down
+only inside 3 cm of the plate's centre (median h 0.015 m there).
+
+| episode set | carry onset d (m) | touch-down d, median (m) | success |
+|---|---|---|---|
+| K1 familiar, P_pp | 0.12-0.19 | 0.017 | 19 / 20 |
+| K1 familiar, P_rt | 0.13-0.17 | 0.009 | 20 / 20 |
+| N4 familiar, P_pp | 0.24-0.34 | 0.060 | 6 / 17 held |
+| N4 familiar, P_rt | 0.24-0.28 | 0.045 | 8 / 16 held |
+
+- **The bottle's foot comes down 4-10 cm short of the plate's centre.** At d = 0.03-0.06 m its median height is 0.025 m
+  (P_pp) and 0.033 m (P_rt), against the demos' 0.091 m.
+  - Every P_pp failure that touches down does so at 0.05-0.10 m. The successes touch down at 0.01-0.05 m.
+  - Earlier, at d = 0.10-0.22 m, the bottle is carried higher than the demos: median 0.10-0.17 m (both arms), against 0.01-0.04 m.
+- **The tilt trace confirms the mechanism.** N4 tips at d = 0.04-0.07 m with the bottle's origin 1.4-2.5 cm above the plate's, after 15-40°
+  of hand turn and 20-30° of slip. The bottle's foot drags on the plate while the hand still travels.
+- **This is §26's mechanism on the carry.** Every N4 carry starts beyond the plate part's support (0.16 m). Under radial
+  relocation the term sees the support radius with the true height. It runs its onset program, the lift, over the extra
+  distance, and its descent then starts too far out. Round 6's smaller radius (0.0925 m) presented the far field as already
+  close and hid part of this. Round 8's own radius (0.160 m) shows it fully.
+- K1 in the new layout (onsets up to 0.41 m) shows the same thing: P_pp touches down at a median 0.038 m and over-lifts to
+  0.18-0.25 m at d = 0.06-0.22 m.
+
+## 33. Round 9 design note and protocol: a carry scale frame frozen at the hold's onset (fixed 2026-11-03, before any code of this round; m3_prereg tag pp_r9)
+
+**Weakness (measured, §32).** N4 carries start beyond the plate part's support. Under radial relocation the bottle's foot
+touches down 4-10 cm before the plate's centre, and the bottle tips. N4 familiar success is 0.23 and its 3F D3 is −0.61.
+
+**Principle.** A carry from farther out is the same carry with its horizontal plane stretched about the target: the same height
+profile over the same fraction of the way. The place frame (stage 1c) already freezes the carry's bearing at the hold's onset.
+This round also freezes its horizontal scale:
+
+s_t = min(1, r_t(part) / d_onset)
+
+Here d_onset is the horizontal object-to-target distance at the hold's onset, and r_t(part) is the activated target part's own
+support radius (round 8).
+
+**Why the carry and not the approach (round 7).** Round 7 failed because the grasp is not scale-equivariant: the hand-object
+offset at the close was shrunk by s too (§29). At the place, the relevant precision is the release site's, and the plate's
+calibrated radius is 0.08 m. Most training carries start inside their own part's support (§29's table), so s_t = 1 on almost
+every demo row and the training data is nearly unchanged. Round 7's library-wide 0.124 m scaled a large share of the demos.
+
+**Change (one, structural; on P_pp).**
+- In the target term, the radial relocation of the carry (round 6, with round 8's per-part radius) is replaced by this frame:
+  - input: the horizontal object-to-target offset × s_t, and the noisy chunk's horizontal translation × s_t, both in the
+    canonical frame;
+  - output: the horizontal translation velocity × 1/s_t.
+- d_onset is captured at the hold's onset, as cyaw and rot0 are. On demo rows it comes from the first row of each hold, by the
+  rollout's own rule.
+- The object term (round 5's clip with round 8's per-part radius), Φ, the parts and the data are P_pp's.
+- No teacher, data or per-scene input is added. s_t uses only the fitted part radius and the onset state.
+- **Known limit.** Commands above 1 are clipped by the executor. For far new-layout carries (s_t ≈ 0.4) the scaled horizontal
+  command may saturate. N4 familiar (s_t ≈ 0.6) is less exposed.
+
+**Arm.** P_ts (rank 32), seeds 10-12, builds full, nobottle and noplate. Reference: P_pp, seeds 10-12 (pp_r8_roll).
+
+**Reads.** Dev states 4-23, N2's seeds. S1, S2 and S3 with pp_l2's estimators and frozen GO mapping.
+
+**Pre-registered round verdict (metric n4_fam).** Δ = N4's familiar success, P_ts − P_pp, state bootstrap with seeds pooled.
+**improves** iff the CI's lower bound is > 0, the mandate's rule as in round 8.
