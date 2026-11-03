@@ -89,8 +89,10 @@ def roll(a):
             r = float(m._radius(m.rclip, m.rclip_p, pr).reshape(-1)[0]) if float(m.rclip) > 0 else float("inf")
             d = float(np.linalg.norm(o[:2]))
             mm = int(m.message(bb)[0]) if getattr(m, "nmode", 0) > 0 else None
+            on = m.part_on(bb, bb["pos"][torch.arange(1), bb["oi"]]) if getattr(m, "rtransport", False) else None
             calls.append(dict(dxy=d, dz=float(o[2]), app=min(d, r), r=r, m=mm, grip=float(x[0, 0, 6]), vz=float(x[0, :5, 2].mean()),
-                              yaw=float(np.degrees(yaw2(bb["ee_rot"].numpy())[0]) / 2)))
+                              yaw=float(np.degrees(yaw2(bb["ee_rot"].numpy())[0]) / 2),
+                              backbone_only=None if on is None else bool(not on[0])))       # PARTS_RESULTS 41 (P_rtr)
         rel = next((c for c in calls if c["dxy"] <= c["r"]), None)
         low = next((c for c in calls if c["dz"] <= zc + 0.04), None)
         cl = [c for c in calls if c["grip"] > 0]

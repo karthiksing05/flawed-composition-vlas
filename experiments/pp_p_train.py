@@ -112,6 +112,31 @@ def part_radii(b, dev):
     return ro, rt
 
 
+def start_radii(b):
+    """PARTS_RESULTS 41 (P_rtr): each object part's start radius, the 99th pct over its demos of the horizontal hand-to-object
+    offset at the demo's first row (rows are in episode order).  Parts without demos: 0 (the part never acts)."""
+    key = b["dkey"].cpu().numpy()
+    first = np.r_[0, np.nonzero(key[1:] != key[:-1])[0] + 1]
+    idx = torch.arange(len(key), device=b["oi"].device)
+    d0 = torch.linalg.norm((b["ee_pos"] - b["pos"][idx, b["oi"]])[:, :2], dim=-1).cpu().numpy()[first]
+    oi = b["oi"].cpu().numpy()[first]
+    ent = list(FC.ENT)
+    rs = np.zeros(len(PF.OBJ_ATOMS))
+    for i, a in enumerate(PF.OBJ_ATOMS):
+        sel = oi == ent.index(a)
+        if sel.any():
+            rs[i] = float(np.quantile(d0[sel], 0.99))
+    return rs
+
+
+def role_radius(b):
+    """PARTS_RESULTS 41 (P_rtr): the object role's support radius, the 99th pct of the horizontal hand-to-object distance over
+    every not-held object row of the build (round 5's rule on the backbone's rows)."""
+    idx = torch.arange(len(b["oi"]), device=b["oi"].device)
+    dxy = torch.linalg.norm((b["ee_pos"] - b["pos"][idx, b["oi"]])[:, :2], dim=-1)
+    return float(torch.quantile(dxy[b["held"] < 0.5], 0.99))
+
+
 def deterministic():
     """PARTS_RESULTS 35 (decoupled training, part 3): deterministic kernels.  Called before the first cuBLAS call."""
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
@@ -130,8 +155,8 @@ def role_init(m, seed):
         net.load_state_dict(fresh.state_dict())
 
 
-ROLE_BUFFERS = dict(obj=("rclip", "rclip_p", "home", "hscale"), tgt=("rtclip", "rtclip_p"))
-ROLE_FLAGS = dict(obj=("aframe",), tgt=("tsize", "tscale"))
+ROLE_BUFFERS = dict(obj=("rclip", "rclip_p", "home", "hscale", "rs_p", "rrole"), tgt=("rtclip", "rtclip_p"))
+ROLE_FLAGS = dict(obj=("aframe", "rtransport"), tgt=("tsize", "tscale"))
 
 
 def reuse_role(m, spec, seed, steps):
@@ -303,6 +328,7 @@ def main():
     ap.add_argument("--decouple", action="store_true")                    # PARTS_RESULTS 35: one training per role
     ap.add_argument("--reuse", default="")                                # PARTS_RESULTS 35: "<role>:<tag>", needs --decouple
     ap.add_argument("--imode", action="store_true")                       # PARTS_RESULTS 38: P_imd (grasp-mode message m)
+    ap.add_argument("--rtransport", action="store_true")                  # PARTS_RESULTS 41: P_rtr (role-level transport)
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -341,9 +367,14 @@ def main():
             nmode, tmode, gm, inv = grasp_inventory(b, act)
             inv["bits_task_entropy"] = task_entropy_bits(tasks, tmode)
             print("[pp_p] interface", json.dumps(inv), flush=True)
+        rs_p, rrole = None, 0.0
+        if a.rtransport:                                                   # PARTS_RESULTS 41: start radii and the role radius
+            assert not a.rclip, "--rtransport removes the per-part rclip (PARTS_RESULTS 41)"
+            rs_p, rrole = start_radii(b), role_radius(b)
+            print(f"[pp_p] rtransport rs_p {[round(x, 4) for x in rs_p]} rrole {rrole:.4f}", flush=True)
         m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
                          rclip=rclip, rtclip=rtclip, hscale=hscale, psupport=a.psupport, rclip_p=ro, rtclip_p=rt, tscale=a.tscale,
-                         nmode=nmode, tmode=tmode, gm=gm)
+                         nmode=nmode, tmode=tmode, gm=gm, rtransport=a.rtransport, rs_p=rs_p, rrole=rrole)
         groups, reused = None, None
         if a.decouple:                                                     # PARTS_RESULTS 35
             hv = torch.unique(b["held"]).cpu().tolist()
@@ -362,6 +393,7 @@ def main():
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
                    decouple=a.decouple, reuse=a.reuse or None, reused_role=reused, interface=inv,
                    rclip=rclip, rtclip=rtclip, hscale=hscale, rclip_p=None if ro is None else list(ro), rtclip_p=None if rt is None else list(rt),
+                   rs_p=None if rs_p is None else list(rs_p), rrole=rrole,
                    params_total=int(sum(p.numel() for p in m.parameters())), part_params=dict(obj=m.obj.part_params(), tgt=m.tgt.part_params()),
                    backbone_params=dict(obj=int(sum(p.numel() for p in m.obj.backbone_parameters())),
                                         tgt=int(sum(p.numel() for p in m.tgt.backbone_parameters()))))
@@ -403,6 +435,15 @@ def main():
             with torch.no_grad():
                 (m.rclip_p if a.role == "obj" else m.rtclip_p)[j] = radius
             print(f"[pp_p] created part radius {radius:.4f}", flush=True)
+        rstart = None
+        if m.rtransport:                                             # P_rtr: the backbone is frozen, so no backbone-only term
+            m.training_bb = False
+            if a.role == "obj":                                      # ... and the created part's start radius, from its k demos
+                rstart = float(start_radii(b)[j])
+                assert rstart > 0, "no creation demo of the atom"
+                with torch.no_grad():
+                    m.rs_p[j] = rstart
+                print(f"[pp_p] created part start radius {rstart:.4f}", flush=True)
         cmode = None
         if m.nmode > 0 and a.role == "tgt":                          # P_imd: the created target part's m, from its own k demos
             g = grasp_angles(b, act)
@@ -420,6 +461,7 @@ def main():
             w = after[k].to(v.device)
             own = k == ("rclip_p" if a.role == "obj" else "rtclip_p") and radius is not None     # P_pp: the part's radius row
             own = own or (k == "tmode" and cmode is not None)                                  # P_imd: the part's m
+            own = own or (k == "rs_p" and rstart is not None)                                  # P_rtr: the part's start radius
             if own or (k.endswith(("emb", ".A", ".B")) and k.startswith("obj." if a.role == "obj" else "tgt.")):
                 other = torch.ones(v.shape[0], dtype=torch.bool)
                 other[j] = False
@@ -432,7 +474,7 @@ def main():
         ema.cpu().save(os.path.join(d, name), dict(meta, created=a.atom, role=a.role, task=a.task, k=a.k, demos=demos))
         rep = dict(mode="create", tag=a.tag, seed=a.seed, atom=a.atom, role=a.role, task=a.task, k=a.k, demos=demos, n_rows=n,
                    steps=CREATE_STEPS, secs=secs, gpu_seconds_to_ready=time.time() - t0, curve=curve, params_added=net.part_params(),
-                   old_parameters_changed=0, part_radius=radius, part_mode=cmode)
+                   old_parameters_changed=0, part_radius=radius, part_mode=cmode, part_start_radius=rstart)
         fn = os.path.join(ROOT, "results", "flawed", f"pp_create_{a.tag}_s{a.seed}_{a.atom}_k{a.k}.json")
     with open(fn, "w", encoding="utf-8") as fh:
         json.dump(rep, fh, indent=1)

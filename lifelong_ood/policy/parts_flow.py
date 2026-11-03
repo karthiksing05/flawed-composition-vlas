@@ -40,8 +40,10 @@ class LoRALinear(nn.Module):
         self.B = nn.Parameter(torch.zeros(n_atoms, rank, dout))
         self.rank = rank
 
-    def forward(self, x, atom):
+    def forward(self, x, atom, on=None):
         d = torch.einsum("bi,bir->br", x, self.A[atom])
+        if on is not None:                                          # PARTS_RESULTS 41: rows with the part off get no delta
+            d = d * on[:, None].to(d.dtype)
         return self.base(x) + torch.einsum("br,bro->bo", d, self.B[atom])
 
 
@@ -56,10 +58,14 @@ class RoleNet(nn.Module):
         self.act = nn.SiLU()
         self.out = nn.Linear(width, dout)
 
-    def forward(self, x, atom):
-        h = torch.cat([x, self.emb[atom]], -1)
+    def forward(self, x, atom, on=None):
+        """on (PARTS_RESULTS 41): per-row bool, the part acts (None: every row).  Part off = slot embedding 0 and LoRA delta 0."""
+        e = self.emb[atom]
+        if on is not None:
+            e = e * on[:, None].to(e.dtype)
+        h = torch.cat([x, e], -1)
         for ly in self.hidden:
-            h = self.act(ly(h, atom))
+            h = self.act(ly(h, atom, on))
         return self.out(h)
 
     def part_params(self):
@@ -77,8 +83,14 @@ class PartsFlow(nn.Module):
 
     def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
                  rclip=0.0, rtclip=0.0, hscale=0.0, psupport=False, rclip_p=None, rtclip_p=None, tscale=False, nmode=0, tmode=None,
-                 gm=None):
+                 gm=None, rtransport=False, rs_p=None, rrole=0.0):
         super().__init__()
+        # PARTS_RESULTS 41 (P_rtr; PLAN_PARTS 10.6): role-level transport.  An object part acts only where the horizontal
+        # hand-object distance is <= its start radius rs_p[part] (99th pct of its demos' start offsets); beyond it the object
+        # backbone acts alone (part off), relocated onto the role's support radius rrole.  The per-part rclip is not used.
+        self.rtransport = bool(rtransport)
+        self.register_buffer("rs_p", torch.tensor(rs_p if rs_p is not None else np.zeros(len(OBJ_ATOMS)), dtype=torch.float32))
+        self.register_buffer("rrole", torch.tensor(float(rrole), dtype=torch.float32))
         self.H, self.rank = horizon, rank
         self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
         # PARTS_RESULTS 14 (P_af, aframe=1): the object term's translation in the approach frame;
@@ -144,7 +156,14 @@ class PartsFlow(nn.Module):
         r = r[:, 0] if r.dim() == 2 else r.expand(len(d0))
         return torch.clamp(r / d0.clamp_min(1e-9), max=1.0)
 
-    def _obj_in(self, b, Q, o, yaw0, Qp=None):
+    def part_on(self, b, o):
+        """P_rtr: per row, does the object part act (horizontal hand-object distance <= the part's start radius)?  None when off."""
+        if not self.rtransport:
+            return None
+        dxy = torch.linalg.norm((b["ee_pos"] - o)[:, :2], dim=-1)
+        return dxy <= self.rs_p[self.opart[b["oi"]].clamp_min(0)]
+
+    def _obj_in(self, b, Q, o, yaw0, Qp=None, on=None):
         idx = torch.arange(len(b["oi"]), device=b["oi"].device)
         QT = Q.transpose(1, 2)
         QpT = QT if Qp is None else Qp.transpose(1, 2)                      # translation frame (P_af: the approach frame)
@@ -152,6 +171,10 @@ class PartsFlow(nn.Module):
         s = self._scale(b, o)
         if s is not None:                                                       # horizontal scaling commutes with the yaw frame
             d = torch.cat([d[:, :2] * s[:, None], d[:, 2:]], -1)
+        if on is not None and float(self.rrole) > 0:                            # P_rtr: backbone rows relocated onto the role's radius
+            r = torch.linalg.norm(d[:, :2], dim=-1, keepdim=True).clamp_min(1e-9)
+            f = torch.where(on[:, None], torch.ones_like(r), torch.clamp(self.rrole / r, max=1.0))
+            d = torch.cat([d[:, :2] * f, d[:, 2:]], -1)
         if float(self.rclip) > 0:                                               # relocate far states onto the support radius
             r = torch.linalg.norm(d[:, :2], dim=-1, keepdim=True).clamp_min(1e-9)
             d = torch.cat([d[:, :2] * torch.clamp(self._radius(self.rclip, self.rclip_p, self.opart[b["oi"]]) / r, max=1.0), d[:, 2:]], -1)
@@ -194,31 +217,43 @@ class PartsFlow(nn.Module):
         held_geom = [self.size[b["oi"]]] if self.tsize else []                 # the held object's footprint radius and height
         return Q, torch.cat([pr, b["prev"][:, None], self.size[e], aux[:, None] * 10.0, drot] + held_geom, -1)
 
+    def _vobj(self, b, x, te, part_off=False):
+        """The object term's velocity (world frame).  part_off (P_rtr's backbone-only loss): every row with the part off."""
+        B = x.shape[0]
+        flat = lambda z: z.reshape(B, -1)                                       # noqa: E731
+        idx = torch.arange(B, device=x.device)
+        Qo, oo, yo = rz(b["yaw"][idx, b["oi"]]), b["pos"][idx, b["oi"]], b["yaw"][idx, b["oi"]]
+        on = self.part_on(b, oo)
+        if on is not None and part_off:
+            on = torch.zeros_like(on)
+        if self.aframe == 2:                                        # one frame: positions, rotations and yaw relative to the bearing
+            ay = torch.atan2(oo[:, 1] - self.home[1], oo[:, 0] - self.home[0])
+            Qa = rz(ay)
+            co = self._obj_in(b, Qa, oo, ay, on=on)
+            Qo = Qa
+        elif self.aframe:                                           # x-axis: the bearing from the home end effector to the object
+            Qa = rz(torch.atan2(oo[:, 1] - self.home[1], oo[:, 0] - self.home[0]))
+            co = self._obj_in(b, Qo, oo, yo, Qp=Qa, on=on)
+        else:
+            Qa = Qo
+            co = self._obj_in(b, Qo, oo, yo, on=on)
+        po = self.opart[b["oi"]]
+        assert bool((po >= 0).all()), "an atom without a part"
+        s = self._scale(b, oo)
+        xo = x if s is None else torch.cat([x[..., :2] * s[:, None, None], x[..., 2:]], -1)
+        vo = _from2(Qa, Qo, self.obj(torch.cat([co, flat(_to2(Qa, Qo, xo)), te], -1), po, on).reshape(B, self.H, 7))
+        if s is not None:
+            vo = torch.cat([vo[..., :2] / s[:, None, None], vo[..., 2:]], -1)
+        return vo
+
     def velocity(self, b, x, t):
         B = x.shape[0]
         te = temb(t)
         flat = lambda z: z.reshape(B, -1)                                       # noqa: E731
-        idx = torch.arange(B, device=x.device)
-        Qo, oo, yo = rz(b["yaw"][idx, b["oi"]]), b["pos"][idx, b["oi"]], b["yaw"][idx, b["oi"]]
-        if self.aframe == 2:                                        # one frame: positions, rotations and yaw relative to the bearing
-            ay = torch.atan2(oo[:, 1] - self.home[1], oo[:, 0] - self.home[0])
-            Qa = rz(ay)
-            co = self._obj_in(b, Qa, oo, ay)
-            Qo = Qa
-        elif self.aframe:                                           # x-axis: the bearing from the home end effector to the object
-            Qa = rz(torch.atan2(oo[:, 1] - self.home[1], oo[:, 0] - self.home[0]))
-            co = self._obj_in(b, Qo, oo, yo, Qp=Qa)
-        else:
-            Qa = Qo
-            co = self._obj_in(b, Qo, oo, yo)
+        vo = self._vobj(b, x, te)
         Qc, ct = self._canon(b)
-        po, pt = self.opart[b["oi"]], self.tpart[b["ti"]]
-        assert bool((po >= 0).all()) and bool((pt >= 0).all()), "an atom without a part"
-        s = self._scale(b, oo)
-        xo = x if s is None else torch.cat([x[..., :2] * s[:, None, None], x[..., 2:]], -1)
-        vo = _from2(Qa, Qo, self.obj(torch.cat([co, flat(_to2(Qa, Qo, xo)), te], -1), po).reshape(B, self.H, 7))
-        if s is not None:
-            vo = torch.cat([vo[..., :2] / s[:, None, None], vo[..., 2:]], -1)
+        pt = self.tpart[b["ti"]]
+        assert bool((pt >= 0).all()), "an atom without a part"
         st = self._tscale(b)
         xc = chunk_to(Qc, x)
         if st is not None:                                          # P_ts: the chunk's horizontal translation in scaled units
@@ -235,7 +270,13 @@ class PartsFlow(nn.Module):
         x0 = torch.randn_like(a)
         t = torch.rand(B, device=a.device)
         xt = (1 - t[:, None, None]) * x0 + t[:, None, None] * a
-        return ((self.velocity(b, xt, t) - (a - x0)) ** 2).mean()
+        loss = ((self.velocity(b, xt, t) - (a - x0)) ** 2).mean()
+        if self.rtransport and self.training_bb:                            # PARTS_RESULTS 41: the backbone-only term, not-held rows
+            vbb = self._vobj(b, xt, temb(t), part_off=True)
+            loss = loss + ((1 - b["held"])[:, None, None] * (vbb - (a - x0)) ** 2).mean()
+        return loss
+
+    training_bb = True                                                      # creation turns it off (the backbone is frozen there)
 
     @torch.no_grad()
     def sample(self, b, steps=10, generator=None):
@@ -248,7 +289,8 @@ class PartsFlow(nn.Module):
 
     def save(self, path, meta):
         np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize, aframe=self.aframe,
-                                                psupport=self.psupport, tscale=self.tscale, nmode=self.nmode)),
+                                                psupport=self.psupport, tscale=self.tscale, nmode=self.nmode,
+                                                rtransport=self.rtransport)),
                  **{k: v.detach().cpu().numpy() for k, v in self.state_dict().items()})
 
     @classmethod
@@ -256,8 +298,11 @@ class PartsFlow(nn.Module):
         z = np.load(path, allow_pickle=False)
         meta = json.loads(str(z["__meta__"]))
         m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False), aframe=meta.get("aframe", False),
-                psupport=meta.get("psupport", False), tscale=meta.get("tscale", False), nmode=meta.get("nmode", 0))
+                psupport=meta.get("psupport", False), tscale=meta.get("tscale", False), nmode=meta.get("nmode", 0),
+                rtransport=meta.get("rtransport", False))
         sd ={k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
+        sd.setdefault("rs_p", m.rs_p.clone())                                   # checkpoints before P_rtr carry no start radii
+        sd.setdefault("rrole", torch.tensor(0.0))
         sd.setdefault("tmode", m.tmode.clone())                                 # checkpoints before P_imd carry no interface
         sd.setdefault("gm", m.gm.clone())
         sd.setdefault("home", torch.zeros(3))                                   # checkpoints before P_af carry no home buffer

@@ -74,16 +74,26 @@ def metric(a, cand, ref):
         d = [f(np.arange(n)), *L.boot(f, n)]
         return dict(metric=a.metric, candidate=float(rate(Ha, Ra, np.arange(n))), reference=float(rate(Hb, Rb, np.arange(n))), delta=d,
                     rule="improves iff the CI lower bound > 0 (PARTS_RESULTS 30)", improves=bool(d[1] is not None and d[1] > 0))
-    if a.metric == "bottle_hold_fam":                                        # PARTS_RESULTS 38: familiar hold over the bottle's tasks
+    if a.metric in ("bottle_hold_fam", "bottle_hold_new"):                   # PARTS_RESULTS 38 / 41: hold over the bottle's tasks
         bt = ["K4", "K5", "N4", "N5", "N6"]
-        Ha, _ = held_arrived(cand, bt, "familiar")
-        Hb, _ = held_arrived(ref, bt, "familiar")
+        lay = "familiar" if a.metric == "bottle_hold_fam" else "new"
+        Ha, _ = held_arrived(cand, bt, lay)
+        Hb, _ = held_arrived(ref, bt, lay)
         n = Ha.shape[-1]
         f = lambda kk: float(np.nanmean(Ha[:, kk]) - np.nanmean(Hb[:, kk]))  # noqa: E731
         d = [f(np.arange(n)), *L.boot(f, n)]
-        return dict(metric=a.metric, candidate=float(np.nanmean(Ha)), reference=float(np.nanmean(Hb)), delta=d,
-                    rule="improves iff delta > 0.10 and the CI lower bound > 0 (PARTS_RESULTS 38)",
-                    improves=bool(d[0] > 0.10 and d[1] is not None and d[1] > 0))
+        out = dict(metric=a.metric, candidate=float(np.nanmean(Ha)), reference=float(np.nanmean(Hb)), delta=d,
+                   rule=f"improves iff delta > 0.10 and the CI lower bound > 0 (PARTS_RESULTS {38 if lay == 'familiar' else 41})",
+                   improves=bool(d[0] > 0.10 and d[1] is not None and d[1] > 0))
+        if lay == "new":                                                     # PARTS_RESULTS 41: familiar non-regression (reported)
+            A = C.stack(cand, cand.s2[0], cand.s2[1], known, "familiar").transpose(1, 0, 2).reshape(-1, len(cand.states))
+            B_ = C.stack(ref, ref.s2[0], ref.s2[1], known, "familiar").transpose(1, 0, 2).reshape(-1, len(ref.states))
+            g = lambda kk: float(np.nanmean(A[:, kk]) - np.nanmean(B_[:, kk]))  # noqa: E731
+            dg = [g(np.arange(n)), *L.boot(g, n)]
+            out["familiar_nonregression"] = dict(candidate=float(np.nanmean(A)), reference=float(np.nanmean(B_)), delta=dg,
+                                                 rule="regresses iff the CI upper bound < 0 (reported, no verdict)",
+                                                 regresses=bool(dg[2] is not None and dg[2] < 0))
+        return out
     if a.metric == "n4_fam":
         A = C.stack(cand, cand.s2[0], cand.s2[1], ["N4"], "familiar")[:, 0]   # [seeds, states]
         B_ = C.stack(ref, ref.s2[0], ref.s2[1], ["N4"], "familiar")[:, 0]
@@ -106,7 +116,7 @@ def main():
     ap.add_argument("--s2", required=True)
     ap.add_argument("--ref-s2", required=True)
     ap.add_argument("--s3", required=True)
-    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam", "bottle_hold_fam"))
+    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam", "bottle_hold_fam", "bottle_hold_new"))
     ap.add_argument("--s1-extra", default="")                               # PARTS_RESULTS 38: further S1 files that must all hold
     ap.add_argument("--phase", default="main", choices=("main", "conf"))
     a = ap.parse_args()
