@@ -1169,3 +1169,40 @@ r is 0.124 m in the full and noplate builds and 0.173 m in nobottle.)
 | round | weakness | change | prereg | round verdict | GO |
 |---|---|---|---|---|---|
 | 6 | N4 place tipping: carry starts outside the plate part's support (§23) | radial relocation of the carry state | pp_r6 | +0.27 [0.13, 0.42]: improves | false |
+
+## 26. Round 7 diagnostic: the new layout fails at the grasp (2026-11-02; `experiments/pp_phase_diag.py`, `pp_trace.py`, `pp_close_diag.py`)
+
+**Where the new layout fails now (P_rt, seeds 10-12).** It fails at the grasp, not at the place.
+- Bottle tasks (K4, K5, N4-N6): hold 0.18 (familiar 0.85). In 38% of episodes no object is moved at all.
+- Cheese tasks (K6, N1-N3): hold 0.48 (familiar 0.98).
+- Bowl tasks (K1-K3): hold 0.85, and once held, arrival is 0.65-0.75.
+- Given arrival, the place mostly succeeds (0.53-1.00).
+
+**The moment of the close (P_rt seed 10, dev states 4-23).** The probe is the object term's input at its first close command,
+or, for an episode that never closes, at its closest approach. The cloud is the not-held demo rows whose chunk starts with a
+close.
+- **Bottle, new layout: 0 of 20 succeed. The hand descends before it arrives.**
+  - The close fires 1.4-18 cm from the bottle horizontally, median 9 cm. In the demos' close rows this distance is at most 7 cm
+    (median 1.3 cm).
+  - At the close the hand is only 2-16 cm above the bottle's origin. The position input is out of the cloud (nn-z 0.9-9.9).
+  - Under the radial relocation (§21), a far state is shown to the term at radius r with its true height. The term then applies
+    r's descent rate over the whole extra distance, so the hand comes down too early.
+- **Cheese, new layout: 9 of 20 succeed. The hand arrives before it descends.**
+  - In all 10 episodes that never close, the hand hovers directly above the cheese (1-4 cm horizontally) but 15-24 cm high.
+    That state is out of the cloud (nn-z 1.5-4.1). These are the near starts (0.08-0.14 m).
+  - Every grasp that does close does so inside the cloud (nn-z ≤ 0.44) and succeeds.
+- **Common cause.** The demos couple the hand's height to its horizontal distance from the object. New-layout starts break that
+  coupling in both directions:
+  - far starts, relocated, come down too early (bottle);
+  - near starts stay too high (cheese).
+- **Side finding.** At the close, the hand's rotation in the bottle's frame is far outside the cloud even in familiar successes
+  (nn-z up to 156). The bottle is rotationally symmetric, so its body yaw carries no task information, yet the object term
+  reads the hand's rotation relative to it.
+
+**Round 7 was not run.** Each candidate change fixes one direction of the coupling only:
+- zeroing the term's vertical velocity while the clip is active;
+- an approach-progress input in place of (horizontal, height);
+- a symmetric-object frame.
+
+Each is either an executor-level output rule or a new input design. That needs the user's decision under the mandate's rule
+against executor engineering.
