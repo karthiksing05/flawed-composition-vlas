@@ -1,0 +1,69 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS round 13, role-level transport (docs/PARTS_RESULTS.md section 41)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4498722",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "32076256a98563ee957fdc53d92939acdcc40509",
+  "short": "32076256"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "P_rtr: P_imd's flags without --rclip, plus --rtransport; object term retrained, target term reused from <cond>_tdc; seeds 10-12; builds full, nobottle, noplate and the S3 creations",
+  "familiar_nonregression": "pooled familiar known-pairing success K1-K6, P_rtr - P_imd, same bootstrap; 'regresses' iff the CI upper bound < 0 (reported, no verdict)",
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "076abf25ac9a8fd857700d98442e7deb951d3686dc6b28bef2233977d6da3108",
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "2053ef8bdc6d985e64f5edbccc79b15ba4a453901b0b1f1df55aae4ff194601d",
+   "experiments/pp_far_diag.py": "2369f0157007ee4fef7bab432c9bc8a2bb424bbb830bfc6e05de7f63fbf940b3",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "3ba746d13b6d980f982118bd72cf8b161ce3e4bfe5ecd2568d33cc01362baaf4",
+   "experiments/pp_round_read.py": "c87eb79845e5a1c971746170c4e577fa6fd927c010697e7fe509c25e1406eb05",
+   "experiments/pp_s1_mix.py": "5977d02dd297ee5c80b05b51af3c9cc2156514b141d97ca828924d9ac401a6aa",
+   "lifelong_ood/policy/parts_flow.py": "73f586d238425004574e60f9c79eb1fe7ec843e320f1b26e7d72ccbe3aa7b844"
+  },
+  "layer2_go": "pp_l2's mapping, unchanged (S1 as restated; S2 3F + OM in both layouts; S3 ratio >= 0.8, LB >= 0.6, both atoms, both layouts, k in {1, 5, 10})",
+  "metric": "bottle_hold_new: new-layout hold pooled over K4, K5, N4, N5, N6, seeds pooled; P_rtr - P_imd, 2,000-draw state bootstrap",
+  "reference": "P_imd, seeds 10-12 (pp_r11_roll)",
+  "reported_no_verdict": "r_s per part and r_role per build; share of pre-hold calls served by the backbone alone (pp_far_diag, seed 10)",
+  "round_verdict": "improves iff delta > 0.10 and the CI lower bound > 0",
+  "s1_restated": "S1 holds iff, with every target part's m fixed to v for each v in the inventory, both swap tests and every target-into-grasp component are exactly 0 for every seed",
+  "section_sha256": "3bef1f78d9d1cd33b86d58395ee509c61df53fd97750baaaba57d78d7df0e41e",
+  "states": "dev: N2 main states 4-23, N2 seeds",
+  "status": "PRE-REGISTERED PLAN_PARTS round 13 (docs/PARTS_RESULTS.md section 41)",
+  "written_before": "the round's S1 read and any of its rollouts"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_r13__s0__32076256",
+ "schema": 1,
+ "script": "experiments/prereg/pp_r13.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-03T17:44:32+00:00",
+ "stream": null,
+ "tag": "pp_r13"
+}
