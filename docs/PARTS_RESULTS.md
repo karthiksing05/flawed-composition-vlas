@@ -1142,3 +1142,30 @@ round-5 rollouts (pp_r5_roll).
 
 **Pre-registered round verdict.** **improves** iff N4's familiar-layout success, P_rt minus P_rc, is > 0.10 with its
 state-bootstrap CI lower bound > 0 (metric n4_fam).
+
+## 25. Round 6 results (2026-11-02; m3_prereg pp_r6; results/flawed/pp_r6_read.json; rollouts pp_r6_roll)
+
+**The fitted radius.** The pre-fixed rule gives r_t = 0.0925 m in all three builds. The smallest training target support is
+not the plate's (0.16 m); it is set by another target's carries, as the rule allows. r_t was used as fitted. (The object term's
+r is 0.124 m in the full and noplate builds and 0.173 m in nobottle.)
+
+**Round verdict: improves.** N4's familiar success is 0.57 for P_rt against 0.30 for P_rc: +0.27 [0.13, 0.42].
+**Layer-2 GO = false.**
+- S1 holds.
+- **S2 fails.**
+  - Familiar: s known 0.83, s new 0.81, OM 1.09 [1.02, 1.17], which passes. 3F now holds on N4: observed 0.57 against
+    predicted 0.69, D3 −0.13 [−0.28, 0.01].
+  - 3F fails on N3 (−0.15 [−0.30, −0.02]) and, sign-agnostic, on N5 (+0.08 [0.02, 0.14]) and N6 (+0.11 [0.03, 0.19]), where
+    the observed success exceeds the prediction.
+  - New layout: s known 0.34 (P_rc 0.31), s new 0.23, OM 0.92 [0.74, 1.18]. 3F fails on N3, N4 and N6.
+- **S3 passes all 6 familiar cells**, plus bottle-new k10.
+  - Bottle, familiar: 0.96 / 0.97 / 0.92 at k = 1 / 5 / 10, lower bounds 0.86-0.92.
+  - Plate, familiar: 0.88 / 0.88 / 0.86, lower bounds 0.78-0.79.
+  - New layout: bottle k10 passes, 1.33 [0.67, 2.67], on near-zero rates (0.03 and 0.04). The other 5 cells fail. Plate-new
+    ratios are 0.39-0.50: the created plate part succeeds at 0.15 on N4 in the new layout, while the training pairing K1
+    succeeds at 0.48-0.65.
+- Known-task success also rises in the familiar layout: K1 1.00, K2 1.00, K4 0.72, K5 0.43 (P_rc 0.95, 0.98, 0.67, 0.33).
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 6 | N4 place tipping: carry starts outside the plate part's support (§23) | radial relocation of the carry state | pp_r6 | +0.27 [0.13, 0.42]: improves | false |
