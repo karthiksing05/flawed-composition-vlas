@@ -1276,3 +1276,91 @@ against 0.34 for P_rt: −0.11 [−0.16, −0.06]. **Layer-2 GO = false.**
 | 7 | new-layout grasp: far starts descend before arriving (§26) | horizontal scale frame frozen at the episode start | pp_r7 | −0.11 [−0.16, −0.06]: worse | false |
 
 The best arm is still P_rt (round 6). That is one failed round since the last improvement.
+
+## 29. Round 8 diagnostics: round 7's cause, and the cabinet's arrival under the library-wide carry radius (2026-11-03; `experiments/pp_sat_diag.py`, `pp_arrive_diag.py`, `pp_support_diag.py`)
+
+**Round 7's open question: saturation or the scaled grasp?** (`pp_sat_diag.py`, P_hs and P_rt seed 10, K1, K4 and K6, dev states
+4-23, both layouts.) Per episode, before the hold: the fraction of executed steps whose raw horizontal command exceeds the
+executor's clip, and the hand-object distance where the first close fires.
+- **Saturation is rare.** The demos never saturate in the far field (0 of their K1, K4 and K6 rows). Under P_hs the median
+  episode saturates on 0 steps for K4 and K6 in both layouts, and on 7% of steps for the bowl in the new layout.
+- **The close fires farther from the object.** In the new layout, P_hs closes at a median 0.089 m from the bowl (P_rt 0.055 m),
+  and its K1 success there is 0.15 (P_rt 0.35). The scale frame shrinks the hand-object offset by s at the grasp too. A close
+  that is accurate in apparent units is off by 1/s in true units, which is up to 2.5 times for far starts.
+- **The familiar bottle was not scaled at test time.** Its familiar starts are 0.04-0.06 m from the hand, inside r, so s = 1 in all
+  20 states (§28's "0.11-0.15 m" are the bottle demos' starts, not the familiar rollouts'). P_hs's familiar K4 loss is a training
+  effect of the frame on the shared backbone, not a test-time one.
+- So round 7 failed because the grasp is not equivariant to horizontal scale: the object's size and the gripper's width are
+  fixed. Saturation, §27's known limit, is not the main cause.
+
+**The cabinet loses arrival under round 6's carry radius** (`pp_arrive_diag.py` on the S2 rollouts of earlier rounds, seeds
+10-12, familiar layout). Arrival given hold, for the three pairings with the cabinet top as target:
+
+| arm | K3 (bowl) | K4 (bottle) | N3 (cheese) | pooled |
+|---|---|---|---|---|
+| P, rank 32 | 0.97 | 0.90 | 0.91 | — |
+| P_af | 0.95 | 0.85 | 0.98 | — |
+| P_rc | 0.93 | 0.75 | 0.92 | 0.87 |
+| P_rt | 0.78 | 0.73 | 0.81 | 0.78 |
+
+- Every other familiar target arrives at 0.90-1.00 under P_rt.
+- The episodes that do not arrive stop 0.13-0.18 m short (median closest approach; radius 0.10 m), and most of them drop the
+  object. Cabinet carries start 0.28-0.42 m out and 0.22 m below the cabinet top. They must climb while they travel.
+- **This is the 3F failure of the familiar layout.** 3F gives arrival to the object (a_o). A target that loses arrival breaks the
+  law in both directions:
+  - N3 (cheese on the cabinet) runs below its prediction, −0.15;
+  - the bottle's a_o includes K4's cabinet loss, so N5 and N6 (bottle on stove, in bowl) run above theirs, +0.08 and +0.11.
+
+**The cause: one radius for the whole library** (`pp_support_diag.py`, demo rows of the full library). Round 6's rule takes the
+minimum over targets of each target's 99th percentile of the held object-to-target distance. Each part's own support is:
+
+| target part | carries (onsets) | 99th percentile (m) | onset median / max (m) |
+|---|---|---|---|
+| plate | 56 | 0.160 | 0.142 / 0.171 |
+| bowl | 52 | 0.162 | 0.142 / 0.164 |
+| stove | 57 | 0.273 | 0.251 / 0.285 |
+| cabinet top | 129 | 0.311 | 0.286 / 0.326 |
+| rack | 55 | 0.173 | 0.133 / 0.167 |
+| cabinet drawer | 69 | 0.266 | 0.176 / 0.292 |
+| stove front | 2 | 0.0925 | 0.070 / 0.094 |
+
+- The minimum, 0.0925 m, comes from the stove front: 40 held rows from 2 carries of a task outside the N2 pick-and-place set.
+- So every carry of every target is relocated to 0.0925 m, including carries that start inside their own part's support. The
+  cabinet's familiar carries start at 0.28 m, inside its 0.31 m support.
+- Relocation at the true height breaks the coupling of the climb to horizontal progress (§26's mechanism, now on the carry).
+- Object parts, same rule (not-held rows): bowl 0.173 m, cheese 0.212 m, bottle 0.124 m. Round 5's r, 0.124 m, is the bottle's,
+  so the bowl and cheese are relocated inside their own supports too.
+
+## 30. Round 8 design note and protocol: relocation into each part's own support (fixed 2026-11-03, before any code of this round; m3_prereg tag pp_r8)
+
+**Weakness (measured, §29).** Under P_rt, familiar arrival at the cabinet top falls to 0.73-0.81 (P_rc: 0.75-0.93). The
+library-wide carry radius, 0.0925 m, is set by a 2-carry target. It relocates cabinet carries that start inside the cabinet
+part's own support.
+
+**Principle (Prop. 2).** A state is relocated into **the part's** support. A state inside the acting part's support needs no
+relocation, so the radius is a property of the part, like its LoRA rows. Rounds 5 and 6 took the minimum over all parts. That
+relocates in-support states of every part whose support is larger.
+
+**Change (one, structural; on P_rt).**
+- Each part carries its own support radius, fitted by rounds 5-6's rule on its own demo rows:
+  - object parts: the 99th percentile of the horizontal hand-to-object distance on its not-held rows;
+  - target parts: the 99th percentile of the horizontal object-to-target distance on its held rows.
+- Each term clips with the radius of the part the row activates. The clip's form and every other input are P_rt's.
+- A created part fits its radius from its own k creation demos by the same rule. The radius is stored with the part, and the
+  bitwise check of every other parameter and buffer is unchanged.
+- An atom without demos in a build falls back to the library-wide radius. No N2 read uses such an atom before its creation.
+- No data, teacher or per-scene input is added. The radii are fitted, never set by hand.
+- Expected side effects:
+  - the bottle's object radius is unchanged (0.124 m is its own);
+  - the plate's carry radius rises from 0.0925 m to 0.160 m. N4's carries (0.19-0.28 m) stay relocated, to the edge of the plate
+    part's support. Whether N4 keeps round 6's gain is not predicted.
+
+**Arm.** P_pp (rank 32), seeds 10-12, builds full, nobottle and noplate. Reference: P_rt, seeds 10-12 (pp_r6_roll).
+
+**Reads.** Dev states 4-23, N2's seeds. S1, S2 and S3 with pp_l2's estimators and frozen GO mapping.
+
+**Pre-registered round verdict (metric cab_arr_fam).**
+- The metric is familiar arrival given hold, pooled over K3, K4 and N3: arrived episodes over held episodes, seeds pooled.
+- Δ = P_pp − P_rt, with a 2,000-draw state bootstrap (the same states resampled for both arms).
+- **improves** iff the CI's lower bound is > 0. This is the mandate's rule ("the CI excludes 0 upward"). Rounds 2-7 also
+  required Δ > 0.10.
