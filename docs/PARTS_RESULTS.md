@@ -2134,3 +2134,52 @@ m fixed.
 - The GO read and the per-pairing 3F.
 
 **Cost.** About 3 A40-h for the builds and creations (object term only), plus rollout CPU.
+
+## 45. Round 14 results (2026-11-03; m3_prereg pp_r14; results/flawed/pp_r14_read.json, pp_phase_diag_P2nom.json, pp_far_read_r14.json; rollouts pp_r14_roll)
+
+**Code smoke (300 steps, before the builds).**
+- With the flag off, the edited model gives P_rtr's velocity bitwise.
+- Changing m leaves the backbone-only path and every part-off row exactly unchanged, and moves part-on rows.
+- S1's swap tests are 0 with m fixed at 0 and 2.
+
+**Round verdict (pre-registered metric k5_hold_new): improves.** K5's new-layout hold is 0.22 for P_nom against 0.05 for
+P_rtr: +0.17 [0.08, 0.25]. **Layer-2 GO = false.** No rollout had an episode error.
+
+**But the pooled bottle hold falls.** bottle_hold_new (reported, no verdict) is 0.31 against 0.49: −0.18 [−0.33, −0.04].
+- K4, N4, N5 and N6 (m = 0) share one new-layout hold of 0.33, against P_rtr's 0.60.
+- 42-43% of those episodes move no object (P_rtr 15%).
+- Seed 10 shows the mechanism (`pp_far_diag.py`):
+  - In K4 new, 95% of pre-hold calls are backbone-only. The median closest approach is 0.19 m, the median vertical command
+    while backbone-only is +0.63, and 16 of 20 episodes move nothing.
+  - K5 new shows the same: 91% backbone-only, closest approach 0.19 m, 19 of 20 move nothing.
+- The m-free backbone climbs instead of transporting, for both bottle tasks. Under P_rtr the backbone with m = 0 brought the
+  hand in (§42), and so did the m = 0 override of §43.
+- A plausible reading, not tested: without m the backbone must fit K5's turned near-start rows and K4's rows with one input,
+  and it no longer separates them.
+- **Familiar non-regression: does not regress.** −0.006 [−0.04, 0.02].
+
+**S1 (restated) holds.** With m fixed at 0, 1 or 2, both swap tests and every target-into-grasp component are exactly 0, on
+all three seeds.
+
+**S2 familiar fails on N5.** s known 0.91, s new 0.93, OM 1.10 [1.04, 1.18], which passes. 3F fails only on N5: 0.98 against
+0.86, +0.125 [0.075, 0.175].
+
+**S2 new fails on N4 and N5.** s known 0.39 (P_rtr 0.41), s new 0.28 (0.34), OM 1.16 [0.86, 1.68], which passes.
+- 3F fails on N4 (+0.16 [0.06, 0.28]) and N5 (+0.18 [0.08, 0.30]). It holds on N1, N2, N3 and N6.
+- The bowl's new-layout tasks hold 0.93. K2 is 0.72 and K3 0.82 (P_rtr 0.63 and 0.75).
+
+**S3 passes 7 of 12 cells.** All 6 familiar cells pass, plus bottle-new at k = 5, 1.17 [0.67, 3.67], on rates of 0.03-0.04.
+- Plate-new fails at every k, with lower bounds 0.28-0.36.
+- Bottle-new k = 1 and k = 10 fail on the lower bound.
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 14 | under m = 2 the backbone stalls before the bottle's support (§43) | the backbone-alone path does not read m (§10.7) | pp_r14 | K5 new hold +0.17 [0.08, 0.25]: improves; pooled bottle new hold −0.18 [−0.33, −0.04] | false |
+
+- **By the pre-registered rule the round improves, and the streak stays at 0.**
+- **The best arm stays P_rtr.** This is a judgement, not a pre-registered rule. P_nom raises the one task the change targets
+  but lowers the four m = 0 bottle tasks, and with them new-layout success (s new 0.28 against 0.34).
+- The next weakness is the m-free backbone's transport for the bottle: it climbs where P_rtr's m = 0 backbone came in. A
+  diagnostic of the backbone's far-field output per object, with and without m, should come before any change.
+
+**Cost.** 3.2 A40-h (smoke 0.05; builds 2.35; creations 0.8), plus rollout CPU.
