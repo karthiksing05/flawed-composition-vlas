@@ -1,0 +1,59 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS step 1, N4 diagnostic with the fixed instrument (v2)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "neo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4489838",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0871c9bdf603aa7640d7254f3876fc6461fa7b6e",
+  "short": "0871c9bd"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "a: single-task PartsFlow r32 on 50 familiar servo-generated N4 carries (seeds 0-2); P: pp_full_r32_s10-12; o: oracle planner (stage 1g's, unchanged).  Familiar layout, dev states 4-23; tilt recorded",
+  "files_sha256": {
+   "experiments/fa1g_plan.py": "bc6d30bb4c1da0f3e66495b8a228246ecd15f4fa3c5224e1b06b9e0f5dd600a6",
+   "experiments/fa1h_roll.py": "05d3f51919da90ae8be6e47d7648746c13644b11e1b8237304dca28dc05f2291",
+   "experiments/pp_n4d.py": "cde3340289af3441d27b4178cc3b5610bfe56dd626519aa0b6bb111be10a7c2c",
+   "experiments/pp_n4d2.py": "f134005e43f4b326c86cc63aed60cd3098c93d34d07aca5afe18a268e5012dc4",
+   "lifelong_ood/policy/parts_flow.py": "a2e3fc20717436b65bbff8c571ba3f3cb7cbe94aee9b9e58bd83273a7b61bb3b",
+   "results/flawed/pp_n4d2v_gen_N4.json": "2364b600a9fa2eec8e2388dc2c56ebe70a8e7e68e45fea961bad7dd9d5658bd0"
+  },
+  "gate": "passed: single-task K1 1.00 vs P 0.97; K4 0.72 vs P 0.63 (within 0.15)",
+  "mapping": "pp_n4d's, unchanged: D = s_a(N4) - s_P(N4): competence iff D <= 0.10; combination iff D > 0.10 and CI lower bound > 0 (failing phase = largest P deficit among hold, arrival, place-on-arrival); else unresolved",
+  "sections_18_19_sha256": "0ca5c0fa61f14f7a599a91814d0a17376c6a10e4d9ae356e494b1f7f3a380fae",
+  "status": "PRE-REGISTERED PLAN_PARTS N4 diagnostic, instrument v2 (docs/PARTS_RESULTS.md sections 18-19)",
+  "tilt": "held-but-failed N4 episodes split by final tilt > 45 deg (tipped) vs upright (off-site release)",
+  "written_before": "any N4 rollout of this step and its read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_n4d2__s0__0871c9bd",
+ "schema": 1,
+ "script": "experiments/prereg/pp_n4d2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-03T00:59:53+00:00",
+ "stream": null,
+ "tag": "pp_n4d2"
+}
