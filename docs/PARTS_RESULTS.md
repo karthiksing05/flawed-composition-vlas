@@ -1762,3 +1762,57 @@ cheese part never sees in training (K6's target is the bowl), so N1 and N2 would
 replaced by one that does not depend on any object's frame: **the turn of the hand's yaw from the demo's first row to its first
 close row**, doubled. This is §37's own measure, which separates K5 (81°) from every other task (1.9-3.7°). Every other part of
 the rule is unchanged. This is a change made after seeing the inventory, and it is labelled as such.
+
+## 39. Round 11 results (2026-11-03; m3_prereg pp_r11; results/flawed/pp_r11_read.json, pp_r11_hop.json; rollouts pp_r11_roll)
+
+**The induced interface** (same in all three seeds; pp_train_*_imd_s*.json).
+- **Full build: K = 3 by BIC** (BIC 884 / 368 / 316 / 332 for K = 1-4). The components sit at a turn of −0.2° (weight 0.69),
+  −11.5° (0.17) and −89.1° (0.14).
+- The rack emits m = 2 (the turned grasp). The cabinet drawer emits m = 1. Every other target emits m = 0.
+- Bandwidth: a capacity of log2 3 = 1.58 bits, and an entropy over the 8 known tasks of 1.06 bits.
+- In the nobottle build (no K4 or K5), K = 2 and every target emits m = 0. That is 0 bits used.
+- In the noplate build, K = 3 and the rack emits m = 1 (components ordered by weight).
+- The created plate parts fit m = 0 at every k. Their own demos' labels are 0 except a few −12° turns at k ≥ 10.
+
+**Round verdict: improves.** Familiar bottle hold (K4, K5, N4, N5, N6, seeds pooled) is 0.87 for P_imd against 0.68 for P_tdc:
++0.19 [0.003, 0.36]. **Layer-2 GO = false.** No rollout had an episode error.
+
+**Mode hopping and delivery** (`pp_hop_read.py`; familiar, seeds 10-12, 60 episodes per cell).
+
+| | hop rate K4 | hop rate K5 | delivery K4 | delivery K5 |
+|---|---|---|---|---|
+| P_tdc | 0.12 | 0.13 | 0.37 (of 41 held) | 0.63 (of 41) |
+| P_imd | 0.08 | 0.02 | 0.75 (of 52) | 1.00 (of 53) |
+
+The bottle part now delivers the grasp its target asks for. In K5 every hold is in the rack's mode.
+
+- **S1 (restated, §10.5) holds.** With every target's m fixed at 0, 1 or 2, both swap tests are exactly 0 and every
+  target-into-grasp component is exactly 0, on all three seeds. With m free, the target-into-grasp profile is non-zero, as
+  it must be, so the unrestated S1 fails. That is the 1.58-bit channel.
+- **S2 familiar now passes.** s known 0.88, s new 0.88, OM 1.11 [1.02, 1.21]. **3F holds on all six new pairings**, for the
+  first time in any round: N1 −0.02, N2 0.00, N3 0.00, **N4 −0.075 [−0.17, 0.00]**, N5 −0.03, N6 −0.03.
+  - K4 rises to 0.87 (P_tdc 0.63), N4 to 0.80 (0.48), N5 to 0.85 (0.63) and N6 to 0.75 (0.53).
+  - K5 rises to 0.58 (0.28). Its hold is 0.88 and its arrival 1.00; place on arrival at the rack is 0.66.
+- **S2 new fails, on N5 only.** s known 0.31, s new 0.22, OM 1.01 [0.85, 1.25], which passes. 3F holds on N1-N4 and N6; it fails
+  on N5, +0.07 [0.009, 0.15].
+  - **The bottle's new-layout grasp is worse.** Hold is 0.23 (P_tdc 0.37), the first hold comes at a median step of 150-159
+    (P_tdc 114), and 20% of episodes move no object.
+  - K4 new falls to 0.10 (0.20), and N4-N6 new are 0.05-0.12.
+- **S3 passes all 6 familiar cells and none in the new layout.**
+  - Familiar: bottle 0.90 / 0.96 / 0.89, plate 0.88 / 0.84 / 0.88; lower bounds 0.75-0.92.
+  - New: the bottle's rates are 0.00-0.08. The plate's ratios are 0.60-0.64, with lower bounds 0.25-0.38. Its unseen partner N4 (the
+    bottle on the plate) succeeds at 0.02-0.07 in the new layout, while N1 runs at 0.28-0.38.
+
+**What is left for GO.** Everything that fails now sits in the new layout, and almost all of it on the bottle's new-layout
+grasp:
+- N5's 3F deviation, on near-zero predictions;
+- the bottle's S3 cells, at rates near 0;
+- the plate's S3 cells, through N4.
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 11 | the bottle part mixes a target-dependent two-mode grasp (§37) | explicit grasp-mode message m from the target part (§10.5), 1.58 bits | pp_r11 | +0.19 [0.003, 0.36]: improves | false |
+
+The failure streak resets to 0. P_imd is the new best arm.
+
+**Cost.** 2.1 A40-h (the object term is retrained, the target terms are reused) plus a 0.06 A40-h smoke run.
