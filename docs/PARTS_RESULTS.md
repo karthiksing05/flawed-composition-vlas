@@ -1904,3 +1904,77 @@ supply transport needs a decision that the plan does not settle, or breaks a rul
   that follows from the weakness.
 
 **Cost.** CPU only: 12 diagnostic jobs (about 0.7 CPU-h). No GPU.
+
+## 41. Round 13 design note and protocol: role-level transport (fixed 2026-11-03, before any code of this round; m3_prereg tag pp_r13)
+
+**This round follows a plan change made after seeing data.** The user chose option (i) of §40, recorded as PLAN_PARTS §10 item
+6 (commit 40c3717e). A part acts only where its own demos have support. Outside that region, the object role's backbone acts
+alone.
+
+**Weakness (measured, §40).** The bottle part's demos start 3-7 cm from the bottle and contain no level transport. From far
+new-layout starts the bottle term comes down about 0.11 m from the bottle and closes 4-7 cm beside it. New-layout bottle hold
+is 0.23 under P_imd.
+
+**Principle (§10.6, Prop. 2).** The role backbone holds the role-general skill, the transport to the object. Each part holds
+its atom-specific skill, the grasp, and acts only where its own demos have support. The cheese's and bowl's demos contain level
+transport at height (§40, table 1). A backbone trained on every object atom's rows therefore has support where the bottle part
+has none.
+
+**Is "backbone alone" a policy under the current training? No.** In every build so far, each object row runs through its
+atom's part: the LoRA delta is on and the slot embedding is an input. The base weights have never produced an output without a
+part, so the backbone alone is not a trained policy. The fix is stated here, before code.
+- **Backbone-only loss term.** Every not-held row of every object atom also trains the backbone with the part off: LoRA delta
+  0 and slot embedding 0. It uses the same noisy chunk, the same flow time and the same frame inputs, including m. The two
+  terms are averaged over the batch with the same normalisation:
+  L = L_Φ + (1/B) Σ over not-held rows of |v_bb − u|²
+  L_Φ is the deployed (switched) field's loss, as in every build.
+- **Why a loss term and not adapter dropout.** Rows beyond a part's start support are few, because a demo's start is nearly
+  its farthest point. L_Φ alone would therefore train the backbone on almost no rows. The extra term gives the backbone every
+  object row of the library, which is the role-level union §10.6 asks for. Dropout would do the same in expectation, but it
+  would add a rate, and the loss term needs none.
+- The target term is unchanged and is reused (`--reuse tgt:<cond>_tdc`). The decoupled per-role clip keeps it bitwise.
+
+**Change (one; on P_imd; default off; `pp_p_train.py --rtransport`).**
+- **Support test** (§4.1's 99th-percentile rule, applied to start offsets). Each object part has a start radius r_s(part):
+  the 99th percentile, over the part's demos, of the horizontal hand-to-object offset at the demo's first row. A created part
+  fits r_s from its own k demos (for k = 1, its one start).
+- **Switch, fixed in advance: hard, with no blend band.** Per call and per row, with d the current horizontal hand-to-object
+  distance:
+  - d ≤ r_s(part): backbone with part (the part acts);
+  - d > r_s(part): backbone alone.
+  A hard switch adds no width parameter. Both paths read the same frame inputs and the same m.
+- **Relocation (rclip) is removed in this arm.**
+  - The part acts only at d ≤ r_s, so the per-part clip of rounds 5 and 8 is subsumed there and is dropped: the arm has no
+    `--rclip`.
+  - The backbone has its own support: the union of the role's rows. Prop. 2 relocates a backbone state beyond it onto the
+    role's support radius r_role, the 99th percentile of the horizontal hand-to-object distance over all not-held object
+    rows of the build. This is round 5's rule, applied to the acting conditional (here the backbone) as round 8 applied it to
+    each part. It is not a new knob. It acts only on backbone rows.
+  - The removal is reported: the part path has no clip; the backbone path has the role clip.
+- Every other element is P_imd's: the approach frame, m, Φ, the gate, the target term with its radii and scale frame, and the
+  data.
+- **S1 is unaffected.** The switch reads only the object part's own radius and the hand-object state, with no target input.
+- **Mirror case, the cheese's near starts (§40, finding 4).** These starts (0.06-0.14 m) lie inside the cheese's start radius
+  (about 0.22 m), so the part acts and the switch does not cover them. A radius test detects only "too far". The near-and-high
+  hover is a different support boundary, and this round does not address it.
+
+**Arm.** P_rtr (rank 32), seeds 10-12, builds full, nobottle and noplate with the S3 creations. The object term is retrained;
+the target term is reused from <cond>_tdc. Flags: `--rank 32 --aframe --rtclip --psupport --tscale --decouple --imode
+--rtransport`. Reference: P_imd (pp_r11_roll).
+
+**Reads.** Dev states 4-23, N2's seeds. S1 as restated in §10.5 (m fixed at each inventory value), S2 and S3 with pp_l2's
+estimators and its frozen GO mapping.
+
+**Pre-registered round verdict (metric bottle_hold_new).**
+- The metric is new-layout hold pooled over the bottle's tasks K4, K5, N4, N5 and N6, seeds pooled.
+- Δ = P_rtr − P_imd, with a 2,000-draw state bootstrap (the same states resampled for both arms).
+- **improves** iff Δ > 0.10 and the CI's lower bound is > 0.
+
+**Reported, with no verdict.**
+- **Familiar non-regression.** The pooled familiar known-pairing success (K1-K6), P_rtr − P_imd, with the same bootstrap. It is
+  labelled "regresses" iff the CI's upper bound is < 0.
+- The GO read and the per-pairing 3F.
+- Each part's r_s and r_role, per build.
+- The share of pre-hold calls served by the backbone alone, per object and layout (from `pp_far_diag.py`, seed 10).
+
+**Cost.** About 2 A40-h for the builds and creations (object term only), plus rollout CPU.
