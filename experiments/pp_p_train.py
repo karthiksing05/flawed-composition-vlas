@@ -70,6 +70,27 @@ def rows(dev, tasks=None, k=None):
     return b, T(np.clip(X, -1, 1)), center, size, int(keep.sum()), sorted({int(x) for x in np.asarray(D["demo"])[keep]})
 
 
+def part_radii(b, dev):
+    """PARTS_RESULTS 30 (P_pp): each part's own support radius by rounds 5-6's rule, on the rows in b.  Object part: the 99th pct of
+    the horizontal hand-to-object distance on its not-held rows; target part: the 99th pct of the horizontal object-to-target
+    distance on its held rows.  Parts without rows: 0 (the model then falls back to the library-wide radius)."""
+    idx = torch.arange(len(b["oi"]), device=dev)
+    nh, hd = b["held"] < 0.5, b["held"] > 0.5
+    dxy = torch.linalg.norm((b["ee_pos"] - b["pos"][idx, b["oi"]])[:, :2], dim=-1)
+    txy = torch.linalg.norm((b["pos"][idx, b["oi"]] - b["pos"][idx, b["ti"]])[:, :2], dim=-1)
+    ent = list(FC.ENT)
+    ro, rt = np.zeros(len(PF.OBJ_ATOMS)), np.zeros(len(PF.TGT_ATOMS))
+    for i, a in enumerate(PF.OBJ_ATOMS):
+        m = nh & (b["oi"] == ent.index(a))
+        if bool(m.any()):
+            ro[i] = float(torch.quantile(dxy[m], 0.99))
+    for i, a in enumerate(PF.TGT_ATOMS):
+        m = hd & (b["ti"] == ent.index(a))
+        if bool(m.any()):
+            rt[i] = float(torch.quantile(txy[m], 0.99))
+    return ro, rt
+
+
 def fit(m, params, b, act, steps, batch, lr, seed, wd, mask_fn=None, log=""):
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)
@@ -114,6 +135,7 @@ def main():
     ap.add_argument("--rclip", action="store_true")                       # PARTS_RESULTS 21: P_rc
     ap.add_argument("--rtclip", action="store_true")                      # PARTS_RESULTS 24: P_rt
     ap.add_argument("--hscale", action="store_true")                      # PARTS_RESULTS 27: P_hs
+    ap.add_argument("--psupport", action="store_true")                    # PARTS_RESULTS 30: P_pp (per-part support radii)
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -141,12 +163,15 @@ def main():
             idx = torch.arange(len(b["oi"]), device=dev)
             txy = torch.linalg.norm((b["pos"][idx, b["oi"]] - b["pos"][idx, b["ti"]])[:, :2], dim=-1)
             rtclip = float(min(torch.quantile(txy[hd & (b["ti"] == t)], 0.99) for t in torch.unique(b["ti"][hd])))
-        print(f"[pp_p] rclip {rclip:.4f} rtclip {rtclip:.4f} hscale {hscale:.4f}", flush=True)
+        ro, rt = part_radii(b, dev) if a.psupport else (None, None)
+        print(f"[pp_p] rclip {rclip:.4f} rtclip {rtclip:.4f} hscale {hscale:.4f} psupport {a.psupport} "
+              f"obj {None if ro is None else [round(x, 4) for x in ro]} tgt {None if rt is None else [round(x, 4) for x in rt]}", flush=True)
         m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
-                         rclip=rclip, rtclip=rtclip, hscale=hscale).to(dev)
+                         rclip=rclip, rtclip=rtclip, hscale=hscale, psupport=a.psupport, rclip_p=ro, rtclip_p=rt).to(dev)
         ema, curve, secs = fit(m, list(m.parameters()), b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}")
         ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps))
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
+                   rclip=rclip, rtclip=rtclip, hscale=hscale, rclip_p=None if ro is None else list(ro), rtclip_p=None if rt is None else list(rt),
                    params_total=int(sum(p.numel() for p in m.parameters())), part_params=dict(obj=m.obj.part_params(), tgt=m.tgt.part_params()),
                    backbone_params=dict(obj=int(sum(p.numel() for p in m.obj.backbone_parameters())),
                                         tgt=int(sum(p.numel() for p in m.tgt.backbone_parameters()))))
@@ -178,13 +203,22 @@ def main():
                     p.grad[j] = keepj
         b, act, _, _, n, demos = rows(dev, [a.task], a.k)
         assert len(demos) == a.k, ("demos", demos)
+        radius = None
+        if m.psupport:                                               # P_pp: the created part's own radius, from its k demos only
+            ro, rt = part_radii(b, dev)
+            radius = float((ro if a.role == "obj" else rt)[j])
+            assert radius > 0, "no creation rows for the atom's radius"
+            with torch.no_grad():
+                (m.rclip_p if a.role == "obj" else m.rtclip_p)[j] = radius
+            print(f"[pp_p] created part radius {radius:.4f}", flush=True)
         t0 = time.time()
         ema, curve, secs = fit(m, parts, b, act, CREATE_STEPS, 256, CREATE_LR, a.seed, 0.0, mask_fn=mask, log=f"create {a.atom} k{a.k}")
         after = ema.state_dict()
         changed = []
         for k, v in before.items():
             w = after[k].to(v.device)
-            if k.endswith(("emb", ".A", ".B")) and k.startswith("obj." if a.role == "obj" else "tgt."):
+            own = k == ("rclip_p" if a.role == "obj" else "rtclip_p") and radius is not None     # P_pp: the part's radius row
+            if own or (k.endswith(("emb", ".A", ".B")) and k.startswith("obj." if a.role == "obj" else "tgt.")):
                 other = torch.ones(v.shape[0], dtype=torch.bool)
                 other[j] = False
                 if not torch.equal(v[other], w[other]):
@@ -196,7 +230,7 @@ def main():
         ema.cpu().save(os.path.join(d, name), dict(meta, created=a.atom, role=a.role, task=a.task, k=a.k, demos=demos))
         rep = dict(mode="create", tag=a.tag, seed=a.seed, atom=a.atom, role=a.role, task=a.task, k=a.k, demos=demos, n_rows=n,
                    steps=CREATE_STEPS, secs=secs, gpu_seconds_to_ready=time.time() - t0, curve=curve, params_added=net.part_params(),
-                   old_parameters_changed=0)
+                   old_parameters_changed=0, part_radius=radius)
         fn = os.path.join(ROOT, "results", "flawed", f"pp_create_{a.tag}_s{a.seed}_{a.atom}_k{a.k}.json")
     with open(fn, "w", encoding="utf-8") as fh:
         json.dump(rep, fh, indent=1)

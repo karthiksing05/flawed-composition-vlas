@@ -41,8 +41,39 @@ def cfg_of(a, seeds):
     return c
 
 
+def held_arrived(cfg, comps, lay):
+    """-> (held, arrived) arrays [comps x seeds, states] from a cfg's S2 rollouts (fa1g_read's arrival: held within the pair's
+    calibrated radius)."""
+    n2 = L.n2()
+    cal = json.load(open(os.path.join(OUT, "a1_calib.json"), encoding="utf-8"))["pairs"]
+    H, R = [], []
+    for c in comps:
+        t = next(x for x in n2["tasks"] if x["compound"] == c and x["layout"] == lay)
+        rad = C.radius(t["object"], t["target"], cal)
+        for sd in cfg.seeds:
+            h, r = np.full(len(cfg.states), np.nan), np.full(len(cfg.states), np.nan)
+            f = os.path.join(OUT, cfg.s2[0], f"{cfg.s2[1]}_s{sd}_{cfg.phase}_{t['tid']}.json")
+            for e in [e for v in json.load(open(f, encoding="utf-8"))["tasks"].values() for e in v["episodes"]]:
+                j = cfg.states.index(int(e["trial"]))
+                h[j] = e["held_step"] is not None
+                r[j] = h[j] and e["min_dxy_held"] is not None and e["min_dxy_held"] <= rad
+            H.append(h)
+            R.append(r)
+    return np.array(H), np.array(R)
+
+
 def metric(a, cand, ref):
     known = ["K1", "K2", "K3", "K4", "K5", "K6"]
+    if a.metric == "cab_arr_fam":                                            # PARTS_RESULTS 30: cabinet arrival given hold
+        cab = ["K3", "K4", "N3"]
+        Ha, Ra = held_arrived(cand, cab, "familiar")
+        Hb, Rb = held_arrived(ref, cab, "familiar")
+        rate = lambda H, R, kk: np.nansum(R[:, kk]) / max(np.nansum(H[:, kk]), 1)   # noqa: E731
+        n = Ha.shape[-1]
+        f = lambda kk: float(rate(Ha, Ra, kk) - rate(Hb, Rb, kk))           # noqa: E731
+        d = [f(np.arange(n)), *L.boot(f, n)]
+        return dict(metric=a.metric, candidate=float(rate(Ha, Ra, np.arange(n))), reference=float(rate(Hb, Rb, np.arange(n))), delta=d,
+                    rule="improves iff the CI lower bound > 0 (PARTS_RESULTS 30)", improves=bool(d[1] is not None and d[1] > 0))
     if a.metric == "n4_fam":
         A = C.stack(cand, cand.s2[0], cand.s2[1], ["N4"], "familiar")[:, 0]   # [seeds, states]
         B_ = C.stack(ref, ref.s2[0], ref.s2[1], ["N4"], "familiar")[:, 0]
@@ -65,7 +96,7 @@ def main():
     ap.add_argument("--s2", required=True)
     ap.add_argument("--ref-s2", required=True)
     ap.add_argument("--s3", required=True)
-    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new"))
+    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam"))
     ap.add_argument("--phase", default="main", choices=("main", "conf"))
     a = ap.parse_args()
     seeds = tuple(int(x) for x in a.seeds.split("+"))
