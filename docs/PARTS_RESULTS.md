@@ -1816,3 +1816,91 @@ grasp:
 The failure streak resets to 0. P_imd is the new best arm.
 
 **Cost.** 2.1 A40-h (the object term is retrained, the target terms are reused) plus a 0.06 A40-h smoke run.
+
+## 40. Round 12 diagnostic: the bottle part has no transport phase to relocate onto, and the rounds stop here (2026-11-03; `experiments/pp_far_diag.py`, `pp_far_read.py`; results/flawed/pp_far_demo.json, pp_far_read.json, pp_far_<name>_<task>_<layout>.json)
+
+**Target.** The bottle's new-layout grasp carries every remaining GO failure (§39). Under P_imd its hold there is 0.23, against
+0.37 for P_tdc.
+
+**Method.**
+- **Demos** (`pp_far_diag.py demo`; fitted rows, never executed). For K1, K4, K5 and K6, per demo: the hand's offset from the
+  object at the start and at the first close row. Over not-held rows: the median height above the object and the median
+  commanded vertical step, per bin of horizontal distance.
+- **Closed loop** (`pp_far_diag.py roll`; `fa1h_roll.episode` unchanged; dev states 4-23). Per pre-hold call: the true offset,
+  the message m and the chunk's commands. The runs:
+  - P_imd, seeds 10-12, on K4 and K5 in the new layout;
+  - P_tdc, seeds 10-12, on K4 in the new layout;
+  - P_imd seed 10 on K4 in the familiar layout and on K6 in the new layout, as references.
+- "Low" means the first call at which the hand is within 4 cm of the demos' median close height for that object.
+
+**1. The bottle's demos start almost above the bottle.** The table gives the horizontal start offset as 10th / 50th / 90th
+percentiles. Every demo starts 0.25-0.29 m above its object.
+
+| task | start offset (m) | what the not-held rows do beyond the start |
+|---|---|---|
+| K4 (bottle, m = 0) | 0.033 / 0.048 / 0.064 | 73 rows in 0.08-0.11 m, all descending (median vertical command −0.57); none beyond 0.11 m |
+| K5 (bottle, m = 2) | 0.037 / 0.057 / 0.071 | 2,153 rows in 0.08-0.14 m; height there bimodal (10th pct 0.04-0.05 m, median 0.21-0.23 m) |
+| K1 (bowl) | 0.102 / 0.115 / 0.134 | level at 0.08-0.18 m (median vertical command 0.0) |
+| K6 (cheese) | 0.186 / 0.206 / 0.219 | level transport at 0.11-0.25 m (median vertical command 0.0 to −0.02) |
+
+- The cheese and bowl demos contain a transport phase, in which the hand travels level at about 0.25 m, and only then descend.
+- The bottle's demos contain none. They begin 3-7 cm from the bottle and descend at once.
+- The bottle part's radius, 0.124 m, is the 99th percentile over K4's and K5's rows together. Beyond 0.11 m every bottle row is
+  K5's, and many of those are low re-grasp rows, not an approach at height.
+
+**2. In the new layout the bottle term comes down while it is still far away** (P_imd K4; per seed 10 / 11 / 12; median over
+episodes).
+
+| | P_imd K4 new | P_tdc K4 new | P_imd K4 familiar (seed 10) |
+|---|---|---|---|
+| start offset (m) | 0.216 (0.09-0.37) | same states | 0.049 |
+| offset when "low" (m) | 0.109 / 0.109 / 0.109 | 0.120 / 0.081 / 0.112 | 0.024 |
+| first close: offset (m) | 0.059 / 0.063 / 0.067 | 0.039 / 0.030 / 0.033 | 0.016 |
+| first closes beyond the demos' 90th pct (0.027 m) | 18 / 16 / 19 of 20 | 16 / 13 / 12 of 20 | 2 of 20 |
+| close calls per episode | 24.5 / 15 / 21.5 | 20.5 / 15.5 / 19.5 | 2 |
+| holds | 5 / 6 / 4 of 20 | 5 / 9 / 8 of 20 | 18 of 20 |
+
+- The hand reaches the grasp height about 0.11 m from the bottle and then closes, again and again, 4-7 cm beside it. In the
+  familiar layout it reaches that height 2.4 cm away and closes once or twice.
+- This is §26's mechanism, and it does not depend on the clip alone. Starts inside the radius (0.09-0.12 m; 3 states per seed)
+  also come down at 0.026-0.032 m and close 3-7 cm off: 3 of 9 hold under P_imd.
+- Any state of the bottle part's support is a state where its demos descend. Relocating a far state onto that support,
+  radially (round 5) or by scaling (round 7), therefore produces a descent over the remaining distance.
+
+**3. In the new layout P_tdc's grasps came from the rack's mode, and the message removed it from the cabinet.** The table gives
+the hand's yaw at the hold's onset.
+- **P_tdc, K4 new.** 21 of its 22 holds are turned by 55-173°, the K5 mode. Only K5's rows cover the far field.
+- **P_imd, K4 new (m = 0).** 10 of 14 holds with a recorded yaw are turned by more than 20°, so the message's mode is not
+  delivered there. 3 of the 4 unturned holds come from starts inside the radius.
+- **P_imd, K4 familiar.** 17 of 18 holds are within 16° of the unturned mode.
+- **K5 new under P_imd (m = 2)** holds in 5 / 0 / 3 of 20 episodes. In 10 / 10 / 7 of them no object moves. The rack's mode has
+  far rows, but they are not an approach at height either.
+- So §39's drop in new-layout bottle hold, 0.37 to 0.23, has a mechanism. The message gives K4 the m = 0 conditional, and that
+  conditional's support is K4's own 3-7 cm starts. The pooled part had borrowed a little far-field competence from K5's rows.
+
+**4. The cheese shows the same coupling, in the other direction** (P_imd seed 10, K6 new; the radius is 0.212 m).
+- Starts at or beyond the cheese demos' 10th-percentile start (0.186 m): 4 of 4 hold and 3 succeed.
+- Nearer starts (0.06-0.14 m): 5 of 16 hold. 10 never close; they hover above the cheese at height, as §26 found.
+- Each object part has learned one approach path in (horizontal distance, height), from its demos' start distance. A start on
+  that path, or relocated onto a level segment of it, works. A start off the path does not.
+
+**Why no round 12 is run (stop condition (d)).** The weakness is measured. The bottle part's support contains no level
+transport, so no relocation into that part's own support (Prop. 2) can make the hand travel at height. Every change that would
+supply transport needs a decision that the plan does not settle, or breaks a rule:
+- **(i) A role-level transport field.** The cheese's and bowl's demos cover a level approach. The role backbone, trained on all
+  object atoms, could act where a state lies outside the acting part's start support, with the part acting inside it. That is
+  a support-gated split of the object role into a shared field plus per-atom parts. It changes §2's "one part per atom per
+  role" and Φ's object term, so it is a plan-level decision. It is also close to L5's induced partition.
+- **(ii) Hold the height while relocated.** Zero the object term's vertical command while the clip is active. This is the
+  executor-level output rule that §26 already set aside as executor engineering.
+- **(iii) Data with a transport phase.** The plan keeps the generated-carries arm as a labelled ablation only (§4.1). Curating
+  or synthesising far bottle approaches as main-arm data is forbidden by the mandate.
+- **(iv) Accept a part-competence limit of the demos**, as §37 (iv) did. New-layout GO is then out of reach for the bottle
+  pairings, and the frozen 3F and S3 failures are reported with this mechanism beside them.
+- **Considered and not run: a radius per (part, m).** After §10.5 the acting object conditional is indexed by (part, m). Prop. 2
+  then puts the relocation radius on that pair, which would be about 0.09-0.10 m for (bottle, m = 0). This has a theory basis
+  and needs no decision. But at that radius K4's demos descend at their steepest (median −0.57). The prediction is the same
+  early descent, so the change would not address the measured cause. It was not run, because the mandate asks for a change
+  that follows from the weakness.
+
+**Cost.** CPU only: 12 diagnostic jobs (about 0.7 CPU-h). No GPU.
