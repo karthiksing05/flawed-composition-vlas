@@ -1206,3 +1206,52 @@ close.
 
 Each is either an executor-level output rule or a new input design. That needs the user's decision under the mandate's rule
 against executor engineering.
+
+## 27. Round 7 design note and protocol: a horizontal scale frame frozen at the episode's start (fixed 2026-11-02, before any code of this round; m3_prereg tag pp_r7)
+
+(The user's amended mandate of 2026-11-02 continues the rounds. This note supersedes §26's "not run".)
+
+**Weakness (measured, §26).** On far new-layout starts the object term breaks the demos' coupling between height and
+horizontal progress. Under round 5's per-step clip, a far state is shown at radius r with its true height. The term applies
+r's descent over the whole extra distance, comes down early, and closes 5-18 cm from the bottle. Bottle hold in the new layout
+is 0.18.
+
+**Why not a 3D ray (checked first, `experiments/pp_ray_check.py`).** Far-field demo motion is not a straight line to the object
+for every object:
+- the bottle's commands lie 12-20° from the 3D direction to it;
+- the bowl's and cheese's lie 10-31° from the horizontal direction (62-69° from the 3D one).
+
+The coupling of height to progress is object-specific, so a fixed geometric rule (horizontal or 3D) cannot preserve it for
+all objects.
+
+**Principle.** The approach is equivariant to a uniform scaling of the horizontal plane about the object. A demo that started
+farther out, with the same height profile stretched horizontally, is the same approach. One fixed scale per episode
+therefore maps any start onto the support:
+
+s = min(1, r / |horizontal start offset|)
+
+The scale is frozen at the episode start, as the place frame's bearing is frozen at the hold's onset. In that frame the term
+sees and acts in scaled horizontal units:
+- input: the horizontal hand-object offset × s, and the noisy chunk's horizontal translation × s;
+- output: the horizontal translation velocity × 1/s.
+
+Every object then keeps its own coupling of height to progress, because the term never sees an apparent distance beyond r,
+and apparent progress advances at the demos' rate.
+
+**Change (one, structural; on P_rt).**
+- The object term's per-step horizontal clip (round 5) is replaced by this frame. With s fixed at the start, the apparent
+  offset never exceeds r, so the clip would be inert.
+- r is fitted by round 5's rule, unchanged. The start offset is the hand's position at the end of the 10 settle steps
+  (rollouts) or at step 0 (demo rows), relative to the object.
+- The target term, the gate and everything else stay P_rt's.
+- Callers that pass no start (S1's grasp frames, which are start states) use the current hand position as the start.
+- No data, teacher or per-scene input is added.
+- Known limit: commands above 1 are clipped by the executor, as for every arm. If the scaled horizontal command saturates, the
+  coupling is only partly restored.
+
+**Arm.** P_hs (rank 32), seeds 10-12, builds full, nobottle and noplate. Reference: P_rt, seeds 10-12 (pp_r6_roll).
+
+**Reads.** Dev states 4-23, N2's seeds. S1, S2 and S3 with pp_l2's estimators and frozen GO mapping.
+
+**Pre-registered round verdict.** **improves** iff the pooled known-pairing new-layout success, P_hs minus P_rt, is > 0.10
+with its state-bootstrap CI lower bound > 0 (metric s_known_new).
