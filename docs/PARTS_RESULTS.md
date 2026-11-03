@@ -2051,3 +2051,41 @@ The failure streak stays at 0. P_rtr is the new best arm.
 
 **Cost.** 3.0 A40-h (smoke 0.05; builds 2.4, of which nobottle 1.2; creations 0.55, including two preempted runs), plus
 rollout CPU.
+
+## 43. Round 14 diagnostic: the backbone stalls because it reads m, and the rounds stop here (2026-11-03; `experiments/pp_far_diag.py --bb-m`, `pp_far_read.py`; results/flawed/pp_far_read_d14.json)
+
+**Target.** K5 in the new layout under P_rtr. Its hold is 0.05, and in 85% of episodes no object moves (§42). Through the pooled
+a_o, K5 also drives the new-layout 3F failures on N4 and N5, and the familiar one on N5.
+
+**Method.** P_rtr seed 10, K5, dev states 4-23. This is a diagnostic intervention, not an arm: on backbone-only rows (beyond the
+bottle's start radius) the message read by the backbone is overridden. Rows where the part acts keep the rack's m = 2.
+
+| K5 new, seed 10 | holds of 20 | nothing moved | closest pre-hold approach (median, m) | median vertical command while backbone-only | backbone-only share |
+|---|---|---|---|---|---|
+| as built (backbone reads m = 2) | 0 | 19 | 0.098 | +0.24 | 0.90 |
+| backbone reads m = 0 | 9 | 6 | 0.012 | −0.03 | 0.28 |
+| K5 familiar, as built (reference) | 19 | 0 | 0.012 | −0.15 | 0.27 |
+
+- **Under m = 2 the backbone never brings the hand inside the bottle's 0.079 m support.** It stops at about 0.10 m and climbs.
+  The backbone's only rows with m = 2 are K5's, and they start 4-7 cm from the bottle (§40). So under m = 2 the backbone has
+  no transport rows, which is §40's gap moved one level up.
+- **With m = 0 on the backbone rows alone, the transport works.** The part then delivers the rack's grasp: all 9 holds are
+  turned by 63-83°, against 67-120° for K5 familiar. Success stays 0, because the rack's place in the new layout is 0 in every
+  round.
+- So the transport depends on m only through a lack of coverage. The grasp mode is used where the part acts.
+
+**Why no round 14 is run (stop condition (d)).** The principled change follows from §10.6's own hierarchy. The backbone holds the
+role-general transport, the part holds the atom-specific grasp, and m is a grasp mode, so it belongs to the grasp. That change
+is: the backbone-alone path does not read m (m zeroed on backbone-only rows in training and at test). But PLAN_PARTS §10 item 6
+states that the backbone "reads the same frame and the same message m". The change contradicts the amendment's text, so it
+needs the user's decision. The options:
+- **(i)** The backbone-alone path does not read m. The part still reads it, and S1 is unaffected. This is one change, with
+  no new rate.
+- **(ii)** Keep m on the backbone, and give the backbone's loss term m-invariance in the far field, for example m resampled on
+  backbone-only rows. This adds a rate and is a device.
+- **(iii)** Accept the gap. K5's new-layout hold then stays near 0, and through the pooled a_o, 3F on N4 and N5 stays failing.
+
+Even with K5's hold restored, K5's new-layout success stays 0, because its place on the rack in the new layout is 0 in every
+round. Its arrival there is 0.33 under P_rtr. Whether 3F on N4 and N5 would then pass is not predicted.
+
+**Cost.** CPU only: 3 diagnostic jobs and 1 summary.

@@ -70,6 +70,14 @@ def roll(a):
     from pp_p_roll import load_any
     torch.set_num_threads(1)
     m, _ = load_any(os.path.join(FC.DATA, "ckpt", a.ckpt))
+    if a.bb_m >= 0:                                                        # diagnostic intervention (P_rtr): backbone-only rows read m = bb_m
+        vel = m.velocity
+
+        def velocity(b, x, t):
+            on = m.part_on(b, b["pos"][torch.arange(len(b["oi"])), b["oi"]])
+            b = dict(b, m=torch.where(on, m.message(b), torch.full_like(m.message(b), a.bb_m)))
+            return vel(b, x, t)
+        m.velocity = velocity
     dm = json.load(open(os.path.join(OUT, "pp_far_demo.json"), encoding="utf-8"))
     zc = float(dm[a.task if a.task in dm else "K4"]["close_dz"][1])         # the demos' median close height for this object
     n2 = json.load(open(os.path.join(OUT, "n2_tasks.json"), encoding="utf-8"))
@@ -122,6 +130,7 @@ def main():
     ap.add_argument("--task")
     ap.add_argument("--layout")
     ap.add_argument("--states", default="+".join(str(k) for k in range(4, 24)))
+    ap.add_argument("--bb-m", type=int, default=-1)                       # P_rtr diagnostic: m read by backbone-only rows (-1: off)
     a = ap.parse_args()
     demo() if a.mode == "demo" else roll(a)
 

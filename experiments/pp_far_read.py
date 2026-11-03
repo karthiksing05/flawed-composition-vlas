@@ -28,6 +28,9 @@ def summ(E, demo):
                 close_dz=med([e["first_close"]["dz"] for e in E if e["first_close"]]), no_close=int(sum(e["first_close"] is None for e in E)),
                 close_beyond_demo_p90=int(sum(e["first_close"] is not None and e["first_close"]["dxy"] > demo["close_dxy"][2] for e in E)),
                 n_close_med=med([e["n_close"] for e in E]),
+                min_dxy_pre=med([min(c["dxy"] for c in e["calls"]) for e in E if e["calls"]]),
+                yaw_turn_pre=med([abs(e["calls"][-1]["yaw"] - e["calls"][0]["yaw"]) for e in E if e["calls"]]),
+                vz_far_med=med([c["vz"] for e in E for c in e["calls"] if c.get("backbone_only")]),
                 backbone_only_share=(lambda v: None if not v else float(np.mean(v)))(                  # PARTS_RESULTS 41 (P_rtr)
                     [c["backbone_only"] for e in E for c in e["calls"] if c.get("backbone_only") is not None]),
                 yaw_onset=[None if e["yaw_onset"] is None else round(e["yaw_onset"], 1) for e in E if e["held_step"] is not None])
