@@ -111,12 +111,59 @@ def part_radii(b, dev):
     return ro, rt
 
 
-def fit(m, params, b, act, steps, batch, lr, seed, wd, mask_fn=None, log=""):
+def deterministic():
+    """PARTS_RESULTS 35 (decoupled training, part 3): deterministic kernels.  Called before the first cuBLAS call."""
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+    torch.use_deterministic_algorithms(True)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+
+def role_init(m, seed):
+    """PARTS_RESULTS 35 (decoupled training, part 2): each role network's initial parameters from its own generator, seeded by
+    (build seed, role): independent of the other role's architecture and of the construction order."""
+    for i, net in enumerate((m.obj, m.tgt)):
+        with torch.random.fork_rng(devices=[]):
+            torch.manual_seed(1_000_003 * (i + 1) + int(seed))
+            fresh = PF.RoleNet(net.hidden[0].base.in_features - PF.EMB, net.out.out_features, net.emb.shape[0], rank=net.hidden[0].rank)
+        net.load_state_dict(fresh.state_dict())
+
+
+ROLE_BUFFERS = dict(obj=("rclip", "rclip_p", "home", "hscale"), tgt=("rtclip", "rtclip_p"))
+ROLE_FLAGS = dict(obj=("aframe",), tgt=("tsize", "tscale"))
+
+
+def reuse_role(m, spec, seed, steps):
+    """PARTS_RESULTS 35: load ONE role's term (`spec` = "<role>:<tag>") from a decoupled build of the same seed and freeze it.  The
+    role's buffers, flags and the shared buffers must equal this build's (asserted).  -> the role reused."""
+    role, tag = spec.split(":")
+    src, meta = PF.PartsFlow.load(os.path.join(FC.DATA, "ckpt", f"pp_{tag}_s{seed}", "P.npz"))
+    assert meta.get("decouple") and int(meta["seed"]) == int(seed) and int(meta["steps"]) == int(steps), ("donor", meta)
+    sd, mine = src.state_dict(), m.state_dict()
+    for k in ROLE_BUFFERS[role] + ("center", "size"):
+        assert torch.equal(sd[k].cpu(), mine[k].cpu()), ("reuse: buffer differs", k)
+    for k in ROLE_FLAGS[role]:
+        assert getattr(src, k) == getattr(m, k), ("reuse: flag differs", k)
+    net, snet = getattr(m, role), getattr(src, role)
+    with torch.no_grad():
+        for p, q in zip(net.parameters(), snet.parameters()):
+            p.copy_(q.to(p.device))
+    for p in net.parameters():
+        p.requires_grad_(False)
+    return role
+
+
+def fit(m, params, b, act, steps, batch, lr, seed, wd, mask_fn=None, log="", groups=None):
+    """groups (PARTS_RESULTS 35, decoupled training, part 1): parameter lists clipped separately (one per role); None = one joint
+    clip over `params`, as every build before round 10.  The EMA updates only parameters that train."""
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)
     ema = copy.deepcopy(m)
     opt = torch.optim.AdamW(params, lr=lr, weight_decay=wd)
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, s / 500) * 0.5 * (1 + np.cos(np.pi * min(s, steps) / steps)))
+    if groups is not None:
+        ids = sorted(id(p) for g in groups for p in g)
+        assert ids == sorted(id(p) for p in params) and len(set(ids)) == len(ids), "clip groups must partition the trained parameters"
     n = len(act)
     curve, run, t0 = [], [], time.time()
     for s in range(1, steps + 1):
@@ -126,13 +173,15 @@ def fit(m, params, b, act, steps, batch, lr, seed, wd, mask_fn=None, log=""):
         loss.backward()
         if mask_fn is not None:
             mask_fn()
-        torch.nn.utils.clip_grad_norm_(params, 1.0)
+        for g in (groups if groups is not None else [params]):
+            torch.nn.utils.clip_grad_norm_(g, 1.0)
         opt.step()
         sched.step()
         if mask_fn is None:                                          # creation keeps no EMA (an EMA of unchanged rows is not bitwise exact)
             with torch.no_grad():
                 for pe, pm in zip(ema.parameters(), m.parameters()):
-                    pe.mul_(0.999).add_(pm, alpha=0.001)
+                    if pm.requires_grad:                             # a reused (frozen) role keeps its loaded values exactly
+                        pe.mul_(0.999).add_(pm, alpha=0.001)
         run.append(float(loss))
         if s % 1000 == 0 or s == steps:
             curve.append(dict(step=s, train=float(np.mean(run))))
@@ -157,11 +206,16 @@ def main():
     ap.add_argument("--hscale", action="store_true")                      # PARTS_RESULTS 27: P_hs
     ap.add_argument("--psupport", action="store_true")                    # PARTS_RESULTS 30: P_pp (per-part support radii)
     ap.add_argument("--tscale", action="store_true")                      # PARTS_RESULTS 33: P_ts (carry scale frame)
+    ap.add_argument("--decouple", action="store_true")                    # PARTS_RESULTS 35: one training per role
+    ap.add_argument("--reuse", default="")                                # PARTS_RESULTS 35: "<role>:<tag>", needs --decouple
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
     ap.add_argument("--k", type=int)
     a = ap.parse_args()
+    assert not a.reuse or a.decouple, "--reuse needs --decouple"
+    if a.decouple:
+        deterministic()
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     d = os.path.join(FC.DATA, "ckpt", f"pp_{a.tag}_s{a.seed}")
     os.makedirs(d, exist_ok=True)
@@ -188,10 +242,24 @@ def main():
         print(f"[pp_p] rclip {rclip:.4f} rtclip {rtclip:.4f} hscale {hscale:.4f} psupport {a.psupport} "
               f"obj {None if ro is None else [round(x, 4) for x in ro]} tgt {None if rt is None else [round(x, 4) for x in rt]}", flush=True)
         m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
-                         rclip=rclip, rtclip=rtclip, hscale=hscale, psupport=a.psupport, rclip_p=ro, rtclip_p=rt, tscale=a.tscale).to(dev)
-        ema, curve, secs = fit(m, list(m.parameters()), b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}")
-        ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps))
+                         rclip=rclip, rtclip=rtclip, hscale=hscale, psupport=a.psupport, rclip_p=ro, rtclip_p=rt, tscale=a.tscale)
+        groups, reused = None, None
+        if a.decouple:                                                     # PARTS_RESULTS 35
+            hv = torch.unique(b["held"]).cpu().tolist()
+            assert set(hv) <= {0.0, 1.0}, ("held must be 0/1 for the loss to split by role", hv)
+            role_init(m, a.seed)
+        m = m.to(dev)
+        if a.reuse:
+            reused = reuse_role(m, a.reuse, a.seed, a.steps)
+        if a.decouple:
+            groups = [[p for p in net.parameters() if p.requires_grad] for net in (m.obj, m.tgt)]
+            groups = [g for g in groups if g]
+        params = [p for p in m.parameters() if p.requires_grad]
+        ema, curve, secs = fit(m, params, b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}", groups=groups)
+        ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps,
+                                                      decouple=a.decouple, reuse=a.reuse or None))
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
+                   decouple=a.decouple, reuse=a.reuse or None, reused_role=reused,
                    rclip=rclip, rtclip=rtclip, hscale=hscale, rclip_p=None if ro is None else list(ro), rtclip_p=None if rt is None else list(rt),
                    params_total=int(sum(p.numel() for p in m.parameters())), part_params=dict(obj=m.obj.part_params(), tgt=m.tgt.part_params()),
                    backbone_params=dict(obj=int(sum(p.numel() for p in m.obj.backbone_parameters())),
@@ -199,6 +267,8 @@ def main():
         fn = os.path.join(ROOT, "results", "flawed", f"pp_train_{a.tag}_s{a.seed}.json")
     else:
         m, meta = PF.PartsFlow.load(os.path.join(d, "P.npz"))
+        if meta.get("decouple") and not a.decouple:                  # PARTS_RESULTS 35: a decoupled library's parts train deterministically
+            deterministic()
         m = m.to(dev)
         net = m.obj if a.role == "obj" else m.tgt
         j = (PF.OBJ_ATOMS if a.role == "obj" else PF.TGT_ATOMS).index(a.atom)
