@@ -1,0 +1,66 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS round 10, one training per role (docs/PARTS_RESULTS.md section 35)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4497118",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "10512278798ff9de5b8fcccea7357dc14985be47",
+  "short": "10512278"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "P_tdc: P_ts's flags (rank 32, aframe, rclip, rtclip, psupport, tscale) + --decouple; seeds 10-12; builds full, nobottle, noplate and the S3 creations",
+  "files_sha256": {
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "2053ef8bdc6d985e64f5edbccc79b15ba4a453901b0b1f1df55aae4ff194601d",
+   "experiments/pp_decouple_check.py": "b2bb4cee03c3413c6a783fa2e1b30929c0aa8cc179b7bbd70de818547fab8f3f",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "7c87c9a5c0424f8067fa5313f6908247749440be0d4b33975f451a70ab34674f",
+   "experiments/pp_round_read.py": "3bc0d0bd3258fdbc44d0c271e763142bc34ff3cae449166e7cd7829c2c179928",
+   "experiments/pp_s1_mix.py": "8ae310147b698daec08206c097a4bebf821a45d86a80cc10dc65c34ffa1de513",
+   "lifelong_ood/policy/parts_flow.py": "00a549fb19450a7e8a4748b62b0192b0a5e4a12e5f704b10754dd417b28f30d8"
+  },
+  "layer2_go": "pp_l2's mapping, unchanged (S1 exact; S2 3F + OM in both layouts; S3 ratio >= 0.8, LB >= 0.6, both atoms, both layouts, k in {1, 5, 10})",
+  "metric": "decouple",
+  "reference": "P_pdc: P_pp's flags + --decouple, full, seeds 10-12 (same object-term design as P_tdc)",
+  "reported_no_verdict": "(c) repeat full_tdcr vs full_tdc seed 10, whole state bitwise; (d) reuse full_pdcu (--reuse obj:full_tdc) vs full_pdc seed 10, whole state bitwise; (e) per-object factor variance across seeds under P_tdc vs the between-arm range of rounds 6-9; (f) P_tdc GO read",
+  "round_verdict": "(a) for each seed 10-12 every object-term tensor (obj.*, rclip, rclip_p, home) of full_pdc equals full_tdc's bitwise; (b) every paired S2 episode's hold flag agrees between P2pdc and P2tdc (all tasks, both layouts, seeds 10-12). decoupled iff (a) and (b); 'decoupled in training only' iff (a) and not (b); 'not decoupled' iff not (a). Success for the failure streak iff decoupled.",
+  "section_sha256": "7d25dd270383a8d12b6376f69876d29fb6516471a393fb5ce438390a9b89b80a",
+  "states": "dev: N2 main states 4-23, N2 seeds",
+  "status": "PRE-REGISTERED PLAN_PARTS round 10 (docs/PARTS_RESULTS.md section 35)",
+  "written_before": "the round's checkpoint comparisons, its S1 read and any of its rollouts"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_r10__s0__10512278",
+ "schema": 1,
+ "script": "experiments/prereg/pp_r10.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-03T11:34:08+00:00",
+ "stream": null,
+ "tag": "pp_r10"
+}
