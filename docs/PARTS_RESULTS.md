@@ -2089,3 +2089,48 @@ Even with K5's hold restored, K5's new-layout success stays 0, because its place
 round. Its arrival there is 0.33 under P_rtr. Whether 3F on N4 and N5 would then pass is not predicted.
 
 **Cost.** CPU only: 3 diagnostic jobs and 1 summary.
+
+## 44. Round 14 design note and protocol: the backbone-alone path does not read m (fixed 2026-11-03, before any code of this round; m3_prereg tag pp_r14)
+
+**This round follows a plan change made after seeing data.** The user chose option (i) of §43, recorded as PLAN_PARTS §10 item
+7 (commit 318baaff). It amends item 6.
+
+**Weakness (measured, §43).** Under m = 2 the backbone stops about 0.10 m from the bottle and climbs. K5's new-layout hold is
+0.05, and through the pooled a_o this drives the 3F failures on N4 and N5.
+
+**Principle (§10.6 and §10.7).** The backbone holds the role-general transport. m is a grasp mode, and the grasp belongs to the
+part, so m enters only where the part acts.
+
+**Change (one; on P_rtr; default off; `pp_p_train.py --bbnom`).**
+- On every row where the backbone acts alone, the object term's one-hot m input is replaced by zeros. This holds:
+  - in the switched field (L_Φ and at test, rows beyond the part's start radius);
+  - in the backbone-only loss term (every not-held row).
+- A constant zero input carries no information, so the backbone-alone path does not read m. It adds no parameter and no rate.
+- Rows where the part acts read one-hot m, as in P_rtr.
+- Everything else is P_rtr's: the start radii, the hard switch, the role radius, the backbone-only term, Φ, the target term and
+  the data.
+- S1 is unaffected. m still comes only from the target part, and with m fixed nothing else crosses.
+
+**Arm.** P_nom (rank 32), seeds 10-12, builds full, nobottle and noplate with the S3 creations. The object term is retrained;
+the target term is reused from <cond>_tdc. Flags: P_rtr's plus `--bbnom`. Reference: P_rtr (pp_r13_roll).
+
+**Smoke (before the builds).** With the flag off the edited model gives P_rtr's velocity bitwise, and S1's swap tests are 0 with
+m fixed.
+
+**Reads.** Dev states 4-23, N2's seeds. S1 as restated in §10.5, S2 and S3 with pp_l2's estimators and its frozen GO mapping.
+
+**Pre-registered round verdict (metric k5_hold_new).**
+- The metric is K5's new-layout hold, seeds pooled. The change targets the one task whose message is m = 2, so the metric is that
+  task's hold.
+- The coordinator suggested the pooled bottle_hold_new instead. K5 is 1 of its 5 tasks, so a large K5 change would be diluted
+  about five-fold. The pooled metric is reported, not used for the verdict.
+- Δ = P_nom − P_rtr, with a 2,000-draw state bootstrap.
+- **improves** iff Δ > 0.10 and the CI's lower bound is > 0.
+
+**Reported, with no verdict.**
+- Familiar non-regression: pooled familiar known-pairing success, P_nom − P_rtr. It is labelled "regresses" iff the CI's
+  upper bound is < 0.
+- bottle_hold_new: new-layout hold pooled over K4, K5, N4, N5 and N6, P_nom − P_rtr.
+- The GO read and the per-pairing 3F.
+
+**Cost.** About 3 A40-h for the builds and creations (object term only), plus rollout CPU.
