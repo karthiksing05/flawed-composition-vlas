@@ -297,3 +297,13 @@ The plan is adopted. Each layer is still pre-registered before its first read (ย
    - **Unchanged.** There is still no cross-role term beyond m, and every frozen criterion stays as it was.
    - **Removal of earlier devices.** Where this switch subsumes an earlier device (rclip and its relocation of the approach
      state), the round removes that device and measures the removal.
+
+7. **(User, 2026-11-03) The backbone-alone path does not read m.** This amends item 6 after seeing data, and is labelled
+   as such everywhere.
+   - **Finding.** PARTS_RESULTS ยง43: under m = 2 the backbone stalls about 0.10 m short of the bottle and climbs away. Its only
+     m = 2 rows are K5's near-start rows.
+   - **Amendment.** m is a grasp mode, and the grasp belongs to the part. So m enters only where the part acts, that is
+     inside its start support. Outside it, the role backbone acts alone, and it does so without m, in both training and the
+     switch. This replaces item 6's phrase "and the same message m".
+   - **Unchanged.** There is no new rate and no new cross-role term. m's inventory and bandwidth stay as in item 5, and every
+     frozen criterion stays as it was.
