@@ -281,3 +281,19 @@ The plan is adopted. Each layer is still pre-registered before its first read (�
    - **Locality (S1) is restated.** Swapping the target changes the object term only through m. With m held fixed, the
      swap tests must still be exactly 0. Any change to the object term by a route other than m counts as mixing.
    - **Unchanged.** All other criteria, including the pp_l2 GO mapping, stay frozen.
+
+6. **(User, 2026-11-03) Role-level transport.** This is a plan change made after seeing data, labelled as such everywhere.
+   - **Finding.** PARTS_RESULTS §40 showed that the bottle's demos start 3-7 cm from it and contain no level transport, so
+     far starts make the bottle part descend early.
+   - **Amendment to §2 and Φ's object term.** A part acts only where its own demos have support (condition S). Outside that
+     region, the role backbone acts alone. The backbone is trained on every object atom's demos, and it reads the same frame
+     and the same message m.
+     - The switch between backbone and part is a support test fitted from the part's own demos, for example the start-offset
+       radius under §4.1's existing 99th-percentile rule. It is not hand-set per scene.
+     - The blend inside the switch is fixed in advance.
+     - A created part fits its support region from its own k demos.
+   - **The hierarchy this makes explicit.** The role backbone holds the role-general skill (transport to the object). Parts
+     hold the atom-specific skill (the grasp).
+   - **Unchanged.** There is still no cross-role term beyond m, and every frozen criterion stays as it was.
+   - **Removal of earlier devices.** Where this switch subsumes an earlier device (rclip and its relocation of the approach
+     state), the round removes that device and measures the removal.
