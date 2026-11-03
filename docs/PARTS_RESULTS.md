@@ -1040,3 +1040,46 @@ this change's base.
 
 **Pre-registered round verdict.** **improves** iff the pooled known-pairing new-layout success, P_rc minus P_af, is > 0.10
 with its state-bootstrap CI lower bound > 0.
+
+## 22. Step 1 and round 5 results (2026-11-02; m3_prereg pp_n4d2 and pp_r5; results/flawed/pp_n4d2_read.json, pp_r5_read.json)
+
+**Instrument v2: the gate passes.** With the servoing generator (§19), the single-task fits on familiar-layout generated
+carries score 1.00 on K1 (P 0.97) and 0.72 on K4 (P 0.63). Both are within 0.15 of P, so the instrument is valid. The
+planner itself succeeds at 0.95 (K1), 0.75 (K4) and 0.65 (N4) on the dev states.
+
+**pp_n4d2 verdict, as pre-registered with pp_n4d's mapping: "combination", failing phase place-on-arrival.**
+- N4's single-task fit (arm a) succeeds at 0.55 [0.38, 0.72]. P succeeds at 0.22 [0.10, 0.35]. Δ = +0.33 [0.13, 0.53].
+- The controls are clean: no control flag.
+- By phase, the gap is at the place:
+  - hold Δ +0.03;
+  - arrival Δ +0.07;
+  - place given arrival 0.77 (a) against 0.34 (P), Δ +0.43 [0.20, 0.66].
+- Release error in xy: 0.030 m for arm a, 0.093 m for P, 0.027 m for the planner.
+- N4 is therefore within the class's competence from carries alone. P's composed parts fail at the place interface, and N4
+  becomes a target for a later round at that interface.
+- **Tilt separates the failure modes.**
+  - P: 29 failures while held, 27 of them end tipped, median maximum tilt while held 95°.
+  - Arm a: 11 failures while held, 3 tipped, median maximum tilt 9°.
+  - Planner: 2 failures, 1 tipped.
+- P's N4 failure is **tipping**: the bottle goes over while it is carried and placed on the plate, not an upright release off
+  the site. The plate part learned its carry from the bowl alone, a short, rotation-insensitive object.
+
+**Round 5 verdict: improves.** Known-pairing new-layout success is 0.31 for P_rc against 0.16 for P_af: +0.15 [0.08, 0.21].
+Round 5 is the first round that raised new-layout competence. **Layer-2 GO = false.**
+- S1 holds.
+- **S2 fails, on 3F in both layouts.**
+  - Familiar: OM 1.07 [0.97, 1.20], which passes. 3F fails on N4 (observed 0.30 against predicted 0.65, D3 −0.35
+    [−0.47, −0.25]) and on N3 (−0.13 [−0.27, −0.02]).
+  - New: s known 0.31, s new 0.23, OM 1.17 [0.83, 1.87]. Observed exceeds predicted on N5 (+0.09 [0.03, 0.15]) and N6
+    (+0.09 [0.02, 0.19]), where predictions are near 0.
+  - New-layout success by known task: K1 0.28, K2 0.55, K3 0.57, K4 0.10, K5 0.00, K6 0.33.
+- **S3 passes 4 of 12 cells.**
+  - Bottle, familiar: k1 0.82 [0.76, 0.88] and k5 0.87 [0.81, 0.94] pass. k10 0.80 [0.73, 0.86] fails by 0.004.
+  - Bottle, new: k1 0.95 [0.67, 2.02] passes. k5 and k10 fail.
+  - Plate, familiar: k1 0.82 [0.73, 0.91] passes. k5 0.76 and k10 0.74 fail.
+  - Plate, new: all fail.
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| step 1 | single-task fits score 0 (instrument) | servoing generator (instrument only) | pp_n4d2 | gate passes; N4 = combination at place-on-arrival | — |
+| 5 | new-layout position input out of distribution (§20) | radial relocation of the approach state | pp_r5 | +0.15 [0.08, 0.21]: improves | false |
