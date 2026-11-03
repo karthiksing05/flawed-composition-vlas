@@ -1693,3 +1693,63 @@ decision the plan does not settle, or breaks a rule:
 The theory predicts this outcome. Composition makes a pairing as good as its parts. A target-blind part trained on a
 target-dependent grasp is a mixture, and the product law then carries the mixture into every partner. That is what N4 to N6
 show.
+
+## 38. Round 11 design note and protocol: an explicit grasp-mode message from the target part (fixed 2026-11-03, before any code of this round; m3_prereg tag pp_r11)
+
+**This round follows a plan change made after seeing data.** The user chose option (i) of §37, as PLAN_PARTS §10 item 5
+(commit 87e9b02d): one explicit, sparse, declared interface between the roles. The claim becomes composition with a declared
+interface of b bits, and b is reported.
+
+**Weakness (measured, §37).** The bottle's demos grasp in two modes, one per target. K4 grasps with the hand unturned (2.1°),
+and K5 turns it by about 81° before the close. The target-blind bottle part mixes the two modes. Under P_tdc it delivers the
+rack's grasp in 9 of 13 familiar K4 holds and hops between modes during the approach. Familiar bottle hold is 0.65-0.70.
+
+**Principle (§10.5).** A target may need a particular grasp. That requirement is the target's information, so it travels
+from the target part to the object part as one discrete message m, the only cross-role channel. Its inventory is induced
+from the demos, and each target part's value is fitted from its own demos. Nothing else crosses between the roles.
+
+**Change (one; on P_tdc; default off; `pp_p_train.py --imode`).**
+- **Feature.** One number per training demo: the hand's yaw relative to the object's body yaw, doubled (the parallel
+  gripper is symmetric under a half turn), at the demo's first close row. A close row is a not-held row whose chunk's first
+  gripper command closes. Demos without a close row contribute nothing.
+- **Inventory rule (fixed here).**
+  - Fit mixtures of von Mises distributions on that doubled angle over all demos of the build, for K = 1, 2, 3 and 4
+    components. EM runs 300 iterations from a deterministic farthest-point initialisation that starts at the circular
+    mean, with each κ capped at 1,000.
+  - Choose K by BIC (3K − 1 parameters). Ties go to the smaller K.
+  - Each demo's label is its most responsible component. Components are ordered by weight, so m = 0 is the most common.
+- **A target part's value of m** is the most frequent label among its own demos (ties go to the lower value). A target atom
+  without demos in the build gets m = 0, and no read uses it before its creation.
+- **A created target part** (S3 plate) labels its own k demos with the base build's stored inventory and takes their most
+  frequent label. A created object part (S3 bottle) reads m from the existing target parts.
+- **The object term reads m** as a one-hot input of K entries, appended to its input. m is fixed per episode by the task's
+  target part. The target term, Φ, the gate, the radii and every other input are P_tdc's.
+- **Bandwidth.** The capacity is log2 K bits. Also reported: the entropy of m over the build's known tasks, with tasks
+  weighted equally.
+- No teacher, data, hand label or per-scene constant is added. The inventory and the values are fitted from demo rows.
+
+**Training (decoupled, §35).** The object term gains an input, so it is retrained. The target term is unchanged in function
+(m is a fitted value, not a network output), so each build reuses it with `--reuse tgt:<cond>_tdc`, which is bitwise what joint
+training would give (§36 (d)). Creations are re-run: the bottle part trains against the new object term, and the plate part
+trains as before and also fits its m.
+
+**Arm.** P_imd (rank 32), seeds 10-12, builds full, nobottle and noplate, with the S3 creations. Reference: P_tdc (pp_r10_roll).
+
+**S1, restated per §10.5.**
+- **Holds iff,** with m held fixed (every target part's m set to the same value v, for each v in the build's inventory), both
+  swap tests are exactly 0 and every target-into-grasp component is exactly 0 on every frame, for every seed.
+- Reported beside it: the same profile with m free, which measures what flows through m.
+
+**Reads.** Dev states 4-23, N2's seeds. S1 (restated), S2 and S3 with pp_l2's estimators and its frozen GO mapping, unchanged.
+
+**Pre-registered round verdict (metric bottle_hold_fam).**
+- The metric is familiar-layout hold pooled over the bottle's tasks K4, K5, N4, N5 and N6, seeds pooled.
+- Δ = P_imd − P_tdc, with a 2,000-draw state bootstrap (the same states resampled for both arms).
+- **improves** iff Δ > 0.10 and the CI's lower bound is > 0 (rounds 2-7's rule).
+
+**Reported, with no verdict.**
+- **Mode-hopping rate.** The share of familiar K4 and K5 episodes (seeds 10-12) whose largest pre-hold change of the hand's
+  yaw (modulo 180°) between consecutive calls exceeds 20°, for P_imd and P_tdc. This uses `pp_grasp_yaw_roll.py`.
+- **Mode delivery.** Among the held episodes of those runs, the share whose onset yaw lies nearest the mean of the task's own
+  m.
+- The inventory, each target's m, and the bandwidth, per build.
