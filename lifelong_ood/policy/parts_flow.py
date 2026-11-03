@@ -76,7 +76,7 @@ class PartsFlow(nn.Module):
     arm = "P"
 
     def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
-                 rclip=0.0):
+                 rclip=0.0, rtclip=0.0):
         super().__init__()
         self.H, self.rank = horizon, rank
         self.tsize = bool(tsize)                                    # PARTS_RESULTS 12 (P_sz): the target term reads the held object's size
@@ -86,6 +86,8 @@ class PartsFlow(nn.Module):
         self.register_buffer("home", torch.tensor(home, dtype=torch.float32))
         # PARTS_RESULTS 21 (P_rc): the object term's horizontal ee offset clipped to the demos' support radius (0: off)
         self.register_buffer("rclip", torch.tensor(float(rclip), dtype=torch.float32))
+        # PARTS_RESULTS 24 (P_rt): the target term's horizontal object-to-target offset clipped to the demos' carry radius (0: off)
+        self.register_buffer("rtclip", torch.tensor(float(rtclip), dtype=torch.float32))
         self.register_buffer("center", torch.tensor(center, dtype=torch.float32))
         self.register_buffer("size", torch.tensor(size if size is not None else np.zeros((N_ENT, 2)), dtype=torch.float32))
         da, dt = 7 * horizon, 32
@@ -122,7 +124,11 @@ class PartsFlow(nn.Module):
         QT = Q.transpose(1, 2)
         p = b["pos"][idx, b["oi"]].clone()
         p[:, 2] = p[:, 2] - b["zrest"] + b["pos"][:, TABLE, 2]
-        pr = torch.einsum("bij,bj->bi", QT, p - pt) * POS_SCALE
+        pr = torch.einsum("bij,bj->bi", QT, p - pt)
+        if float(self.rtclip) > 0:                                              # relocate far carry states onto the support radius
+            r = torch.linalg.norm(pr[:, :2], dim=-1, keepdim=True).clamp_min(1e-9)
+            pr = torch.cat([pr[:, :2] * torch.clamp(self.rtclip / r, max=1.0), pr[:, 2:]], -1)
+        pr = pr * POS_SCALE
         e = b["ti"]
         aux = b["drawer"] * (e == DRAWER).float()
         r0 = b["rot0"] if "rot0" in b else b["ee_rot"]
@@ -184,6 +190,7 @@ class PartsFlow(nn.Module):
         sd = {k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
         sd.setdefault("home", torch.zeros(3))                                   # checkpoints before P_af carry no home buffer
         sd.setdefault("rclip", torch.tensor(0.0))                               # nor before P_rc
+        sd.setdefault("rtclip", torch.tensor(0.0))                              # nor before P_rt
         m.load_state_dict(sd)
         m.eval()
         return m, meta

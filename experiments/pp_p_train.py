@@ -105,6 +105,7 @@ def main():
     ap.add_argument("--aframe", action="store_true")                      # PARTS_RESULTS 14: P_af
     ap.add_argument("--aframe2", action="store_true")                     # PARTS_RESULTS 16: P_af2
     ap.add_argument("--rclip", action="store_true")                       # PARTS_RESULTS 21: P_rc
+    ap.add_argument("--rtclip", action="store_true")                      # PARTS_RESULTS 24: P_rt
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -124,8 +125,15 @@ def main():
             idx = torch.arange(len(b["oi"]), device=dev)
             dxy = torch.linalg.norm((b["ee_pos"] - b["pos"][idx, b["oi"]])[:, :2], dim=-1)
             rclip = float(min(torch.quantile(dxy[nh & (b["oi"] == o)], 0.99) for o in torch.unique(b["oi"][nh])))
+        rtclip = 0.0
+        if a.rtclip:                                                         # P_rt: min over training targets of the 99th pct of held object-target dxy
+            hd = b["held"] > 0.5
+            idx = torch.arange(len(b["oi"]), device=dev)
+            txy = torch.linalg.norm((b["pos"][idx, b["oi"]] - b["pos"][idx, b["ti"]])[:, :2], dim=-1)
+            rtclip = float(min(torch.quantile(txy[hd & (b["ti"] == t)], 0.99) for t in torch.unique(b["ti"][hd])))
+        print(f"[pp_p] rclip {rclip:.4f} rtclip {rtclip:.4f}", flush=True)
         m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
-                         rclip=rclip).to(dev)
+                         rclip=rclip, rtclip=rtclip).to(dev)
         ema, curve, secs = fit(m, list(m.parameters()), b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}")
         ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps))
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
