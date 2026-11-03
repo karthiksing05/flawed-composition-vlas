@@ -1255,3 +1255,24 @@ and apparent progress advances at the demos' rate.
 
 **Pre-registered round verdict.** **improves** iff the pooled known-pairing new-layout success, P_hs minus P_rt, is > 0.10
 with its state-bootstrap CI lower bound > 0 (metric s_known_new).
+
+## 28. Round 7 results (2026-11-03; m3_prereg pp_r7; results/flawed/pp_r7_read.json; rollouts pp_r7_roll)
+
+**Round verdict: does not improve. It makes new-layout competence worse.** Known-pairing new-layout success is 0.23 for P_hs
+against 0.34 for P_rt: −0.11 [−0.16, −0.06]. **Layer-2 GO = false.**
+- S1 holds. S3 passes all 6 familiar cells and none of the new-layout ones.
+- **S2 fails.** Familiar: OM 1.11 [1.03, 1.20]; 3F fails on N3, N4 (−0.11 [−0.21, −0.02]), N5 and N6. New: s known 0.23, OM
+  0.92 [0.68, 1.27].
+- **The scale frame hurts the bottle in both layouts.**
+  - Familiar K4 drops from 0.72 to 0.48, K5 from 0.43 to 0.23. The familiar bottle starts (0.11-0.15 m) lie beyond r = 0.124 m,
+    so they are scaled too.
+  - New-layout bottle hold is 0.15 (P_rt 0.18), with no object moved in 68% of episodes (P_rt 38%).
+- Cheese new-layout hold falls from 0.48 to 0.33, and bowl hold from 0.85 to 0.73.
+- **Not established here:** whether the cause is saturation of the scaled horizontal commands (×1/s up to 2.5, clipped at 1 by
+  the executor; the known limit in §27) or the loss of round 5's per-step clip. No trace was run.
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 7 | new-layout grasp: far starts descend before arriving (§26) | horizontal scale frame frozen at the episode start | pp_r7 | −0.11 [−0.16, −0.06]: worse | false |
+
+The best arm is still P_rt (round 6). That is one failed round since the last improvement.
