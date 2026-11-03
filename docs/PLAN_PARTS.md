@@ -264,3 +264,20 @@ each is reported as such.
 4. **Phase 2 uses LIBERO-90-C.**
 
 The plan is adopted. Each layer is still pre-registered before its first read (§6).
+
+5. **(User, 2026-11-03) An explicit sparse interface between roles.** PARTS_RESULTS §37 found that a demo's grasp
+   depends on its target. The bottle is grasped with the hand turned about 81° for the rack, and unturned for the cabinet.
+   The target-blind object part averages the two modes. The user chose to amend §2 as follows. This is a plan-level change
+   made after seeing data, and is labelled as such everywhere.
+   - **Interface message m.** The target part emits one discrete message m, a "grasp mode" token. It is the only
+     cross-role channel. The object part reads m as one extra input. Φ is otherwise unchanged.
+   - **Inventory.** The set of values m can take is induced from the training demos alone, for example by clustering
+     pre-close hand yaw in the object frame. Its size is chosen by a rule fixed before any read, such as description length
+     or BIC. It is not hand-set per scene.
+   - **Which value a target emits.** Each target part's value of m is fitted from its own demos. A created part fits its
+     value of m from its own k demos.
+   - **Bandwidth.** The bandwidth of m, in bits, is a reported composition quantity. The claim becomes: composition with a
+     declared interface of b bits, and b is reported.
+   - **Locality (S1) is restated.** Swapping the target changes the object term only through m. With m held fixed, the
+     swap tests must still be exactly 0. Any change to the object term by a route other than m counts as mixing.
+   - **Unchanged.** All other criteria, including the pp_l2 GO mapping, stay frozen.
