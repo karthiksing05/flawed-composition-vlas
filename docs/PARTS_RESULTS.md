@@ -1978,3 +1978,76 @@ estimators and its frozen GO mapping.
 - The share of pre-hold calls served by the backbone alone, per object and layout (from `pp_far_diag.py`, seed 10).
 
 **Cost.** About 2 A40-h for the builds and creations (object term only), plus rollout CPU.
+
+## 42. Round 13 results (2026-11-03; m3_prereg pp_r13; results/flawed/pp_r13_read.json, pp_phase_diag_P2rtr.json, pp_far_read_r13.json; rollouts pp_r13_roll)
+
+**The fitted supports** (same in all three seeds).
+- Full build start radii: bowl 0.140 m, cheese 0.231 m, bottle 0.079 m. Role radius r_role 0.225 m. In the noplate build the
+  bowl's is 0.137 m and r_role 0.229 m; in nobottle r_role is 0.237 m.
+- The created bottle parts fit 0.055 / 0.064 / 0.064 / 0.074 m at k = 1 / 5 / 10 / 50.
+- Code smoke (300 steps; before the builds): with the flag off, the edited model reproduces P_imd's velocity bitwise. The
+  switch turns the part off exactly beyond r_s, and the backbone-only path is unchanged when the part's parameters change.
+
+**Round verdict: improves.** New-layout bottle hold (K4, K5, N4, N5, N6, seeds pooled) is 0.49 for P_rtr against 0.21 for
+P_imd: +0.28 [0.12, 0.44]. **Layer-2 GO = false.** No rollout had an episode error.
+- **Familiar non-regression: does not regress; it rises.** Pooled familiar known-pairing success is 0.92 against 0.88:
+  +0.04 [0.006, 0.08].
+- **Removal of rclip.** The arm has no per-part clip. Familiar bottle, cheese and bowl holds are 0.97, 1.00 and 1.00, against
+  P_imd's 0.87, 0.98 and 1.00. In the new layout the bowl's hold is 0.93 (P_imd 0.87) and the cheese's 0.42 (P_imd 0.43).
+  On these reads, nothing that rclip did is lost.
+
+**How the switch acts** (`pp_far_diag.py`, seed 10; share of pre-hold calls served by the backbone alone).
+
+| task, layout | backbone-only share | holds of 20 | offset when "low" (m) | first close offset (m) |
+|---|---|---|---|---|
+| K4 new | 0.35 | 11 (P_imd 5) | 0.027 (P_imd 0.109) | 0.032 (P_imd 0.059) |
+| K5 new | 0.90 | 0 | 15 of 20 never come down | 15 of 20 never close |
+| K1 new | 0.22 | 19 | 0.052 | 0.048 |
+| K6 new | 0.01 | 9 | — | 10 of 20 never close |
+| K4 familiar | 0.03 | 19 | 0.022 | 0.015 |
+| K6 familiar | 0.00 | 20 | 0.023 | 0.017 |
+
+- **K4 new (m = 0):** the backbone carries the hand in at height, and the bottle part takes over inside 0.079 m. The early
+  descent of §40 is gone: the hand reaches the grasp height 2.7 cm from the bottle.
+- **K5 new (m = 2): the backbone stalls.** 90% of calls stay beyond the bottle's start radius, and in 19 of 20 episodes nothing
+  moves. Over three seeds, K5 new hold falls from 0.13 to 0.05, and 85% of its episodes move no object. The backbone's rows
+  with m = 2 are K5's alone; they have no far coverage, so under m = 2 the backbone has no transport to give.
+- **The cheese's near-start hover is unchanged** (10 of 20 never close), as §41 predicted: those starts lie inside the
+  cheese's start radius.
+
+**S1 (restated, §10.5) holds.** With every target's m fixed at 0, 1 or 2, both swap tests and every target-into-grasp
+component are exactly 0, on all three seeds.
+
+**S2 familiar fails, on N5 alone.** s known 0.92, s new 0.93, OM 1.07 [1.02, 1.14], which passes.
+- 3F holds on N1-N4 and N6. N4 is −0.03 [−0.16, 0.07].
+- It fails on N5: observed 0.97 against predicted 0.90, +0.07 [0.02, 0.13]. The bottle's a_o pools K4 and K5, and K5's lower
+  hold (0.88, against K4's 0.97) pulls the prediction down. This is a reading of the phase table, not a separate test.
+- K4 is 0.95 (P_imd 0.87), N4 0.87 (0.80), N5 0.97 (0.85), N6 0.83 (0.75). K5 is 0.60 (0.58).
+
+**S2 new fails, on N2, N4 and N5.** s known 0.41 (P_imd 0.31), s new 0.34 (0.22), OM 1.13 [0.94, 1.41], which passes.
+- 3F holds on N1, N3 and N6. It fails on N2 (−0.09 [−0.20, −0.005]), N4 (+0.18 [0.08, 0.29]) and N5 (+0.29 [0.18, 0.39]).
+- In the new layout K4 rises to 0.42 (0.10), N4 to 0.27 (0.05), N5 to 0.50 (0.12) and N6 to 0.28 (0.10). The bottle pairings
+  with m = 0 now run well above their predictions. In the pooled a_o, K5's new-layout hold (0.05, against K4's 0.60) drags those
+  predictions toward 0.
+
+**S3 passes 7 of 12 cells**: all 6 familiar cells, and plate-new at k = 10.
+- Familiar: bottle 0.86 / 0.89 / 0.90, plate 0.975 / 0.90 / 0.96; lower bounds 0.79-0.95.
+- Plate new: k = 10 passes, 1.03 [0.60, 2.00]. k = 1 (0.79 [0.52, 1.27]) and k = 5 (0.885 [0.357, 2.44]) fail on the lower
+  bound. N4 with the created plate now succeeds at 0.13-0.33 in the new layout (P_imd 0.02-0.07).
+- Bottle new fails at every k. s_train (K4 with the created part) is 0.017 / 0.017 / 0.13. The created part's start radius
+  (0.055-0.064 m) hands over late, and the nobottle backbone has never seen a bottle row.
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 13 | the bottle part has no transport phase; far starts descend early (§40) | role-level transport: backbone alone outside the part's start support (§10.6); per-part rclip removed | pp_r13 | +0.28 [0.12, 0.44]: improves | false |
+
+The failure streak stays at 0. P_rtr is the new best arm.
+
+**What is left for GO.**
+- Familiar 3F on N5 (+0.07), from K5's success pulling the bottle's a_o down.
+- New-layout 3F on N4 and N5, the same bias in the other layout, and on N2 (−0.09).
+- K5 in the new layout: under m = 2 the backbone stalls before the bottle part's support.
+- The created bottle part in the new layout (S3).
+
+**Cost.** 3.0 A40-h (smoke 0.05; builds 2.4, of which nobottle 1.2; creations 0.55, including two preempted runs), plus
+rollout CPU.
