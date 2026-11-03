@@ -1500,3 +1500,72 @@ term's updates. This is a training-time coupling of the roles. The function is u
 | round | weakness | change | prereg | round verdict | GO |
 |---|---|---|---|---|---|
 | 9 | N4: the bottle touches down before it arrives (§32) | carry scale frame frozen at the hold's onset | pp_r9 | +0.17 [0.03, 0.30]: improves | false |
+
+## 35. Round 10 design note and protocol: one training per role (fixed 2026-11-03, before any code of this round; m3_prereg tag pp_r10)
+
+**Weakness (measured, §34).** The roles train together. The joint `clip_grad_norm_` rescales the object term's update by the
+target term's gradient, so a change to one role retrains the other role's term into a different network. P_pp and P_ts have
+the same object-term design, but their seed-10 object terms differ by 1.40 times the parameter norm, and the bottle's familiar
+hold moves from 0.87 to 0.62. Every between-round comparison of a per-object factor carries this variance, and the state
+bootstrap does not cover it. A second point, found by reading `pp_p_train.py`: no torch random call precedes the model's
+construction, so every build starts from torch's default seed. Seeds 10-12 share their initial parameters, and the seed sets
+only the batches and the flow noise.
+
+**Principle (plan §2 and §4.1).** Φ has no learned cross-role term, and each role backbone is trained once. Φ gates on held,
+which is 0 or 1 on every row, so the loss already splits exactly into two sums:
+
+L = (1/B) [ Σ over not-held rows of |v_o − u|² + Σ over held rows of |v_t − u|² ]
+
+Each role's gradient therefore depends only on its own rows and its own term. AdamW, weight decay and the EMA act per
+parameter. The joint norm clip is the only place where the two roles meet in training. With one clip per role, a role's
+training is a function of its own design, its own rows and the seed, and nothing else. A role that an arm does not change then
+comes out bitwise unchanged. So it can be trained once and reused, as §4.1 intends.
+
+**Change (one, structural; default off; `pp_p_train.py --decouple`).** "Decoupled training" has three parts. None of them
+changes the function class, the inputs, the data, the loss or Φ.
+1. One `clip_grad_norm_` per role network, with the same threshold (1.0).
+2. Each role network's initial parameters come from its own generator, seeded by the build seed and the role. A role's
+   initialisation then depends neither on the other role's architecture nor on the construction order. The build seed now
+   also sets the initial parameters.
+3. Deterministic kernels: `torch.use_deterministic_algorithms(True)`, `CUBLAS_WORKSPACE_CONFIG=:4096:8`, and cuDNN's
+   deterministic mode.
+
+Reuse follows from parts 1-3 and is a saving, not a separate change. `--reuse obj:<tag>` (or `tgt:<tag>`) loads one role's
+term from a decoupled build of the same seed: its parameters and its role buffers (radii, home). It then trains only the other
+role, on the same batches and noise. The loaded role's configuration must match, which is asserted. The EMA then updates only
+the trained parameters. Under parts 1-3 this gives the joint result bitwise. That is checked once below and assumed thereafter.
+
+**What this does not do.** It adds no input, data, teacher or per-scene constant. It does not revisit the devices of rounds 5-9
+(aframe, rclip, rtclip, psupport, tscale). Their between-arm comparisons were made under the coupling, so a later round that
+removes or merges one of them is now measurable cleanly.
+
+**Arms** (rank 32, seeds 10-12; builds by `submit_round_train.sh`'s convention).
+- **P_tdc**: P_ts's flags plus `--decouple`. Builds full, nobottle and noplate, with the S3 creations. This is the new
+  baseline.
+- **P_pdc**: P_pp's flags plus `--decouple`, build full only. Its object-term design is P_tdc's, and only its target term
+  differs (the radial carry clip instead of the carry scale frame).
+- **Repeat**: P_tdc full, seed 10, built a second time in a separate job.
+- **Reuse check**: P_pdc full, seed 10, built with `--reuse obj:full_tdc`.
+
+**Reads.** Dev states 4-23, N2's seeds. P_tdc: S1, S2 and S3 with pp_l2's estimators and its frozen GO mapping. P_pdc: S2.
+
+**Pre-registered round verdict (metric decouple).**
+- **(a) Training decoupled.** For each seed 10-12, every object-term tensor of P_pdc (parameters `obj.*` and the object-role
+  buffers `rclip`, `rclip_p`, `home`) equals P_tdc's bitwise.
+- **(b) Per-object factors decoupled.** For each seed, both layouts and each object atom (bowl, cheese, bottle), the hold
+  flag (held_step set) of every paired S2 episode agrees between P_pdc and P_tdc. So each per-object hold rate differs by
+  exactly 0. Hold depends only on the steps before the hold's onset, where Φ uses the object term alone.
+- **Verdict.** "decoupled" iff (a) and (b). "decoupled in training only" iff (a) holds and (b) does not; the remaining
+  between-arm difference is then from the rollouts, and it is reported. "not decoupled" iff (a) fails.
+- The round counts as a success for the failure streak iff the verdict is "decoupled". The improvement rule of rounds 2-9 does
+  not apply, because this round targets a coupling, not a competence.
+
+**Reported, with no verdict.**
+- (c) Reproducibility: the repeat build against the first, whole state, bitwise.
+- (d) Reuse: the reuse build against the jointly trained P_pdc, seed 10, whole state, bitwise.
+- (e) Run-to-run variance of the per-object factors under P_tdc (hold; arrival given hold; place on arrival), per object and
+  layout: the value per seed and the across-seed range and SD. It is set beside the between-arm range of rounds 6-9 (P_rt,
+  P_hs, P_pp, P_ts; seeds 10-12) for the same factors.
+- (f) P_tdc's GO read (pp_l2's mapping) and its per-pairing 3F, against P_ts (round 9), descriptively.
+
+**Cost.** About 14 builds and 24 creations: roughly 4-5 A40-h, more if the deterministic kernels are slower.
