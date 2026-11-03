@@ -1631,3 +1631,65 @@ The round counts as a failure for the streak (streak 1).
 
 **Cost.** 3.9 A40-h: P_tdc 3.1 (with creations), P_pdc 0.4, repeat 0.15, reuse 0.25; the smoke run is under 0.02. Under the
 deterministic kernels a build takes 8-23 min depending on the host (round 9: 14-15 min).
+
+## 37. Round 11 diagnostic: the bottle part is trained on a target-dependent two-mode grasp, and the rounds stop here (2026-11-03; `experiments/pp_yaw_diag.py`, `pp_grasp_modes.py`, `pp_grasp_yaw_roll.py`)
+
+**Target.** The bottle's grasp is the weakest object factor under P_tdc. Familiar hold is 0.65-0.70, new-layout hold
+0.225-0.45, and the bottle pairings carry every remaining GO blocker. The starting point was §26's side finding: at the close,
+the hand's rotation in the bottle's frame lies far outside the demo cloud.
+
+**1. It is not a frame artifact** (`pp_yaw_diag.py`, demo rows of K1, K4, K5 and K6; closed-loop probes of P_tdc seed 10).
+- In the demos each object's body yaw is nearly constant: circular SD 1.8° (K4), 4.2° (K5), 3.0° (K6) and 6.9° (K1). The
+  bottle's body frame is therefore almost the world frame. At the probe the bottle stands at about 180° in every upright
+  episode.
+- At K4's first close, in 11 of the 20 familiar episodes the hand's rotation lies 1.06-1.69 (of a possible 2.8) from the
+  nearest close row in the body frame, and about as far in the world frame. Familiar successes are among them. The approach
+  frame does not bring it inside.
+- So the hand has really turned, by about 60-80°, before the close. Re-framing the rotation input cannot remove that.
+
+**2. The bottle's demos contain two grasps, one per target** (`pp_grasp_modes.py`; hand yaw modulo 180°, the gripper's
+symmetry; 50 demos per task).
+
+| task | hand yaw at the close (circular mean, SD) | turn from the start to the close (median; 10th-90th pct) |
+|---|---|---|
+| K1-K3 (bowl) | −4.0° to −0.8° (SD 4.1-5.3°) | 3.1-3.7° (0.1-12.4°) |
+| K4 (bottle → cabinet top) | 2.1° (SD 3.1°) | 2.5° (0.4-6.3°) |
+| **K5 (bottle → rack)** | **−89.0° (SD 13.7°)** | **81.2° (67.7-87.3°)** |
+| K6 (cheese) | 1.1° (SD 3.4°) | 1.9° (0.2-5.5°) |
+
+- To place the bottle in the rack, the K5 demos grasp it side-on: the hand turns by about 81° before it closes. K4 grasps it
+  head-on, without a turn. The grasp depends on the target.
+- The object term is target-blind by construction (S1). The bottle part is trained on both tasks' rows, so it learns a
+  two-mode mixture over the hand's yaw.
+
+**3. The closed loop mixes the modes** (`pp_grasp_yaw_roll.py`; P_tdc seed 10, dev states 4-23; the hand's yaw at the
+hold's onset, and the largest yaw change between consecutive calls before it).
+- **Familiar K4, 13 holds.** 3 are in the K4 mode (−3° to 22°), 9 in the K5 mode (74-106°), and 1 in between (49°). The part
+  mostly delivers the rack's grasp, even for the cabinet.
+- **Familiar K4, 7 episodes without a hold.** The largest yaw step before the hold has a median of 20° (11-87°). In the held
+  episodes it is at most 14.4° (median 10.1°), and 5 of the 7 no-hold episodes exceed that. Hold failures go with the hand
+  hopping between modes during the approach.
+- **New layout K4: 5 holds,** all in the K5 mode or beyond (68-168°). The 15 no-hold episodes have a median largest step of 22°.
+- Before the onset the bottle part acts alone. K5 and N4 give the same onset yaw in every familiar state (to 0.01°). K4
+  matches them to within 0.2° on every state that holds, and differs on some no-hold ones. The mode mixture is therefore one
+  part's competence, carried into every bottle pairing.
+- On N4 (familiar), success does not separate cleanly by mode on these small numbers: 2 of 3 in the K4 mode, 5 of 9 in the K5
+  mode.
+
+**Why no round 11 is run (stop condition (d)).** The weakness is measured, but every change that would address it needs a
+decision the plan does not settle, or breaks a rule:
+- **(i) A target-aware grasp.** The grasp's yaw is a requirement of the target (the rack). Letting the object term read the
+  target, or giving the target term the wrist yaw before the hold, is a cross-role term. Φ (§2) and S1 forbid it. Changing Φ
+  per action dimension, for example handing the wrist yaw to the target role for the whole episode, is a plan-level decision.
+- **(ii) Removing one mode from the data.** Training the bottle part's grasp without K5's rows, or relabelling K5's grasp, is
+  per-scene data curation, which the mandate forbids.
+- **(iii) Committing to one mode per episode.** Drawing the flow's noise once per episode instead of once per call would stop
+  the mode hopping. That is a sampler change. It does not follow from P/F/S/B, frame equivariance or relocation, so it would
+  be another device of the kind the user warned against. It would also leave the mode choice random. K4 would still get the
+  rack's grasp in most episodes.
+- **(iv) Accept it as a part-competence limit of the demos,** as §5.32's option (c) did for the near-rack cheese grasp. The
+  frozen 3F would then be reported as failing on N4 (familiar) and on the bottle pairings (new), with this mechanism beside it.
+
+The theory predicts this outcome. Composition makes a pairing as good as its parts. A target-blind part trained on a
+target-dependent grasp is a mixture, and the product law then carries the mixture into every partner. That is what N4 to N6
+show.
