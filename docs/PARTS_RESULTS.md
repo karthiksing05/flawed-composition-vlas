@@ -1753,3 +1753,12 @@ trains as before and also fits its m.
 - **Mode delivery.** Among the held episodes of those runs, the share whose onset yaw lies nearest the mean of the task's own
   m.
 - The inventory, each target's m, and the bandwidth, per build.
+
+**Amendment to the feature (2026-11-03, after the code smoke; before any build, the pre-registration and any read).** The
+code smoke (300-step builds) printed the inventory under the body-frame feature. Its largest component sat at 88° and held the
+bowl's grasps: the bowl's body yaw in the demos is about 90°, and the bowl is round, so its body yaw is arbitrary. m thus
+encoded the object's body yaw, not the target's requirement. It gave the plate and the stove the 88° value, which the
+cheese part never sees in training (K6's target is the bowl), so N1 and N2 would read an unseen m. The feature is therefore
+replaced by one that does not depend on any object's frame: **the turn of the hand's yaw from the demo's first row to its first
+close row**, doubled. This is §37's own measure, which separates K5 (81°) from every other task (1.9-3.7°). Every other part of
+the rule is unchanged. This is a change made after seeing the inventory, and it is labelled as such.
