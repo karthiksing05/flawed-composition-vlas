@@ -1,0 +1,67 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS round 15, backbone-alone path reads no size (docs/PARTS_RESULTS.md section 47)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "kipp.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4500575",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "0439e1e67b6048a3f128903dfdfb5089795cc765",
+  "short": "0439e1e6"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "P_nsz: P_nom's flags + --bbnosize; object term retrained, target term reused from <cond>_tdc; seeds 10-12; builds full, nobottle, noplate and the S3 creations",
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "b5da32a0893301787a5662eda169a45ea53aab10683386b73b55daa84ba3baf0",
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "2053ef8bdc6d985e64f5edbccc79b15ba4a453901b0b1f1df55aae4ff194601d",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "80e5ebbb04c572c757fd839815dfb833c475bd7645f99f0c4922752051a1d155",
+   "experiments/pp_round_read.py": "4f51c24b2487ba91103aef1ff94eacd01d0ad9d1f24174af2dd2bdbccc4d1fbf",
+   "experiments/pp_s1_mix.py": "5977d02dd297ee5c80b05b51af3c9cc2156514b141d97ca828924d9ac401a6aa",
+   "lifelong_ood/policy/parts_flow.py": "b29adcfe7dfe041df7f02c1a1bd4df519b2de3fc4e14c46107be15739aa2506d"
+  },
+  "layer2_go": "pp_l2's mapping, unchanged (S1 as restated; S2 3F + OM in both layouts; S3 ratio >= 0.8, LB >= 0.6, both atoms, both layouts, k in {1, 5, 10})",
+  "metric": "bottle_hold_new: new-layout hold pooled over K4, K5, N4, N5, N6, seeds pooled; P_nsz - P_nom, 2,000-draw state bootstrap (pp_round_read.py --tag r15 --metric bottle_hold_new --ref-s2 pp_r14_roll:P2nom)",
+  "reference": "P_nom, seeds 10-12 (pp_r14_roll)",
+  "reported_no_verdict": "bottle_hold_new vs P_rtr (tag r15vrtr, ref pp_r13_roll:P2rtr); k5_hold_new vs P_nom (tag r15k5); familiar non-regression vs P_nom ('regresses' iff CI upper bound < 0); per-pairing 3F; pp_far_diag.py bb on seed 10",
+  "round_verdict": "improves iff delta > 0.10 and the CI lower bound > 0",
+  "s1_restated": "S1 holds iff, with every target part's m fixed to v for each v in the inventory, both swap tests and every target-into-grasp component are exactly 0 for every seed",
+  "section_sha256": "badf8930fa93f227ce470ab4bb4dc99de3bdecd134aac835a2e1e3a3b3fe7259",
+  "states": "dev: N2 main states 4-23, N2 seeds",
+  "status": "PRE-REGISTERED PLAN_PARTS round 15 (docs/PARTS_RESULTS.md section 47)",
+  "written_before": "the round's S1 read and any of its rollouts"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_r15__s0__0439e1e6",
+ "schema": 1,
+ "script": "experiments/prereg/pp_r15.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-04T00:08:18+00:00",
+ "stream": null,
+ "tag": "pp_r15"
+}
