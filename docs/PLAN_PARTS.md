@@ -357,3 +357,13 @@ The plan is adopted. Each layer is still pre-registered before its first read (�
       follow once their perception infrastructure is built.
     - **Unchanged.** Each rung still replaces one oracle piece and keeps every other piece at the previous rung. The gate stays
       as in item 10.
+
+13. **(User, 2026-11-04) The ladder gate is the plan's wording, and the ladder waits.** The rule registered for L1 and L4
+    (pp_L1, pp_L4) breaks a measure only if |Δ| exceeds the tolerance and its CI excludes 0. That is softer than §5 and item 10.
+    - **Gate.** A counted measure must stay within the tolerance of L0, read on the point estimate. The tolerance stays as in §5. The
+      registered rule's verdict is reported beside it.
+    - **L1** holds under both readings.
+    - **L4** is recorded as breaking on familiar 3F N4 (LADDER_RESULTS §7). This decision came after the L4 read and is labelled
+      as such. The registered rule's verdict was "holds".
+    - **Order.** No new rung starts until the coverage arm reads out.
+    - **Scope.** Why K5 and N4 moved at L4 is not established.

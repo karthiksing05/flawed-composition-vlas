@@ -644,6 +644,9 @@ not started here. Cap: this track's 15 A40-h, with 10.83 left.
 
 ## 7. L4 results (2026-11-04; m3_prereg pp_L4; results/flawed/pp_ladder_L4_read.json, pp_s1_mix_full_L4_m{0,1,2}.json, pp_L4_smoke_rollagree.json; rollouts pp_L4_roll)
 
+**User decision (2026-11-04, after this read; PLAN_PARTS §10 item 13): the plan's wording decides, so L4 is recorded as BREAKING on
+familiar 3F N4.** The verdict of the registered rule follows, kept as it was read. The ladder pauses at this rung.
+
 **Verdict (pp_L4 mapping): L4 HOLDS.** S1 holds, and no counted familiar measure breaks.
 
 **The pass rests on the CI clause for one measure.** Familiar 3F N4 moves by +0.138, more than 0.10. It does not break only because its
