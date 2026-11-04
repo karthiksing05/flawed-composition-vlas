@@ -2318,3 +2318,77 @@ reported.
 - `pp_far_diag.py bb` on seed 10 (K4, K5, K1 and K6 new; the P_nsz driver).
 
 **Cost.** About 3 A40-h for the builds and creations (object term only), plus rollout CPU.
+
+## 48. Round 15 results (2026-11-03; m3_prereg pp_r15; results/flawed/pp_r15_read.json, pp_r15vrtr_read.json, pp_r15k5_read.json, pp_phase_diag_P2nsz.json, pp_bb_read_r15.json; rollouts pp_r15_roll)
+
+**Code smoke (300 steps, before the builds).**
+- With the flag off, the edited model gives P_nom's velocity bitwise.
+- Changing every object's size leaves the backbone-only path and every part-off row exactly unchanged, and moves part-on rows.
+- With m fixed at 0, 1 or 2, a target swap leaves the object term unchanged. S1's swap tests are 0 with m fixed at 0 and 2.
+- The fitted radii are round 13's: in the full build, start radii bowl 0.140, cheese 0.231 and bottle 0.079 m; r_role 0.225 m.
+
+**Round verdict (pre-registered metric bottle_hold_new, against P_nom): improves.** New-layout bottle hold is 0.59 for P_nsz
+against 0.31 for P_nom: +0.28 [0.10, 0.46]. **Layer-2 GO = false.** No rollout had an episode error.
+
+**Reported, with no verdict.**
+- **Against P_rtr:** bottle_hold_new +0.10 [−0.07, 0.28] (0.59 against 0.49).
+- **K5's new-layout hold:** 0.42 against P_nom's 0.22, +0.20 [0.03, 0.37]. P_rtr's was 0.05.
+- **Familiar non-regression: does not regress.** −0.014 [−0.036, 0.008] against P_nom, and −0.019 [−0.044, 0.003] against
+  P_rtr.
+
+**S1 (restated) holds.** With m fixed at 0, 1 or 2, both swap tests and every target-into-grasp component are exactly 0, on all
+three seeds.
+
+**S2 familiar fails, on N5 alone.** s known 0.90, s new 0.91, OM 1.10 [1.02, 1.22], which passes.
+- 3F holds on N1-N4 and N6. N4 is −0.08 [−0.23, 0.04].
+- It fails on N5: +0.067 [0.017, 0.125]. P_nom's was +0.125 and P_rtr's +0.07.
+
+**S2 new fails, on N4, N5 and N6.** s known 0.40, s new 0.37 (P_nom 0.28, P_rtr 0.34), OM 1.33 [1.15, 1.58], which passes.
+- 3F holds on N1 (+0.14 [−0.03, 0.32]), N2 and N3.
+- It fails on N4 (+0.23 [0.09, 0.35]), N5 (+0.33 [0.23, 0.42]) and N6 (+0.23 [0.09, 0.37]).
+- The bottle pairings with m = 0 rise: K4 0.48, N4 0.30, N5 0.55, N6 0.45 (P_nom 0.23, 0.20, 0.30, 0.17; P_rtr 0.42, 0.27,
+  0.50, 0.28). They run above predictions that the bottle's pooled a_o pulls down.
+- K5 new succeeds 0 of 60. It holds 0.42, but arrival at the rack is 0.08 and place 0.
+- The cheese falls slightly: K6 new 0.32 (P_nom 0.37, P_rtr 0.38). Its hold is 0.38, and 65% of its episodes move no object.
+
+**S3 passes 8 of 12 cells.**
+- All 6 familiar cells pass: bottle 0.84 / 0.865 / 0.915 and plate 0.95 / 0.93 / 0.96, with lower bounds 0.78-0.90.
+- Bottle new passes at k = 5 (0.83 [0.63, 1.25]). It fails at k = 1 (0.74 [0.64, 0.83]) and k = 10 (0.75 [0.62, 0.90]), on the
+  ratio, not only the bound. s_train is 0.32 / 0.20 / 0.33 (P_rtr 0.017 / 0.017 / 0.13): the created bottle now transports.
+- Plate new passes at k = 10 (1.17 [0.67, 2.50]). It fails at k = 1 (0.67 [0.42, 1.13]) and k = 5 (1.08 [0.57, 2.58]) on the
+  lower bound.
+
+**The mechanism prediction failed in magnitude** (`pp_far_diag.py bb`, seed 10, P_nsz driver). The table gives the median
+progress of the backbone-alone chunk at 0.14-0.225 m, as P_nsz / P_rtr / P_nom on the same states.
+
+| K4 | K5 | K1 bowl | K6 cheese |
+|---|---|---|---|
+| 0.13 / 0.53 / 0.02 | 0.18 / −0.01 / 0.04 | 0.81 / 0.80 / 0.77 | 0.29 / 0.68 / 0.45 |
+
+- §47 predicted progress 0.56-0.64 at the bottle, from the size probe. Measured: 0.13-0.18. That beats P_nom's 0.02-0.04, but
+  it falls far short of P_rtr's m = 0 backbone on K4.
+- A probe of a model trained with size does not stand in for a model trained without it.
+- The cheese's far transport falls (0.45 to 0.29, vz 0.47). This contradicts the prediction that it would stay about unchanged.
+- The size-free backbone pools every object's far rows, K5's stand-off rows included, and its transport is weaker for every
+  object except the bowl.
+- The hold gains are real by the pre-registered read, but this diagnostic does not establish their mechanism. On these states
+  the driver holds K4 in 9 of 20 and K5 in 9 of 20 (P_nom's own: 3 and 1).
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 15 | the m-free backbone identifies the bottle by its size and fits K5's stand-off rows (§46) | the backbone-alone path reads no atom-specific slot attribute (size 0 on backbone-only rows) | pp_r15 | bottle new hold +0.28 [0.10, 0.46] vs P_nom: improves | false |
+
+- The failure streak stays at 0.
+- **Best arm: P_nsz, by judgement, not by a pre-registered rule.** It satisfies §10.7, which P_rtr does not. Against P_rtr it
+  has a higher bottle hold (+0.10, CI includes 0) and a higher s new (0.37 against 0.34). Its K5 hold is 0.42 against 0.05,
+  and it passes S3 in 8 cells against 7. Familiar success is lower by 0.02, with a CI that includes 0.
+
+**What is left for GO.**
+- **New-layout 3F on N4, N5 and N6.** The bottle's m = 0 pairings run above predictions that include K5's cell. K5's new-layout
+  place on the rack is still 0 (arrival 0.08), in every round so far. This is now the largest single gap, and it is in the
+  target term, which every round since 10 has reused unchanged.
+- **Familiar 3F on N5:** +0.067 [0.017, 0.125].
+- **The cheese's far transport** under the pooled backbone (65% of K6 new episodes move nothing).
+- **S3:** bottle new at k = 1 and 10, and plate new at k = 1 and 5.
+
+**Cost.** 2.3 A40-h (smoke 0.05; builds 1.7; creations 0.37; S1 0.16), plus rollout and diagnostic CPU.

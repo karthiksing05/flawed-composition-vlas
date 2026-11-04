@@ -28,8 +28,9 @@ def main():
         print("==", nm, {q: r[q] for q in ("driver_bb_m", "n", "held", "success", "n_calls", "m_built")}, flush=True)
         for k, v in r["table"].items():
             print("  ", k, "  ".join(f"{b}:{x}" for b, x in v.items()), flush=True)
-    json.dump(dict(cols="[n, vz_med, rise_share, prog_med]", runs=res), open(os.path.join(OUT, "pp_bb_read.json"), "w", encoding="utf-8"),
-              indent=1)
+    out = "pp_bb_read.json" if len(sys.argv) < 3 else f"pp_bb_read_{sys.argv[2]}.json"     # optional output suffix
+    assert not os.path.exists(os.path.join(OUT, out)), f"{out} exists"
+    json.dump(dict(cols="[n, vz_med, rise_share, prog_med]", runs=res), open(os.path.join(OUT, out), "w", encoding="utf-8"), indent=1)
 
 
 if __name__ == "__main__":
