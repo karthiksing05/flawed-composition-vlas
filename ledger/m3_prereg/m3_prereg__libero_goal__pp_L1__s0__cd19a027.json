@@ -1,0 +1,68 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: ladder rung L1 (docs/LADDER_RESULTS.md sections 1-2)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4506779",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "cd19a02714804f57921fe19fbd4f8d658966bf4b",
+  "short": "cd19a027"
+ },
+ "keys": {},
+ "metrics": {
+  "L0": "P_min = A_naf: pp_{full,nobottle,noplate}_naf_s10-12, created P_<atom>_k{1,5,10}; pp_cons_roll P2naf / Pnaf_<cond>_k<k>; S1 pp_s1_mix_full_naf_m0-2; read pp_cons_min_read.json",
+  "arm": "--rank 32 --psupport --tscale --decouple --imode --rtransport --bbnom --bbnosize --pgate; both roles rebuilt (no reuse: the held labels split both roles' rows); creations k = 1, 5, 10; rollouts pp_L1_roll P2L1 / PL1_<cond>_k<k>; S1 pp_s1_mix_full_L1_m<v> for every v of the inventory",
+  "counted": "familiar layout only: S1, OM, 3F N1 N2 N3 N4 N6 (N5 excluded: L0 fails it), S3 bottle, S3 plate",
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "ed7723bba7f415e7e7588c78285953688985dfe5ad3a68196437cc08eb3b375a",
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "3a0f956aad56ce42d733b050b737a828184a94ef0414d00352c88c2994cc722c",
+   "experiments/pp_L1_smoke.py": "50b3d50cab86528598d53735a4b10a0bcf8638d5a044ec8ba2264db2aa2b17fc",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_ladder_read.py": "fbee75223e78691b883439abe99510c461f644e87f176e03bb4e1dfe11a9ac87",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "7c95d00dfe12654f1618a2a9b84d146fd737e76a08c407a921619cf3081ead88",
+   "experiments/pp_round_read.py": "86a559ec9f99b20db8097b95a1e0be903a9577140fbbff258e76731086242426",
+   "experiments/pp_s1_mix.py": "5977d02dd297ee5c80b05b51af3c9cc2156514b141d97ca828924d9ac401a6aa",
+   "lifelong_ood/policy/parts_flow.py": "3868ac175ec498282a8c110f58b5c203fe3eb4ab7da85326758223048f40529d"
+  },
+  "measures": "per layout: S1 (restated, m fixed); OM; 3F D3 per new pairing N1-N6; S3 per atom = mean over k in {1, 5, 10} of the transfer ratio; delta = L1 - L0 with a 2,000-draw paired state bootstrap (seeds pooled, rng seed 0)",
+  "replaced": "sim-contact held (fa1b_common.Held) in training rows and the policy, by ProprioHeld (finger width, last gripper command, hand height): on when closing, width >= tau_w and the hand rose LIFT = 0.01 m above its lowest height since the close began; off when the command opens or width < tau_w; tau_w = (min width + 1st pct of close-commanded width) / 2 over the build's demo rows; creation uses the library's tau_w. The read's instrument (held_step, min_dxy_held) stays the oracle signal",
+  "rule": "a counted measure BREAKS iff |delta| > 0.10 and its CI excludes 0; L1 HOLDS iff S1 holds and no counted measure breaks, else L1 BREAKS (broken measures named); new layout and competence reported with no verdict",
+  "sections_sha256": "2c7eab9a98a184dd7cc71f2fc7223d67f2855e4ee2fe39bc439d964a3b40d335",
+  "status": "PRE-REGISTERED ladder rung L1 (docs/LADDER_RESULTS.md sections 1-2)",
+  "stop": "L1 breaks: ladder stops for the user's decision; L1 holds: L2 designed next (sources checked first; write up options if it needs large new infrastructure or a plan-level choice); 15 A40-h GPU cap",
+  "written_before": "any L1 rollout, S1 run or read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_L1__s0__cd19a027",
+ "schema": 1,
+ "script": "experiments/prereg/pp_L1.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-04T12:44:31+00:00",
+ "stream": null,
+ "tag": "pp_L1"
+}
