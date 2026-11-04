@@ -2819,6 +2819,9 @@ development read (seeds 10-12, N2 states 4-23) unless marked otherwise.
   one non-zero read is A_nts (0.067), which lacks tscale and fails N4 familiar instead (§53). Through the bottle's pooled a_o,
   K5's zero feeds every remaining new-layout 3F failure.
 
+*Note added later on 2026-11-04: the registered test of this account returned NOT SUPPORTED (COVERAGE_RESULTS §3). Support limits
+competence on the pairings it covers, and it does not explain the whole new-layout shortfall. The text below stands as written.*
+
 **Mechanism: the new-layout shortfall is a failure of demo support (condition S, Prop. 2), not of the combination rule.**
 Wherever a pairing fails in the new layout, the acting conditional is asked to act on states its own demos do not contain. The
 combination rule Φ is exact (S1) and composes whatever its parts can do (familiar 3F and OM; new-layout OM 1.08). Each gap below
