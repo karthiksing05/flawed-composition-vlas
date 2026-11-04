@@ -1,0 +1,62 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: place diagnostic (docs/PLACE_DIAG.md sections 1-2; PLAN_PARTS 10.15)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "eva.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4510732",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "de407998e9cc105a299e404a10af7d31a99224b6",
+  "short": "de407998"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "P_min: pp_full_naf_s{10,11,12}",
+  "contrasts": "N1-K1, N4-K1, N6-K6; new layout the headline, familiar reported beside it",
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "583d9d73d5d1e393aae75a7fb41b9d0e4a879e9ad53eac0ac2210ee22c6676ad",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/pp_place_drop.py": "5f3fd605335a859b9eaedb486c3248d2b169c089d62b2967555bf87feb952e51",
+   "experiments/pp_place_read.py": "d8ea3a10f9937c7796891965babb3a89dcc8906f484605b119b51fe0b484351b",
+   "experiments/pp_place_t3.py": "054efcdcc28d0c82a4e408e2e434d3648de34690dd64419ff984737709b350f4",
+   "experiments/pp_place_trace.py": "8a0d88c1a2fe5984734811d0e8c7a554e9daefb936c49c7b0882e458ff87e7f9",
+   "lifelong_ood/policy/parts_flow.py": "b51b01eb2998424b240e8b23ca791c6e9dc55611fb3869b051130431ef4cafae"
+  },
+  "labelled": "post hoc diagnostic; builds no model; changes no criterion, GO or ladder verdict",
+  "mapping": "per contrast, first match wins: G's CI contains 0 -> NOISE; G_c's CI contains 0 -> ARRIVAL-DEFINITION; overlap < 0.5 -> UNDETERMINED; |A| <= 0.5 |G_c| -> RELEASE-STATE; D has G_c's sign and |D| >= 0.10 -> SAME-STATE: PHYSICS; else SAME-STATE: UNMEASURED. T3 not exact -> stop",
+  "prediction": "new layout: N1-K1 SAME-STATE: PHYSICS; N4-K1 RELEASE-STATE; N6-K6 SAME-STATE: PHYSICS",
+  "section_sha256": "2749840ea6af8fde5ed4c4d5dc420eb9868a58240d154474a17fe8af1b7fce93",
+  "states": "dev only: N2 main states 4-23 (T4: 4-7), N2 seeds; no confirmatory or sealed read",
+  "status": "PRE-REGISTERED place diagnostic (docs/PLACE_DIAG.md sections 1-2)",
+  "written_before": "any T0-T4 run or read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_place__s0__de407998",
+ "schema": 1,
+ "script": "experiments/prereg/pp_place.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-04T20:56:23+00:00",
+ "stream": null,
+ "tag": "pp_place"
+}
