@@ -117,3 +117,87 @@ The contrasts, estimators and verdict rule are unchanged. T0 and the last 7 line
 - Standardising on a state reached during the episode describes association within the rollouts. It is not a controlled intervention.
   T4 is the only intervention here, and it has no hand.
 - Each target has only a few partners, so a verdict covers these pairs and not objects in general.
+
+## 3. Results (2026-11-04; m3_prereg pp_place; results/flawed/pp_place_read.json, pp_place_t0.json, pp_place_t3_a1.json; pp_place_trace, pp_place_drop)
+
+### 3.1 Summary
+
+- **The verdicts.** New layout: N1 − K1 and N6 − K6 are SAME-STATE: UNMEASURED; N4 − K1 is NOISE. All three of my predictions were wrong.
+- **Ruled out for these pairs.** The target term cannot tell objects apart (T3 exact). Per-pair radii aren't the cause, as each contrast's two
+  radii are equal. Landing physics at a matched pose isn't the cause either: inside 2 cm, with no hand, the drop map gives 1.00 for almost every cell.
+- **Not established.** What does cause the gaps. The registered matching left most of the gap in place, but it was weak (§3.4), so the state
+  reached in the hand remains an untested candidate.
+- **Scope.** No GO, ladder or coverage verdict changes.
+
+### 3.2 Verdicts
+
+| layout | contrast | G [95% CI] | G_c | A [95% CI] | overlap | D | verdict |
+|---|---|---|---|---|---|---|---|
+| new | N1 − K1 | +0.33 [0.04, 0.58] | +0.33 | +0.25 [−0.13, 0.62] | 1.00 | 0.00 | SAME-STATE: UNMEASURED |
+| new | N4 − K1 | +0.08 [−0.21, 0.38] | +0.08 | +0.16 [−0.08, 0.40] | 0.97 | 0.00 | NOISE |
+| new | N6 − K6 | −0.23 [−0.50, −0.00] | −0.23 | −0.13 [−0.41, 0.21] | 0.91 | −0.03 | SAME-STATE: UNMEASURED |
+| familiar | N1 − K1 | −0.02 [−0.05, 0.00] | −0.02 | 0.00 [0.00, 0.00] | 0.95 | 0.00 | NOISE |
+| familiar | N4 − K1 | −0.16 [−0.31, −0.04] | −0.16 | −0.07 [−0.13, 0.00] | 0.91 | 0.00 | RELEASE-STATE |
+| familiar | N6 − K6 | −0.13 [−0.24, −0.04] | −0.13 | −0.06 [−0.14, 0.03] | 0.92 | −0.03 | RELEASE-STATE |
+
+- N6 − K6's upper CI bound in the new layout is −0.004, so that gap only just clears NOISE. Both new-layout A intervals contain 0.
+- T3 (amendment 1): every swap difference is exactly 0 on all seeds and both tasks, and the control changes the velocity on all of them.
+- T1's outcomes match the stored rollouts in 95-100% of episodes per task.
+
+### 3.3 What the failures look like
+
+T1's place-on-arrival, with arrived failures split by how they end. "Median tilt" is at the open command, among episodes that have one.
+
+| layout | task | object → target | arrived | place | still held at the end | ended ≥ 3 cm away | ended < 3 cm away | no open command | median tilt |
+|---|---|---|---|---|---|---|---|---|---|
+| new | K1 | bowl → plate | 45 | 0.51 | 13 | 9 | 0 | 22 | 24° |
+| new | N1 | cheese → plate | 25 | 0.84 | 3 | 1 | 0 | 19 | 10° |
+| new | N4 | bottle → plate | 29 | 0.59 | 0 | 12 | 0 | 10 | 36° |
+| new | K6 | cheese → bowl | 29 | 0.93 | 0 | 2 | 0 | 4 | 11° |
+| new | N6 | bottle → bowl | 27 | 0.70 | 0 | 8 | 0 | 0 | 13° |
+| familiar | K1 | bowl → plate | 60 | 1.00 | 0 | 0 | 0 | 55 | 10° |
+| familiar | N1 | cheese → plate | 59 | 0.98 | 0 | 1 | 0 | 55 | 13° |
+| familiar | N4 | bottle → plate | 57 | 0.84 | 0 | 9 | 0 | 36 | 14° |
+| familiar | K6 | cheese → bowl | 60 | 0.98 | 0 | 1 | 0 | 6 | 8° |
+| familiar | N6 | bottle → bowl | 56 | 0.86 | 0 | 8 | 0 | 0 | 8° |
+
+Descriptive readings, post hoc:
+- **No failure in this table ended within 3 cm.** The contact and height parts of the check are not what fails here.
+- **Bowl on plate is a new-layout problem.** It is 60 of 60 in the familiar layout. In the new layout 13 of its 22 failures are still holding
+  the bowl at the end, and K1's trace log includes a bowl at 175° of tilt, 33 cm above the plate.
+- **The bottle falls short in both layouts.** Every N4 and N6 failure ends away from the target and none is still held, and most are still in
+  contact with it (familiar: 9 of 9 and 8 of 8). So the two shortfalls look like different problems.
+- **P_cov and P_cov_h show the same split in T0:** K1 new has 15 still held in each, and no target-tolerance failures to speak of.
+
+### 3.4 Drop map, and a weakness in the registered matching
+
+**Drop map.** Inside 2 cm every object succeeds in every cell, with one exception: the bottle over the bowl at d = 0, h = 0.05 m fails at all states
+(so N6's rate is 0.97). Excluded drops: 0%. Beyond the registered cells the objects do differ, for example at d = 0.03 m: bowl on plate 0.25 at the lower
+height and 0 at the higher, cheese on plate 0.91-1.00, bottle on plate 1.00. The drop has no hand and starts upright, so it says nothing about a
+tilted or still-gripped object.
+
+**Weakness in the matching.** I defined the release state at the first open command. In many episodes there is none, because the check passes on
+touch-down with the gripper still closed: 55 of 60 in K1 familiar. Those episodes share the `none` stratum with episodes that never let go. In the new
+layout, `none` holds K1's 11 of 22 successes against N1's 17 of 19, so most of N1 − K1's gap sits inside one mixed stratum. SAME-STATE here therefore
+means "the registered strata did not explain it", and is weaker evidence than its name suggests.
+
+### 3.5 3F with m conditioning (PLAN_PARTS §10.14; post-hoc, no verdict; P_min)
+
+| layout | | N1 | N2 | N3 | N4 | N5 | N6 |
+|---|---|---|---|---|---|---|---|
+| new | frozen | +0.129 | −0.063 | −0.067 | +0.164 | +0.276 | +0.107 |
+| new | m-conditioned | +0.129 | −0.063 | −0.067 | +0.061 | +0.068 | −0.102 |
+| familiar | frozen | −0.033 | 0.000 | 0.000 | −0.033 | +0.133 | +0.011 |
+| familiar | m-conditioned | −0.033 | 0.000 | 0.000 | −0.167 | 0.000 | −0.118 |
+
+Intervals are in pp_place_t0.json. The frozen column reproduces the published values, and the frozen estimator still decides every criterion.
+- **N5, the frozen estimator's one familiar failure, goes to 0.000.** So that failure comes from pooling the bottle's hold across grasp modes.
+- **Familiar N4 and N6 now miss**, with intervals excluding 0 (N4 [−0.317, −0.050], N6 [−0.234, −0.021]). In the frozen estimator K5's low rates pull the
+  bottle's prediction down, which offsets the bottle's place shortfall, so these two may pass the frozen 3F partly because two errors cancel.
+
+### 3.6 What this does and does not change
+
+- **The law's factorisation at the place remains open.** The bottle's shortfall at both targets is what a pair term would capture, but the cause isn't known.
+- **A testable candidate, not a result:** the target term sees the foot and the hand's rotation since onset, not the object's own tilt or its pose in the hand. K1 new and
+  N4 new have the largest tilts in §3.3. An in-hand-state test would need its own registration, and should drop the open-command event in favour of
+  states along the carry.
