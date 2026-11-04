@@ -64,7 +64,7 @@ ADVERSARIAL_STUDY §3 asks what the library adds. These run on CPU, with no trai
 
 The start radius, target radius and m stay at the k = 1 values, so this removes the part's weights and keeps its fitted numbers.
 
-**L1b, scripted servo.** The v2 servoing planner (`pp_n4d.plan_episode(servo=True)`) on P_min's evaluation states, K1-K6 and N1-N6, both layouts, with three planner seeds. It uses demo-fitted keypoints: known tasks use their own, and a new pairing combines the grasp of the known task sharing its object with the carry and release of the known task sharing its target. So it is itself a scripted composition. For new pairings and for known pairings in each layout, `Δ` is P_min's success minus the servo's, paired state bootstrap.
+**L1b, scripted servo.** The v2 servoing planner (`pp_n4d.plan_episode(servo=True)`) on P_min's evaluation states, K1-K6 and N1-N6, both layouts, with three planner seeds. It uses demo-fitted keypoints: known tasks use their own, and a new pairing applies `pp_n4d.keypoints`' existing rule for N4 to every new pairing: the object-sharing known task's grasp, carry and release rotation, with release offset = its grasp offset + (the target-sharing task's release offset − its grasp offset). So it is itself a scripted composition. For new pairings and for known pairings in each layout, `Δ` is P_min's success minus the servo's, paired state bootstrap.
 - P_MIN BEATS SERVO iff the CI lower bound is above 0 and Δ > 0.10.
 - SERVO BEATS P_MIN iff the CI upper bound is below 0 and Δ < −0.10.
 - Otherwise TIED.
