@@ -2602,3 +2602,99 @@ three seeds.
 - S3 new-layout cells at every k.
 
 **Cost.** 2.3 A40-h (smokes 0.2; builds 1.6; creations 0.45; S1 0.11), plus rollout and diagnostic CPU.
+
+## 52. Consolidation design note and protocol: leave-one-out removal of P_nsz's stacked options (fixed 2026-11-03, before any compute of this phase; m3_prereg tag pp_cons)
+
+**Why (PLAN_PARTS §10 item 9).** The user stopped the patch rounds after round 16. This phase removes each stacked option from
+the best arm P_nsz one at a time, keeps only the options that earn their place under one pre-registered rule, and makes no new
+structural change. P_nsz's flags: `--rank 32 --aframe --rtclip --psupport --tscale --decouple --imode --rtransport --bbnom
+--bbnosize` (seeds 10-12; rollouts pp_r15_roll; read pp_r15_read.json). Its GO components (§48): S1 exact; S2 familiar OM 1.10
+with 3F failing on N5 only (+0.067); S2 new OM 1.33 with 3F failing on N4, N5 and N6; S3 8 of 12 cells.
+
+**Inventory.** "Acts" says where an option enters the model. Every option below sits in the forward pass that the training loss
+uses on demo rows, so each one shapes training as well as inference. Removing one at test time from a checkpoint trained with it
+would pair a network with inputs it never saw, which is no leave-one-out. The one exception is an option that P_nsz never
+evaluates (rtclip, below).
+
+| option | round, section | weakness it was added for | own metric: Δ at introduction | acts | may be subsumed by | ablation, GPU cost |
+|---|---|---|---|---|---|---|
+| `--aframe` (object translation in the approach frame) | 3, §14-15 | new-layout competence: the hand never leaves home for far objects | s_known_new +0.00 [−0.07, 0.06]: did not improve | object term, train and test | rtransport's backbone, which now carries the far-field transport (§41-42) | object term retrained, 9 builds + 9 bottle creations, about 2.0 A40-h |
+| `--rtclip` (radial carry clip, library-wide radius) | 6, §24-25 | N4 tips: the carry starts outside the plate part's support | n4_fam +0.27 [0.13, 0.42] | target term; in P_nsz never evaluated | tscale replaced the clip in round 9 (`_canon` takes the scale branch), and psupport supplies the per-part radius; the scalar is read only for a target part with no held demo row | exact check on existing checkpoints, CPU, 0 A40-h |
+| `--psupport` (per-part support radii) | 8, §30-31 | familiar cabinet arrival lost under the 0.0925 m library radius | cab_arr_fam +0.16 [0.03, 0.30] | target term (radius of the scale frame), train and test; its object half is inert since round 13 removed rclip | none | not ablated |
+| `--tscale` (carry scale frame frozen at the hold's onset) | 9, §33-34 | N4: the bottle touches down before it arrives | n4_fam +0.17 [0.03, 0.30] | target term, train and test | the radial per-part clip it replaced; §49 found it moves the rack's release outward | target term retrained (removing it restores round 8's per-part radial clip, P_pdc's target term), 7 builds + 9 plate creations, about 1.5 A40-h |
+| `--decouple` (one training per role) | 10, §35-36 | the joint gradient clip couples the roles' training | (a) exact, "decoupled in training only" | training only (optimiser and kernels) | — | kept without ablation: it is a measurement and determinism fix, not a model device; it changes no input, loss or Φ, and every reuse below depends on it |
+| `--imode` (grasp-mode message m, 1.58 bits) | 11, §38-39 | the bottle part mixes a target-dependent two-mode grasp | bottle_hold_fam +0.19 [0.003, 0.36] | object term input, train and test | — | not ablated (budget) |
+| `--rtransport` (backbone alone outside the part's start support) | 13, §41-42 | the bottle part has no transport phase | bottle_hold_new +0.28 [0.12, 0.44] | object term and its backbone-only loss, train and test | — (bbnom and bbnosize require it) | not ablated (budget; its leave-one-out also removes bbnom and bbnosize) |
+| `--bbnom` (backbone-alone path reads no m) | 14, §44-45 | under m = 2 the backbone stalls before the bottle's support | k5_hold_new +0.17 [0.08, 0.25]; pooled bottle new hold −0.18 [−0.33, −0.04] | object term, train and test | bbnosize, which removed the next atom-specific input; both follow one principle (PLAN_PARTS §10 items 7-8) | object term retrained, about 2.0 A40-h |
+| `--bbnosize` (backbone-alone path reads no size) | 15, §47-48 | the m-free backbone identifies the bottle by its size | bottle_hold_new +0.28 [0.10, 0.46] vs P_nom | object term, train and test | — | P_nom is exactly P_nsz without it (§44-45; seeds 10-12; pp_r14_roll): a re-read of existing rollouts, 0 A40-h |
+| rank 32 | §6 (post-hoc confirmatory choice) | part size | — | part size | — | not ablated: a part-size question. The plan's primary arm is rank 8 (PLAN_PARTS §10 item 2); every arm of this phase, the minimal arm included, uses rank 32 |
+
+- The Δs of rounds 3-9 were measured under the joint-clip coupling of §34, so part of each between-arm difference is a retrained
+  partner role, not the option.
+- `--tsize` (round 2), `--hscale` (round 7), `--rclip` (rounds 5 and 8, removed in round 13) and `--tnear` (round 16) are not on
+  P_nsz and are not revisited.
+
+**Ablation set and order** (fixed here).
+1. **No GPU.** rtclip: `experiments/pp_cons_check.py` shows on every P_nsz checkpoint a read uses that (a) no read task's target
+   part lacks its own radius, (b) no training row does, and (c) the velocity with the scalar set to 0 equals the velocity as built,
+   bitwise, on every demo row with each read target and with carries pushed 3 times farther out. If all hold, the arm is P_nsz's
+   function and its read is P_nsz's read (Δ = 0 identically). If any fails, rtclip is listed "not ablated".
+   bbnosize: P_nom against P_nsz, from existing rollouts. These rollouts were already read in §45 and §48; this phase reads them
+   again under its own rule.
+2. **Training-time, by suspected redundancy.** tscale (A_nts), then aframe (A_naf), then bbnom (A_nnm). Each changes one role. The
+   other role is reused bitwise from `<cond>_nsz` (`--reuse`, §35-36), so each arm's unchanged role and the seeds equal P_nsz's.
+   - A_nts: target term retrained without `--tscale`, object term reused from `<cond>_nsz`. nobottle and noplate are built; full
+     is assembled (`experiments/pp_assemble.py`) from full_nsz's object term and full_pdc's target term (round 10; P_pp's target
+     design, decoupled, seeds 10-12), which is the same design. One verification build, full seed 10 trained with
+     `--reuse obj:full_nsz`, must equal full_pdc_s10's target term bitwise; if it does not, full is built for all three seeds.
+     The created bottle parts of nobottle are assembled from nobottle_nsz's created checkpoints (a created object part trains on
+     object rows only). The plate parts are created on noplate_nts.
+   - A_naf, A_nnm: object term retrained, target term reused from `<cond>_nsz`. The bottle parts are created on each nobottle
+     build. The created plate parts are assembled from noplate_nsz's created checkpoints and each noplate build's object term.
+   - The S3 creations are k = 1, 5 and 10, the cells GO reads; k = 50 is not run in this phase.
+3. **The combined minimal arm** (below).
+
+**Not ablated, within the 8.5 A40-h cap:** psupport, imode, rtransport and rank 32. They are reported as "not ablated", not as
+kept with evidence. decouple is kept without ablation, for the reason in the table.
+
+**Reads.** Dev states 4-23, N2's seeds, seeds 10-12, paired with P_nsz. Per arm: S1 restated (m fixed at each inventory value), S2
+(all 32 cells; 3F per pairing and OM, both layouts), S3 (k = 1, 5, 10; both atoms, both layouts), the removed option's own metric,
+and familiar non-regression. Read: `experiments/pp_cons_read.py` -> results/flawed/pp_cons_<arm>_read.json, with pp_l2r32_read's
+and pp_round_read's estimators unchanged.
+
+**The keep/drop rule (one rule, frozen here; never changed after a read).** Removing an option *worsens* iff any of:
+- (a) its own metric (the table's; rtclip and tscale: n4_fam; aframe: s_known_new; bbnom: k5_hold_new; bbnosize:
+  bottle_hold_new): Δ = arm − P_nsz, 2,000-draw paired state bootstrap with seeds pooled, has Δ < −0.10 and CI upper bound < 0;
+- (b) familiar non-regression (pooled familiar known-pairing success, K1-K6), by the same rule;
+- (c) a GO item that passes for P_nsz fails for the arm. The GO items: S1 (restated); OM per layout; 3F per layout and new pairing
+  (N1-N6); and S3 per atom and layout, which passes iff all three k ∈ {1, 5, 10} cells meet ratio ≥ 0.8 with lower bound ≥ 0.6.
+
+The verdict is **DROP** iff removing the option does not worsen; otherwise **KEEP**.
+- **Refinement of the suggested rule, made here before any read.** S3 enters per atom and layout, as GO's own mapping requires
+  every k, not per cell. P_nsz's two passing new-layout cells (bottle k = 5, plate k = 10) sit on wide CIs (§48), and round 16 lost
+  both on a new draw of the target term alone (§51). Counting them one by one would keep options on draw noise. Cell flips are
+  reported beside the verdict.
+- The rule leans toward keeping: a flip of a 3F pairing near its bound (familiar N4, new N1) also keeps an option. Every KEEP is
+  reported with the clause that fired, so a KEEP on a flip alone is visible as such.
+
+**Dependencies (fixed here).**
+- rtclip's leave-one-out holds only while tscale is on. If tscale is dropped, A_nts's per-part radial clip is switched on by the
+  rtclip scalar, so rtclip stays with it, and its drop verdict lapses (untested in that configuration).
+- psupport is not ablated, so it stays in every arm.
+
+**Combined minimal arm.** Every option with a DROP verdict is removed at once. The arm is assembled from the leave-one-out terms
+when its object design and its target design each exist among them (no GPU). If it drops two or more object options, its object
+term is built once (about 2.0 A40-h). It is read with the same rule against P_nsz. Its own metrics are those of every dropped
+option.
+- If no option but rtclip is dropped, the combined arm is P_nsz's function exactly and needs no read.
+- If the combined arm worsens, that is reported. The minimal arm then falls back by this **tiebreak**: among the single-option
+  arms with a DROP verdict, the one with the most passing GO items in (c); ties go to the higher pooled new-layout new-pairing
+  success (s new), then to the arm listed first in step 2's order. The exact rtclip drop is added where the dependency allows.
+  If no such arm exists, the minimal arm is P_nsz.
+
+**Stop rules.** If the minimal arm passes Layer-2 GO on dev under the frozen pp_l2 mapping in both layouts, this phase stops and
+reports; the confirmatory fresh-seed read is not run here (PLAN_PARTS §6 needs the user's approval). The phase also stops at the
+8.5 A40-h cap.
+
+**Budget (estimate).** A_nts 1.5, A_naf 2.0, A_nnm 2.0, S1 runs about 0.1 each, combined arm 0 or 2.0: 5.8-7.8 A40-h. Rollouts
+and reads run on CPU.
