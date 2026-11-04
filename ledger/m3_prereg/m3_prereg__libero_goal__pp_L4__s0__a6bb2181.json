@@ -1,0 +1,70 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: ladder rung L4 (docs/LADDER_RESULTS.md sections 5-6)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4507591",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "a6bb2181d22930a05026edbfb2a889919d08adf1",
+  "short": "a6bb2181"
+ },
+ "keys": {},
+ "metrics": {
+  "L0": "P_min: pp_cons_roll P2naf / Pnaf_<cond>_k<k>; S1 pp_s1_mix_full_naf_m0-2",
+  "arm": "L1's flags + --iroles (--rank 32 --rtclip --psupport --tscale --decouple --imode --rtransport --bbnom --bbnosize --pgate --iroles); object term retrained, target term reused from <cond>_L1 under the asserted precondition; creations k = 1, 5, 10; rollouts pp_L4_roll P2L4 / PL4_<cond>_k<k>; S1 pp_s1_mix_full_L4_m<v> for every v of the inventory",
+  "counted": "familiar only: S1, OM, 3F N1 N2 N3 N4 N6 (N5 excluded: L0 fails it), S3 bottle, S3 plate",
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "0b2d07a2265864f3d8d1c935070e0345a4bcd4b2f46c5509a666731e741fad25",
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/pp_L4_smoke.py": "6cdeda6bf3b3790f56b465f21f44018489627252448e325bf79f357035ce86b7",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_ladder_read.py": "4ce636f174975f6d944168d0a372dbe9d2de7997b474c1b752a0e2c2be858cb0",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "c51c33d7c0432a9e458bf4b5e0437f5dfa48e64a8ca687745ea0bb165949c922",
+   "experiments/pp_round_read.py": "86a559ec9f99b20db8097b95a1e0be903a9577140fbbff258e76731086242426",
+   "experiments/pp_s1_mix.py": "5977d02dd297ee5c80b05b51af3c9cc2156514b141d97ca828924d9ac401a6aa",
+   "lifelong_ood/policy/parts_flow.py": "b51b01eb2998424b240e8b23ca791c6e9dc55611fb3869b051130431ef4cafae",
+   "results/flawed/pp_L4_smoke_roles.json": "98fa2c121ed6be8a2b5cc27a9c67faea83d933f77806099f131e790f45b2321c"
+  },
+  "measures": "pp_ladder_read.py --rung L4 (as pp_L1): OM, 3F D3 N1-N6, S3 per atom (mean over k in {1, 5, 10}); delta = L4 - L0, 2,000-draw paired state bootstrap",
+  "replaced": "FC.roles (template parse + noun table) in training rows, creation and the rollout, by the lexicon of LADDER_RESULTS 5.2; a task trains iff it has a contact event and an induced parse. The read's n2_tasks roles stay the instrument",
+  "rule": "a counted measure BREAKS iff |delta| > 0.10 and its CI excludes 0; L4 HOLDS iff S1 holds and no counted measure breaks, else L4 BREAKS (broken measures named); new layout and competence reported with no verdict",
+  "s1": "holds iff the model's swap tests and target-into-grasp components are exactly 0 with m fixed at every inventory value on every seed AND parse locality holds on K1-K6, N1-N6 with the full lexicon",
+  "sections_sha256": "13db928905350b1318fd2e1e163f5de9b613948c5273d92acbd20e5cf43b5746",
+  "status": "PRE-REGISTERED ladder rung L4 (docs/LADDER_RESULTS.md sections 5-6)",
+  "stop": "L4 breaks: ladder stops for the user's decision. L4 holds: stop and report; L5 and L2/L3 are not started here. Cap: the track's 15 A40-h",
+  "written_before": "any L4 rollout, S1 run or read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_L4__s0__a6bb2181",
+ "schema": 1,
+ "script": "experiments/prereg/pp_L4.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-04T14:36:03+00:00",
+ "stream": null,
+ "tag": "pp_L4"
+}
