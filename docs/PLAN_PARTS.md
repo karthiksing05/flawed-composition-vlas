@@ -372,3 +372,6 @@ The plan is adopted. Each layer is still pre-registered before its first read (ย
     known pairings, and since item 5 those pairings can run under different grasp modes (COVERAGE_RESULTS ยง3.5).
     - **Reads.** Every later read reports an m-conditioned 3F beside the frozen one, labelled post-hoc, with no verdict of its own.
     - **Unchanged.** The frozen estimator decides every criterion.
+
+15. **(User, 2026-11-04) Next: diagnose the place.** The ladder stays paused, and Layer 2 is not written up yet. A CPU-only diagnostic
+    asks why the place rate depends on the object-target pair (docs/PLACE_DIAG.md). It builds no model and changes no criterion or verdict.
