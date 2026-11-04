@@ -1,0 +1,60 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: in-hand test (docs/PLACE_DIAG.md section 4; PLAN_PARTS 10.16)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4510980",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "87bea84e588fffae92730845d50038efec8a4f47",
+  "short": "87bea84e"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "P_min pp_full_naf_s{10,11,12}: base, norot (a[3:6] = 0 while the oracle hold is on)",
+  "contrasts": "N1-K1, N4-K1, N6-K6; new layout the headline, familiar beside it",
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "f87fb9f9348d632718cd0bb1971b8c6b07b7f7b978ba4d4fd3a419e4db3e032b",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/pp_inhand_read.py": "278a5df697dc259dae81a260076872c5f560416f3ea9ffd931ae42cc932fdff7",
+   "experiments/pp_inhand_trace.py": "820b4b6228214b7c669ffabdfc5bbdbacabab30060ad4d39aa2cc5b04a8812d6",
+   "lifelong_ood/policy/parts_flow.py": "b51b01eb2998424b240e8b23ca791c6e9dc55611fb3869b051130431ef4cafae"
+  },
+  "labelled": "post hoc diagnostic; norot is not a candidate fix; builds no model; changes no criterion, GO or ladder verdict",
+  "mapping": "observational, first match wins: G's CI contains 0 -> NO GAP; overlap < 0.5 -> UNDETERMINED; |A| <= 0.5 |G| -> TILT-MEDIATED; else NOT EXPLAINED BY TILT. Intervention, on the contrast's lower-place task: delta's CI lower > 0 and delta > 0.10 -> ROTATION-CAUSAL; else NO EFFECT",
+  "prediction": "new layout: N1-K1 TILT-MEDIATED, NO EFFECT; N4-K1 NO GAP; N6-K6 NOT EXPLAINED BY TILT",
+  "section_sha256": "39ab1dcd162493ce6a660186e56ec6215fe58bc1bd27075887702fee53a054ab",
+  "states": "dev only: N2 main states 4-23, N2 seeds; no confirmatory or sealed read",
+  "status": "PRE-REGISTERED in-hand test (docs/PLACE_DIAG.md section 4)",
+  "written_before": "any I1 or I2 run or read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_inhand__s0__87bea84e",
+ "schema": 1,
+ "script": "experiments/prereg/pp_inhand.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-04T21:23:31+00:00",
+ "stream": null,
+ "tag": "pp_inhand"
+}
