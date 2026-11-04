@@ -128,6 +128,7 @@ def main():
     ap.add_argument("--s1", required=True)
     ap.add_argument("--s2", required=True)
     ap.add_argument("--s3", required=True)
+    ap.add_argument("--parse-locality", default="")                         # LADDER_RESULTS 5.5 (L4): pp_L4_smoke roles' file
     a = ap.parse_args()
     fn = os.path.join(OUT, f"pp_ladder_{a.rung}_read.json")
     assert not os.path.exists(fn), f"{fn} exists"
@@ -139,6 +140,10 @@ def main():
     out = dict(rung=a.rung, inputs=dict(L0=L0, rung=dict(s1=a.s1, s2=a.s2, s3=a.s3)), S1=dict(L0=s1r, rung=s1c, holds=bool(all(s1c.values()))),
                layouts={}, rule=f"counted familiar measure breaks iff |delta| > {TOL} and the paired state-bootstrap CI excludes 0; "
                                  "the rung holds iff S1 holds and no counted measure breaks; new layout reported only")
+    if a.parse_locality:                                                     # L4: S1 holds iff the swaps and parse locality both hold
+        pl = json.load(open(os.path.join(OUT, a.parse_locality), encoding="utf-8"))["parse_locality"]
+        out["S1"]["parse_locality"] = pl
+        out["S1"]["holds"] = bool(out["S1"]["holds"] and pl["holds"])
     n = len(ref.states)
     rng = np.random.default_rng(0)
     draws = [rng.choice(n, n) for _ in range(NB)]

@@ -102,16 +102,61 @@ def pgate_agreement(D, held_p, held_o, keep):
     return out
 
 
-def rows(dev, tasks=None, k=None, pgate=None):
+def instructions():
+    n2 = json.load(open(os.path.join(ROOT, "results", "flawed", "n2_tasks.json"), encoding="utf-8"))
+    return {t["compound"]: t["language"] for t in n2["tasks"]}
+
+
+def demo_sites(D, held):
+    """Ladder L4 (LADDER_RESULTS 5.2, step 1): per demo with an event, from the first onset to the last held row: grasp slot g = the
+    slot that moves farthest (3-D); release slot r = the slot other than g nearest to g at the last held row.
+    -> {(task index, demo): dict(g, r, margin_g, margin_r)}."""
+    key = D["task"].astype(np.int64) * 1000 + D["demo"]
+    out = {}
+    h = np.asarray(held) > 0.5
+    for kk in np.unique(key[h]):
+        r = np.nonzero((key == kk) & h)[0]
+        a, b = r[0], r[-1]
+        move = np.linalg.norm(D["pos"][b] - D["pos"][a], axis=-1)
+        order = np.argsort(-move, kind="stable")
+        g = int(order[0])
+        dist = np.linalg.norm(D["pos"][b] - D["pos"][b, g], axis=-1)
+        dist[g] = np.inf
+        near = np.argsort(dist, kind="stable")
+        out[(int(kk // 1000), int(kk % 1000))] = dict(g=FC.ENT[g], r=FC.ENT[int(near[0])], margin_g=float(move[order[0]] - move[order[1]]),
+                                                      margin_r=float(dist[near[1]] - dist[near[0]]))
+    return out
+
+
+def situation(sites, t, k=None):
+    """Ladder L4 (step 2): task index t's (g, r): the most frequent pair over its demos (first k), ties to the first seen; None if none."""
+    pairs = [(v["g"], v["r"]) for (tt, dm), v in sorted(sites.items()) if tt == t and (k is None or dm < k)]
+    return list(max(dict.fromkeys(pairs), key=pairs.count)) if pairs else None
+
+
+def build_situations(tasks, D, held, k=None):
+    names, lang, sites = list(FC.KNOWN), instructions(), demo_sites(D, held)
+    out = {}
+    for c in tasks:
+        s = situation(sites, names.index(c), k)
+        if s is not None:
+            out[lang[c]] = s
+    return out
+
+
+def rows(dev, tasks=None, k=None, pgate=None, roles=None):
     """-> (batch dict of tensors, actions, centre, size) over the demo rows of `tasks` (compound names; None = all), first k demos.
-    pgate (ladder L1): {tw, lift} -> every use of held takes the proprioceptive event instead of demos_b.npz's contact label."""
+    pgate (ladder L1): {tw, lift} -> every use of held takes the proprioceptive event instead of demos_b.npz's contact label.
+    roles (ladder L4): a lexicon -> (oi, ti) from its parse instead of the given roles; a task with no induced roles has no rows."""
     D = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
     Db = dict(np.load(os.path.join(FC.DATA, "demos_b.npz")))
     if pgate:
         Db["held"] = pgate_held(D, pgate)
     n2 = json.load(open(os.path.join(ROOT, "results", "flawed", "n2_tasks.json"), encoding="utf-8"))
     lang = {t["compound"]: t["language"] for t in n2["tasks"]}
-    rl = [FC.roles(lang[c]) for c in FC.KNOWN]
+    rl = [(PF.role_parse(roles, lang[c]) if roles else FC.roles(lang[c])) for c in FC.KNOWN]
+    no_roles = [i for i, r in enumerate(rl) if r is None]
+    rl = [FC.ENT[:2] if r is None else r for r in rl]                 # placeholder: these rows are dropped below
     oi = np.array([FC.ENT.index(rl[t][0]) for t in D["task"]])
     ti = np.array([FC.ENT.index(rl[t][1]) for t in D["task"]])
     zr, cy = FK.canon_rows(D, Db["held"], oi, ti)
@@ -124,6 +169,8 @@ def rows(dev, tasks=None, k=None, pgate=None):
         keep &= np.isin(D["task"], [names.index(c) for c in tasks])
     if k is not None:
         keep &= D["demo"] < k
+    if no_roles:
+        keep &= ~np.isin(D["task"], no_roles)
     T = lambda v, dt=torch.float32: torch.tensor(np.asarray(v)[keep], dtype=dt, device=dev)   # noqa: E731
     b = dict(ee_pos=T(D["ee_pos"]), ee_rot=T(D["ee_rot"]), grip=T(D["grip"]), prev=T(D["prev_grip"]), pos=T(D["pos"]), yaw=T(D["yaw"]),
              drawer=T(D["drawer"]), oi=T(oi, torch.long), ti=T(ti, torch.long), held=T(Db["held"]), off=T(Db["off"]), zrest=T(zr),
@@ -399,6 +446,7 @@ def main():
     ap.add_argument("--bbnosize", action="store_true")                    # PARTS_RESULTS 47: P_nsz (backbone-alone path reads no size)
     ap.add_argument("--tnear", action="store_true")                       # PARTS_RESULTS 50: P_rel (release region unstretched)
     ap.add_argument("--pgate", action="store_true")                       # LADDER_RESULTS 1: L1 (proprioceptive held event)
+    ap.add_argument("--iroles", action="store_true")                      # LADDER_RESULTS 5: L4 (roles induced from contact events)
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -419,7 +467,20 @@ def main():
             keep = np.isin(Dz["task"], [list(FC.KNOWN).index(c) for c in tasks])
             pg_agree = pgate_agreement(Dz, pgate_held(Dz, pg), np.load(os.path.join(FC.DATA, "demos_b.npz"))["held"], keep)
             print("[pp_p] pgate", json.dumps(pg), "agreement", json.dumps(pg_agree["all"]), flush=True)
-        b, act, center, size, n, _ = rows(dev, tasks, pgate=pg)
+        lex, lex_rep = None, None
+        if a.iroles:                                                       # LADDER_RESULTS 5.2: the build's lexicon
+            assert pg is not None, "--iroles reads L1's event: it needs --pgate"
+            Dz = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
+            lex = PF.role_lexicon(build_situations(tasks, Dz, pgate_held(Dz, pg)))
+            lang = instructions()
+            parsed = {c: PF.role_parse(lex, lang[c]) for c in tasks}
+            lex_rep = dict(lexicon=lex, parsed=parsed, no_roles=[c for c in tasks if parsed[c] is None])
+            print("[pp_p] iroles", json.dumps(lex_rep), flush=True)
+            if a.reuse:                                                    # LADDER_RESULTS 5.6: the reuse precondition
+                diff = [c for c in tasks if parsed[c] is not None and tuple(parsed[c]) != tuple(FC.roles(lang[c]))]
+                assert not diff, ("--reuse: induced roles differ from the donor's on trained tasks", diff)
+            tasks = [c for c in tasks if parsed[c] is not None]
+        b, act, center, size, n, _ = rows(dev, tasks, pgate=pg, roles=lex)
         D0 = np.load(os.path.join(FC.DATA, "demos.npz"))
         home = D0["ee_pos"][D0["step"] == 0].mean(0).tolist()               # the demos' mean end effector at step 0 (P_af)
         rclip = hscale = 0.0
@@ -476,6 +537,8 @@ def main():
         smeta = dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps, decouple=a.decouple, reuse=a.reuse or None)
         if pg is not None:                                                 # flag off: the meta is L0's, key for key
             smeta["pgate"] = dict(tw=pg["tw"], lift=pg["lift"])
+        if lex is not None:
+            smeta["roles"] = lex
         ema.cpu().save(os.path.join(d, "P.npz"), smeta)
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
                    decouple=a.decouple, reuse=a.reuse or None, reused_role=reused, interface=inv,
@@ -486,6 +549,8 @@ def main():
                                         tgt=int(sum(p.numel() for p in m.tgt.backbone_parameters()))))
         if pg is not None:
             rep.update(pgate=pg, pgate_agreement=pg_agree)
+        if lex_rep is not None:
+            rep.update(iroles=lex_rep)
         fn = os.path.join(ROOT, "results", "flawed", f"pp_train_{a.tag}_s{a.seed}.json")
     else:
         m, meta = PF.PartsFlow.load(os.path.join(d, "P.npz"))
@@ -515,7 +580,19 @@ def main():
                     p.grad.zero_()
                     p.grad[j] = keepj
         assert not a.pgate or meta.get("pgate"), "--pgate creation needs a --pgate library"
-        b, act, _, _, n, demos = rows(dev, [a.task], a.k, pgate=meta.get("pgate"))   # L1: the library's event, not refitted
+        lex, roles_changed = meta.get("roles"), None
+        if lex:                                                      # LADDER_RESULTS 5.2: the creation's situation, from its k demos
+            Dz = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
+            s = build_situations([a.task], Dz, pgate_held(Dz, meta["pgate"]), a.k)
+            assert s, "no event in the creation demos"
+            old = lex
+            lex = PF.role_lexicon(dict(old["situations"], **s))
+            roles_changed = [x for x in old["situations"] if PF.role_parse(old, x) != PF.role_parse(lex, x)]
+            parsed = PF.role_parse(lex, instructions()[a.task])
+            print(f"[pp_p] iroles creation situation {s} parse {parsed}; library parses changed: {roles_changed}", flush=True)
+            assert parsed is not None and parsed[0 if a.role == "obj" else 1] == a.atom, ("creation task's induced roles", parsed, a.atom)
+            meta = dict(meta, roles=lex)
+        b, act, _, _, n, demos = rows(dev, [a.task], a.k, pgate=meta.get("pgate"), roles=lex)   # L1: the library's event, not refitted
         assert len(demos) == a.k, ("demos", demos)
         radius = None
         if m.psupport:                                               # P_pp: the created part's own radius, from its k demos only
@@ -573,6 +650,8 @@ def main():
         rep = dict(mode="create", tag=a.tag, seed=a.seed, atom=a.atom, role=a.role, task=a.task, k=a.k, demos=demos, n_rows=n,
                    steps=CREATE_STEPS, secs=secs, gpu_seconds_to_ready=time.time() - t0, curve=curve, params_added=net.part_params(),
                    old_parameters_changed=0, part_radius=radius, part_mode=cmode, part_start_radius=rstart, part_release_radius=rrel)
+        if roles_changed is not None:
+            rep.update(iroles=dict(lexicon=lex, library_parses_changed=roles_changed))
         fn = os.path.join(ROOT, "results", "flawed", f"pp_create_{a.tag}_s{a.seed}_{a.atom}_k{a.k}.json")
     with open(fn, "w", encoding="utf-8") as fh:
         json.dump(rep, fh, indent=1)

@@ -31,7 +31,18 @@ MAX_STEPS, WAIT, REPLAN = 300, 10, 5
 
 
 def episode(model, bddl, state, lang, seed_base):
-    oe, te = FC.roles(lang)
+    lex = getattr(model, "role_lex", None)                                  # LADDER_RESULTS 5 (L4): roles from the library's lexicon
+    if lex:
+        from lifelong_ood.policy.parts_flow import role_parse
+        parsed = role_parse(lex, lang)
+        if parsed is None:                                                  # no induced roles: a failure with no steps
+            return dict(success=False, steps=0, calls=0, secs=0.0, error="no induced roles", bound=None, bound_step=None, final={},
+                        final_grip=None, last_cmd=-1.0, drawer=None, held_step=None, held_ee=None, held_segments=0, held_end=False,
+                        onset_canon=None, min_dxy_held=None, roles=None,
+                        pgate=dict(event_step=None, event_segments=0, event_end=False, steps=0, agree=0, event_only=0, oracle_only=0))
+        oe, te = parsed
+    else:
+        oe, te = FC.roles(lang)
     oi, ti = FC.ENT.index(oe), FC.ENT.index(te)
     env = FC.fresh_env(bddl)
     env.reset()
@@ -156,6 +167,8 @@ def episode(model, bddl, state, lang, seed_base):
     if pg:                                                                  # L1: the event's trace next to the oracle's
         out["pgate"] = dict(event_step=ptr["step"], event_segments=ptr["segs"], event_end=bool(ptr["on"]), steps=ptr["n"],
                             agree=ptr["agree"], event_only=ptr["ev_only"], oracle_only=ptr["or_only"])
+    if lex:
+        out["roles"] = [oe, te]
     return out
 
 

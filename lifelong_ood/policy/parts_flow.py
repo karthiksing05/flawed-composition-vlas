@@ -77,6 +77,46 @@ def pgate_rows(key, grip, cmd, z, tw, lift=PG_LIFT):
     return out
 
 
+def role_lexicon(situations):
+    """Ladder L4 (LADDER_RESULTS 5.2, steps 3-4).  situations: {instruction: [grasp slot, release slot]}.  -> dict(situations, ref
+    {token: slot}, pg {token: share of its situations with g = ref}, pr likewise for r).  Reads no given role."""
+    toks = {s: s.lower().split() for s in situations}
+    words = sorted({w for v in toks.values() for w in v})
+    has = {w: [s for s in situations if w in toks[s]] for w in words}
+    cand = {w: set.intersection(*[set(situations[s]) for s in has[w]]) for w in words}
+    ref = {w: next(iter(c)) for w, c in cand.items() if len(c) == 1}
+    while True:                                                             # explaining away: simultaneous passes to a fixpoint
+        new = {}
+        for w in words:
+            if w in ref or len(cand[w]) < 2:
+                continue
+            gone = set.intersection(*[{ref[u] for u in toks[s] if u != w and u in ref} for s in has[w]])
+            left = cand[w] - gone
+            if len(left) == 1:
+                new[w] = next(iter(left))
+        if not new:
+            break
+        ref.update(new)
+    pg = {w: sum(situations[s][0] == ref[w] for s in has[w]) / len(has[w]) for w in ref}
+    pr = {w: sum(situations[s][1] == ref[w] for s in has[w]) / len(has[w]) for w in ref}
+    return dict(situations={s: list(v) for s, v in situations.items()}, ref=ref, pg=pg, pr=pr)
+
+
+def role_parse(lex, instruction):
+    """Ladder L4 (LADDER_RESULTS 5.2, step 5): -> (object slot, target slot), or None when the instruction has no induced roles."""
+    toks = [w for w in instruction.lower().split() if w in lex["ref"]]
+    og = [w for w in toks if lex["pg"][w] > 0]
+    if not og:
+        return None
+    best = max(lex["pg"][w] for w in og)
+    obj = lex["ref"][next(w for w in og if lex["pg"][w] == best)]           # ties: the earliest token
+    tg = [w for w in toks if lex["pr"][w] > 0 and lex["ref"][w] != obj]
+    if not tg:
+        return None
+    best = max(lex["pr"][w] for w in tg)
+    return obj, lex["ref"][[w for w in tg if lex["pr"][w] == best][-1]]     # ties: the latest token
+
+
 class LoRALinear(nn.Module):
     """A frozen-able base Linear plus per-atom low-rank deltas; the atom of each row selects its delta."""
 
@@ -390,9 +430,12 @@ class PartsFlow(nn.Module):
         m.eval()
         if meta.get("pgate"):                                                   # ladder L1: the build's proprioceptive event
             m.pgate = dict(tw=float(meta["pgate"]["tw"]), lift=float(meta["pgate"]["lift"]))
+        if meta.get("roles"):                                                   # ladder L4: the library's induced lexicon
+            m.role_lex = meta["roles"]
         return m, meta
 
     pgate = None                                                            # ladder L1 off: the rollout steps the oracle gate only
+    role_lex = None                                                         # ladder L4 off: the rollout uses the given roles
 
 
 def _to2(Qp, Qr, x):
