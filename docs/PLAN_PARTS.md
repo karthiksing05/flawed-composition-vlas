@@ -349,3 +349,11 @@ The plan is adopted. Each layer is still pre-registered before its first read (�
     - **Not the main claim.** A pass supports the mechanism (condition S), not structural layout generalisation, which §4.1
       says must come from frame equivariance. It does not change the main arm's GO.
     - **Results** go in docs/COVERAGE_RESULTS.md.
+
+12. **(User, 2026-11-04) Ladder order: L4 before L2 and L3.** L1 holds (LADDER_RESULTS §3).
+    - **Why.** L2 needs rendered rollouts, a pi0.5 pass at every replan, and an unsupervised token-to-position readout, with an
+      estimated 30-60 A40-h per rung (LADDER_RESULTS §4).
+    - **Change.** L4 (roles induced from contact events) runs next, on top of L1 and with oracle frames and slots. L2 and L3
+      follow once their perception infrastructure is built.
+    - **Unchanged.** Each rung still replaces one oracle piece and keeps every other piece at the previous rung. The gate stays
+      as in item 10.
