@@ -298,3 +298,25 @@ Zeroing rotation while held raises the bottle's place and closes both gaps, with
 - **Removing tilt doesn't rescue K1.** Within K1's base arm, tilt predicts failure (place 12 of 16 below 15°, 2 of 17 at 30° or more). Under `norot` the high tilts mostly go away (3 of 42 at 30° or more), yet place stays at 0.43, with 12 of 25 below 15°. So tilt marks K1's bad episodes and does not appear to cause them.
 - **K1's still-held failures end high and away.** Median end state in base: 0.18 m from the plate, foot 0.23 m above it, 103° of tilt. Under `norot`: 0.11 m, 0.35 m, 26°. So those episodes reach the radius once and then never come down.
 - **Hold rates differ a lot:** K1 0.97; N1, N4, K6 and N6 0.50-0.52. So K1 and N1 may be compared over different start states (§6).
+
+## 6. Selection check (fixed 2026-11-04, before running it; m3_prereg tag pp_select)
+
+§5.3's hold rates suggested this, so it is post hoc. It is a read of saved rollouts: no simulation, no model.
+
+**Question.** Is the new-layout N1 − K1 gap, the one gap still standing, a comparison over different start states?
+
+**Data.** P_min's stored rollouts (pp_cons_roll, `P2naf`), new layout, seeds 10-12, states 4-23, as COVERAGE_RESULTS §3.5. Also the N2 state files.
+
+**Estimators.**
+- `G_all`: place-on-arrival difference over each task's own arrived episodes.
+- `G_s`: the same over only the (seed, state) pairs where both tasks arrived. Paired state bootstrap, as §2.
+
+**Verdict, N1 − K1, first match wins:**
+1. The two tasks' saved state vectors don't match on their first 64 entries (the leading simulator state, which holds the robot's and objects' poses) within 0.01 on at least 90% of states: **NOT TESTABLE**, as pairing by index would have no meaning.
+2. Fewer than 15 shared episodes: **TOO FEW**.
+3. CI of `G_s` contains 0 and |G_s| ≤ 0.5 |G_all|: **START-STATE SELECTION**.
+4. Otherwise: **NOT SELECTION**.
+
+**Reported with no verdict.** The same for N4 − K1 and N6 − K6, and place-on-arrival by hold-onset distance d0 (tertiles pooled within each target) per task, from `onset_canon`.
+
+**Prediction (mine, before data).** NOT SELECTION. I expect the gap to shrink but survive.
