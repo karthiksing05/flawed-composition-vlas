@@ -323,3 +323,29 @@ The plan is adopted. Each layer is still pre-registered before its first read (�
      failure of demo support (condition S, Prop. 2), not of the combination rule.
    - **Unchanged.** No new structural changes are made. The frozen pp_l2 GO mapping is unchanged, and the new layout stays
      inside the claim, so GO remains false unless the minimal arm passes it.
+
+10. **(User, 2026-11-04) Start the Layer-3 ladder on the familiar layout.** Layer-2 GO is false (PARTS_RESULTS §53-54).
+    The user chose to start the ladder anyway. This is a plan-level change made after seeing data, labelled as such.
+    - **L0 is P_min** (§53).
+    - **Gate.** §5's tolerance is applied to the familiar-layout composition measures only: S1, OM, 3F per pairing, and S3 per
+      atom. Each must stay within 0.10 of L0, and a measure that L0 fails is not counted.
+    - **New layout.** Its measures are reported at every rung, with no verdict.
+    - **Claim.** Every ladder claim is scoped as "familiar layout, given Layer-2 GO false in the new layout".
+    - **Order.** The rungs run in §5's order, one at a time. A rung that breaks stops the ladder for the user's decision.
+    - **Results** go in docs/LADDER_RESULTS.md.
+    - **Unchanged.** The frozen GO mapping is unchanged.
+
+11. **(User, 2026-11-04) A coverage arm: widen demo support in the new layout.** This is §4.1's labelled generated-data
+    ablation, made after seeing data. It tests §54's mechanism claim that the new-layout shortfall is a failure of demo support
+    (condition S).
+    - **Data.** Generated demos (v2 servoing generator, §18-19) are added to P_min's training data, labelled as generated.
+      - The start and carry distribution is widened by one layout-agnostic rule, applied identically to every atom and fixed
+        before any build.
+      - There is no targeting of failing tasks or atoms, no clearance strata, no grasp-option teachers, and no task-specific
+        constants.
+      - The generator never sees any read's evaluation states.
+    - **Prediction, fixed before the read.** If §54's account is right, the arm's new-layout composition measures (3F per
+      pairing, OM, S3 per atom) approach its familiar-layout ones.
+    - **Not the main claim.** A pass supports the mechanism (condition S), not structural layout generalisation, which §4.1
+      says must come from frame equivariance. It does not change the main arm's GO.
+    - **Results** go in docs/COVERAGE_RESULTS.md.
