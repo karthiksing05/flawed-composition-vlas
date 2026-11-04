@@ -219,3 +219,86 @@ Otherwise it is **NOT SUPPORTED**, and every failing clause is reported.
 - **CPU.** Generation, rollouts and reads run on overcap CPU.
 - **Stop.** The track stops at the GPU cap. If W's generator keeps too few demos to train on (fewer than 10 per task), the arm
   stops and reports, with no build.
+
+### 1.10 Generation and smoke results (2026-11-04; after the note, before any build)
+
+Files: results/flawed/pp_cov_gen.json, pp_cov_gen_<task>.json and pp_cov_gen_stats.json. Code: experiments/pp_cov_gen.py and
+pp_cov_train.py (commits 488e445f and 710168fc).
+
+**The generator's own success under W** (filter: LIBERO's success predicate within 300 steps). Every task reached 50 kept demos
+within 120 attempts, so no task was cut.
+
+| task | attempts to 50 kept | layouts accepted | kept / layouts | rows | median steps |
+|---|---|---|---|---|---|
+| K1 | 72 | 70 | 0.71 | 4,214 | 84 |
+| K2 | 61 | 59 | 0.85 | 4,033 | 76 |
+| K3 | 63 | 57 | 0.88 | 5,365 | 97 |
+| K4 | 116 | 110 | 0.45 | 5,245 | 100 |
+| K5 | 77 | 71 | 0.70 | 5,812 | 112 |
+| K6 | 107 | 102 | 0.49 | 5,101 | 96 |
+
+**Rule checks** (smoke check 2).
+- Every seed is W's and lies outside every listed base.
+- Every attempted placement lies in the box.
+- Each task keeps 50.
+- The generated rows are 29,770 of 81,974 in the full build, a share of 0.36. The generated episodes are shorter than the human
+  ones (median 76-112 steps against about 130).
+
+**The success filter's effect on placements.** For each object, the table gives the share of placements within 0.10 m of the
+object's own training spot. Uniform placement over the box predicts 0.23.
+- Attempted placements: 0.07-0.38.
+- Kept placements: 0.04-0.38.
+- Within a task, kept and attempted shares differ by at most 0.08 for every object.
+- So the filter adds no visible preference for the familiar spots. The clearance rules alone lower the cheese's share (0.07-0.17 attempted).
+
+**Support after W** (generated rows, beside the human ones of §1.2). The table gives 10th / 50th / 90th / max percentiles.
+
+| atom | human | generated |
+|---|---|---|
+| bowl, start offset (m) | 0.103 / 0.117 / 0.131 / 0.153 | 0.055 / 0.162 / 0.359 / 0.393 |
+| cream cheese, start offset | 0.186 / 0.206 / 0.219 / 0.231 | 0.110 / 0.189 / 0.346 / 0.375 |
+| bottle, start offset | 0.036 / 0.054 / 0.067 / 0.084 | 0.066 / 0.158 / 0.297 / 0.374 |
+| plate, onset d0 (m) | 0.118 / 0.142 / 0.161 / 0.171 | 0.189 / 0.274 / 0.408 / 0.452 |
+| stove, onset d0 | 0.067 / 0.251 / 0.271 / 0.285 | 0.097 / 0.284 / 0.373 / 0.435 |
+| cabinet top, onset d0 | 0.075 / 0.286 / 0.312 / 0.326 | 0.239 / 0.340 / 0.446 / 0.519 |
+| rack, onset d0 | 0.121 / 0.133 / 0.152 / 0.167 | 0.107 / 0.306 / 0.413 / 0.523 |
+| bowl (target), onset d0 | 0.125 / 0.142 / 0.156 / 0.164 | 0.127 / 0.192 / 0.331 / 0.388 |
+| rack, bearing (deg; min / 10 / 50 / 90 / max) | −22 / 50 / 60 / 65 / 73 | −11 / 23 / 56 / 89 / 99 |
+| rack, release d (m; 10 / 50 / 90) | 0.058 / 0.080 / 0.100 | 0.063 / 0.077 / 0.090 |
+
+- The generated support covers the new-layout ranges §20, §40 and §49 report:
+  - start offsets up to 0.37-0.39 m (new-layout bowl 0.31, bottle up to 0.37);
+  - rack onsets 0.31 / 0.38 / 0.40 m (generated 90th percentile 0.41 m, max 0.52 m);
+  - rack bearings 21-54° (generated 10th-90th percentile 23-89°).
+- Releases keep the demos' (d, h). The planner releases at the demos' median release offset.
+
+**Smoke checks 1 and 3 pass.**
+- With zero generated rows, the batch tensors equal `pp_p_train.rows` bitwise for full, nobottle and noplate. A 300-step build
+  through pp_cov_train equals `pp_p_train.py build` bitwise in all 53 arrays.
+- **Full-length check (added beyond the note).** pp_cov_train with zero generated rows, the full 30,000 steps, full, seed 10,
+  equals P_min's own checkpoint pp_full_naf_s10 bitwise in 52 of its 53 arrays: all 19 object-term arrays, all 19 target-term
+  arrays and 14 of the 15 buffers.
+  - The only array that differs is the scalar buffer rtclip. P_min's target term was trained with `--rtclip`, which P_min never
+    evaluates (PARTS_RESULTS §53).
+  - So the zero-generated build is P_min's function exactly, on the code at HEAD f54101dd. That commit is the ladder agent's
+    flag-off `--pgate` change.
+- With generated rows: every human row's fields equal P_min's bitwise, episode keys are unique, held is 0/1, and the input
+  centre is P_min's.
+  - The first merge appended the generated rows after the human rows. The human-rows check then failed. `fa1_train.chunks` clips
+    its look-ahead at the file's last row, so the last human demo (K8 demo 49) changed its final chunks' padding. The fix puts
+    the generated rows first (commit 710168fc), and the check passes. No build had run.
+- A 300-step build with generated rows trains.
+
+**Fitted quantities with generated rows** (full build; every quantity by its existing rule, as §1.5 fixes).
+- Start radii: bowl 0.381, cheese 0.373, bottle 0.353 m (P_min 0.140 / 0.231 / 0.079). The plate is unchanged at 0.279 m: it has
+  no generated demos.
+- Role radius: 0.268 m (P_min 0.225).
+- Per-part carry radii: plate 0.424, stove 0.384, cabinet top 0.475, rack 0.478, bowl 0.351 m. The drawer and stove front are
+  unchanged.
+- **The grasp-mode inventory has K = 4** (P_min 3). The BIC rule adds a tight component (κ at its cap, 1000, at −84°) from the
+  planner's K5 grasps.
+  - Every target's m is unchanged: rack 2, drawer 1, all others 0.
+  - The capacity is 2.0 bits (P_min 1.58); the task entropy is 1.06 bits, unchanged.
+  - No target emits the fourth value.
+  - This is the fixed rule's output on W's rows, not a choice made here. S1 is therefore restated with m fixed at each of
+    0, 1, 2 and 3.
