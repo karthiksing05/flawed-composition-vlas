@@ -320,3 +320,45 @@ Zeroing rotation while held raises the bottle's place and closes both gaps, with
 **Reported with no verdict.** The same for N4 − K1 and N6 − K6, and place-on-arrival by hold-onset distance d0 (tertiles pooled within each target) per task, from `onset_canon`.
 
 **Prediction (mine, before data).** NOT SELECTION. I expect the gap to shrink but survive.
+
+### 6.1 Results (2026-11-04; results/flawed/pp_select_read.json)
+
+**Verdict: NOT SELECTION.** The verdict matches my prediction, but the gap widened where I expected it to shrink.
+
+| contrast | states match | shared episodes | G_all | G_s [95% CI] | place on shared episodes | label |
+|---|---|---|---|---|---|---|
+| N1 − K1 | 100% | 20 | +0.38 | +0.45 [0.11, 0.78] | 0.85 vs 0.40 | NOT SELECTION |
+| N4 − K1 | 100% | 21 | +0.11 | +0.14 [−0.16, 0.45] | 0.62 vs 0.48 | reported only |
+| N6 − K6 | 100% | 13 | −0.23 | +0.15 [0.00, 0.42] | 1.00 vs 0.85 | reported only (under 15 episodes) |
+
+Place-on-arrival by hold-onset distance d0, as successes of arrived episodes in each tertile (tertile edges pooled within each target):
+
+| task | near | middle | far | median d0 (m) |
+|---|---|---|---|---|
+| K1 bowl → plate | 2 of 6 | 10 of 17 | 9 of 23 | 0.29 |
+| N1 cheese → plate | 11 of 12 | 7 of 7 | 3 of 6 | 0.20 |
+| N4 bottle → plate | 8 of 15 | 6 of 9 | 2 of 4 | 0.19 |
+| K6 cheese → bowl | 4 of 5 | 7 of 7 | 16 of 17 | 0.29 |
+| N6 bottle → bowl | 12 of 14 | 7 of 11 | 0 of 2 | 0.17 |
+
+- K1 trails N1 in every tertile, though the cells are small, so carry distance does not obviously account for it.
+- N6 − K6 changes sign on shared episodes. With §5.1's NO GAP this leaves no support for a new-layout N6 − K6 gap, though 13 episodes can't settle it.
+
+## 7. What the place diagnostic found
+
+All of this is post hoc and on dev data. No GO, ladder or coverage verdict changes.
+
+**The broad claim shrinks.** "Placing depends on the pair" splits into two narrower findings and two gaps that aren't established:
+
+| finding | evidence | status |
+|---|---|---|
+| Bottle, familiar layout: the target term's rotation commands while held cost the place | N4 − K1 and N6 − K6 ROTATION-CAUSAL; gaps close under `norot` | registered, both lower bounds near 0, no multiplicity correction |
+| Bowl on plate, new layout: lower place than cheese on plate | gap in T1, I1 and stored rollouts; not radius, landing physics, tilt, held rotation or start-state selection | established for this pair, cause unknown |
+| Bottle on plate vs bowl on plate, new layout | NOISE, then NO GAP | not established |
+| Bottle vs cheese in bowl, new layout | NO GAP in one run of two; sign flips on shared episodes | not established |
+
+**Consequence for 3F, not yet tested.** The plate's q_t comes from K1 alone. If K1's new-layout place is anomalous, it sets every new-layout plate prediction low, which fits the positive D3 on N1 (+0.129) and N4 (+0.164). So part of those misses may reflect one weak task and not a failure of the law. This is a reading of the existing numbers and no test here separates it. One estimate of q_t per target is a limit of the design.
+
+**Consequence for the architecture.** The bottle result points at a structural matter: the target term issues rotations learned on one object to any object it holds, with no way to tell them apart. `norot` is not the fix, because it does not help in the new layout and its point estimates there fall. Any change would need its own design note and the user's decision.
+
+**A caution about direction.** Following K1's new-layout failure further would mean debugging one task in one scene, which the plan warns against (PLAN_PARTS §10 and the 2026-11-01 direction).
