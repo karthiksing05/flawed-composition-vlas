@@ -2698,3 +2698,176 @@ reports; the confirmatory fresh-seed read is not run here (PLAN_PARTS §6 needs 
 
 **Budget (estimate).** A_nts 1.5, A_naf 2.0, A_nnm 2.0, S1 runs about 0.1 each, combined arm 0 or 2.0: 5.8-7.8 A40-h. Rollouts
 and reads run on CPU.
+
+## 53. Consolidation results (2026-11-04; m3_prereg pp_cons; results/flawed/pp_cons_<arm>_read.json, pp_cons_rtclip_check.json, pp_cons_rtclip_check_naf.json; rollouts pp_cons_roll)
+
+**Outcome.** Of the five options ablated, the rule drops two (rtclip and aframe) and keeps three (tscale, bbnom and bbnosize).
+The combined arm without rtclip and aframe does not worsen anything, so it is the minimal arm. **Layer-2 GO = false** for every
+arm, the minimal arm included, so the stop condition does not apply. No rollout had an episode error and no cell has a missing
+episode.
+
+**Construction checks.**
+- **rtclip is exact.** On all 21 P_nsz checkpoints the reads use (full, nobottle and noplate, seeds 10-12, and the creations at
+  k = 1, 5, 10), no read target and no held training row has a target part without its own radius. With the scalar set to 0, the
+  velocity is unchanged on every demo row, for every read target, with carries at their own distance and 3 times farther out
+  (largest difference 0.0). The same check passes on the 21 A_naf checkpoints, whose target term is P_nsz's.
+- **Assembly is exact.** The verification build (full, seed 10, target term trained without `--tscale` with the object term
+  reused from full_nsz) equals full_pdc_s10's target term bitwise in all 22 tensors, and the assembled full_nts_s10 equals it
+  too. So a decoupled target term does not depend on the object design it trained beside, which is §36 (a) with the roles
+  swapped.
+
+**Per option** (Δ = arm − P_nsz on the option's own metric, paired state bootstrap, seeds pooled; familiar non-regression is the
+pooled familiar known-pairing success).
+
+| option removed | arm | own metric: Δ [95% CI] | familiar non-regression Δ | GO items lost (pass → fail) | GO items gained | verdict |
+|---|---|---|---|---|---|---|
+| rtclip | P_nsz itself (exact) | n4_fam 0.0 (identical function) | 0.0 | none | none | **DROP** |
+| bbnosize | A_bbs = P_nom (re-read) | bottle_hold_new −0.283 [−0.463, −0.100] | +0.014 [−0.008, 0.036] | none | new 3F N6 | **KEEP**, clause (a) |
+| tscale | A_nts | n4_fam −0.233 [−0.417, −0.033] | +0.006 [−0.011, 0.022] | familiar 3F N4; S3 bottle familiar (k = 1: 0.78 [0.71, 0.84]) | familiar 3F N5 | **KEEP**, clauses (a) and (c) |
+| aframe | A_naf | s_known_new +0.058 [0.003, 0.119] | +0.003 [−0.017, 0.019] | none | new 3F N6 | **DROP** |
+| bbnom | A_nnm | k5_hold_new −0.383 [−0.550, −0.217] | +0.031 [−0.003, 0.064] | new 3F N1 | familiar 3F N5 | **KEEP**, clauses (a) and (c) |
+
+- Every KEEP fired on its own metric (clause a), not on a flip alone. Each kept option still does the job it was added for.
+- **tscale.** Without the carry scale frame, N4 familiar falls from 0.80 to 0.57 and its 3F fails again (D3 −0.32 [−0.47, −0.18]),
+  as in round 8. K5 in the new layout succeeds for the first time in any arm (0.067, against 0 for P_nsz). That fits §49: the
+  radial clip leaves the rack's release distance unstretched. It is one task at a low rate and carries no verdict.
+- **aframe.** Removing the approach frame does not hurt and slightly raises new-layout known-pairing success (0.46 against
+  0.40). Round 3 never showed a gain from it (§15). Its job, the far-field approach, has belonged to rtransport's backbone since
+  round 13. That reading is post hoc: the rule drops the option because nothing worsens, not because a mechanism was shown.
+- **bbnom.** With m back on the backbone, K5's new-layout hold falls from 0.42 to 0.03, as in round 13 (§42-43).
+- **bbnosize.** This re-read of round 15's comparison gives the same verdict.
+
+**Combined minimal arm, P_min** (rtclip and aframe removed at once). It needs no new training. Its object term is A_naf's, and
+its target term is P_nsz's, where the scalar rtclip is never read (the A_naf check above). So P_min's function is A_naf's
+exactly, and A_naf's rollouts are its rollouts. Read with the same rule (pp_cons_min_read.json): n4_fam −0.017 [−0.133, 0.100],
+s_known_new +0.058 [0.003, 0.119], familiar non-regression +0.003 [−0.017, 0.019], no GO item lost. **It does not worsen, so the
+fallback tiebreak is not needed.**
+
+**The minimal arm.** Flags: `--rank 32 --psupport --tscale --decouple --imode --rtransport --bbnom --bbnosize`. It uses rank 32,
+not the plan's primary rank 8. psupport, imode and rtransport were not ablated, so they are in the minimal arm without
+leave-one-out evidence. Seeds 10-12, dev states 4-23.
+
+| GO component | P_min | P_nsz |
+|---|---|---|
+| S1 (restated, m fixed at 0, 1, 2) | exact, every seed | exact |
+| S2 familiar: s known / s new; OM | 0.90 / 0.92; 1.09 [1.04, 1.14] | 0.90 / 0.91; 1.10 [1.02, 1.22] |
+| S2 familiar 3F | fails on N5 only, +0.133 [0.058, 0.208] | fails on N5 only, +0.067 [0.017, 0.125] |
+| S2 new: s known / s new; OM | 0.46 / 0.37; 1.08 [0.94, 1.29] | 0.40 / 0.37; 1.33 [1.15, 1.58] |
+| S2 new 3F | fails on N4 (+0.164 [0.043, 0.302]) and N5 (+0.276 [0.177, 0.377]) | fails on N4, N5, N6 |
+| S3 familiar | all 6 cells | all 6 cells |
+| S3 new | bottle k = 1 (0.82 [0.71, 0.95]), plate k = 10 (1.44 [0.89, 2.78]) | bottle k = 5, plate k = 10 |
+| K5 new success | 0 | 0 |
+| Layer-2 GO | false | false |
+
+- P_min is P_nsz with two fewer devices and no measured loss. It is not a better arm. Every difference in the table lies within
+  run-to-run noise except s_known_new's small rise.
+- The familiar N5 deviation grows (N5 0.95 against a prediction of 0.82). It is still the only familiar 3F failure. The bottle's
+  pooled a_o includes K5, which runs lower without the approach frame (0.48 against 0.58).
+
+**What each option bought** (this phase's evidence only):
+- tscale: N4's familiar place (+0.23 on N4, and its familiar 3F).
+- bbnom: K5's new-layout hold (+0.38).
+- bbnosize: new-layout bottle hold (+0.28).
+- rtclip: nothing in P_nsz (never evaluated).
+- aframe: nothing measurable (−0.06 on s_known_new when present).
+- psupport, imode, rtransport, rank 32: not ablated.
+- decouple: kept as the measurement fix every reuse here relies on.
+
+**Deviations.**
+- `experiments/pp_assemble.py` was edited after its hash went into pp_cons and before it produced any output. Its first run
+  stopped on an assert: P_pdc carries no grasp-mode inventory, and the script had treated the inventory buffers as shared. The
+  edit takes the inventory (gm, each target part's m) from the object donor, which reads it, and a created target part's m from
+  its own donor. No estimator, rule or read changed.
+- The rtclip exactness check also ran on A_naf's checkpoints, to establish P_min's exact identity with A_naf. pp_cons
+  pre-registered the assembly of the combined arm, not this check by name.
+- bbnosize's leave-one-out re-reads rollouts already read in §45 and §48, as §52 declared.
+- GPU used: 31,065 GPU-s = 8.6 A40-h (sacct over every job of this phase), against the 8.5 A40-h cap. The builds ran 20-27
+  minutes each, slower than §52's estimate. No GPU job was started after the overrun was seen.
+- Login-node rule breaks: one `ls` of a directory piped to `head`, one `grep` with a filename glob over SLURM logs, and one
+  shell redirection (`>`) that wrote two job-id files under .claude_tmp/pp.
+
+**Cost.** GPU 8.6 A40-h: verification build 0.32; A_nts target builds 1.59, including 9 plate creations; A_naf 2.30; A_nnm 3.97;
+three S1 runs 0.47. CPU: 90 rollout jobs, plus checks, assemblies and reads.
+
+## 54. Layer 2 summary (2026-11-04; after rounds 1-16 and the consolidation)
+
+**Verdict.** Layer-2 GO (pp_l2's frozen mapping) is false for every arm built, the minimal arm P_min included (§53). Layer 3 has
+not started. The confirmatory fresh-seed read of the plan (§6) is not run, because GO is false. Every number below is a
+development read (seeds 10-12, N2 states 4-23) unless marked otherwise.
+
+**What holds.**
+- **S1, locality, is exact in every arm and every round.** Both swap tests and every target-into-grasp component are exactly 0.
+  Since round 11 the object term reads one cross-role message m, and S1 holds with m fixed at each of its three values (PLAN_PARTS
+  §10 item 5). The declared interface carries 1.58 bits of capacity and 1.06 bits of task entropy (§39).
+- **Familiar-layout composition.** Under P_min, familiar OM is 1.09 [1.04, 1.14], and 3F holds on five of six new pairings. It
+  fails on N5 (+0.133), where the observed rate exceeds the prediction. Under P_imd (§39), 3F held on all six; under P_rel (§51)
+  on all six, N5 only by a 0.00 lower bound. Familiar S3 has passed all 6 cells in every arm since round 6. A part created from
+  one demo of one task works with partners it never saw, at its training partner's rate.
+- **Old tasks are untouched by creation.** Every creation leaves every other parameter bitwise unchanged (asserted in every
+  round).
+- **Baselines do not compose.** On S3's protocol with the same oracle inputs (§5; fresh seeds and states in §9), holistic
+  fine-tuning, a per-task LoRA, a role-routed fine-tune and a DMPEL/CLARE-style learned-router library reach at most 0.06 on
+  unseen pairings in the familiar layout and at most 0.01 in the new layout on fresh seeds (§9); on development seeds the
+  maximum is 0.09, at k = 50 (§5). The fine-tuned baselines and the router library lose the old tasks (0.68-0.89 to 0.00-0.06).
+  The baselines were compared with the original P, before any round's device, not with P_min.
+
+**What fails.**
+- **New-layout competence and composition.** P_min's known-pairing success is 0.46 in the new layout against 0.90 in the
+  familiar one. New-layout 3F fails on N4 and N5, where the bottle pairings succeed more often than predicted. S3 passes 2 of
+  its 6 new-layout cells, on wide CIs.
+- **K5 never succeeds in the new layout.** K5 (bottle in the rack) scores 0 of 60 in every round's best arm, P_min included. The
+  one non-zero read is A_nts (0.067), which lacks tscale and fails N4 familiar instead (§53). Through the bottle's pooled a_o,
+  K5's zero feeds every remaining new-layout 3F failure.
+
+**Mechanism: the new-layout shortfall is a failure of demo support (condition S, Prop. 2), not of the combination rule.**
+Wherever a pairing fails in the new layout, the acting conditional is asked to act on states its own demos do not contain. The
+combination rule Φ is exact (S1) and composes whatever its parts can do (familiar 3F and OM; new-layout OM 1.08). Each gap below
+was measured before the change that addressed it.
+1. **The bottle part has no transport phase** (§40, round 12). The bottle's demos start 3-7 cm from it and descend at once. Far
+   new-layout starts come down about 0.11 m out and close 4-7 cm beside the bottle. No relocation into the part's own support can
+   add a transport its rows lack. Role-level transport (round 13) gave the transport to the backbone and raised new-layout bottle
+   hold by +0.28.
+2. **Under m = 2 the backbone has no far rows** (§43, round 14). The backbone's only m = 2 rows are K5's near-start rows, so the
+   backbone stalls about 0.10 m short and climbs. With m = 0 on those rows, 9 of 20 hold.
+3. **Size identifies the bottle to the m-free backbone** (§46, round 15). Beyond the bottle's start radius its rows are 28 to 1
+   K5's stand-off rows, which barely move toward the bottle. Swapping the size input reverses the stall both ways.
+4. **The size-free backbone pools those stand-off rows** (§48). Its far transport is weak for the bottle (progress 0.13-0.18
+   against 0.53 for P_rtr's m = 0 backbone) and falls for the cheese. 65% of K6 new-layout episodes move no object. The cheese's
+   near starts at height (§26, §40) lie inside its start radius but off its one approach path: its demos start 0.19-0.22 m out.
+5. **The rack part's carries start inside 0.167 m; the new layout's start at 0.31-0.41 m** (§49, round 16). The new-layout
+   bearings (21-54°) lie partly outside the rack demos' (50-65° for the 10th-90th percentiles), and the target term reads no
+   bearing. Under the carry scale frame the release moves out by 1/s_t.
+6. **The climb completes far out** (§51). In the new layout the foot reaches rack height 0.15-0.22 m out, a state the rack demos
+   contain only at their release, and the term opens there. That was described on one seed and two arms, not tested.
+
+Rounds 5-9 found the same kind of gap at the approach and the carry: §20 (start offsets beyond every demo's), §26 (height
+coupled to horizontal progress), §32 (N4's carries start beyond the plate part's support). The 16 rounds patched these gaps one at
+a time with relocation devices. The consolidation shows that two of those devices no longer buy anything (§53). The account
+predicts the remaining shortfall without a new mechanism: demos alone, at 50 per task in one layout, do not cover the new layout's
+approach and carry states. The plan's §4.1 claim, "layout generalization from frame equivariance", fails at this coverage, as §17
+first reported. This account is assembled post hoc from the diagnostics of rounds 12-16; no single pre-registered test confirms it
+as a whole.
+
+**Post-hoc decisions, labelled.** The plan amendments of PLAN_PARTS §10 items 5-8 (the message m, role-level transport, the
+backbone without m, the backbone without size) were all made after seeing data. Rank 32 was chosen after pp_l2 (§6). The
+choice of P_nsz as round 15's best arm was a judgement (§48). The consolidation's own rule was pre-registered (§52).
+
+**Supervision in the Layer-2 arms (the list for the Layer-3 ladder).** Every item is oracle or designed. None comes from the
+VLA.
+
+| item | where it enters | source |
+|---|---|---|
+| object and target slots: identity (which part acts), pose (position, yaw) | both terms; part selection | simulator state; task definition |
+| object size (footprint radius, height) | object part path (since round 15, not the backbone path) | hand-set table (FC.SIZE) |
+| target size and drawer opening | target term | hand-set table; simulator state |
+| role assignment (which entity is object, which is target) | everything | the task definition |
+| the object/target split and the one-part-per-atom partition | the architecture | designed by us |
+| frames: object frame, canonical place frame (bearing and scale frozen at the hold's onset), rest height | both terms | simulator poses |
+| contact gate (held) for Φ, and the held labels of demo rows | Φ; training split; onsets | simulator contact |
+| the m inventory and each target's m | object part input | fitted from demos' hand yaw (proprioception), but grouped by each demo's target label from the task definition; the close rows use the gripper command |
+| support radii: start radii r_s, role radius r_role, per-part carry radii r_t | the part/backbone switch; the scale frame | fitted from demo rows by the 99th-percentile rule, on simulator positions |
+| demo-to-task labels | which part a demo trains | dataset metadata |
+| demos executed? | — | no: fitted only, never executed |
+
+**What carries forward.** P_min is the arm a Layer-3 rung would start from, if the user restarts the ladder on the familiar layout
+or widens demo coverage. Either is a plan-level decision. Neither is taken here.

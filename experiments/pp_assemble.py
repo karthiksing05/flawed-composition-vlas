@@ -9,8 +9,9 @@ rows (the other role's rows give it an exactly-zero gradient through Phi's 0/1 g
 assembled with the other role of a different base the same way.
 
   build    --obj <ckpt rel> --tgt <ckpt rel> --out <ckpt rel> [--set-rtclip X]
-           Shared buffers (center, size, opart, tpart, gm) must be equal; tmode (the target parts' m) is taken from --tgt, and
-           every row of it that is not a created target part must equal --obj's.  Meta: seed, steps, tasks, decouple must agree.
+           Shared buffers (center, size, opart, tpart) must be equal.  The interface (gm, tmode: fitted from the build's demos by
+           a fixed rule, not trained) comes from --obj; a created target part's m comes from --tgt, whose inventory must then be
+           equal.  Meta: seed, steps, tasks, decouple must agree.
            --set-rtclip: write this scalar into the target role's library-wide carry radius (the rtclip leave-one-out; only valid
            where pp_cons_check.py rtclip has shown the scalar inert).  The output must not exist.
            -> <out>, results/flawed/pp_assemble_<out tag>.json
@@ -33,7 +34,7 @@ from pp_p_train import ROLE_BUFFERS, ROLE_FLAGS                             # no
 from lifelong_ood.policy import parts_flow as PF                            # noqa: E402
 
 CK = os.path.join(FC.DATA, "ckpt")
-SHARED = ("center", "size", "opart", "tpart", "gm")
+SHARED = ("center", "size", "opart", "tpart")
 FLAG_ARGS = dict(tsize="tsize", aframe="aframe", psupport="psupport", tscale="tscale", nmode="nmode", rtransport="rtransport",
                  bbnom="bbnom", bbnosize="bbnosize", tnear="tnear")
 
@@ -59,20 +60,34 @@ def build(a):
         assert torch.equal(so[k], st[k]), ("shared buffer differs", k)
     created_t = mt_meta.get("created") if mt_meta.get("role") == "tgt" else None
     created_o = mo_meta.get("created") if mo_meta.get("role") == "obj" else None
-    keep = torch.ones(len(PF.TGT_ATOMS), dtype=torch.bool)
-    if created_t:
-        keep[PF.TGT_ATOMS.index(created_t)] = False
-    assert torch.equal(so["tmode"][keep], st["tmode"][keep]), "tmode differs outside a created target part"
-    assert mo.nmode == mt.nmode, "inventory size differs"
+    # The interface (inventory gm, each target part's m) is fitted from the build's demo rows by a fixed rule, not trained; it
+    # comes from the object donor (which reads it).  A created target part's m comes from the target donor, which must then
+    # carry the same inventory.  A target donor built without --imode (nmode 0) carries no interface and contributes none.
+    tmode = so["tmode"].clone()
+    if mt.nmode > 0:
+        assert mt.nmode == mo.nmode and torch.equal(so["gm"], st["gm"]), "inventory differs"
+        keep = torch.ones(len(PF.TGT_ATOMS), dtype=torch.bool)
+        if created_t:
+            keep[PF.TGT_ATOMS.index(created_t)] = False
+            tmode[~keep] = st["tmode"][~keep]
+        assert torch.equal(so["tmode"][keep], st["tmode"][keep]), "tmode differs outside a created target part"
+    else:
+        assert not created_t, "a created target part needs its donor's interface"
     kw = dict(tsize=mt.tsize, aframe=mo.aframe, psupport=mo.psupport, tscale=mt.tscale, nmode=mo.nmode, rtransport=mo.rtransport,
               bbnom=mo.bbnom, bbnosize=mo.bbnosize, tnear=mt.tnear)
     m = PF.PartsFlow(mo.H, rank=mo.rank, **kw)
     sd = m.state_dict()
+    def donor(k):
+        if k.startswith("obj.") or k in ROLE_BUFFERS["obj"] or k == "gm":
+            return so
+        if k.startswith("tgt.") or k in ROLE_BUFFERS["tgt"]:
+            return st
+        return None
     for k in sd:
-        if k.startswith("obj.") or k in ROLE_BUFFERS["obj"]:
-            sd[k] = so[k].clone()
-        elif k.startswith("tgt.") or k in ROLE_BUFFERS["tgt"] or k == "tmode":
-            sd[k] = st[k].clone()
+        if k == "tmode":
+            sd[k] = tmode.clone()
+        elif donor(k) is not None:
+            sd[k] = donor(k)[k].clone()
         else:
             assert torch.equal(so[k], st[k]), ("unassigned buffer differs", k)
             sd[k] = so[k].clone()
@@ -80,10 +95,10 @@ def build(a):
         sd["rtclip"] = torch.tensor(float(a.set_rtclip), dtype=torch.float32)
     m.load_state_dict(sd)
     for k, v in m.state_dict().items():                                      # every tensor comes from exactly the intended donor
-        src = so if (k.startswith("obj.") or k in ROLE_BUFFERS["obj"]) else st if (k.startswith("tgt.") or k in ROLE_BUFFERS["tgt"] or k == "tmode") else so
-        if k == "rtclip" and a.set_rtclip is not None:
+        if (k == "rtclip" and a.set_rtclip is not None) or k == "tmode":
             continue
-        assert torch.equal(v, src[k]), ("copy failed", k)
+        assert torch.equal(v, (donor(k) or so)[k]), ("copy failed", k)
+    assert torch.equal(m.state_dict()["tmode"], tmode), "copy failed: tmode"
     meta = dict(mo_meta)
     for k in ("created", "role", "task", "k", "demos"):                     # a created part's meta comes with its own role
         meta.pop(k, None)
