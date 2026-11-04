@@ -56,10 +56,12 @@ def merged(gen):
     G = [dict(np.load(os.path.join(FC.DATA, "gen", f"pp_cov_{t}.npz"))) for t in gen]
     for t, g in zip(gen, G):
         assert (g["task"] == list(FC.KNOWN).index(t)).all() and (g["demo"] >= 100).all() and (g["gen"] == 1).all(), t
+    # generated rows go FIRST: fa1_train.chunks clips its look-ahead at the file's last row, so the file's last demo (human K8 demo
+    # 49 in P_min) pads with its last action; with the generated rows in front, every human row's fields stay bitwise P_min's
     D2 = {k: v for k, v in D.items() if k not in ROWCOLS}
     for k in ROWCOLS:
-        D2[k] = np.concatenate([D[k]] + [g[k].astype(D[k].dtype) for g in G])
-    Db2 = {k: np.concatenate([Db[k]] + [g[k].astype(Db[k].dtype) for g in G]) for k in ("held", "off")}
+        D2[k] = np.concatenate([g[k].astype(D[k].dtype) for g in G] + [D[k]])
+    Db2 = {k: np.concatenate([g[k].astype(Db[k].dtype) for g in G] + [Db[k]]) for k in ("held", "off")}
     return {DEMOS: D2, DEMOS_B: Db2}
 
 
@@ -91,12 +93,12 @@ def smoke():
         same = all(torch.equal(ref[0][x], z[0][x]) for x in ref[0]) and torch.equal(ref[1], z[1]) and ref[2] == z[2] and ref[4] == z[4]
         g = rows_cov(dev, tasks, gen=PP)
         nh = ref[4]
-        human_prefix = all(torch.equal(ref[0][x], g[0][x][:nh]) for x in ref[0] if x not in ("ee0", "d0t")) and torch.equal(ref[1], g[1][:nh])
-        human_prefix = human_prefix and all(torch.equal(ref[0][x], g[0][x][:nh]) for x in ("ee0", "d0t"))
+        differ = [x for x in ref[0] if not torch.equal(ref[0][x], g[0][x][-nh:])] + ([] if torch.equal(ref[1], g[1][-nh:]) else ["chunks"])
+        human_prefix = not differ
         key = g[0]["dkey"].numpy()
         starts = key[np.r_[True, key[1:] != key[:-1]]]
         tix = {int(x) for x in np.unique(key[(key % 1000) >= 100] // 1000)}
-        res["+".join(tasks)] = dict(zero_gen_bitwise=bool(same), human_rows_unchanged=bool(human_prefix),
+        res["+".join(tasks)] = dict(zero_gen_bitwise=bool(same), human_rows_unchanged=bool(human_prefix), human_fields_differ=differ,
                                     episodes_contiguous_unique=bool(len(starts) == len(set(starts.tolist()))),
                                     held_01=bool(set(torch.unique(g[0]["held"]).tolist()) <= {0.0, 1.0}),
                                     generated_tasks=sorted(f"K{t + 1}" for t in tix), rows=int(g[4]), generated=INFO["n_generated"],
