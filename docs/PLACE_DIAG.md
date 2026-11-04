@@ -105,6 +105,13 @@ release-state distributions per task; and, per PLAN_PARTS §10.14, P_min's m-con
 while a small cheese settles toward the centre. N4 − K1 is RELEASE-STATE, given the bottle's history of tilting and touching down
 early. N6 − K6 is SAME-STATE: PHYSICS, as a tall bottle in a bowl can tip.
 
+**Amendment 1 (2026-11-04, after T3's first run and T0, before the final read).** T3's first version included the bowl in its list of
+object slots. At K6, where the bowl is the target, it overwrote the target's position with the held object's, and its control then moved
+both together, so the control showed no change. Every swap difference was exactly 0, on K1's rows and on K6's degenerate rows, but K6's
+check was not informative. The corrected check never touches the target's slot, compares only non-target objects, and writes
+`pp_place_t3_a1.json`, which the read now uses for the gate. The control must also change the velocity. The first output stays in place.
+The contrasts, estimators and verdict rule are unchanged. T0 and the last 7 lines of one K1 trace log were seen before this amendment.
+
 **What this cannot show.**
 - The strata are coarse. A SAME-STATE verdict means these strata did not explain the gap, not that no state could.
 - Standardising on a state reached during the episode describes association within the rollouts. It is not a controlled intervention.

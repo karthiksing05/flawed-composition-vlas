@@ -35,17 +35,19 @@ for sd in (10, 11, 12):
         x, t = torch.randn(B, m.H, 7, generator=g), torch.rand(B, generator=g)
         hold = b["pos"][idx, b["oi"]].clone()
         y = b["yaw"][idx, b["oi"]].clone()
-        for e in OBJ:
+        # PLACE_DIAG 2, amendment 1: never the target's own slot (the first version overwrote the bowl at K6, leaving its control dead)
+        others = [e for e in OBJ if e != FC.ENT[int(b["ti"][0])]]
+        for e in others:
             j = FC.ENT.index(e)
             b["pos"][:, j], b["yaw"][:, j] = hold, y
         with torch.no_grad():
             v0 = m.velocity(b, x, t)
             diffs = {}
-            for e in OBJ:
+            for e in others:
                 b2 = dict(b, oi=torch.full_like(b["oi"], FC.ENT.index(e)))
                 diffs[e] = float((m.velocity(b2, x, t) - v0).abs().max())
             b3 = dict(b, pos=b["pos"].clone())
-            for e in OBJ:
+            for e in others:
                 b3["pos"][:, FC.ENT.index(e), 0] += 0.01
             ctl = float((m.velocity(b3, x, t) - v0).abs().max())
         per[task] = dict(rows=B, max_abs_diff=diffs, control_max_abs_diff=ctl)
@@ -54,4 +56,4 @@ for sd in (10, 11, 12):
     out["seeds"][str(sd)] = per
     print("[t3]", sd, json.dumps(per), flush=True)
 print("T3 exact", out["exact"], "control alive", out["control_alive"], flush=True)
-json.dump(out, open(os.path.join(ROOT, "results", "flawed", "pp_place_t3.json"), "w", encoding="utf-8"), indent=1)
+json.dump(out, open(os.path.join(ROOT, "results", "flawed", "pp_place_t3_a1.json"), "w", encoding="utf-8"), indent=1)

@@ -204,7 +204,7 @@ def drop(comp, lay):
 
 def final():
     res = dict(contrasts={}, tasks={}, drops={}, agreement={})
-    ta = json.load(open(os.path.join(OUT, "pp_place_t3.json"), encoding="utf-8"))
+    ta = json.load(open(os.path.join(OUT, "pp_place_t3_a1.json"), encoding="utf-8"))   # PLACE_DIAG 2, amendment 1
     res["t3"] = dict(exact=ta["exact"], control_alive=ta["control_alive"])
     if not (ta["exact"] and ta["control_alive"]):
         res["verdict"] = "STOPPED: T3 not exact (PLACE_DIAG 2)"
