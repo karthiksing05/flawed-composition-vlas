@@ -280,3 +280,138 @@ pp_L1_amend1).** The arm adds `--rtclip`. Its flags become `--rank 32 --rtclip -
   - No read task's target part lacks a radius. The plate gets its own radius at creation.
 - The nine builds were cancelled at about 3 minutes. Their GPU time is counted, and they wrote no checkpoint. Nothing else in
   the protocol or the mapping changes.
+
+## 3. L1 results (2026-11-04; m3_prereg pp_L1 + pp_L1_amend1; results/flawed/pp_ladder_L1_read.json, pp_s1_mix_full_L1_m{0,1,2}.json, pp_L1_smoke_rollagree.json; rollouts pp_L1_roll)
+
+**Verdict (pp_L1 mapping): L1 HOLDS.** S1 is exact. No counted familiar measure moves by more than 0.10 from L0. Scoped claim:
+in the familiar layout, given Layer-2 GO false in the new layout, P_min composes as well with the sim-contact gate replaced by
+a gripper-width + proprioception event as with the gate. All 30 rollout jobs finished with no episode error, and no cell has a
+missing episode.
+
+**S1.** With m fixed at 0, 1 and 2 (the L1 full inventory: K = 3, 1.58 bits, the same as L0), both swap tests are exactly 0 on
+seeds 10-12, and so is every target-into-grasp component.
+
+**Familiar layout (counted).** Δ = L1 − L0, 2,000 paired state draws, seeds pooled.
+
+| measure | L0 | L1 | Δ [95% CI] | breaks? |
+|---|---|---|---|---|
+| OM | 1.089 | 1.151 | +0.062 [0.014, 0.115] | no |
+| 3F N1 (D3) | −0.033 | +0.017 | +0.050 [−0.017, 0.117] | no |
+| 3F N2 | 0.000 | +0.033 | +0.033 [0.000, 0.083] | no |
+| 3F N3 | 0.000 | +0.067 | +0.067 [0.017, 0.133] | no |
+| 3F N4 | −0.033 | −0.050 | −0.017 [−0.108, 0.092] | no |
+| 3F N6 | +0.011 | −0.071 | −0.082 [−0.199, 0.022] | no |
+| S3 bottle (mean ratio over k = 1, 5, 10) | 0.888 | 0.918 | +0.029 [0.000, 0.064] | no |
+| S3 plate | 0.916 | 0.904 | −0.012 [−0.078, 0.066] | no |
+| 3F N5 (not counted: L0 fails it) | +0.133 | +0.100 | −0.033 [−0.083, 0.017] | — |
+
+- OM and 3F N3 move by a CI-supported amount, but by less than 0.10. N6 moves by −0.082, with a CI that contains 0.
+- **Under Layer-2's own criteria** (reported, not the gate), L1's familiar 3F fails on N3 (+0.067 [0.017, 0.133]) and on N5
+  (+0.100 [0.033, 0.183]). L0 fails on N5 only. Every familiar S3 cell passes, at k = 1, 5 and 10, for both atoms.
+- **Competence.** Familiar known-pairing success is 0.87 against 0.90, and new-pairing success 0.88 against 0.92. The largest
+  per-task drops are K6 (cheese→bowl, 0.82 against 0.97) and N6 (bottle→bowl, 0.70 against 0.80).
+
+**New layout (reported, no verdict).**
+
+| measure | L0 | L1 | Δ [95% CI] |
+|---|---|---|---|
+| OM | 1.081 | 1.178 | +0.097 [−0.119, 0.374] |
+| 3F N1 | +0.129 | +0.177 | +0.048 [−0.056, 0.143] |
+| 3F N2 | −0.063 | +0.001 | +0.064 [−0.085, 0.242] |
+| 3F N3 | −0.067 | −0.027 | +0.040 [−0.075, 0.142] |
+| 3F N4 | +0.164 | +0.229 | +0.065 [−0.033, 0.175] |
+| 3F N5 | +0.276 | +0.247 | −0.029 [−0.092, 0.034] |
+| 3F N6 | +0.107 | +0.039 | −0.068 [−0.187, 0.042] |
+| S3 bottle | 0.770 | 0.698 | −0.072 [−0.153, 0.006] |
+| S3 plate | 1.076 | 1.011 | −0.065 [−0.414, 0.500] |
+
+- Under Layer-2's criteria, new-layout 3F fails on N1, N4 and N5 (L0: N4 and N5). S3 passes 1 of 6 cells, plate k = 1 (L0: 2
+  of 6).
+- New-layout success: 0.46 against 0.46 (known), 0.36 against 0.37 (new). K5 stays at 0.
+
+**The event in the rollouts** (descriptive; every L1 rollout file, S2 and S3 pooled).
+
+| layout | episodes | step agreement with the oracle | event on, oracle off (steps) | oracle on, event off (steps) | onset lag, median (q10, q90) | episodes where only the event holds | only the oracle |
+|---|---|---|---|---|---|---|---|
+| familiar | 2,220 | 0.951 | 11,822 | 2,809 | −1 (−4, 0) | 153 | 5 |
+| new | 2,220 | 0.971 | 12,011 | 3,818 | −2 (−72, +1) | 549 | 5 |
+
+- The event's errors run one way: it holds when the oracle does not.
+  - In the new layout, a quarter of episodes (549) have an event hold and no oracle hold. Most are bottle tasks (K4 93, N4
+    157).
+  - These are closes on something that the hand then lifts, but the object never meets the oracle's own-lift test.
+  - The q10 onset lag of −72 steps comes from such early false holds followed by a real grasp.
+  - These episodes count as not held for the read's h_o, because the instrument is the oracle.
+- The event fires 1.24 segments per familiar episode, against the oracle's 1.00.
+
+**Cost.**
+- **GPU: 15,025 GPU-s = 4.17 A40-h** (sacct). That is 9 cancelled first builds at 223 s each (0.56 A40-h), plus 9 builds with
+  their creations (3.62 A40-h).
+- CPU:
+  - 30 rollout jobs, 16-28 minutes each, about 10.5 CPU-job-h;
+  - 3 S1 jobs, about 5 minutes each;
+  - smoke, read and agreement jobs.
+
+**Deviations.**
+- Amendment 1 (`--rtclip`, §2) was made after the first build attempt and before any rollout or read.
+- The builds were submitted before the pp_L1 ledger row was written. pp_L1 registers "before any rollout, S1 run or read",
+  which holds. The code it hashes is the code the builds ran.
+- The descriptive pre-design look at the demos' widths (§1.2) preceded the design note.
+
+## 4. L2: options, and the ladder paused (2026-11-04)
+
+L1 holds, so §10.10's order calls for L2 next: replace the oracle frames with object positions from the VLA's visual tokens.
+§5 names the source as "S0 KV tools". **The ladder pauses here for the user's decision.** L2 needs large new infrastructure,
+and its design forces plan-level choices. No L2 code was written and no GPU was spent on it.
+
+**What exists.**
+- **S0's tools** (`experiments/s0_data.py`, `s0_sandbox.py`). They set demo states, render the agentview and wrist images at
+  224-256 px, and give per-token object coverage (`body_cov`, `site_cov`). That coverage comes from the simulator's
+  segmentation and camera matrices (`get_camera_intrinsic_matrix` / `extrinsic`).
+- **pi0.5's KV-level hooks** (pp_f1, pp_purify, pp_f3t). They read and edit the prefix KV per layer, on rendered frames.
+
+**What L2 would need that does not exist.**
+1. **Cameras in the rollout.** Every P rollout runs LIBERO's camera-free ControlEnv (fa1_common.make_env). L2 needs rendered
+   frames at every replan, and pi0.5's prefix pass at each one: about 60 calls per episode on 4,440 episodes per rung. That
+   moves rollouts from CPU to GPU-backed serving, or needs a cached-feature design.
+2. **A token-to-position readout.** Some map from pi0.5 tokens (attention to the object word, or KV grouping) to a pixel set,
+   then to a 3-D position.
+3. **Lifting from pixels to 3-D.** This needs a camera model and depth. The sim's camera matrices and depth buffer are oracle,
+   and §5.3's self-calibration (regress the gripper's pixel location from its end-effector position) is not built.
+4. **The rest of the "frames" row** (PARTS_RESULTS §54): the object's yaw, which both terms read; the target sites' positions
+   (cook region, rack top, cabinet top, which are sites, not bodies); the canonical place frame's bearing; and the rest height.
+   §5 names only "object position".
+5. **Training rows from rendered demo frames.** The terms would have to train on the readout's positions, not the simulator's,
+   so the demo frames must be rendered and read (S0's renderer can do this).
+
+**Plan-level choices L2 forces.**
+- **(a) Supervision of the readout.** A probe from pi0.5 features to position, trained on oracle positions, is supervised
+  frames under another name. An unsupervised readout (attention peak or token grouping, with no position labels) is the
+  faithful version, but has no tool yet.
+- **(b) Depth and calibration.** One option is sim calibration and depth: the camera stays oracle, and only the "which pixels
+  are the object" step is removed. The other is §5.3's self-calibration, plus a table-plane or stereo assumption (agentview plus
+  wrist) for depth.
+- **(c) Scope of "frames".** Position only, with yaw and target sites kept oracle (a partial rung). Or every frame quantity
+  (needs yaw from tokens and site localisation).
+- **(d) Compute.** Closed-loop pi0.5 per replan makes every rung's rollouts GPU-bound. The rough estimate is 30-60 A40-h for one
+  rung's 4,440 episodes at L0's 3 × 20 states. That exceeds the 15 A40-h cap of this track by itself. A cheaper path is the
+  readout on a small vision encoder, but that is not "the VLA's visual tokens".
+
+**Options, smallest first.**
+1. **L2a "localisation only":**
+   - pi0.5 attention or token grouping gives the object's and the target's pixel sets, unsupervised;
+   - sim camera matrices and depth lift them to 3-D, with yaw and rest height kept oracle;
+   - closed loop on a reduced state set.
+   This needs the rollout renderer, the per-replan pi0.5 pass and the readout. It is a partial rung by construction.
+2. **L2b, as L2a with self-calibrated cameras** (§5.3) and table-plane depth. It adds the calibration fit, and only the
+   physical robot model stays given.
+3. **L2c, the full frames row:** L2b plus yaw and site localisation from tokens. This is a new perception module, and closest to
+   §5's intent.
+4. **Skip to L3/L4 on oracle frames** (slots from pi0.5 features, roles from contact events). §10.10 fixes the order, so this
+   changes it. L4 (roles from contact events) could reuse L1's event directly, and needs no camera.
+
+**Open concerns for L1** (no criterion attached):
+- The event holds without an oracle hold in 25% of new-layout episodes. The gate is familiar-only, and the read's instrument is
+  the oracle, so this does not enter the verdict. A rung whose instrument also became the event would read h_o differently.
+- Familiar 3F N3 now fails Layer-2's own criterion (+0.067, CI excludes 0), while staying inside the ladder's tolerance.
+- K6 and N6 competence fell by 0.10-0.15. Both place into the bowl. This is an observation of 60 episodes per task, not a test.
