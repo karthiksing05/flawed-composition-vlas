@@ -381,3 +381,9 @@ The plan is adopted. Each layer is still pre-registered before its first read (�
 
 17. **(User, 2026-11-04) Pause and rethink the claim, with an adversarial study** (docs/ADVERSARIAL_STUDY.md). Claims K1-K4 and §8's "likely ours" list stand as
     originally written until the user decides what replaces them. §8's "shown to cause the N2 failures" describes the original goal, and no result supports it.
+
+18. **(User, 2026-11-04) Claim A: compare rival causes; the end goal is a solution.** ADVERSARIAL_STUDY §6, option A replaces K1's role.
+    - **Claim.** On a registered object × target split, new-pairing failure in real VLAs is tested against rival accounts: cross-role dependence at located components,
+      scene shortcuts, memorised or overtrained bindings, and support coverage. A null is reportable.
+    - **End goal.** A solution that resolves composition within chunks and across chunks. Diagnosis serves this goal.
+    - **Next.** The phase-switched instruction test on pi0.5 (ADVERSARIAL_STUDY §7, V1) and the library floors (L1). The grasp-mode purification does not run.
