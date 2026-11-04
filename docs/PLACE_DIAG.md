@@ -257,3 +257,44 @@ frozen and m-conditioned values stand.
 - With about 25-45 arrived episodes per task, A's interval will be wide, and the rule reads its point estimate.
 - If `norot` changes who arrives, the Δ groups differ. Arrival and total success are reported beside it.
 - Tilt is one scalar. A NOT EXPLAINED verdict leaves other in-hand quantities open.
+
+## 5. In-hand test: results (2026-11-04; m3_prereg pp_inhand; results/flawed/pp_inhand_read.json; pp_inhand_trace)
+
+### 5.1 Verdicts
+
+| layout | contrast | G [95% CI] | A [95% CI] | lower task | Δ [95% CI] | G under norot | observational | intervention |
+|---|---|---|---|---|---|---|---|---|
+| new | N1 − K1 | +0.37 [0.03, 0.66] | +0.24 [−0.02, 0.62] | K1 | −0.01 [−0.26, 0.24] | +0.34 | NOT EXPLAINED BY TILT | NO EFFECT |
+| new | N4 − K1 | +0.14 [−0.14, 0.40] | +0.14 [−0.27, 0.40] | K1 | −0.01 [−0.26, 0.24] | +0.07 | NO GAP | NO EFFECT |
+| new | N6 − K6 | −0.19 [−0.46, 0.04] | −0.23 [−0.63, 0.01] | N6 | −0.28 [−0.65, 0.07] | −0.50 | NO GAP | NO EFFECT |
+| familiar | N1 − K1 | −0.02 [−0.05, 0.00] | −0.02 [−0.05, 0.00] | N1 | +0.02 [0.00, 0.05] | +0.02 | NO GAP | NO EFFECT |
+| familiar | N4 − K1 | −0.18 [−0.32, −0.05] | −0.13 [−0.25, −0.03] | N4 | +0.11 [0.02, 0.22] | −0.05 | NOT EXPLAINED BY TILT | ROTATION-CAUSAL |
+| familiar | N6 − K6 | −0.11 [−0.22, −0.01] | −0.12 [−0.24, −0.02] | N6 | +0.13 [0.02, 0.25] | −0.00 | NOT EXPLAINED BY TILT | ROTATION-CAUSAL |
+
+**Against my prediction.** N4 − K1 NO GAP was right. N1 − K1 was half right (no effect, but not tilt-mediated). N6 − K6 was wrong.
+
+**Two runs disagree on N6 − K6.** §3.2 read −0.23 with an upper bound of −0.004, and this re-run of the same policy reads −0.19 with an upper bound of +0.04. Base outcomes
+matched T1's in 88-100% of episodes per task (K1 new 88%), because rollouts differ across hosts, and the bootstrap doesn't model that. So the new-layout N6 − K6 gap is not established.
+
+### 5.2 Rotation commands and the bottle (familiar layout)
+
+Zeroing rotation while held raises the bottle's place and closes both gaps, without harming the other tasks:
+
+| familiar | place, base → norot | tilt reached after arrival, 90th percentile, base → norot |
+|---|---|---|
+| N4 bottle → plate | 0.82 → 0.93 | 95° → 49° |
+| N6 bottle → bowl | 0.86 → 0.98 | 74° → 14° |
+| K1 bowl → plate | 1.00 → 0.98 | 17° → 15° |
+| N1 cheese → plate | 0.98 → 1.00 | 9° → 7° |
+| K6 cheese → bowl | 0.97 → 0.98 | 22° → 18° |
+
+- Tilt at arrival barely differs here (N4 median 5.3° → 4.2°), which fits a tip that happens after arrival, so the arrival stratum could not catch it. That reading is post hoc.
+- Both Δ lower bounds are close to 0 (0.02), and there is no multiplicity correction across the six contrasts.
+- This is a real interaction in one specific sense. The target term cannot tell objects apart, it gives its learned rotations regardless, and those rotations appear to cost the bottle and not the bowl or cheese. Only the bottle's place is moved by them.
+
+### 5.3 The new layout is different
+
+- **`norot` doesn't help, and may harm.** N6's place goes 0.70 → 0.42 (arrived 27 → 19; total success 0.32 → 0.13), N4's 0.57 → 0.50, and K1's stays at 0.43. So `norot` is not a candidate fix.
+- **Removing tilt doesn't rescue K1.** Within K1's base arm, tilt predicts failure (place 12 of 16 below 15°, 2 of 17 at 30° or more). Under `norot` the high tilts mostly go away (3 of 42 at 30° or more), yet place stays at 0.43, with 12 of 25 below 15°. So tilt marks K1's bad episodes and does not appear to cause them.
+- **K1's still-held failures end high and away.** Median end state in base: 0.18 m from the plate, foot 0.23 m above it, 103° of tilt. Under `norot`: 0.11 m, 0.35 m, 26°. So those episodes reach the radius once and then never come down.
+- **Hold rates differ a lot:** K1 0.97; N1, N4, K6 and N6 0.50-0.52. So K1 and N1 may be compared over different start states (§6).
