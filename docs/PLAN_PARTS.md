@@ -375,3 +375,6 @@ The plan is adopted. Each layer is still pre-registered before its first read (�
 
 15. **(User, 2026-11-04) Next: diagnose the place.** The ladder stays paused, and Layer 2 is not written up yet. A CPU-only diagnostic
     asks why the place rate depends on the object-target pair (docs/PLACE_DIAG.md). It builds no model and changes no criterion or verdict.
+
+16. **(User, 2026-11-04) Next: test in-hand state.** After PLACE_DIAG §3, a registered CPU-only test of object tilt along the carry, with one diagnostic
+    intervention that zeroes rotation commands while held (PLACE_DIAG §4). The intervention is not a candidate fix. The ladder stays paused.

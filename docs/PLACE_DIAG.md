@@ -201,3 +201,59 @@ Intervals are in pp_place_t0.json. The frozen column reproduces the published va
 - **A testable candidate, not a result:** the target term sees the foot and the hand's rotation since onset, not the object's own tilt or its pose in the hand. K1 new and
   N4 new have the largest tilts in §3.3. An in-hand-state test would need its own registration, and should drop the open-command event in favour of
   states along the carry.
+
+## 4. In-hand test: design note (fixed 2026-11-04, before any code or data of this test; PLAN_PARTS §10 item 16)
+
+The user approved this next step after reading §3. It is post hoc, because §3's tilts suggested it, and §3 was seen before its thresholds were set. It builds no model and
+changes no criterion or verdict. Dev states and seeds only, CPU only.
+
+**The question.** The target term sees the foot and the hand's rotation since onset, not the object's own tilt. Does the tilt a held object has reached by arrival explain
+the place gaps, and do the target term's own rotation commands cause it?
+
+**The event.** The first step the hold reaches the pair's radius (the frozen estimator's arrival). Unlike §1.3's open command, every arrived episode has it, and it comes
+before the descent and before any contact with the target.
+
+**Tilt.** The angle between the object's body z axis at arrival and at the episode's start, which removes each object's resting orientation. §3.3's tilt was absolute.
+
+**I1: traced re-run.** As T1 with a richer trace: P_min, K1, N1, N4, K6, N6, both layouts, seeds 10-12, states 4-23.
+
+**I2: intervention (arm `norot`).** The same episodes, with the commanded rotation `a[3:6]` set to 0 at every step where the oracle hold is on. This only asks whether those commands cause
+the tilt and the failures. It is a diagnostic and not a candidate fix, and adopting anything like it would be the user's decision. Only the rotation is changed, and only while held.
+
+**Reported with no verdict.** Where the tilt comes from: tilt at the hold's onset, the hand's rotation from onset to arrival, and the object's slip relative to the hand over the same span. Also the object's
+offset shift in the hand; place rate by tilt stratum within each task; the state at the end of K1's still-held failures; agreement with T1's and the stored outcomes. This test computes no 3F; §3.5's
+frozen and m-conditioned values stand.
+
+### 4.1 Pre-registration (fixed 2026-11-04, before any I1 or I2 run; m3_prereg tag pp_inhand)
+
+**Contrasts** as §2: N1 − K1, N4 − K1, N6 − K6, in each layout. The new layout is the headline.
+
+**Estimators**, on arrived episodes:
+- `G`: place-on-arrival difference in the base arm, with the paired state bootstrap of §2 (2,000 draws, generator seed 0). Each contrast's two radii are equal.
+- `A`: the difference standardised over tilt at arrival, strata [0, 15), [15, 30), [30, ∞) degrees, weighted and dropped as in §1.3.
+- `Δ`: for the contrast's lower-place task in the base arm, place-on-arrival in `norot` minus base, same bootstrap.
+
+**Observational verdict per contrast, first match wins:**
+1. CI of `G` contains 0: **NO GAP**.
+2. Overlapping strata hold less than half of the pooled arrived episodes: **UNDETERMINED**.
+3. |A| ≤ 0.5 |G|: **TILT-MEDIATED**.
+4. Otherwise: **NOT EXPLAINED BY TILT**.
+
+**Intervention verdict per contrast:** CI lower bound of `Δ` above 0 and Δ > 0.10 (the rounds' "improves" rule): **ROTATION-CAUSAL**. Otherwise **NO EFFECT**.
+
+**What each pair means:**
+
+| observational | intervention | reading |
+|---|---|---|
+| TILT-MEDIATED | ROTATION-CAUSAL | the target term's own rotation commands tilt the object and cost the place. A question for the target part (condition P or S), not for the law |
+| TILT-MEDIATED | NO EFFECT | tilt goes with the gap but these commands don't drive it: look at the grasp or at slip. The interface has no such input (condition S) |
+| NOT EXPLAINED BY TILT | either | tilt at arrival isn't the answer for this contrast. ROTATION-CAUSAL would still show those commands matter by another route |
+| NO GAP | either | nothing to explain in this run; the intervention's effect on that task is reported |
+
+**Prediction (mine, before data; my last three were wrong).** New layout: N1 − K1 is TILT-MEDIATED with NO EFFECT, N4 − K1 is NO GAP, N6 − K6 is NOT EXPLAINED BY TILT, since §3.3's tilts for N6 and K6 are close.
+
+**What this cannot show.**
+- Standardising is association only. `norot` is the one intervention, and it removes all held rotation, not just the harmful part.
+- With about 25-45 arrived episodes per task, A's interval will be wide, and the rule reads its point estimate.
+- If `norot` changes who arrives, the Δ groups differ. Arrival and total success are reported beside it.
+- Tilt is one scalar. A NOT EXPLAINED verdict leaves other in-hand quantities open.
