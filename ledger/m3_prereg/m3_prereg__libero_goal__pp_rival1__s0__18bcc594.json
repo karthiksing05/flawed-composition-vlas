@@ -1,0 +1,65 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: V1 and L1 (docs/RIVAL_TESTS.md; PLAN_PARTS 10.18)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4511547",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "18bcc59440d1a68dc7734785761f76df96d42c15",
+  "short": "18bcc594"
+ },
+ "keys": {},
+ "metrics": {
+  "L1a_mapping": "per atom and layout: k1 - k0 success CI lower > 0 and > 0.10 -> PART ADDS; else BACKBONE SUFFICES",
+  "L1b_mapping": "per group and layout: P_min - servo CI lower > 0 and > 0.10 -> P_MIN BEATS SERVO; CI upper < 0 and < -0.10 -> SERVO BEATS P_MIN; else TIED",
+  "V1_mapping": "familiar, pooled N1-N6: RECOVERS iff delta_p_A CI lower > 0 and > 0.10; STEERS iff delta_steer CI lower > 0 and > 0.10. yes/yes INSTRUCTION BINDING; no/yes HELD-OBJECT BINDING; no/no NOT THE INSTRUCTION; yes/no RECOVERS WITHOUT STEERING",
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "d288200afce6c9c0fa32f68d88a2d9ef5526aeb560a87d813625ae21997b606d",
+   "docs/RIVAL_TESTS.md": "a3be29d607ea285a05878fb0ee9bcc8e39d2cf5b3cf5e4f2d6392deb1bcde5e2",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/fc_n2_client.py": "5709a33ad3d0cd1a6211bf1ecdac251fba26faaf804c85c3d910119cbc7b9013",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_l1_floor.py": "d9464685b2b098bbc73ab6eae1cb64f98c70c17fe53e5637d2e58e615162ce1e",
+   "experiments/pp_n4d.py": "cde3340289af3441d27b4178cc3b5610bfe56dd626519aa0b6bb111be10a7c2c",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "experiments/pp_v1_client.py": "7e44fb7e909b455a8bf03250ea4defe2849ae670622c847f95651191e64adafb",
+   "experiments/pp_v1_read.py": "df34ca59a5cbed3a0d12e3a923baedf9263658ee4c9e2bc0a96f78ce314fcb60",
+   "experiments/pp_v1_roll.sh": "9cdc87383ce3c58defe993c5ceeed95d8e06eca1a6af617c9315c3c3f34c9fe4"
+  },
+  "labelled": "post hoc; development reads; no training; changes no earlier verdict",
+  "prediction": "V1 INSTRUCTION BINDING; L1a PART ADDS for both atoms in the familiar layout; L1b SERVO BEATS P_MIN in the new layout, TIED in the familiar",
+  "states": "dev only: N2 main states 4-23, N2 seeds; no confirmatory or sealed read; demos never executed",
+  "status": "PRE-REGISTERED V1 and L1 (docs/RIVAL_TESTS.md)",
+  "written_before": "any V1 or L1 run or read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_rival1__s0__18bcc594",
+ "schema": 1,
+ "script": "experiments/prereg/pp_rival1.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-04T22:49:19+00:00",
+ "stream": null,
+ "tag": "pp_rival1"
+}
