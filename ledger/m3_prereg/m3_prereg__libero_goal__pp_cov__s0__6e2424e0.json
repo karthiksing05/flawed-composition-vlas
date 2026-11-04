@@ -1,0 +1,101 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: coverage arm (docs/COVERAGE_RESULTS.md sections 1-2; PLAN_PARTS 10.11)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4507793",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "6e2424e049bf5e7e277c1038525fdbc75f20a40c",
+  "short": "6e2424e0"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "P_cov: P_min's flags (--rank 32 --psupport --tscale --decouple --imode --rtransport --bbnom --bbnosize), human demos + W's generated demos (50 per K1-K6 task), seeds 10-12, both roles trained; S3 created from k in {1, 5, 10} human demos only",
+  "candidate": {
+   "s1": [
+    "pp_s1_mix_cov_full_m0.json",
+    "pp_s1_mix_cov_full_m1.json",
+    "pp_s1_mix_cov_full_m2.json",
+    "pp_s1_mix_cov_full_m3.json"
+   ],
+   "s2": "pp_cov_roll:P2cov",
+   "s3": "pp_cov_roll:Pcov"
+  },
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "479173a76306c9ee40a06b08f9a3512aebc4813eb276a58815f15c5d8bb3c2ae",
+   "experiments/fa1g_plan.py": "bc6d30bb4c1da0f3e66495b8a228246ecd15f4fa3c5224e1b06b9e0f5dd600a6",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/pp_cons_read.py": "6f1ab4cb5bfbe5ae863446252407132467462acc17be4a26a415b1e59f00a0c0",
+   "experiments/pp_cov_gen.py": "f89ec191689ea5cca71de78bf845c5eef47b95422165a27261efe8a9faca7ae1",
+   "experiments/pp_cov_read.py": "213decc319e229132e1fd69f7c5356e574fe09753b54728779afb04678a0a754",
+   "experiments/pp_cov_train.py": "0ef8031584420621b885ac71ee01b0895d02796ae22b4d48bb3e2bd3c920234f",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_n4d.py": "cde3340289af3441d27b4178cc3b5610bfe56dd626519aa0b6bb111be10a7c2c",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "c51c33d7c0432a9e458bf4b5e0437f5dfa48e64a8ca687745ea0bb165949c922",
+   "experiments/pp_round_read.py": "86a559ec9f99b20db8097b95a1e0be903a9577140fbbff258e76731086242426",
+   "experiments/pp_s1_mix.py": "5977d02dd297ee5c80b05b51af3c9cc2156514b141d97ca828924d9ac401a6aa",
+   "lifelong_ood/policy/parts_flow.py": "b51b01eb2998424b240e8b23ca791c6e9dc55611fb3869b051130431ef4cafae"
+  },
+  "generated_sha256": {
+   "K1": "a457ac74bfd811658e6f7e7e098925cd74b9f6d2fb70860f0d4fe639026f5c51",
+   "K2": "64e52b33b0c5df7dda7fbf008a76b7afd73c270a0ac3873ff7111f307df6a8ea",
+   "K3": "de8da465597fba77c0741e3e6c710a09e328b46982f9f3965f36b264d26eb799",
+   "K4": "2e5fc8ab1350380e6ece7ec2d3b2e052c63171ba2db3243e2732644cb033bbc1",
+   "K5": "1b943f10594698f5ccdaafd1647c7db2bf78194e469fefcced398e2c8d29b6e6",
+   "K6": "acfd8cffef114b3f91483d7d4c9e96740045340ca35bfda04ec05668068036ad"
+  },
+  "labelled": "generated-data ablation (PLAN_PARTS 4.1), post hoc (PLAN_PARTS 10.11); not the structural claim; does not change the main arm's GO",
+  "mapping": "SUPPORTED iff (a) S1 restated exact; (b) new-layout 3F passes on every pairing N1-N6; (c) new-layout OM passes; (d) new-layout S3 passes for each atom (all k in {1, 5, 10}: ratio >= 0.8, LB >= 0.6); (e) every familiar GO item passing for P_min passes, and pooled familiar K1-K6 success delta (P_cov - P_min, paired state bootstrap) not < -0.10 with CI upper < 0. Else NOT SUPPORTED",
+  "prediction": "NOT SUPPORTED, failing (d) for the plate only; s known new >= 0.65; familiar within 0.05",
+  "primary": "P_cov's verdict is the arm's verdict; P_cov_h never replaces it",
+  "reference": "P_min: pp_cons_roll (P2naf, Pnaf_<cond>_k<k>); S1 pp_s1_mix_full_naf_m0-2",
+  "secondary": {
+   "arm": "P_cov_h: as P_cov, but the grasp-mode inventory and each target's m fitted on the human rows only (P_min's interface); object term retrained, target term reused from cov_<cond>; added after seeing the builds' fitted interfaces, before any read",
+   "mapping": "the same five clauses",
+   "output": "pp_cov_h_read.json",
+   "s1": [
+    "pp_s1_mix_covh_full_m0.json",
+    "pp_s1_mix_covh_full_m1.json",
+    "pp_s1_mix_covh_full_m2.json"
+   ],
+   "s2": "pp_cov_roll:P2covh",
+   "s3": "pp_cov_roll:Pcovh"
+  },
+  "section_sha256": "3d50621125e99d555364b4124953ca8789362e843191b68c0d6455916747927f",
+  "states": "dev only: N2 main states 4-23, N2 seeds; no confirmatory or sealed read",
+  "status": "PRE-REGISTERED coverage arm (docs/COVERAGE_RESULTS.md sections 1-2)",
+  "written_before": "any S1 run, rollout or read of this arm"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_cov__s0__6e2424e0",
+ "schema": 1,
+ "script": "experiments/prereg/pp_cov.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-04T15:19:11+00:00",
+ "stream": null,
+ "tag": "pp_cov"
+}
