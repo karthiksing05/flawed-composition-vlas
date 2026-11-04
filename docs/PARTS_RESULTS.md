@@ -2469,6 +2469,18 @@ part (§29). So the stretch acts only beyond the part's release region, and it i
 - **Release radius ρ(part)**, fitted from each target part's own demos by §4.1's 99th-percentile rule: the 99th percentile of the
   horizontal object-to-target distance at the last held row of each carry. A created target part fits ρ from its own k demos.
   The build asserts ρ < r_t for every part with rows (r_t is the part's carry radius from round 8).
+  - **Amendment (2026-11-03, after the smoke, before any build or read).** The assert fails for the drawer target
+    (wooden_cabinet_1_top_region, K7 only; no N2 read uses it): ρ = 0.274 m against r_t = 0.266 m. Where ρ ≥ r_t, the release
+    region covers the part's whole carry support, so by the same principle nothing is stretched: the scale is 1 on all of that
+    part's rows. The assert is replaced by this rule, and the build lists the parts it applies to.
+  - **Second amendment (2026-11-03, after the smoke, before any build or read).** The smoke's fitted radii were far above the
+    demos' release band (plate 0.127 m against a 90th percentile of 0.022 m). "The last held row of each carry" had been coded as
+    every hold segment's end, and the segments that end in a drop or regrasp far from the target set the 99th percentile. The
+    release is the place, so ρ is fitted at each demo's last held row. On the full library this gives plate 0.023, bowl 0.042,
+    stove 0.049, rack 0.105, cabinet top 0.114 and drawer 0.067 m, all inside their carry radii, so the first amendment's rule
+    applies to no part. (Under every-segment ends they were 0.127, 0.133, 0.179, 0.122, 0.281 and 0.274 m.)
+  - The smoke's check that the scale lies in [s_t, 1] on far rows is restricted to d ≤ d0. Beyond the onset (d > d0), φ(d)/d
+    falls below s_t, because φ is affine with a positive intercept. Round 9's s_t was constant there.
 - **The frame, frozen at the hold's onset as before.** With d the current horizontal object-to-target distance and d0 the
   onset distance:
   - d0 ≤ r_t: s = 1, as now.

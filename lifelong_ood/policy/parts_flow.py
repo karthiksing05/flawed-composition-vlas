@@ -83,8 +83,14 @@ class PartsFlow(nn.Module):
 
     def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
                  rclip=0.0, rtclip=0.0, hscale=0.0, psupport=False, rclip_p=None, rtclip_p=None, tscale=False, nmode=0, tmode=None,
-                 gm=None, rtransport=False, rs_p=None, rrole=0.0, bbnom=False, bbnosize=False):
+                 gm=None, rtransport=False, rs_p=None, rrole=0.0, bbnom=False, bbnosize=False, tnear=False, rrel_p=None):
         super().__init__()
+        # PARTS_RESULTS 50 (P_rel): with tscale, the carry scale frame leaves the target part's release region unstretched.  rrel_p
+        # [target part] = its release radius rho (99th pct of its demos' object-to-target distance at each carry's last held row).
+        # For d0 > r_t: phi(d) = d (d <= rho), rho + (d - rho)(r_t - rho)/(d0 - rho) (d > rho); the row's scale is phi(d)/d.
+        self.tnear = bool(tnear)
+        assert not self.tnear or tscale, "tnear needs tscale"
+        self.register_buffer("rrel_p", torch.tensor(rrel_p if rrel_p is not None else np.zeros(len(TGT_ATOMS)), dtype=torch.float32))
         # PARTS_RESULTS 47 (P_nsz): with rtransport, the backbone-alone path reads no atom-specific slot attribute (the object's
         # hand-set size is 0 on backbone-only rows); part-on rows read it as before
         self.bbnosize = bool(bbnosize)
@@ -161,7 +167,14 @@ class PartsFlow(nn.Module):
         d0 = b["d0t"] if "d0t" in b else torch.linalg.norm((b["pos"][idx, b["oi"]] - b["pos"][idx, b["ti"]])[:, :2], dim=-1)
         r = self._radius(self.rtclip, self.rtclip_p, self.tpart[b["ti"]])
         r = r[:, 0] if r.dim() == 2 else r.expand(len(d0))
-        return torch.clamp(r / d0.clamp_min(1e-9), max=1.0)
+        if not self.tnear:
+            return torch.clamp(r / d0.clamp_min(1e-9), max=1.0)
+        d = torch.linalg.norm((b["pos"][idx, b["oi"]] - b["pos"][idx, b["ti"]])[:, :2], dim=-1)      # PARTS_RESULTS 50
+        rho = self.rrel_p[self.tpart[b["ti"]].clamp_min(0)]
+        sfar = (r - rho) / (d0 - rho).clamp_min(1e-9)
+        phi = torch.where(d > rho, rho + (d - rho) * sfar, d)
+        # rho >= r_t: the release region covers the part's whole carry support, so nothing is stretched (scale 1)
+        return torch.where((d0 > r) & (rho < r), torch.clamp(phi / d.clamp_min(1e-9), max=1.0), torch.ones_like(d))
 
     def part_on(self, b, o):
         """P_rtr: per row, does the object part act (horizontal hand-object distance <= the part's start radius)?  None when off."""
@@ -302,7 +315,8 @@ class PartsFlow(nn.Module):
     def save(self, path, meta):
         np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize, aframe=self.aframe,
                                                 psupport=self.psupport, tscale=self.tscale, nmode=self.nmode,
-                                                rtransport=self.rtransport, bbnom=self.bbnom, bbnosize=self.bbnosize)),
+                                                rtransport=self.rtransport, bbnom=self.bbnom, bbnosize=self.bbnosize,
+                                                tnear=self.tnear)),
                  **{k: v.detach().cpu().numpy() for k, v in self.state_dict().items()})
 
     @classmethod
@@ -311,8 +325,10 @@ class PartsFlow(nn.Module):
         meta = json.loads(str(z["__meta__"]))
         m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False), aframe=meta.get("aframe", False),
                 psupport=meta.get("psupport", False), tscale=meta.get("tscale", False), nmode=meta.get("nmode", 0),
-                rtransport=meta.get("rtransport", False), bbnom=meta.get("bbnom", False), bbnosize=meta.get("bbnosize", False))
+                rtransport=meta.get("rtransport", False), bbnom=meta.get("bbnom", False), bbnosize=meta.get("bbnosize", False),
+                tnear=meta.get("tnear", False))
         sd ={k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
+        sd.setdefault("rrel_p", m.rrel_p.clone())                               # checkpoints before P_rel carry no release radii
         sd.setdefault("rs_p", m.rs_p.clone())                                   # checkpoints before P_rtr carry no start radii
         sd.setdefault("rrole", torch.tensor(0.0))
         sd.setdefault("tmode", m.tmode.clone())                                 # checkpoints before P_imd carry no interface
