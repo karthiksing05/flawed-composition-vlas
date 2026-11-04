@@ -1,0 +1,2510 @@
+{
+ "instructions": {
+  "K1": "put the bowl on the plate",
+  "K2": "put the bowl on the stove",
+  "K3": "put the bowl on top of the cabinet",
+  "K4": "put the wine bottle on top of the cabinet",
+  "K5": "put the wine bottle on the rack",
+  "K6": "put the cream cheese in the bowl",
+  "K7": "open the top drawer and put the bowl inside",
+  "K8": "push the plate to the front of the stove",
+  "N1": "put the cream cheese on the plate",
+  "N2": "put the cream cheese on the stove",
+  "N3": "put the cream cheese on top of the cabinet",
+  "N4": "put the wine bottle on the plate",
+  "N5": "put the wine bottle on the stove",
+  "N6": "put the wine bottle in the bowl",
+  "N7": "open the top drawer and put the cream cheese inside",
+  "N8": "push the bowl to the front of the stove"
+ },
+ "pgate": {
+  "tw": 0.0025343644694657995,
+  "lift": 0.01,
+  "w_min": 0.001234428258612752,
+  "w_close_q01": 0.0038343006803188474
+ },
+ "per_demo": {
+  "K1": {
+   "demos_with_event": 50,
+   "g_ok": 50,
+   "r_ok": 50,
+   "pairs": {
+    "akita_black_bowl_1|plate_1": 50
+   },
+   "margin_g_q10_50": [
+    0.12545507177710533,
+    0.1453554853796959
+   ],
+   "margin_r_q10_50": [
+    0.15081678032875062,
+    0.16799743473529816
+   ]
+  },
+  "K2": {
+   "demos_with_event": 50,
+   "g_ok": 50,
+   "r_ok": 50,
+   "pairs": {
+    "akita_black_bowl_1|flat_stove_1_cook_region": 50
+   },
+   "margin_g_q10_50": [
+    0.2218758672475815,
+    0.24836432188749313
+   ],
+   "margin_r_q10_50": [
+    0.11284551247954369,
+    0.1424940899014473
+   ]
+  },
+  "K3": {
+   "demos_with_event": 50,
+   "g_ok": 50,
+   "r_ok": 50,
+   "pairs": {
+    "akita_black_bowl_1|wooden_cabinet_1_top_side": 50
+   },
+   "margin_g_q10_50": [
+    0.31128486096858976,
+    0.3282335251569748
+   ],
+   "margin_r_q10_50": [
+    0.007390425354242325,
+    0.010928118601441383
+   ]
+  },
+  "K4": {
+   "demos_with_event": 50,
+   "g_ok": 50,
+   "r_ok": 50,
+   "pairs": {
+    "wine_bottle_1|wooden_cabinet_1_top_side": 50
+   },
+   "margin_g_q10_50": [
+    0.3088812202215195,
+    0.32835425436496735
+   ],
+   "margin_r_q10_50": [
+    0.005848408490419388,
+    0.009052598848938942
+   ]
+  },
+  "K5": {
+   "demos_with_event": 50,
+   "g_ok": 50,
+   "r_ok": 50,
+   "pairs": {
+    "wine_bottle_1|wine_rack_1_top_region": 50
+   },
+   "margin_g_q10_50": [
+    0.2776831239461899,
+    0.28746287524700165
+   ],
+   "margin_r_q10_50": [
+    0.1179371528327465,
+    0.15277522057294846
+   ]
+  },
+  "K6": {
+   "demos_with_event": 50,
+   "g_ok": 50,
+   "r_ok": 50,
+   "pairs": {
+    "cream_cheese_1|akita_black_bowl_1": 50
+   },
+   "margin_g_q10_50": [
+    0.13100375682115556,
+    0.15135391801595688
+   ],
+   "margin_r_q10_50": [
+    0.0441435381770134,
+    0.0641479566693306
+   ]
+  },
+  "K7": {
+   "demos_with_event": 50,
+   "g_ok": 50,
+   "r_ok": 50,
+   "pairs": {
+    "akita_black_bowl_1|wooden_cabinet_1_top_region": 50
+   },
+   "margin_g_q10_50": [
+    0.22610174417495726,
+    0.26227329671382904
+   ],
+   "margin_r_q10_50": [
+    0.09274161085486413,
+    0.11921065300703049
+   ]
+  },
+  "K8": {
+   "demos_with_event": 0,
+   "g_ok": 0,
+   "r_ok": 0,
+   "pairs": {},
+   "margin_g_q10_50": null,
+   "margin_r_q10_50": null
+  }
+ },
+ "lexicons": {
+  "full": {
+   "lexicon": {
+    "situations": {
+     "put the bowl on the plate": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "put the bowl on the stove": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "put the bowl on top of the cabinet": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "put the wine bottle on top of the cabinet": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "put the wine bottle on the rack": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "put the cream cheese in the bowl": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "open the top drawer and put the bowl inside": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ]
+    },
+    "ref": {
+     "bottle": "wine_bottle_1",
+     "bowl": "akita_black_bowl_1",
+     "cabinet": "wooden_cabinet_1_top_side",
+     "of": "wooden_cabinet_1_top_side",
+     "wine": "wine_bottle_1",
+     "and": "wooden_cabinet_1_top_region",
+     "cheese": "cream_cheese_1",
+     "cream": "cream_cheese_1",
+     "drawer": "wooden_cabinet_1_top_region",
+     "in": "cream_cheese_1",
+     "inside": "wooden_cabinet_1_top_region",
+     "open": "wooden_cabinet_1_top_region",
+     "plate": "plate_1",
+     "rack": "wine_rack_1_top_region",
+     "stove": "flat_stove_1_cook_region"
+    },
+    "pg": {
+     "bottle": 1.0,
+     "bowl": 0.8,
+     "cabinet": 0.0,
+     "of": 0.0,
+     "wine": 1.0,
+     "and": 0.0,
+     "cheese": 1.0,
+     "cream": 1.0,
+     "drawer": 0.0,
+     "in": 1.0,
+     "inside": 0.0,
+     "open": 0.0,
+     "plate": 0.0,
+     "rack": 0.0,
+     "stove": 0.0
+    },
+    "pr": {
+     "bottle": 0.0,
+     "bowl": 0.2,
+     "cabinet": 1.0,
+     "of": 1.0,
+     "wine": 0.0,
+     "and": 1.0,
+     "cheese": 0.0,
+     "cream": 0.0,
+     "drawer": 1.0,
+     "in": 0.0,
+     "inside": 1.0,
+     "open": 1.0,
+     "plate": 1.0,
+     "rack": 1.0,
+     "stove": 1.0
+    }
+   },
+   "parses": {
+    "K1": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K5": {
+     "parsed": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": true
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": null,
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N5": {
+     "parsed": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N6": {
+     "parsed": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "N7": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   }
+  },
+  "nobottle": {
+   "lexicon": {
+    "situations": {
+     "put the bowl on the plate": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "put the bowl on the stove": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "put the bowl on top of the cabinet": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "put the cream cheese in the bowl": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "open the top drawer and put the bowl inside": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ]
+    },
+    "ref": {
+     "bowl": "akita_black_bowl_1",
+     "on": "akita_black_bowl_1",
+     "put": "akita_black_bowl_1",
+     "the": "akita_black_bowl_1",
+     "top": "akita_black_bowl_1",
+     "and": "wooden_cabinet_1_top_region",
+     "cabinet": "wooden_cabinet_1_top_side",
+     "cheese": "cream_cheese_1",
+     "cream": "cream_cheese_1",
+     "drawer": "wooden_cabinet_1_top_region",
+     "in": "cream_cheese_1",
+     "inside": "wooden_cabinet_1_top_region",
+     "of": "wooden_cabinet_1_top_side",
+     "open": "wooden_cabinet_1_top_region",
+     "plate": "plate_1",
+     "stove": "flat_stove_1_cook_region"
+    },
+    "pg": {
+     "bowl": 0.8,
+     "on": 1.0,
+     "put": 0.8,
+     "the": 0.8,
+     "top": 1.0,
+     "and": 0.0,
+     "cabinet": 0.0,
+     "cheese": 1.0,
+     "cream": 1.0,
+     "drawer": 0.0,
+     "in": 1.0,
+     "inside": 0.0,
+     "of": 0.0,
+     "open": 0.0,
+     "plate": 0.0,
+     "stove": 0.0
+    },
+    "pr": {
+     "bowl": 0.2,
+     "on": 0.0,
+     "put": 0.2,
+     "the": 0.2,
+     "top": 0.0,
+     "and": 1.0,
+     "cabinet": 1.0,
+     "cheese": 0.0,
+     "cream": 0.0,
+     "drawer": 1.0,
+     "in": 0.0,
+     "inside": 1.0,
+     "of": 1.0,
+     "open": 1.0,
+     "plate": 1.0,
+     "stove": 1.0
+    }
+   },
+   "parses": {
+    "K1": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": false
+    },
+    "K5": {
+     "parsed": null,
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": false
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": false
+    },
+    "N5": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": false
+    },
+    "N6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": false
+    },
+    "N7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": false
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   }
+  },
+  "nobottle+k1": {
+   "situation": {
+    "put the wine bottle on top of the cabinet": [
+     "wine_bottle_1",
+     "wooden_cabinet_1_top_side"
+    ]
+   },
+   "parses": {
+    "K1": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K5": {
+     "parsed": null,
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": false
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": null,
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N5": {
+     "parsed": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N6": {
+     "parsed": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "N7": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   },
+   "library_parses_changed": []
+  },
+  "nobottle+k5": {
+   "situation": {
+    "put the wine bottle on top of the cabinet": [
+     "wine_bottle_1",
+     "wooden_cabinet_1_top_side"
+    ]
+   },
+   "parses": {
+    "K1": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K5": {
+     "parsed": null,
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": false
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": null,
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N5": {
+     "parsed": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N6": {
+     "parsed": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "N7": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   },
+   "library_parses_changed": []
+  },
+  "nobottle+k10": {
+   "situation": {
+    "put the wine bottle on top of the cabinet": [
+     "wine_bottle_1",
+     "wooden_cabinet_1_top_side"
+    ]
+   },
+   "parses": {
+    "K1": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K5": {
+     "parsed": null,
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": false
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": null,
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N5": {
+     "parsed": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N6": {
+     "parsed": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "N7": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   },
+   "library_parses_changed": []
+  },
+  "noplate": {
+   "lexicon": {
+    "situations": {
+     "put the bowl on the stove": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "put the bowl on top of the cabinet": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "put the wine bottle on top of the cabinet": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "put the wine bottle on the rack": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "put the cream cheese in the bowl": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "open the top drawer and put the bowl inside": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ]
+    },
+    "ref": {
+     "bottle": "wine_bottle_1",
+     "bowl": "akita_black_bowl_1",
+     "cabinet": "wooden_cabinet_1_top_side",
+     "of": "wooden_cabinet_1_top_side",
+     "wine": "wine_bottle_1",
+     "and": "wooden_cabinet_1_top_region",
+     "cheese": "cream_cheese_1",
+     "cream": "cream_cheese_1",
+     "drawer": "wooden_cabinet_1_top_region",
+     "in": "cream_cheese_1",
+     "inside": "wooden_cabinet_1_top_region",
+     "open": "wooden_cabinet_1_top_region",
+     "rack": "wine_rack_1_top_region",
+     "stove": "flat_stove_1_cook_region"
+    },
+    "pg": {
+     "bottle": 1.0,
+     "bowl": 0.75,
+     "cabinet": 0.0,
+     "of": 0.0,
+     "wine": 1.0,
+     "and": 0.0,
+     "cheese": 1.0,
+     "cream": 1.0,
+     "drawer": 0.0,
+     "in": 1.0,
+     "inside": 0.0,
+     "open": 0.0,
+     "rack": 0.0,
+     "stove": 0.0
+    },
+    "pr": {
+     "bottle": 0.0,
+     "bowl": 0.25,
+     "cabinet": 1.0,
+     "of": 1.0,
+     "wine": 0.0,
+     "and": 1.0,
+     "cheese": 0.0,
+     "cream": 0.0,
+     "drawer": 1.0,
+     "in": 0.0,
+     "inside": 1.0,
+     "open": 1.0,
+     "rack": 1.0,
+     "stove": 1.0
+    }
+   },
+   "parses": {
+    "K1": {
+     "parsed": null,
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": false
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K5": {
+     "parsed": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": true
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": null,
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": null,
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": false
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": null,
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": false
+    },
+    "N5": {
+     "parsed": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N6": {
+     "parsed": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "N7": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   }
+  },
+  "noplate+k1": {
+   "situation": {
+    "put the bowl on the plate": [
+     "akita_black_bowl_1",
+     "plate_1"
+    ]
+   },
+   "parses": {
+    "K1": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K5": {
+     "parsed": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": true
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": null,
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N5": {
+     "parsed": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N6": {
+     "parsed": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "N7": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   },
+   "library_parses_changed": []
+  },
+  "noplate+k5": {
+   "situation": {
+    "put the bowl on the plate": [
+     "akita_black_bowl_1",
+     "plate_1"
+    ]
+   },
+   "parses": {
+    "K1": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K5": {
+     "parsed": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": true
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": null,
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N5": {
+     "parsed": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N6": {
+     "parsed": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "N7": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   },
+   "library_parses_changed": []
+  },
+  "noplate+k10": {
+   "situation": {
+    "put the bowl on the plate": [
+     "akita_black_bowl_1",
+     "plate_1"
+    ]
+   },
+   "parses": {
+    "K1": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "K2": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "K3": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K4": {
+     "parsed": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "K5": {
+     "parsed": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "wine_rack_1_top_region"
+     ],
+     "exact": true
+    },
+    "K6": {
+     "parsed": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "K7": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "K8": {
+     "parsed": null,
+     "given": [
+      "plate_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    },
+    "N1": {
+     "parsed": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N2": {
+     "parsed": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N3": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_side"
+     ],
+     "exact": true
+    },
+    "N4": {
+     "parsed": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "plate_1"
+     ],
+     "exact": true
+    },
+    "N5": {
+     "parsed": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "flat_stove_1_cook_region"
+     ],
+     "exact": true
+    },
+    "N6": {
+     "parsed": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "given": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "exact": true
+    },
+    "N7": {
+     "parsed": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "given": [
+      "cream_cheese_1",
+      "wooden_cabinet_1_top_region"
+     ],
+     "exact": true
+    },
+    "N8": {
+     "parsed": [
+      "akita_black_bowl_1",
+      "flat_stove_1_cook_region"
+     ],
+     "given": [
+      "akita_black_bowl_1",
+      "main_table_stove_front_region"
+     ],
+     "exact": false
+    }
+   },
+   "library_parses_changed": []
+  }
+ },
+ "parse_locality": {
+  "holds": true,
+  "violations": []
+ },
+ "one_demo": {
+  "per_index": {
+   "0": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "1": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "2": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "3": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "4": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "5": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "6": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "7": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "8": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "9": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "10": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "11": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "12": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "13": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "14": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "15": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "16": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "17": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "18": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "19": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "20": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "21": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "22": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "23": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "24": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "25": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "26": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "27": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "28": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "29": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "30": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "31": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "32": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "33": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "34": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "35": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "36": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "37": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "38": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "39": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "40": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "41": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "42": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "43": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "44": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "45": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "46": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "47": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "48": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   },
+   "49": {
+    "read_exact": 12,
+    "k7_exact": true,
+    "wrong": []
+   }
+  },
+  "all_read_exact": 50,
+  "mean_read_exact": 12.0,
+  "n": 50
+ },
+ "leave_one_task_out": {
+  "K1": {
+   "itself": {
+    "parsed": null,
+    "given": [
+     "akita_black_bowl_1",
+     "plate_1"
+    ],
+    "exact": false
+   },
+   "read_exact": 9,
+   "wrong": [
+    "K1",
+    "N1",
+    "N4"
+   ]
+  },
+  "K2": {
+   "itself": {
+    "parsed": null,
+    "given": [
+     "akita_black_bowl_1",
+     "flat_stove_1_cook_region"
+    ],
+    "exact": false
+   },
+   "read_exact": 9,
+   "wrong": [
+    "K2",
+    "N2",
+    "N5"
+   ]
+  },
+  "K3": {
+   "itself": {
+    "parsed": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "given": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "exact": true
+   },
+   "read_exact": 12,
+   "wrong": []
+  },
+  "K4": {
+   "itself": {
+    "parsed": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "given": [
+     "wine_bottle_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "exact": false
+   },
+   "read_exact": 7,
+   "wrong": [
+    "K4",
+    "K5",
+    "N4",
+    "N5",
+    "N6"
+   ]
+  },
+  "K5": {
+   "itself": {
+    "parsed": null,
+    "given": [
+     "wine_bottle_1",
+     "wine_rack_1_top_region"
+    ],
+    "exact": false
+   },
+   "read_exact": 11,
+   "wrong": [
+    "K5"
+   ]
+  },
+  "K6": {
+   "itself": {
+    "parsed": null,
+    "given": [
+     "cream_cheese_1",
+     "akita_black_bowl_1"
+    ],
+    "exact": false
+   },
+   "read_exact": 7,
+   "wrong": [
+    "K6",
+    "N1",
+    "N2",
+    "N3",
+    "N6"
+   ]
+  },
+  "K7": {
+   "itself": {
+    "parsed": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "given": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_region"
+    ],
+    "exact": false
+   },
+   "read_exact": 12,
+   "wrong": []
+  }
+ },
+ "token_shuffle_exact_of_20": {
+  "K1": 20,
+  "K2": 20,
+  "K3": 20,
+  "K4": 20,
+  "K5": 20,
+  "K6": 20,
+  "N1": 20,
+  "N2": 20,
+  "N3": 20,
+  "N4": 20,
+  "N5": 20,
+  "N6": 11
+ },
+ "plain_prediction": {
+  "K1": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "plate_1"
+   ],
+   "exact": true
+  },
+  "K2": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "flat_stove_1_cook_region"
+   ],
+   "exact": true
+  },
+  "K3": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "exact": true
+  },
+  "K4": {
+   "parsed": [
+    "wine_bottle_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "exact": true
+  },
+  "K5": {
+   "parsed": [
+    "wine_bottle_1",
+    "wine_rack_1_top_region"
+   ],
+   "exact": true
+  },
+  "K6": {
+   "parsed": [
+    "cream_cheese_1",
+    "akita_black_bowl_1"
+   ],
+   "exact": true
+  },
+  "K7": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_region"
+   ],
+   "exact": true
+  },
+  "K8": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "exact": false
+  },
+  "N1": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "plate_1"
+   ],
+   "exact": false
+  },
+  "N2": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "flat_stove_1_cook_region"
+   ],
+   "exact": false
+  },
+  "N3": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "exact": false
+  },
+  "N4": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "exact": false
+  },
+  "N5": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "exact": false
+  },
+  "N6": {
+   "parsed": [
+    "wine_bottle_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "exact": false
+  },
+  "N7": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_region"
+   ],
+   "exact": false
+  },
+  "N8": {
+   "parsed": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "exact": false
+  }
+ }
+}

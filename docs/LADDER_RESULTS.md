@@ -539,3 +539,105 @@ build:
 - (c) the comparison of §5.4.
 
 Protocol and mapping follow in §6, before any L4 rollout, S1 run or read.
+
+### 5.7 Smoke checks and the induction's comparison (2026-11-04; commits c3515936, 89f623d4; results/flawed/pp_L4_smoke_{rows,roles,roll}.json)
+
+**Is the induced assignment equal to the given one on every task? No.** It is exact on 14 of the 16 compounds, including all 12 read
+tasks, so the "holds trivially" case does not apply.
+
+| compound | full lexicon's parse | given |
+|---|---|---|
+| K1-K7, N1-N7 | exact | same |
+| K8 | none (no object) | plate, stove front |
+| N8 | bowl, stove cook region | differs |
+
+**Per demo.** On K1-K7, all 350 of 350 demos give (g, r) equal to the given pair. K8 has no event in any of its 50 demos.
+
+| task | grasp margin, q10 / median (m) | release margin, q10 / median (m) |
+|---|---|---|
+| K1 | 0.125 / 0.145 | 0.151 / 0.168 |
+| K2 | 0.222 / 0.248 | 0.113 / 0.142 |
+| K3 | 0.311 / 0.328 | **0.007 / 0.011** |
+| K4 | 0.309 / 0.328 | **0.006 / 0.009** |
+| K5 | 0.278 / 0.287 | 0.118 / 0.153 |
+| K6 | 0.131 / 0.151 | 0.044 / 0.064 |
+| K7 | 0.226 / 0.262 | 0.093 / 0.119 |
+
+The cabinet-top release is decided by under 1 cm in the median demo. Every demo still gets it right, but it is the thin point of the
+induction.
+
+**The builds' lexicons, with creation.**
+- **Full:** as above.
+- **nobottle:** exact on its own tasks K1, K2, K3, K6, K7, and on N1-N3. Before creation it maps "put", "the", "on" and "top" to the
+  bowl, and it misreads the bottle tasks (K4, N4, N5, N7 as bowl; N6 as cheese). After creating from K4, at k = 1, 5 or 10, K4 and
+  N4-N7 are exact. K5 has no parse, because creating the bottle does not ground "rack".
+- **noplate:** exact on its own tasks. K1, N1 and N4 have no parse before creation, and are exact after it, at k = 1, 5 and 10.
+- No creation changes the parse of any library task.
+
+**Robustness.**
+- **One-demo lexicons:** with each task's situation from demo j alone, all 12 read tasks are exact for all 50 values of j.
+- **Leave one known task out** (read tasks exact, of 12):
+
+| withheld | read tasks exact | its own parse | also wrong |
+|---|---|---|---|
+| K1 | 9 | none | N1, N4 |
+| K2 | 9 | none | N2, N5 |
+| K3 | 12 | exact | — |
+| K4 | 7 | **wrong: bowl as object** | K5, N4, N5, N6 |
+| K5 | 11 | none | — |
+| K6 | 7 | none | N1, N2, N3, N6 |
+| K7 | 12 | wrong on the target slot (cabinet top instead of drawer); K7 is not a read task | — |
+
+  A word first seen in the withheld task cannot be grounded. A task whose two slots are both unexplained stays unresolved, so with
+  K4 withheld, K5's "wine", "bottle" and "rack" get no referent. **The failures are not always refusals: withholding K4 gives a
+  silent wrong parse.**
+- **Token shuffles:** 20 of 20 exact on 11 read tasks, 11 of 20 on N6. So the parse mostly does not use word order. N6 does: "in" is
+  grounded to the cheese (it occurs only in K6), and N6 parses correctly only because "wine" comes before "in".
+- **The lexicon is not a linguist's.** "in", "of", "and", "open" and "inside" have referents. It parses these instructions; it has
+  not learned English prepositions.
+- **Plain prediction** (no referents, no explaining away): 6 of 12 read tasks, all six new pairings wrong. This confirms §5.2's
+  reasoning on the data.
+
+**Parse locality (§5.5):** holds with no violation.
+
+**Flag off.**
+- (a) `rows()` equals the code at 3bb75b8c bitwise, on full, nobottle, noplate and the K4 creation, with oracle held and with the
+  event. An L1 checkpoint loads with no lexicon.
+- (b) K5 familiar (seed 10), a varied-outcome task, on L0's checkpoint: equal to pp_cons_roll in all 20 episodes.
+- (b) on L1's checkpoint, **first run: not equal**. Every episode differed by a small amount at first, 2 of 20 outcomes flipped, and
+  the rate was 0.50 against 0.60.
+  - Re-run on bmo, the committed file's host: equal in every field of all 20 episodes.
+  - The first re-run was on walle. So **the code is unchanged, and rollouts are not bitwise reproducible across hosts**. The first
+    episode's values differ at about 1e-8, and the difference grows.
+  - L0's file (neo) and its re-run (walle) did agree, so this depends on the host pair, and I have not mapped which.
+
+**What host dependence means for the reads.** L0's and each rung's rollouts ran on whatever overcap gave them. So a state-paired Δ
+includes some floating-point divergence, and one rung-versus-rung cell can move by 2 of 20 episodes (0.10) from this alone, on this
+one measured task and seed. The paired bootstrap does not model it. L1's read is not re-run, and the rule stays as registered. This
+is one more reason to treat a Δ near the tolerance with care.
+
+## 6. L4 protocol and verdict mapping (fixed 2026-11-04, before any L4 rollout, S1 run or read; m3_prereg tag pp_L4)
+
+**Arm L4.** L1's flags plus `--iroles`: `--rank 32 --rtclip --psupport --tscale --decouple --imode --rtransport --bbnom --bbnosize
+--pgate --iroles`.
+- Builds: `pp_{full,nobottle,noplate}_L4_s{10,11,12}`. Object term retrained, target term reused bitwise from `<cond>_L1` (§5.6),
+  with the precondition asserted.
+- Creations: bottle from K4, plate from K1, k = 1, 5, 10.
+
+**Data.** As in §2: dev states 4-23, seeds 10-12. `P2L4` (32 tasks) and `PL4_<cond>_k<k>` in results/flawed/pp_L4_roll. S1:
+`pp_s1_mix_full_L4_m<v>.json` for every value v of the L4 full inventory, plus parse locality from pp_L4_smoke_roles.json.
+
+**Read.** `experiments/pp_ladder_read.py --rung L4 ... --parse-locality pp_L4_smoke_roles.json` -> results/flawed/pp_ladder_L4_read.json.
+Measures and estimators as in §2. The reference is L0, as §10.10 fixes. L1's values are shown beside them, with no criterion.
+
+**Counted, familiar layout only:** S1 (§5.5, both parts), OM, 3F on N1, N2, N3, N4, N6, and S3 for the bottle and the plate.
+
+**Verdict mapping (one rule, §2's, unchanged).** A counted measure breaks iff |Δ| > 0.10 and its CI excludes 0. **L4 holds iff S1 holds
+and no counted measure breaks.** Otherwise L4 breaks, and the broken measures are named. New layout and competence are reported with
+no verdict.
+
+**Scope of a pass, stated before the read.** A pass says that induced roles matched the given ones on these tasks, and the policy did
+not lose composition by dropping K8's rows. It does not show the rule generalises beyond these 16 instructions (§5.2, §5.7).
+
+**Stop rules.** If L4 breaks, the ladder stops for the user's decision. If L4 holds, this track stops and reports. L5 and L2/L3 are
+not started here. Cap: this track's 15 A40-h, with 10.83 left.
