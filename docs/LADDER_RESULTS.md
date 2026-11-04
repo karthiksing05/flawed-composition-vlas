@@ -337,11 +337,15 @@ seeds 10-12, and so is every target-into-grasp component.
 | new | 2,220 | 0.971 | 12,011 | 3,818 | −2 (−72, +1) | 549 | 5 |
 
 - The event's errors run one way: it holds when the oracle does not.
-  - In the new layout, a quarter of episodes (549) have an event hold and no oracle hold. Most are bottle tasks (K4 93, N4
-    157).
-  - These are closes on something that the hand then lifts, but the object never meets the oracle's own-lift test.
-  - The q10 onset lag of −72 steps comes from such early false holds followed by a real grasp.
+  - In the new layout, a quarter of episodes (549) have an event hold and no oracle hold. 462 of them are bottle tasks (K4 93,
+    K5 20, N4 157, N5 94, N6 98).
+  - None of these episodes succeeds, in either layout (153 familiar, 549 new).
+  - **Corrected 2026-11-04.** The first version of this section said these episodes close on something the hand then lifts. The
+    data do not establish that. In 321 of the 549 new-layout episodes, no movable object moves more than 3 cm under a close
+    command (`bound` is null); in 172 the role object moves, and in 56 another object does. The mechanism is not known.
+  - A q10 onset lag of −72 steps means the event's first hold came 72 steps before the oracle's first hold, in episodes that have both.
   - These episodes count as not held for the read's h_o, because the instrument is the oracle.
+  - Checked over all 222 L1 rollout files: 4,440 episodes, 0 episode errors.
 - The event fires 1.24 segments per familiar episode, against the oracle's 1.00.
 
 **Cost.**
@@ -415,3 +419,117 @@ and its design forces plan-level choices. No L2 code was written and no GPU was 
   the oracle, so this does not enter the verdict. A rung whose instrument also became the event would read h_o differently.
 - Familiar 3F N3 now fails Layer-2's own criterion (+0.067, CI excludes 0), while staying inside the ladder's tolerance.
 - K6 and N6 competence fell by 0.10-0.15. Both place into the bowl. This is an observation of 60 episodes per task, not a test.
+
+## 5. L4 design note: roles induced from contact events instead of the given assignment (fixed 2026-11-04, before any code of this rung)
+
+**Order.** PLAN_PARTS §10.12: L4 runs before L2 and L3, on top of L1, with oracle frames and slots. L0 stays P_min, and the gate
+stays §10.10's.
+
+### 5.1 Where the role assignment enters today
+
+`FC.roles(instruction)` is a template parse plus a noun table (`NOUN`). It returns (object entity, target entity).
+- **Training.** `pp_p_train.rows()` calls it per known task and sets `oi`, `ti` on every row. From those come:
+  - which part each row trains (`opart`, `tpart`);
+  - each term's frame, slot pose and size;
+  - the onset quantities;
+  - `part_radii`, `start_radii`, `role_radius`;
+  - the m inventory's grouping by target.
+- **Creation.** The same call, on the creation task's rows.
+- **Rollout.** `fa1h_roll.episode` calls it on the instruction, and `oi`, `ti` select the parts and frames.
+- **`task_entropy_bits`.** It uses it for the reported interface entropy.
+- **Reads (instrument, stays).** `n2_tasks.json`'s `object` and `target` fields group the 3F factors and pick the arrival radius.
+- **S1.** It sets `oi` and `ti` explicitly.
+
+L4 replaces both things that call does: which role a word plays, and which slot a word refers to. Word-to-slot grounding is not
+kept from the noun table. Slot identities and poses stay oracle (L3 is later).
+
+### 5.2 The induction rule
+
+**Fixed, label-free in its fit.** It reads the instructions, L1's event, and the oracle slot positions. It never reads `FC.roles`,
+`NOUN` or `n2_tasks`' roles.
+
+1. **Per demo, the sites.** Over a demo's event-held rows, from the first onset to the last held row:
+   - grasp site g = the slot that moves farthest between those two rows (3-D);
+   - release site r = the slot other than g nearest to g, in 3-D, at the last held row.
+
+   A demo with no event gives nothing.
+2. **Per task, one situation.** (g, r) = the most frequent pair over its demos, ties to the first seen. A task with no event gives
+   no situation. Tokens are the lowercased, whitespace-split instruction.
+3. **Referents, cross-situationally.** For token w, C(w) = the intersection, over the situations whose instruction contains w, of
+   {g, r}. If C(w) has one slot, that is ref(w).
+   **Explaining away:** for an unresolved w, remove from C(w) any slot that is ref(u) of another token u in every situation
+   containing w. Passes are simultaneous, and repeat until nothing changes. A token left with no single slot has no referent.
+4. **Role predictiveness.** For a token with a referent, P_g(w) = the share of its situations with g = ref(w), and P_r(w) likewise
+   for r. These are the plan's "words that predict the grasp site" and "the release site".
+5. **Parsing an instruction.**
+   - object = ref(w) of the token with the largest P_g(w) > 0, ties to the earliest token;
+   - target = ref(w) of the token with the largest P_r(w) > 0 among referents other than the object, ties to the latest token;
+   - if either has no candidate, the instruction has **no induced roles**.
+
+**Library and creation.** A build's lexicon comes from its own training tasks, and its situations go in the checkpoint's metadata.
+A creation adds one situation from its k demos, and recomputes the lexicon, so the new atom's words are grounded by the same rule.
+
+**How the rule's form was chosen (disclosed).** I chose steps 3-5 by reasoning by hand about these instructions, with their given
+roles in mind. Plain word-to-site prediction fails on paper: "plate" appears only with grasps of the bowl, so it would predict the
+bowl as the object on "put the cream cheese on the plate". The nobottle library needs step 4's ranking, because there "put", "the"
+and "bowl" all co-occur with the bowl in every task. So the fit uses no labels, but **the design saw them, and agreement on these
+16 instructions is weak evidence for the rule's generality**. They share few templates.
+
+### 5.3 What cannot be induced
+
+K8 ("push the plate to the front of the stove") has no close command, so L1's event never fires, and it gives no situation. Its
+parse should have no object, since the plate is never a grasp site. FLAWED_COMPOSITION §5.3 lists this gap: contact without a
+carry. N8 is the same.
+- **Rule: a task with no induced roles trains nothing, and its rollout records a failure with no steps.** Keeping K8 on its given
+  roles would leave an oracle input in the rung.
+- K8, K7, N7 and N8 are outside every counted measure, as they were at L0.
+- So the induced assignment cannot equal the given one on every task, and the "holds trivially" case does not apply if K8 parses
+  as predicted.
+
+### 5.4 Comparison with the given assignment (reported, no criterion)
+
+`experiments/pp_L4_smoke.py roles` compares the induced roles with `FC.roles`, which only that script reads:
+- **Per demo:** the share with (g, r) equal to the given pair, per task, and the release margin (second-nearest minus nearest
+  slot distance) and grasp margin (largest minus second-largest displacement).
+- **Per lexicon:** the parse of all 16 compounds, for the full library, and for nobottle and noplate before and after creation at
+  k = 1, 5, 10; with demos 0 to k−1 as the creation uses them.
+- **Robustness:**
+  - one-demo lexicons: each task's situation from demo j alone, for each demo index j;
+  - leave-one-task-out: each known task withheld from the induction, then parsed;
+  - token shuffles: 20 random orders of each read instruction;
+  - plain prediction without steps 3-4, as the comparator of §5.2.
+
+### 5.5 S1 under induced roles
+
+Φ and the terms are unchanged, and the parse sits upstream of them. S1 has two parts, and L4's S1 holds iff both hold:
+- **The model's swap tests and target-into-grasp components**, exactly 0 with m fixed at each inventory value, as at L1, on the L4
+  checkpoints.
+- **Parse locality, new at this rung.** Over K1-K6 and N1-N6, with the full lexicon: any two instructions that share a given object
+  parse to one object, and any two that share a given target parse to one target. So the word carrying one role does not change
+  the other role's slot. Without this, a target word could change the object term by a route other than m. The check uses the given
+  roles only to choose pairs.
+
+### 5.6 What is rebuilt
+
+- **Object term: retrained.** K8's rows leave the object term's training. They are its only rows for the plate part, and the role
+  radius changes.
+- **Target term: reused bitwise from L1 (`--reuse tgt:<cond>_L1`), if two conditions hold.**
+  - K8 has no event-held rows, so its rows carry zero gate weight in the target term: they give it no gradient. They do affect
+    which rows fill L1's batches.
+  - The precondition is asserted per build: the induced roles equal L1's on every trained task, and `reuse_role`'s buffer equality
+    holds (rtclip, per-part radii). If it fails, the target term is rebuilt too, and that is reported.
+- **Creations.** Bottle from K4 and plate from K1, k = 1, 5, 10. Each asserts the old-parameter guarantee as before. Each also
+  reports whether adding its situation changes the parse of any library task.
+
+**A plain statement of what to expect.** If the parse equals the given roles on K1-K7 and on every read task, then L4 differs from L1
+only by K8's object rows. The rung's read would then be mostly a test of removing those rows and of re-training noise, plus the
+induction's own accuracy.
+
+**Default off.** Without `--iroles`, the role source is `FC.roles`, and the rows and checkpoints are L1's. Smoke checks before any
+build:
+- (a) flag off, `rows()` equals the committed code's (3bb75b8c) bitwise, with and without `--pgate` rows;
+- (b) flag off, one varied-outcome rollout file (K5, familiar, 0.48 at L0) re-run on both an L0 and an L1 checkpoint equals the
+  committed file;
+- (c) the comparison of §5.4.
+
+Protocol and mapping follow in §6, before any L4 rollout, S1 run or read.
