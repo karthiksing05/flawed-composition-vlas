@@ -263,3 +263,20 @@ That is 8 measures plus S1.
   - Its sources (§5: the S0 KV tools) are checked first.
   - If L2 needs large new infrastructure, or forces a plan-level choice, the options are written up and the ladder pauses.
 - **Budget:** this track stops at 15 A40-h of GPU.
+
+**Amendment 1 (2026-11-04, after the first build attempt and before any L1 rollout, S1 run or read; m3_prereg tag
+pp_L1_amend1).** The arm adds `--rtclip`. Its flags become `--rank 32 --rtclip --psupport --tscale --decouple --imode
+--rtransport --bbnom --bbnosize --pgate`.
+- **What happened.** The nine builds with the registered flags reached a NaN loss by step 1,000. The cause is a target part with
+  no event-held rows: the stove-front part (K8), and the plate in noplate.
+  - Such a part's radius falls back to the rtclip scalar, which P_min's flags leave at 0. So s_t = 0, and the target term
+    divides by it.
+  - The target term is computed on every row before Φ's gate multiplies it by 0, so 0·inf = NaN.
+  - Under the contact gate, K8 has 0.5% held rows, so its part had a radius.
+- **Why this is no change to L0.** L0's target term is P_nsz's, built with `--rtclip` (PARTS_RESULTS §53: P_min's target term
+  carries the scalar, which is never read for a part with its own radius). Adding the flag reproduces L0's actual target
+  configuration.
+  - The scalar acts only as the fallback radius of a part with no held rows.
+  - No read task's target part lacks a radius. The plate gets its own radius at creation.
+- The nine builds were cancelled at about 3 minutes. Their GPU time is counted, and they wrote no checkpoint. Nothing else in
+  the protocol or the mapping changes.
