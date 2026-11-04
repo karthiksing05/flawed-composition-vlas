@@ -32,6 +32,7 @@ PP = ["K1", "K2", "K3", "K4", "K5", "K6"]
 DEMOS, DEMOS_B = os.path.join(FC.DATA, "demos.npz"), os.path.join(FC.DATA, "demos_b.npz")
 ROWCOLS = ("task", "demo", "step", "action", "ee_pos", "ee_rot", "grip", "pos", "yaw", "drawer", "prev_grip")
 _orig_rows = PT.rows
+_orig_inv = PT.grasp_inventory
 INFO = {}
 
 
@@ -83,6 +84,12 @@ def rows_cov(dev, tasks=None, k=None, gen=None, **kw):
     return b, X, center_h, size, n, demos
 
 
+def inv_human(b, X):
+    """COVERAGE_RESULTS 2 (secondary arm P_cov_h): pp_p_train.grasp_inventory on the build's HUMAN rows only (P_min's interface)."""
+    keep = (b["dkey"] % 1000) < 100
+    return _orig_inv({k: v[keep] for k, v in b.items()}, X[keep])
+
+
 def smoke():
     """COVERAGE_RESULTS 1.7 checks 1 (batch part) and 3 (CPU)."""
     dev = torch.device("cpu")
@@ -126,11 +133,19 @@ def main():
         return smoke()
     if sys.argv[1] == "cmp":
         return cmp(sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv) > 4 else "")
-    assert sys.argv[1] == "--gen", "usage: --gen K1+...|none build ..."
+    assert sys.argv[1] == "--gen", "usage: --gen K1+...|none [--human-inv] build ..."
     gen = [] if sys.argv[2] == "none" else sys.argv[2].split("+")
     assert set(gen) <= set(PP)
     rest = sys.argv[3:]
-    assert rest[0] == "build" and "--reuse" not in rest, "builds only, both roles trained"
+    human_inv = rest[0] == "--human-inv"                                   # COVERAGE_RESULTS 2 (secondary arm P_cov_h)
+    rest = rest[1:] if human_inv else rest
+    assert rest[0] == "build", "builds only"
+    if human_inv:                                                          # the object term retrained; the target term (reads no m) reused from cov_<cond>
+        assert rest[rest.index("--reuse") + 1].startswith("tgt:cov_"), "P_cov_h reuses the cov build's target term"
+        PT.grasp_inventory = inv_human
+        INFO["inventory"] = "human rows only"
+    else:
+        assert "--reuse" not in rest, "P_cov: both roles trained"
     INFO["gen"] = gen
     PT.rows = rows_cov
     sys.argv = [os.path.join(HERE, "pp_p_train.py")] + rest

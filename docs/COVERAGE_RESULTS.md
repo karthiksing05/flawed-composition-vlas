@@ -302,3 +302,46 @@ object's own training spot. Uniform placement over the box predicts 0.23.
   - No target emits the fourth value.
   - This is the fixed rule's output on W's rows, not a choice made here. S1 is therefore restated with m fixed at each of
     0, 1, 2 and 3.
+
+## 2. Pre-registration (fixed 2026-11-04, after P_cov's builds and creations, before any S1 run, rollout or read; m3_prereg tag pp_cov)
+
+**Builds done.** cov_full, cov_nobottle and cov_noplate, seeds 10-12, each with k = 1, 5 and 10 creations where it applies. No
+rollout or read of them exists. The only outputs seen are the fitted quantities and training losses.
+
+**Primary arm, P_cov, exactly as §1 froze it.** The read is `experiments/pp_cov_read.py` with `--s1 pp_s1_mix_cov_full_m0.json`
+through `_m3.json`, `--s2 pp_cov_roll:P2cov` and `--s3 pp_cov_roll:Pcov`, written to results/flawed/pp_cov_read.json. Its verdict
+under §1.8's mapping is the arm's verdict. §1.8's prediction is unchanged.
+
+**What the builds' fitted interfaces showed.** §1.5 fits the grasp-mode inventory on all rows. §1.10 looked only at the full build,
+where the refit is harmless: every target keeps its m semantics. The held-out builds differ.
+
+| build | P_min's inventory | P_cov's inventory | effect on S3 |
+|---|---|---|---|
+| nobottle | K = 2, every target m = 0 (0 bits of task entropy) | K = 4, components at −0.5°, −0.9°, −4.3° and −12.3°, two with κ at its cap; plate m = 2, drawer m = 3, others 0 (1.25 bits) | the bottle part is created from K4 (m = 0 only), and N4 (bottle → plate) reads it at m = 2, a value it never trained on |
+| noplate | K = 3; rack and drawer have their own m, others 0 | K = 4; same m per target | the plate created at k = 1 labels itself m = 1, the drawer's value. P_min's emits 0. k = 5 and 10 emit 0 |
+
+The near-duplicate components split the planner's tight grasp clusters; they are not distinct grasps. So P_cov's S3 cells on N4
+(bottle) and at k = 1 (plate) may fail through the interface, in either layout, for a reason other than demo support. §1.8's clause
+(d) or (e) could then read NOT SUPPORTED without testing the account. I did not anticipate this when writing §1.5.
+
+**Secondary arm, P_cov_h, added here, labelled, before any read.** It equals P_cov in every respect except that the grasp-mode
+inventory and each target's m are fitted on the build's human rows only. That reproduces P_min's interface in each build.
+- The radii stay fitted on all rows.
+- Only the object term reads m, so the object term is retrained on the same rows and seeds, and the target term is reused from
+  cov_<cond> (`--reuse tgt:cov_<cond>`).
+- The creations are rerun with `pp_p_train.py create`, unchanged: bottle from K4, plate from K1, k = 1, 5 and 10.
+- The tags are covh_full, covh_nobottle and covh_noplate. S1 uses m fixed at 0, 1 and 2 (`pp_s1_mix_covh_full_m<v>.json`). The
+  rollouts are `pp_cov_roll:P2covh` and `pp_cov_roll:Pcovh`. The read is `pp_cov_read.py --out pp_cov_h_read.json`.
+- Check before its read: each build's printed inventory equals P_min's (§1.2's source, pp_train_<cond>_naf_s10.json), and each
+  build's target term equals cov_<cond>'s bitwise.
+
+**How the two arms relate (fixed here).**
+- **P_cov's verdict is the arm's verdict.** P_cov_h never replaces it.
+- P_cov_h is read with the same five clauses and reported beside it as secondary, with its own label.
+- If the two verdicts differ, the report states which clauses changed, and that the difference lies in the interface refit. The
+  primary verdict still stands. A claim that rests on P_cov_h alone goes to the user as post hoc.
+
+**Prediction for P_cov_h (fixed here).** The same as §1.8's for every clause, with the plate still failing clause (d). Compared with
+P_cov, its bottle S3 ratio on N4's cells is the same or higher in both layouts.
+
+**The read's states.** Dev only: N2 main states 4-23, N2's seeds, seeds 10-12. No confirmatory or sealed read is run.
