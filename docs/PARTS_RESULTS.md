@@ -2392,3 +2392,126 @@ progress of the backbone-alone chunk at 0.14-0.225 m, as P_nsz / P_rtr / P_nom o
 - **S3:** bottle new at k = 1 and 10, and plate new at k = 1 and 5.
 
 **Cost.** 2.3 A40-h (smoke 0.05; builds 1.7; creations 0.37; S1 0.16), plus rollout and diagnostic CPU.
+
+## 49. Round 16 diagnostic: the carry scale frame moves the rack's release outward by 1/s_t (2026-11-03; `experiments/pp_rack_diag.py`; results/flawed/pp_rack_demo.json, pp_rack_nsz10_K5_new.json, pp_rack_nsz10_K5_familiar.json, pp_rack_pdc10_K5_new.json)
+
+**Target.** §48: under P_nsz, K5 (bottle → rack) holds 0.42 in the new layout, but its arrival at the rack is 0.08 and its place 0.
+Every round since round 10 has reused the target term unchanged (P_tdc's, with round 9's carry scale frame).
+
+**Method.** This is descriptive, with no change to any model.
+- **Demos** (`demo`; fitted rows, never executed). Every target part's carries over the held rows of the 8 known tasks. Per
+  carry: the onset distance d0 and height h0 (the foot relative to the target, as the target term reads it), the carry bearing
+  relative to the target's own yaw, and the foot at the carry's last held row (the release).
+- **Closed loop** (`roll`; `fa1h_roll.episode` unchanged; dev states 4-23). On P_nsz seed 10, K5 in the new and the familiar
+  layout. Per held call: d, h, the carry scale s_t, the distance the term sees (s_t · d), and the chunk's commands. Reference:
+  P_pdc seed 10 (round 10's radial carry clip, no scale frame), K5 new.
+- The pair's calibrated arrival radius (bottle, rack) is 0.121 m.
+
+**1. The rack part's demo support** (55 carries, all K5). Values are 10th / 50th / 90th percentiles.
+
+| | rack demos | K5 familiar, P_nsz (17 holds) | K5 new, P_nsz (9 holds) |
+|---|---|---|---|
+| onset d0 (m) | 0.121 / 0.133 / 0.152 (max 0.167) | 0.131 / 0.143 / 0.159 | 0.314 / 0.375 / 0.402 |
+| s_t at the onset | 1 | 1 | 0.43 / 0.46 / 0.55 |
+| bearing to the rack's yaw (deg) | 50 / 60 / 65 (min −22, max 73) | 54 / 62 / 69 | 21 / 26 / 40 / 51 / 54 (min / 10th / 50th / 90th / max) |
+| release distance (m) | 0.057 / 0.079 / 0.101 | — | — |
+
+- **Every new-layout carry starts beyond the rack part's support.** The onsets are 2-2.5 times the rack demos' largest
+  (0.167 m), and s_t is 0.43-0.57.
+- **The rack's release is not at its centre.** The demos release the bottle 6-10 cm from the rack's site. For the plate the
+  same distance is 0.003 / 0.010 / 0.022 m, for the bowl 0.006 / 0.016 / 0.032 m, for the stove 0.011 / 0.028 / 0.046 m, and for
+  the cabinet top 0.039 / 0.066 / 0.097 m.
+- The new-layout bearings lie partly outside the demos' range: 21-54°, against 50-65° for the 10th-90th percentiles. The target
+  term reads no bearing, so this mismatch is invisible to it. It is reported, not addressed.
+
+**2. In the new layout the term releases at the demos' release distance, in scaled units.**
+
+| K5, P_nsz seed 10 | new | familiar |
+|---|---|---|
+| holds of 20 | 9 | 17 |
+| held episodes that command an open during the carry | 8 of 9 | 8 of 17 (8 more succeed before any open) |
+| true distance at the first open (m) | 0.126-0.223, median 0.17 | 0.064-0.126 |
+| seen distance s_t · d there (m) | 0.068-0.101, median 0.085 | the same as the true distance |
+| foot height there (m) | −0.016 to +0.024 | +0.017 to +0.050 |
+| arrived / succeeded | 0 / 0 | 17 / 12 |
+
+- The seen distance at the open, 0.068-0.101 m, is the demos' release band, 0.057-0.101 m. The true distance is that band divided
+  by s_t: 0.13-0.22 m, beyond the 0.121 m arrival radius in every case. The bottle is released in the air in front of the rack
+  and falls.
+- The carry itself works. The foot climbs to the rack top's height (median h +0.02 to +0.03 m at d = 0.10-0.30 m), and the
+  executor's clip binds on only 3-14% of the horizontal commands.
+- The one held episode with no open (state 10) is held at step 268, and the episode runs out. Two of the 9 holds come after step
+  240, so the object term's time to hold is a second, smaller loss.
+- **The radial clip shows the converse.** P_pdc seed 10 (no scale frame) holds K5 new in 5 of 20, and its 2 opens fall at true
+  distances 0.092 and 0.125 m. 2 of 5 arrive and 1 succeeds.
+
+**What this shows.** Round 9's frame stretches the whole horizontal plane about the target's site by 1/s_t (§33): "the same
+carry, stretched". That holds for the transport. It does not hold for the release, whose offset from the site is fixed by the
+rack's geometry, as the grasp's is by the object's size and the gripper's width (§29, round 7's failure). For targets whose demos
+release near the site's centre (plate, bowl), stretching the release moves it by at most a few centimetres. For the rack it
+moves it 7-12 cm outward, outside the arrival radius. This is the mechanism behind K5's new-layout arrival of 0.00-0.08 in every
+round since round 9 (round 13's 0.33 rests on 3 holds), and through the bottle's pooled a_o it feeds the new-layout 3F failures on N4, N5 and N6.
+
+**Cost.** CPU only: 4 diagnostic jobs and 1 summary (about 0.4 CPU-h). No GPU.
+
+## 50. Round 16 design note and protocol: the carry scale frame leaves the part's release region unstretched (fixed 2026-11-03, before any code of this round; m3_prereg tag pp_r16)
+
+**Weakness (measured, §49).** Under round 9's carry scale frame, a target part releases at its demos' release distance in
+scaled units, so at that distance divided by s_t in true units. For the rack (release 0.06-0.10 m from its site; new-layout
+s_t 0.43-0.57) every new-layout release falls 0.13-0.22 m out, beyond the 0.121 m arrival radius. K5's new-layout arrival is 0.08.
+
+**Principle (Prop. 2 and §29).** A state is relocated into the acting part's support, and relocation must not alter what the
+part's own geometry fixes. The scale frame relocates a far carry by stretching it, which is valid for the transport and not for
+the region where the part releases. There the true geometry must reach the part unchanged, as the grasp's must reach the object
+part (§29). So the stretch acts only beyond the part's release region, and it is the identity inside it.
+
+**Change (one; on P_nsz; default off; `pp_p_train.py --tnear`).**
+- **Release radius ρ(part)**, fitted from each target part's own demos by §4.1's 99th-percentile rule: the 99th percentile of the
+  horizontal object-to-target distance at the last held row of each carry. A created target part fits ρ from its own k demos.
+  The build asserts ρ < r_t for every part with rows (r_t is the part's carry radius from round 8).
+- **The frame, frozen at the hold's onset as before.** With d the current horizontal object-to-target distance and d0 the
+  onset distance:
+  - d0 ≤ r_t: s = 1, as now.
+  - d0 > r_t: the radial map φ(d) = d for d ≤ ρ, and φ(d) = ρ + (d − ρ)(r_t − ρ)/(d0 − ρ) for d > ρ. The row's scale is
+    s = φ(d)/d. Inputs and the chunk's horizontal translation are multiplied by s and the output translation is divided by
+    s, exactly as round 9 does with s_t.
+- At the onset, φ(d0) = r_t, so s equals round 9's s_t there. s rises continuously to 1 as d falls to ρ, and stays at 1 inside.
+  With ρ = 0 the map is round 9's frame exactly.
+- It adds no data, teacher, input or constant. ρ is fitted per part, like every other radius. It is not per-scene engineering:
+  one rule over every target part, with no input about occupancy, clearance or free space.
+- **The target term is retrained** (the frame changes the few demo rows whose carries start beyond r_t). The object term is
+  reused bitwise from `<cond>_nsz` (`--reuse obj:<cond>_nsz`), so every hold is the same as P_nsz's up to host differences
+  (§36).
+- **S1 is unaffected.** The change acts only in the target term, on the target's own distances, and the object term reads only
+  m from the target part.
+- **Expected effects** (none carry a verdict). The rack's releases move inside the arrival radius, so K5 new arrival given hold
+  rises. Familiar carries (onsets inside r_t, s = 1) are unchanged. N4 (plate, ρ about 0.02 m) is close to round 9's frame. The
+  cabinet top's new-layout releases move inward too. Whether K5's place on arrival is then above 0 is not predicted: the
+  new-layout bearings lie partly outside the rack demos' range (§49).
+
+**Arm.** P_rel (rank 32), seeds 10-12, builds full, nobottle and noplate with the S3 creations. Flags: P_nsz's plus `--tnear`.
+Builds by `submit_round_train_reuse.sh rel "<flags>" "10 11 12" obj nsz`. Reference: P_nsz (pp_r15_roll).
+
+**Smoke (before the builds).**
+- With the flag off the edited model gives P_nsz's velocity bitwise.
+- With the flag on: rows with d0 ≤ r_t, or with d ≤ ρ, give the scale 1; at d = d0 the scale equals round 9's s_t; the object
+  term is unchanged.
+- S1's swap tests are 0 with m fixed.
+
+**Reads.** Dev states 4-23, N2's seeds. S1 as restated in §10.5, S2 and S3 with pp_l2's estimators and its frozen GO mapping.
+
+**Pre-registered round verdict (metric k5_arr_new).**
+- The metric is K5's new-layout arrival given hold: arrived episodes over held episodes, seeds pooled (fa1g_read's arrival: held
+  within the pair's calibrated radius).
+- Δ = P_rel − P_nsz, with a 2,000-draw state bootstrap (the same states resampled for both arms).
+- **improves** iff Δ > 0.10 and the CI's lower bound is > 0.
+
+**Reported, with no verdict.**
+- K5's new-layout success and place on arrival.
+- New-layout arrival given hold for every target, against P_nsz.
+- Familiar non-regression: pooled familiar known-pairing success, P_rel − P_nsz, labelled "regresses" iff the CI's upper bound
+  is < 0.
+- The GO read and the per-pairing 3F.
+- Each target part's fitted ρ, per build.
+
+**Cost.** About 2.5 A40-h for the builds and creations (target term only), plus rollout CPU.
