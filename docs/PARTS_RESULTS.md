@@ -2527,3 +2527,78 @@ Builds by `submit_round_train_reuse.sh rel "<flags>" "10 11 12" obj nsz`. Refere
 - Each target part's fitted ρ, per build.
 
 **Cost.** About 2.5 A40-h for the builds and creations (target term only), plus rollout CPU.
+
+## 51. Round 16 results (2026-11-03; m3_prereg pp_r16; results/flawed/pp_r16_read.json, pp_phase_diag_P2rel.json, pp_rack_rel10_K5_new.json; rollouts pp_r16_roll)
+
+**The fitted release radii** (same in all three seeds). Full build: plate 0.023, stove 0.049, cabinet top 0.114, rack 0.105,
+drawer 0.067 and bowl 0.042 m. In the nobottle build the cabinet top's is 0.093 m; in noplate the plate has none. The created
+plate (k = 1) fits 0.015 m in the smoke. No part has ρ ≥ r_t.
+
+**Code smoke (300 steps, before the builds).**
+- With the flag off, the edited model gives P_nsz's velocity bitwise.
+- With the flag on, the scale is 1 on every held row with d0 ≤ r_t or d ≤ ρ. At d = d0 it equals round 9's s_t (largest
+  difference 0.0). The object term does not change with the flag.
+- S1's swap tests are 0 with m fixed at 0 and 2.
+- The smoke also found the two faults that §50's amendments record, before any build.
+
+**Round verdict (pre-registered metric k5_arr_new): does not improve.** K5's new-layout arrival given hold is 0.15 for P_rel
+against 0.08 for P_nsz: +0.074 [−0.014, 0.233], on 26 and 25 holds. **Layer-2 GO = false.** No rollout had an episode error.
+The object term is P_nsz's, bitwise, so holds match P_nsz's to within host differences (K5 new: 26 against 25 holds).
+
+**Reported, with no verdict.**
+- **K5 new:** success 0 of 60, place on arrival 0.
+- **Arrival given hold, new layout, P_rel against P_nsz:** K1 0.80 / 0.78, K2 0.83 / 0.76, K3 0.80 / 0.76, K4 0.76 / 0.69, K6
+  0.95 / 0.91, N1 0.91 / 0.83, N2 0.91 / 0.87, N3 0.95 / 0.91, N4 0.84 / 0.82, N5 0.82 / 0.87, N6 0.85 / 0.89. Familiar arrival
+  is unchanged in every cell, to within one episode.
+- **Familiar non-regression: does not regress.** +0.003 [−0.006, 0.011].
+
+**S1 (restated) holds.** With m fixed at 0, 1 or 2, both swap tests and every target-into-grasp component are exactly 0, on all
+three seeds.
+
+**S2 familiar holds.** s known 0.90, s new 0.89, OM 1.08 [1.00, 1.18].
+- 3F holds on every pairing: N4 −0.10 [−0.23, 0.025], N5 +0.05 [0.00, 0.108], N6 −0.07 [−0.25, 0.09], N1-N3 0.0.
+- N5 passes only because its lower bound reaches 0.00. N5 familiar is 0.933 against P_nsz's 0.95 (one episode) at the same
+  prediction, 0.883. This is within run-to-run noise and is not a result of the change.
+
+**S2 new fails, on N1, N4, N5 and N6.** s known 0.40, s new 0.37, OM 1.33 [1.16, 1.58], which passes.
+- N1 +0.145 [0.031, 0.268], N4 +0.20 [0.10, 0.32], N5 +0.31 [0.22, 0.38], N6 +0.185 [0.05, 0.32]. N2 and N3 hold.
+- N1's prediction (0.12) includes the cheese's a_o, which K5 does not enter. P_nsz had N1 at +0.14 [−0.03, 0.32].
+
+**S3 passes 6 of 12 cells: all 6 familiar, none new.**
+- Bottle new: 0.68 [0.55, 0.82] / 0.74 [0.60, 0.96] / 0.70 [0.59, 0.825] at k = 1 / 5 / 10. P_nsz passed k = 5 (0.83).
+- Plate new: 0.61 [0.41, 0.91] / 0.84 [0.385, 2.06] / 1.03 [0.52, 2.25]. P_nsz passed k = 10 (1.17 [0.67, 2.50]); the lower
+  bound now falls below 0.6.
+
+**The mechanism of §49 was incomplete** (`pp_rack_diag.py`, P_rel seed 10, K5 new; same 9 holds as P_nsz).
+
+| K5 new, seed 10 | P_nsz | P_rel |
+|---|---|---|
+| held episodes that open during the carry | 8 of 9 | 8 of 9 |
+| seen distance at the first open (m) | 0.068-0.101 | 0.106-0.142 |
+| true distance there (m) | 0.126-0.223 | 0.108-0.224 (7 of 8 at 0.155-0.224) |
+| foot height there (m) | −0.016 to +0.024 | −0.011 to +0.037 |
+| arrived | 0 | 1 |
+
+- The new frame moved the seen distance at the open from the demos' release band (0.06-0.10 m) to 0.11-0.14 m, as §50
+  intended. The true distance at the open did not move. The term still opens 0.15-0.22 m out.
+- So the seen distance alone does not trigger the release. At every open, in both arms, the foot is already within 2 cm of
+  the rack top's height (−0.016 to +0.037 m). In the rack demos the foot reaches that height only at d ≤ 0.10 m: their median height is −0.04 m
+  at 0.10-0.16 m and +0.03 m at 0.03-0.10 m (§49's demo profile). In the new layout the climb ends far out, and a foot at rack
+  height is a state the rack demos contain only at their release.
+- This is a description of two arms on one seed, not a tested mechanism. Why the climb completes early under both frames is
+  not established.
+
+| round | weakness | change | prereg | round verdict | GO |
+|---|---|---|---|---|---|
+| 16 | under the carry scale frame the rack part releases at its demos' release distance in scaled units (§49) | the scale frame leaves the part's release region unstretched (fitted ρ) | pp_r16 | K5 new arrival +0.074 [−0.014, 0.233]: does not improve | false |
+
+- **The failure streak is 1.**
+- **The best arm stays P_nsz.** P_rel's target term is a new draw, and its new-layout S3 cells fall from 2 to 0. Every
+  difference from P_nsz is within its CI.
+
+**What is left for GO.**
+- New-layout 3F on N1, N4, N5 and N6.
+- K5's new-layout release: the climb completes 10-15 cm before the rack, and the term opens there.
+- S3 new-layout cells at every k.
+
+**Cost.** 2.3 A40-h (smokes 0.2; builds 1.6; creations 0.45; S1 0.11), plus rollout and diagnostic CPU.
