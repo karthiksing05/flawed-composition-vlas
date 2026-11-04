@@ -74,6 +74,34 @@ def metric(a, cand, ref):
         d = [f(np.arange(n)), *L.boot(f, n)]
         return dict(metric=a.metric, candidate=float(rate(Ha, Ra, np.arange(n))), reference=float(rate(Hb, Rb, np.arange(n))), delta=d,
                     rule="improves iff the CI lower bound > 0 (PARTS_RESULTS 30)", improves=bool(d[1] is not None and d[1] > 0))
+    if a.metric == "k5_arr_new":                                             # PARTS_RESULTS 50: K5's new-layout arrival given hold
+        Ha, Ra = held_arrived(cand, ["K5"], "new")
+        Hb, Rb = held_arrived(ref, ["K5"], "new")
+        rate = lambda H, R, kk: np.nansum(R[:, kk]) / max(np.nansum(H[:, kk]), 1)   # noqa: E731
+        n = Ha.shape[-1]
+        f = lambda kk: float(rate(Ha, Ra, kk) - rate(Hb, Rb, kk))           # noqa: E731
+        d = [f(np.arange(n)), *L.boot(f, n)]
+        rep = {}                                                             # reported: arrival given hold per compound and layout
+        for lay in ("new", "familiar"):
+            for c in ("K1", "K2", "K3", "K4", "K5", "K6", "N1", "N2", "N3", "N4", "N5", "N6"):
+                h1, r1 = held_arrived(cand, [c], lay)
+                h0, r0 = held_arrived(ref, [c], lay)
+                rep[f"{c}|{lay}"] = dict(cand=float(rate(h1, r1, np.arange(n))), ref=float(rate(h0, r0, np.arange(n))),
+                                         cand_held=float(np.nansum(h1)), ref_held=float(np.nansum(h0)))
+        known = ["K1", "K2", "K3", "K4", "K5", "K6"]
+        A = C.stack(cand, cand.s2[0], cand.s2[1], known, "familiar").transpose(1, 0, 2).reshape(-1, len(cand.states))
+        B_ = C.stack(ref, ref.s2[0], ref.s2[1], known, "familiar").transpose(1, 0, 2).reshape(-1, len(ref.states))
+        g = lambda kk: float(np.nanmean(A[:, kk]) - np.nanmean(B_[:, kk]))  # noqa: E731
+        dg = [g(np.arange(n)), *L.boot(g, n)]
+        S5 = C.stack(cand, cand.s2[0], cand.s2[1], ["K5"], "new")
+        return dict(metric=a.metric, candidate=float(rate(Ha, Ra, np.arange(n))), reference=float(rate(Hb, Rb, np.arange(n))), delta=d,
+                    rule="improves iff delta > 0.10 and the CI lower bound > 0 (PARTS_RESULTS 50)",
+                    improves=bool(d[0] > 0.10 and d[1] is not None and d[1] > 0),
+                    k5_new_success=float(np.nanmean(S5)), k5_new_place_on_arrival=float(np.nansum(S5[:, 0] * Ra) / max(np.nansum(Ra), 1)),
+                    arrival_given_hold=rep,
+                    familiar_nonregression=dict(candidate=float(np.nanmean(A)), reference=float(np.nanmean(B_)), delta=dg,
+                                                rule="regresses iff the CI upper bound < 0 (reported, no verdict)",
+                                                regresses=bool(dg[2] is not None and dg[2] < 0)))
     if a.metric == "k5_hold_new":                                            # PARTS_RESULTS 44: K5's new-layout hold
         Ha, _ = held_arrived(cand, ["K5"], "new")
         Hb, _ = held_arrived(ref, ["K5"], "new")
@@ -126,7 +154,7 @@ def main():
     ap.add_argument("--s2", required=True)
     ap.add_argument("--ref-s2", required=True)
     ap.add_argument("--s3", required=True)
-    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam", "bottle_hold_fam", "bottle_hold_new", "k5_hold_new"))
+    ap.add_argument("--metric", required=True, choices=("n4_fam", "s_known_new", "cab_arr_fam", "bottle_hold_fam", "bottle_hold_new", "k5_hold_new", "k5_arr_new"))
     ap.add_argument("--s1-extra", default="")                               # PARTS_RESULTS 38: further S1 files that must all hold
     ap.add_argument("--phase", default="main", choices=("main", "conf"))
     a = ap.parse_args()
