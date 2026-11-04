@@ -153,5 +153,113 @@ Smoke checks before any build:
 - (c) the detector's agreement with the oracle on all demo rows, reported per task: row accuracy, the share of held rows, and
   onset and offset lags per demo.
 
+### 1.4 Code and smoke checks (2026-11-04; commits f54101dd and the next; results/flawed/pp_L1_smoke_{rows,agree,roll}.json)
+
+- **Code, behind `--pgate` (default off).**
+  - `parts_flow.py`: `ProprioHeld`, `pgate_fit` (the fixed rule) and `pgate_rows`. `PartsFlow.load` sets `pgate` only from a
+    checkpoint whose metadata carries it.
+  - `pp_p_train.py`: `rows(pgate=...)` and the `--pgate` build and creation.
+  - `fa1h_roll.py`: `policy_gate`.
+- **(a) Flag off, training rows.** `rows()` equals the committed L0 code's (commit ba4f1e42) bitwise, on every tensor, for the
+  full, nobottle and noplate builds and for the k = 10 creation rows of K4 and K1. An L0 checkpoint (pp_full_naf_s10) loads
+  with no detector.
+- **(b) Flag off, rollout.** Task 0 (K1, familiar) of P2naf seed 10, re-run with the new code, equals the committed
+  pp_cons_roll file in all 20 episodes, every field but wall-clock time. The task succeeds in all 20 episodes, so this checks
+  the code path, not a varied outcome.
+- **(c) Agreement with the oracle on all 52,204 demo rows** (full build's rule, τ_w = 0.00253 m):
+
+| | rows | accuracy | held share: event / oracle | P(event \| oracle) | P(oracle \| event) | onset lag, rows (median) | last held row lag (median) |
+|---|---|---|---|---|---|---|---|
+| all | 52,204 | 0.968 | 0.311 / 0.313 | 0.946 | 0.951 | −1 | −2 |
+| K1 bowl→plate | 4,662 | 0.960 | 0.370 / 0.362 | 0.956 | 0.936 | −2 | −1 |
+| K2 bowl→stove | 5,077 | 0.949 | 0.405 / 0.385 | 0.960 | 0.912 | −2 | −2 |
+| K3 bowl→cabinet | 5,094 | 0.950 | 0.473 / 0.452 | 0.967 | 0.925 | −3 | −1 |
+| K4 bottle→cabinet | 5,389 | 0.961 | 0.456 / 0.480 | 0.935 | 0.984 | 0 | −3 |
+| K5 bottle→rack | 8,801 | 0.977 | 0.350 / 0.362 | 0.952 | 0.984 | 0 | −2.5 |
+| K6 cheese→bowl | 5,340 | 0.954 | 0.300 / 0.331 | 0.882 | 0.976 | 0 | −4 |
+| K7 drawer, bowl | 10,205 | 0.974 | 0.285 / 0.275 | 0.972 | 0.935 | −2 | −1 |
+| K8 push plate | 7,636 | 0.995 | 0.000 / 0.005 | 0.0 | — | — | — |
+
+- A negative lag means the event comes earlier than the oracle.
+  - For the bowl, the event turns on 2-3 rows early: the hand rises while the fingers are still closing on the rim.
+  - The event turns off 1-4 rows early: it ends when the open command is given, while the oracle waits for the fingers to leave
+    the object.
+  - K8 has no close command, so the event never fires there. The oracle marks 0.5% of its rows (2 demos) as held.
+- In two demos the oracle holds and the event never does. In one demo the event holds and the oracle never does.
+- **The thresholds per build:**
+
+| build | τ_w (m) | min width | 1st pct of close-commanded width |
+|---|---|---|---|
+| full | 0.00253 | 0.00123 | 0.00383 |
+| nobottle | 0.00261 | 0.00147 | 0.00375 |
+| noplate | 0.00250 | 0.00123 | 0.00376 |
+
+- On all rows, the three thresholds give the same agreement to three decimals.
+- **Estimator check.** `experiments/pp_ladder_read.py` with L0 as both arms (`--rung L0self`) reproduces pp_cons_min_read.json:
+  - every measure's value;
+  - L0's pass and fail per item, with familiar N5 failing;
+  - Δ = 0 with CI [0, 0] everywhere;
+  - verdict HOLDS.
+
+  That run reads only L0 rollouts that were already read in PARTS_RESULTS §53.
+- **Build note.** P_min's flags carry no `--rtclip`, so the L1 builds have rtclip = 0. L0's target term came from P_nsz, which
+  carried the scalar, but it is never read for any target part that has its own radius (PARTS_RESULTS §53). Under the event, K8
+  has no held rows, so the stove-front target part has no radius. No read task uses it.
+
 The protocol and the verdict mapping of the L1 read follow in §2. They are fixed and pre-registered before any read of this
 rung.
+
+## 2. L1 protocol and verdict mapping (fixed 2026-11-04, before any L1 rollout, S1 run or read; m3_prereg tag pp_L1)
+
+**Arm L1.** P_min with the event in place of the contact gate: `--rank 32 --psupport --tscale --decouple --imode --rtransport
+--bbnom --bbnosize --pgate`.
+- Builds: `pp_{full,nobottle,noplate}_L1_s{10,11,12}`, both roles trained, no reuse (§1.3).
+- Creations: the bottle from K4 and the plate from K1, k = 1, 5 and 10, `P_<atom>_k<k>.npz`.
+- Part size and rank are L0's. No other option changes.
+
+**Data.**
+- Dev states 4-23 with N2's noise seeds, seeds 10-12, paired with L0 state for state.
+- S2: all 32 tasks, `P2L1` in results/flawed/pp_L1_roll.
+- S3: `PL1_<cond>_k<k>` in the same directory, on L0's task lists (nobottle: tids 6, 7, 22-27; noplate: tids 0, 1, 16, 17, 22, 23).
+- S1: `pp_s1_mix.py` on pp_full_L1_s10-12, with `--fix-m v` for every value v of the L1 full build's inventory, giving
+  `pp_s1_mix_full_L1_m<v>.json`.
+
+**Measures and read.** `experiments/pp_ladder_read.py --rung L1` writes results/flawed/pp_ladder_L1_read.json. Its estimators
+are pp_l2r32_read's, asserted equal on both arms.
+- **S1** (restated with m fixed): exact for every seed and every value of m.
+- **OM** per layout.
+- **3F** per layout and new pairing: D3 for N1-N6.
+- **S3** per atom and layout: the mean over k = 1, 5, 10 of the transfer ratio.
+
+For each measure, Δ = L1 − L0, with a 95% CI from 2,000 paired draws of the 20 states (the same draw for both arms, seeds pooled,
+rng seed 0).
+
+**Counted measures** (familiar layout only, §10.10). These are S1, plus each familiar measure that L0 passes under its own
+Layer-2 criterion:
+- OM;
+- 3F on N1, N2, N3, N4 and N6 (N5 is excluded: L0 fails it, D3 +0.133 [0.058, 0.208]);
+- S3 for the bottle and for the plate.
+
+That is 8 measures plus S1.
+
+**Verdict mapping (one rule, frozen here).**
+- A counted measure **breaks** iff |Δ| > 0.10 and its CI excludes 0.
+  - The 0.10 tolerance is §5's, fixed before any rung.
+  - The CI clause keeps state-draw noise from breaking a rung, as pp_cons's rule did. Dev cells vary by about ±0.1.
+  - The rule is two-sided, as "within 0.10 of L0" is.
+- **L1 holds iff S1 holds and no counted measure breaks.** Otherwise **L1 breaks**, and the broken measures are named.
+- The new layout's measures and Δs are reported with no verdict, and so is competence (s known, s new, per task).
+
+**Reported, descriptive.**
+- The event against the oracle in the L1 rollouts (`pp_L1_smoke.py rollagree`): step accuracy, onset lag, and episodes held by
+  one signal only.
+- The L1 inventory: K, bits, and each target's m.
+- Build and creation costs.
+
+**Stop rules.**
+- **If L1 breaks**, the ladder stops for the user's decision (§10.10). The report names the piece L1 removed and the measures it
+  broke.
+- **If L1 holds**, L2 (frames from VLA visual tokens) is designed next.
+  - Its sources (§5: the S0 KV tools) are checked first.
+  - If L2 needs large new infrastructure, or forces a plan-level choice, the options are written up and the ladder pauses.
+- **Budget:** this track stops at 15 A40-h of GPU.

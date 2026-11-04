@@ -6,6 +6,7 @@
   agree    the event's threshold by the fixed rule per build, and its agreement with the oracle label on every demo row
   roll     --tid T: the flag-off rollout file re-run with the new code (results/flawed/pp_L1_smoke_roll) against the committed
            pp_cons_roll file, every episode field except secs and host
+  rollagree  descriptive: the event against the oracle signal in the L1 rollouts (results/flawed/pp_L1_roll), per layout and task
 -> results/flawed/pp_L1_smoke_<mode>.json (must not exist)
 """
 import argparse
@@ -80,15 +81,55 @@ def roll_check(tid):
     return dict(tid=tid, episodes=len(ea), equal=bool(same), diffs=diffs)
 
 
+def roll_agree(outdir="pp_L1_roll"):
+    """Descriptive (no criterion): the event against the oracle signal in the L1 rollouts, from each episode's pgate trace."""
+    n2 = json.load(open(os.path.join(OUT, "n2_tasks.json"), encoding="utf-8"))
+    comp = {str(t["tid"]): (t["compound"], t["layout"]) for t in n2["tasks"]}
+    acc = {}
+    d = os.path.join(OUT, outdir)
+    for f in sorted(os.listdir(d)):
+        if not f.endswith(".json"):
+            continue
+        r = json.load(open(os.path.join(d, f), encoding="utf-8"))
+        for tid, v in r["tasks"].items():
+            c, lay = comp[tid]
+            for key in (f"{lay}|all", f"{lay}|{c}"):
+                a = acc.setdefault(key, dict(episodes=0, steps=0, agree=0, event_only=0, oracle_only=0, lag=[], oracle_no_event=0,
+                                             event_no_oracle=0, event_segments=[], oracle_segments=[]))
+                for e in v["episodes"]:
+                    p = e["pgate"]
+                    a["episodes"] += 1
+                    a["steps"] += p["steps"]
+                    a["agree"] += p["agree"]
+                    a["event_only"] += p["event_only"]
+                    a["oracle_only"] += p["oracle_only"]
+                    if p["event_step"] is not None and e["held_step"] is not None:
+                        a["lag"].append(p["event_step"] - e["held_step"])
+                    a["oracle_no_event"] += int(e["held_step"] is not None and p["event_step"] is None)
+                    a["event_no_oracle"] += int(e["held_step"] is None and p["event_step"] is not None)
+                    a["event_segments"].append(p["event_segments"])
+                    a["oracle_segments"].append(e["held_segments"])
+    out = {}
+    for k, a in sorted(acc.items()):
+        lag = a.pop("lag")
+        es, os_ = a.pop("event_segments"), a.pop("oracle_segments")
+        out[k] = dict(a, step_accuracy=a["agree"] / max(a["steps"], 1),
+                      onset_lag_steps_q10_50_90=[float(x) for x in np.quantile(lag, [0.1, 0.5, 0.9])] if lag else None,
+                      mean_segments_event=float(np.mean(es)), mean_segments_oracle=float(np.mean(os_)))
+        print("[L1 rollagree]", k, {x: (round(y, 3) if isinstance(y, float) else y) for x, y in out[k].items()}, flush=True)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("mode", choices=("rows", "agree", "roll"))
+    ap.add_argument("mode", choices=("rows", "agree", "roll", "rollagree"))
     ap.add_argument("--old", default="")
     ap.add_argument("--tid", type=int, default=0)
     a = ap.parse_args()
     fn = os.path.join(OUT, f"pp_L1_smoke_{a.mode}.json")
     assert not os.path.exists(fn), f"{fn} exists"
-    r = rows_check(a.old) if a.mode == "rows" else agree() if a.mode == "agree" else roll_check(a.tid)
+    r = (rows_check(a.old) if a.mode == "rows" else agree() if a.mode == "agree" else roll_check(a.tid) if a.mode == "roll"
+         else roll_agree())
     with open(fn, "w", encoding="utf-8") as fh:
         json.dump(r, fh, indent=1)
     print("[L1 smoke] wrote", fn, flush=True)
