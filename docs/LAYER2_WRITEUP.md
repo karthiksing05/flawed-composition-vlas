@@ -109,7 +109,7 @@ Holistic fine-tuning, a per-task LoRA, a role-routed fine-tune and a DMPEL/CLARE
 | Seeds 10-12, 50 fresh states | original rank-32 library | 0.06 familiar, 0.01 new |
 | Seeds 0-2, N2 states 4-23 | original rank-8 library | 0.09 (router library, k = 50) |
 
-The two fine-tunes and the router library also lose the old tasks on the fresh-state read, falling from 0.68-0.89 to 0.00-0.06. All methods used one adaptation recipe, fixed in advance. We did not test whether a replay or smaller-step recipe forgets less.
+The two fine-tunes and the router library also lose the old tasks on the fresh-state read, falling from 0.68-0.89 to 0.00-0.06. All methods used one adaptation recipe, fixed in advance. We did not test whether a replay or smaller-step recipe forgets less. Forgetting confounds those three methods' scores on unseen pairings. The per-task LoRA does not forget and reaches 0.00-0.02 on development seeds. Prior work has already shown modular policies composing on state input, so this part is largely a replication. No test has yet measured what a created part adds beyond the backbone, or how a scripted servo scores on the same states (docs/ADVERSARIAL_STUDY.md).
 
 ## 5. Why the new layout falls short
 

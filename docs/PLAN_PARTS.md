@@ -378,3 +378,6 @@ The plan is adopted. Each layer is still pre-registered before its first read (�
 
 16. **(User, 2026-11-04) Next: test in-hand state.** After PLACE_DIAG §3, a registered CPU-only test of object tilt along the carry, with one diagnostic
     intervention that zeroes rotation commands while held (PLACE_DIAG §4). The intervention is not a candidate fix. The ladder stays paused.
+
+17. **(User, 2026-11-04) Pause and rethink the claim, with an adversarial study** (docs/ADVERSARIAL_STUDY.md). Claims K1-K4 and §8's "likely ours" list stand as
+    originally written until the user decides what replaces them. §8's "shown to cause the N2 failures" describes the original goal, and no result supports it.
