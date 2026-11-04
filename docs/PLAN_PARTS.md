@@ -314,3 +314,12 @@ The plan is adopted. Each layer is still pre-registered before its first read (ย
      part acts. Size is not part of "the frame" in item 6.
    - **Supervision.** Size is a hand-set (oracle) input. It goes on the supervision list for the Layer-3 ladder.
    - **Unchanged.** Every frozen criterion stays as it was.
+
+9. **(User, 2026-11-03) Consolidate instead of further patch rounds.** After round 16 (PARTS_RESULTS ยง51), the user chose to
+   spend the rest of the mandate on consolidation.
+   - **Scope.** Each stacked option on the best arm P_nsz is removed one at a time, under a pre-registered keep/drop rule. Only
+     options that earn their place are kept.
+   - **Write-up.** The minimal arm is reported with its full GO components. The new-layout shortfall is written up as a
+     failure of demo support (condition S, Prop. 2), not of the combination rule.
+   - **Unchanged.** No new structural changes are made. The frozen pp_l2 GO mapping is unchanged, and the new layout stays
+     inside the claim, so GO remains false unless the minimal arm passes it.
