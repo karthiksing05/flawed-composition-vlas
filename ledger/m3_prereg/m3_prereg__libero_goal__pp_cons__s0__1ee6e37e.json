@@ -1,0 +1,78 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PLAN_PARTS consolidation (docs/PARTS_RESULTS.md section 52)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4502376",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "1ee6e37eaf5214f90405f30be625c19ce2af7a18",
+  "short": "1ee6e37e"
+ },
+ "keys": {},
+ "metrics": {
+  "ablations": {
+   "bbs": "bbnosize removed = P_nom (pp_r14_roll; re-read of existing rollouts); own metric bottle_hold_new",
+   "naf": "aframe removed (object term retrained; target term reused); own metric s_known_new",
+   "nnm": "bbnom removed (object term retrained; target term reused); own metric k5_hold_new",
+   "nts": "tscale removed (target term retrained; object term reused from <cond>_nsz; full assembled from full_pdc's target term after one bitwise verification build); own metric n4_fam",
+   "rtc": "rtclip removed: exactness check pp_cons_check.py (no GPU); own metric n4_fam"
+  },
+  "combined": "every DROP removed at once; assembled from leave-one-out terms where possible, else its object term built once; read with the same rule (own metrics of every dropped option)",
+  "dependencies": "rtclip's drop holds only with tscale on; if tscale is dropped, rtclip stays (it switches the per-part radial clip on). psupport stays in every arm",
+  "files_sha256": {
+   "docs/PLAN_PARTS.md": "d26f48c71b19096e9d6e5665a4f46549db94f4cc2dd461e8176ed44e689db926",
+   "experiments/fa1g_read.py": "5df166ce571755c6a3036ff5532768b22e3a6a0fb27688d8bb4b7255983103f9",
+   "experiments/fa1h_roll.py": "2053ef8bdc6d985e64f5edbccc79b15ba4a453901b0b1f1df55aae4ff194601d",
+   "experiments/pp_assemble.py": "d098cd09e6b940715377facb059913e5bea038194d11834444be510431da412b",
+   "experiments/pp_cons_check.py": "09162765d05ec226af0054badf7e136e0e6030fb06aa6dbed972d9a09e76c613",
+   "experiments/pp_cons_read.py": "6f1ab4cb5bfbe5ae863446252407132467462acc17be4a26a415b1e59f00a0c0",
+   "experiments/pp_l2_read.py": "d249628324f8871087f80687ccc8e049cff902bbcd5e82aeb22fecd983b8fc39",
+   "experiments/pp_l2r32_read.py": "cba65a621525f571fbf744a81584ce80063aca2e870438dff1d793b0013dbc93",
+   "experiments/pp_p_roll.py": "cc5fb40aeb8e386e04380cd9bd9657b84e77a44185213fa804aec6e4ec6a2373",
+   "experiments/pp_p_train.py": "08be8e81b23a5022025b1830a3da1d4b0eac368a7b76637086447186e2b140b9",
+   "experiments/pp_round_read.py": "86a559ec9f99b20db8097b95a1e0be903a9577140fbbff258e76731086242426",
+   "experiments/pp_s1_mix.py": "5977d02dd297ee5c80b05b51af3c9cc2156514b141d97ca828924d9ac401a6aa",
+   "lifelong_ood/policy/parts_flow.py": "bbd750e3c5311420ec3599c8706c870f0381b836d247aea3058a4b0603628379"
+  },
+  "not_ablated": "psupport, imode, rtransport, rank 32 (budget); decouple kept without ablation (measurement fix)",
+  "reference": "P_nsz: --rank 32 --aframe --rtclip --psupport --tscale --decouple --imode --rtransport --bbnom --bbnosize; seeds 10-12; pp_r15_roll (P2nsz, Pnsz_<cond>_k<k>); S1 pp_s1_mix_full_nsz_m0-2",
+  "rule": "removing an option WORSENS iff (a) its own metric or (b) familiar non-regression (pooled familiar K1-K6 success) has delta = arm - P_nsz < -0.10 with paired-state-bootstrap CI upper bound < 0, or (c) a GO item passing for P_nsz fails for the arm (items: S1 restated; OM per layout; 3F per layout and pairing N1-N6; S3 per atom and layout, passing iff all k in {1, 5, 10} cells meet ratio >= 0.8, LB >= 0.6). DROP iff not worsens, else KEEP",
+  "s1_restated": "S1 holds iff, with every target part's m fixed to v for each v in the inventory, both swap tests and every target-into-grasp component are exactly 0 for every seed",
+  "section_sha256": "5df9df8b52ef19cb6a34d4cd2970b7be37b3f603bc287986329bdaeec3f9ee59",
+  "states": "dev: N2 main states 4-23, N2 seeds; S3 k in {1, 5, 10}",
+  "status": "PRE-REGISTERED PLAN_PARTS consolidation (docs/PARTS_RESULTS.md section 52)",
+  "stop": "if the minimal arm passes Layer-2 GO on dev (pp_l2 mapping, both layouts): stop and report; no confirmatory read in this phase",
+  "tiebreak": "if the combined arm worsens: the single-option DROP arm with the most passing GO items, then higher pooled new-layout s new, then step-2 order (nts, naf, nnm); plus rtclip's exact drop where allowed; none: P_nsz",
+  "written_before": "any build, check, S1 run, rollout or read of this phase"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_cons__s0__1ee6e37e",
+ "schema": 1,
+ "script": "experiments/prereg/pp_cons.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-04T03:55:59+00:00",
+ "stream": null,
+ "tag": "pp_cons"
+}
