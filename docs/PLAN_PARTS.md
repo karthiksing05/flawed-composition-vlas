@@ -307,3 +307,10 @@ The plan is adopted. Each layer is still pre-registered before its first read (ย
      switch. This replaces item 6's phrase "and the same message m".
    - **Unchanged.** There is no new rate and no new cross-role term. m's inventory and bandwidth stay as in item 5, and every
      frozen criterion stays as it was.
+
+8. **(User, 2026-11-03) The backbone-alone path reads no atom-specific slot attribute.** This confirms PARTS_RESULTS ยง47
+   (round 15, `--bbnosize`) after the fact, and is labelled as such.
+   - **The rule.** Item 7's principle extends to the object slot's hand-set size: atom-specific inputs enter only where the
+     part acts. Size is not part of "the frame" in item 6.
+   - **Supervision.** Size is a hand-set (oracle) input. It goes on the supervision list for the Layer-3 ladder.
+   - **Unchanged.** Every frozen criterion stays as it was.
