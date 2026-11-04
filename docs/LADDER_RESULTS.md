@@ -641,3 +641,98 @@ not lose composition by dropping K8's rows. It does not show the rule generalise
 
 **Stop rules.** If L4 breaks, the ladder stops for the user's decision. If L4 holds, this track stops and reports. L5 and L2/L3 are
 not started here. Cap: this track's 15 A40-h, with 10.83 left.
+
+## 7. L4 results (2026-11-04; m3_prereg pp_L4; results/flawed/pp_ladder_L4_read.json, pp_s1_mix_full_L4_m{0,1,2}.json, pp_L4_smoke_rollagree.json; rollouts pp_L4_roll)
+
+**Verdict (pp_L4 mapping): L4 HOLDS.** S1 holds, and no counted familiar measure breaks.
+
+**The pass rests on the CI clause for one measure.** Familiar 3F N4 moves by +0.138, more than 0.10. It does not break only because its
+CI, [−0.017, 0.311], contains 0. Read as a plain point-estimate "within 0.10", **N4 would break the rung**. The registered rule is the
+one that decides, and it is unchanged, but this is the closest call on the ladder so far. The rule also does not show equivalence:
+N4's and N6's CIs reach well past ±0.10 at both L1 and L4.
+
+**Scoped claim.** In the familiar layout, given Layer-2 GO false in the new layout, with oracle frames and slots: roles induced from
+contact events, on top of L1, do not move a counted measure past the registered rule. The parse matched the given roles on every read
+task, so what this read tests is the removal of K8's rows from the object term and retraining, not a policy running on different
+roles. §5.2's limit stands: the rule's form was designed with these instructions in view.
+
+**S1.** With m fixed at 0, 1 and 2 (the L4 full inventory, K = 3), both swap tests and every target-into-grasp component are exactly 0
+on seeds 10-12. Parse locality holds with no violation.
+
+**Familiar layout (counted).** Δ = L4 − L0, 2,000 paired state draws, seeds pooled. L1's value is shown for context, with no criterion.
+
+| measure | L0 | L1 | L4 | Δ [95% CI] | breaks? |
+|---|---|---|---|---|---|
+| OM | 1.089 | 1.151 | 1.166 | +0.077 [0.028, 0.136] | no |
+| 3F N1 (D3) | −0.033 | +0.017 | +0.033 | +0.066 [0.000, 0.149] | no |
+| 3F N2 | 0.000 | +0.033 | −0.033 | −0.033 [−0.100, 0.000] | no |
+| 3F N3 | 0.000 | +0.067 | 0.000 | 0.000 [0.000, 0.000] | no |
+| **3F N4** | −0.033 | −0.050 | +0.105 | **+0.138 [−0.017, 0.311]** | no (CI clause) |
+| 3F N6 | +0.011 | −0.071 | −0.001 | −0.012 [−0.162, 0.129] | no |
+| S3 bottle | 0.888 | 0.918 | 0.919 | +0.031 [−0.005, 0.070] | no |
+| S3 plate | 0.916 | 0.904 | 0.944 | +0.028 [−0.028, 0.091] | no |
+| 3F N5 (not counted: L0 fails it) | +0.133 | +0.100 | +0.208 | +0.075 [−0.017, 0.175] | — |
+
+- **Under Layer-2's own criteria** (reported, not the gate): familiar 3F fails on N5 only, as at L0. All 6 familiar S3 cells pass.
+- **Competence.** Familiar success is 0.87 on known pairings (L0 0.90) and 0.93 on new ones (L0 0.92).
+- **K5 falls.** K5 familiar is 0.32, against 0.48 at both L0 and L1. Holds fall too: 35 of 60 at L4, 47 at L1, 42 at L0.
+  - Every seed is lower than at L1 (success 6, 3, 10 of 20 against 12, 6, 11).
+  - K5 enters N4's, N5's and N6's a_o, so this is a candidate source of N4's and N5's rise in D3. I did not test that.
+  - The object term's only input change from L1 is K8's rows leaving. The role radius falls from 0.2251 to 0.1863 m as a result. Whether
+    that radius, the missing rows or retraining noise lowers K5 is **not established**.
+
+**New layout (reported, no verdict).**
+
+| measure | L0 | L1 | L4 | Δ (L4 − L0) [95% CI] |
+|---|---|---|---|---|
+| OM | 1.081 | 1.178 | 1.165 | +0.083 [−0.132, 0.352] |
+| 3F N1 | +0.129 | +0.177 | +0.026 | −0.104 [−0.239, 0.022] |
+| 3F N2 | −0.063 | +0.001 | −0.044 | +0.019 [−0.089, 0.130] |
+| 3F N3 | −0.067 | −0.027 | +0.040 | +0.106 [0.000, 0.233] |
+| 3F N4 | +0.164 | +0.229 | +0.171 | +0.007 [−0.128, 0.145] |
+| 3F N5 | +0.276 | +0.247 | +0.377 | +0.101 [−0.002, 0.212] |
+| 3F N6 | +0.107 | +0.039 | +0.120 | +0.013 [−0.123, 0.158] |
+| S3 bottle | 0.770 | 0.698 | 0.840 | +0.070 [−0.029, 0.158] |
+| S3 plate | 1.076 | 1.011 | 1.231 | +0.155 [−0.161, 0.746] |
+
+- Under Layer-2's criteria, new-layout 3F fails on N4 and N5. S3 passes 5 of 6 cells; L0 passes 2 and L1 passes 1.
+- **Do not read that S3 count as a gain.** L1 and L4 share one target term and the same parse on these tasks, and differ only by the
+  retrained object term, yet the count moves from 1 to 5. That shows how noisy these cells are, on their wide CIs.
+- New-layout success: 0.43 known, 0.40 new (L0 0.46, 0.37). K5 stays at 0.
+
+**Construction checks.**
+- **Target term:** all 19 tensors equal L1's bitwise, on all 9 builds. The object term's 19 all moved.
+- **Trained tasks:** K1-K7 in full, K1, K2, K3, K6, K7 in nobottle, K2-K7 in noplate. K8 trains in none.
+- **Inventory:** K = 3 for full and noplate, K = 2 for nobottle, the same sizes as L1.
+- **Creations:** no creation changed a library task's parse, and each kept the old-parameter guarantee.
+- **Rollouts:** 222 files, 4,440 episodes. The only errors are K8's 120 "no induced roles" episodes on the full build, which §5.3 specifies.
+  Every parse in the rollouts equals the given roles, except K8 (none) and N8's 120 episodes (bowl, cook region). Neither is counted.
+- **Registered files:** all unchanged since pp_L4, except docs/PLAN_PARTS.md, whose §10 heading was reworded by another commit. No
+  criterion changed.
+
+**The event in the L4 rollouts** (descriptive; every file, S2 and S3 pooled).
+
+| layout | episodes | step agreement | event on, oracle off (steps) | oracle on, event off (steps) | onset lag, median (q10, q90) | only the event holds | only the oracle |
+|---|---|---|---|---|---|---|---|
+| familiar | 2,220 | 0.965 | 7,266 | 2,584 | 0 (−4, +1) | 133 | 0 |
+| new | 2,220 | 0.971 | 11,121 | 3,326 | −1 (−62, +1) | 520 | 0 |
+
+**Cost.**
+- **GPU: 12,404 GPU-s = 3.45 A40-h** (sacct over every attempt, including two jobs pre-empted and requeued, three attempts each).
+- **Track total: 27,429 GPU-s = 7.62 A40-h** of the 15.
+- CPU: 30 rollout jobs of 15-27 minutes, about 10 CPU-job-h; 3 S1 jobs of about 5 minutes; smoke, check, read and audit jobs.
+
+**Deviations.**
+- §5.3's training rule was corrected after the smoke and before any build (a task trains iff it has a contact event and a parse).
+- The builds were submitted in the same step as the pp_L4 prereg job, so some started before its row existed. pp_L4 is worded "before any
+  L4 rollout, S1 run or read", and that holds: the row was written at 09:36, and rollouts started after 11:00.
+- The session restarted twice during this rung. Nothing finished was re-run; the builds' logs and sacct showed them complete.
+- pp_L4_smoke's `roll` check records "not equal" for L1's first re-run. That is host dependence, shown in §5.7.
+- L1's first report gave a commit id that does not exist ("30f9e0d1"); the commit is a108aa3a. This doc never carried it.
+
+**Open concerns.**
+- Familiar 3F N4 at +0.138 (above). If the user reads the gate as a point-estimate tolerance, L4 breaks on N4.
+- K5's familiar fall (0.48 to 0.32) and hold fall, unexplained.
+- K8, a task that L1's event cannot see, is simply lost at this rung, and N8 runs on a wrong target with no warning.
+- Host-dependent rollouts (§5.7) add unmodelled noise to every Δ. L0, L1 and L4 ran on different mixes of hosts.
+- The cabinet-top release margin is under 1 cm (§5.7), and a withheld task can produce a silent wrong parse.

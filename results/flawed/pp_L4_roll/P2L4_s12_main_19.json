@@ -1,0 +1,1927 @@
+{
+ "ckpt": "pp_full_L4_s12/P.npz",
+ "name": "P2L4",
+ "ckpt_meta": {
+  "tag": "full_L4",
+  "seed": 12,
+  "tasks": [
+   "K1",
+   "K2",
+   "K3",
+   "K4",
+   "K5",
+   "K6",
+   "K7"
+  ],
+  "center": [
+   -0.08299244195222855,
+   0.007330365478992462,
+   1.0714426040649414
+  ],
+  "steps": 30000,
+  "decouple": true,
+  "reuse": "tgt:full_L1",
+  "pgate": {
+   "tw": 0.0025343644694657995,
+   "lift": 0.01
+  },
+  "roles": {
+   "situations": {
+    "put the bowl on the plate": [
+     "akita_black_bowl_1",
+     "plate_1"
+    ],
+    "put the bowl on the stove": [
+     "akita_black_bowl_1",
+     "flat_stove_1_cook_region"
+    ],
+    "put the bowl on top of the cabinet": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "put the wine bottle on top of the cabinet": [
+     "wine_bottle_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "put the wine bottle on the rack": [
+     "wine_bottle_1",
+     "wine_rack_1_top_region"
+    ],
+    "put the cream cheese in the bowl": [
+     "cream_cheese_1",
+     "akita_black_bowl_1"
+    ],
+    "open the top drawer and put the bowl inside": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_region"
+    ]
+   },
+   "ref": {
+    "bottle": "wine_bottle_1",
+    "bowl": "akita_black_bowl_1",
+    "cabinet": "wooden_cabinet_1_top_side",
+    "of": "wooden_cabinet_1_top_side",
+    "wine": "wine_bottle_1",
+    "and": "wooden_cabinet_1_top_region",
+    "cheese": "cream_cheese_1",
+    "cream": "cream_cheese_1",
+    "drawer": "wooden_cabinet_1_top_region",
+    "in": "cream_cheese_1",
+    "inside": "wooden_cabinet_1_top_region",
+    "open": "wooden_cabinet_1_top_region",
+    "plate": "plate_1",
+    "rack": "wine_rack_1_top_region",
+    "stove": "flat_stove_1_cook_region"
+   },
+   "pg": {
+    "bottle": 1.0,
+    "bowl": 0.8,
+    "cabinet": 0.0,
+    "of": 0.0,
+    "wine": 1.0,
+    "and": 0.0,
+    "cheese": 1.0,
+    "cream": 1.0,
+    "drawer": 0.0,
+    "in": 1.0,
+    "inside": 0.0,
+    "open": 0.0,
+    "plate": 0.0,
+    "rack": 0.0,
+    "stove": 0.0
+   },
+   "pr": {
+    "bottle": 0.0,
+    "bowl": 0.2,
+    "cabinet": 1.0,
+    "of": 1.0,
+    "wine": 0.0,
+    "and": 1.0,
+    "cheese": 0.0,
+    "cream": 0.0,
+    "drawer": 1.0,
+    "in": 0.0,
+    "inside": 1.0,
+    "open": 1.0,
+    "plate": 1.0,
+    "rack": 1.0,
+    "stove": 1.0
+   }
+  },
+  "arm": "P",
+  "horizon": 8,
+  "rank": 32,
+  "tsize": false,
+  "aframe": 0,
+  "psupport": true,
+  "tscale": true,
+  "nmode": 3,
+  "rtransport": true,
+  "bbnom": true,
+  "bbnosize": true,
+  "tnear": false
+ },
+ "phase": "main",
+ "host": "walle.cc.gatech.edu",
+ "tasks": {
+  "19": {
+   "language": "put the cream cheese on the stove",
+   "success_rate": 0.3,
+   "episodes": [
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 11.264267206192017,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.26329658054189015,
+       0.02942878663039148,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.15408534396559254,
+       -0.11568999292462553,
+       0.9221525484280526
+      ],
+      "wine_bottle_1": [
+       -0.10789482188226868,
+       0.07015245474315626,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.10281873306022124,
+       0.09284453984458205,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03952931195333824,
+      -0.03974977833187264
+     ],
+     "last_cmd": -1.0,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": null,
+      "event_segments": 0,
+      "event_end": false,
+      "steps": 301,
+      "agree": 301,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 4
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.941896438598633,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.27147610108459613,
+       -0.053333792553009705,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.11144258327692548,
+       -0.06140948878460351,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.00611541169765716,
+       0.003835917021965045,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.1220199134634726,
+       0.148309341610428,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.040017329148031806,
+      -0.03905426229181535
+     ],
+     "last_cmd": -1.0,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 64,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 301,
+      "agree": 292,
+      "event_only": 9,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 5
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.355946779251099,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 86,
+     "final": {
+      "akita_black_bowl_1": [
+       0.09960916796841242,
+       0.032728355911450506,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.1666312705616657,
+       0.24697666238463348,
+       0.9374522270314967
+      ],
+      "wine_bottle_1": [
+       -0.023152342976857265,
+       0.07900179296993493,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.27597335188598343,
+       0.0017590660994722424,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.01871084369393803,
+      -0.020106771733691346
+     ],
+     "last_cmd": -0.4736986756324768,
+     "drawer": 0.0,
+     "held_step": 83,
+     "held_ee": [
+      0.11401204134981867,
+      0.19962046843546935,
+      0.9231578763886669
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.39936354626468556,
+       2.849789786683261e-17,
+       0.002144018700901973
+      ],
+      "ee": [
+       -0.3814943987121874,
+       -0.0025481100475938465,
+       0.018157876388666838
+      ],
+      "cyaw": 3.1064752949309344,
+      "zrest": 0.9088900915832181
+     },
+     "min_dxy_held": 0.11658204342387225,
+     "pgate": {
+      "event_step": 83,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 292,
+      "event_only": 4,
+      "oracle_only": 5
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 6
+    },
+    {
+     "success": true,
+     "steps": 98,
+     "calls": 20,
+     "secs": 3.6922848224639893,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 75,
+     "final": {
+      "akita_black_bowl_1": [
+       0.1248129781739571,
+       -0.040815628542021705,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.24095886046383355,
+       0.15404191659941213,
+       0.9336214745570075
+      ],
+      "wine_bottle_1": [
+       -0.0593079711303184,
+       0.09762775810387864,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.11793608853195361,
+       0.17857614909196542,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.02592785041911964,
+      -0.015707977044205516
+     ],
+     "last_cmd": 0.9996730089187622,
+     "drawer": 0.0,
+     "held_step": 75,
+     "held_ee": [
+      -0.2331289287277883,
+      0.03922031789504366,
+      0.9262250476879128
+     ],
+     "held_segments": 1,
+     "held_end": true,
+     "onset_canon": {
+      "foot": [
+       -0.1711248320247075,
+       6.664997484234498e-18,
+       0.007704802034116387
+      ],
+      "ee": [
+       -0.17396901492500447,
+       -0.015192174995542004,
+       0.02122504768791278
+      ],
+      "cyaw": 1.6808506601319972,
+      "zrest": 0.9022387580725766
+     },
+     "min_dxy_held": 0.062287374410405036,
+     "pgate": {
+      "event_step": 43,
+      "event_segments": 2,
+      "event_end": true,
+      "steps": 100,
+      "agree": 93,
+      "event_only": 7,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 7
+    },
+    {
+     "success": true,
+     "steps": 200,
+     "calls": 41,
+     "secs": 7.281116247177124,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 152,
+     "final": {
+      "akita_black_bowl_1": [
+       0.09858215363443946,
+       -0.025853911163285326,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.2001358793043151,
+       0.2115801278821559,
+       0.9520073352864676
+      ],
+      "wine_bottle_1": [
+       0.11128458145066819,
+       0.1778586216906212,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.18745205831042214,
+       -0.013882757195230872,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.027993245118623604,
+      -0.025253409230777145
+     ],
+     "last_cmd": -0.9840892553329468,
+     "drawer": 0.0,
+     "held_step": 106,
+     "held_ee": [
+      -0.12876311609443258,
+      0.18652558511064934,
+      0.9288941596899402
+     ],
+     "held_segments": 2,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.11931181149627347,
+       1.070505782025636e-17,
+       0.005149580177762791
+      ],
+      "ee": [
+       -0.14057962248044872,
+       -0.0036379302315458413,
+       0.02389415968994013
+      ],
+      "cyaw": 2.944629960773044,
+      "zrest": 0.9223056881760417
+     },
+     "min_dxy_held": 0.07542529971815141,
+     "pgate": {
+      "event_step": 47,
+      "event_segments": 4,
+      "event_end": false,
+      "steps": 202,
+      "agree": 181,
+      "event_only": 15,
+      "oracle_only": 6
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 8
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.904669523239136,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 215,
+     "final": {
+      "akita_black_bowl_1": [
+       0.09440890447559576,
+       -0.030951159560141956,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.05732510636243786,
+       -0.08055330276337071,
+       0.9089072240297674
+      ],
+      "wine_bottle_1": [
+       -0.1065006105427446,
+       0.04379552911819997,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.2588138925081197,
+       -0.023931346731658282,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.25196982628811765,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03960632567759288,
+      -0.03965181333089641
+     ],
+     "last_cmd": -1.0,
+     "drawer": 0.0016596247775899965,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 212,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 301,
+      "agree": 292,
+      "event_only": 9,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 9
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.749272584915161,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.11780223632510174,
+       -0.012171932938042996,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.17064190389565498,
+       -0.11248271335128641,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.005522727092376327,
+       0.1029878289310302,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.16933037401933268,
+       0.06554092392651707,
+       0.9121303845246008
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.039680766916968827,
+      -0.039764165091401876
+     ],
+     "last_cmd": -0.9939734935760498,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": null,
+      "event_segments": 0,
+      "event_end": false,
+      "steps": 301,
+      "agree": 301,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 10
+    },
+    {
+     "success": true,
+     "steps": 106,
+     "calls": 22,
+     "secs": 4.055142879486084,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 70,
+     "final": {
+      "akita_black_bowl_1": [
+       0.06753353540002911,
+       0.1429161272714802,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.23281191118036493,
+       0.21788716346275938,
+       0.939872670335706
+      ],
+      "wine_bottle_1": [
+       0.0991944440455724,
+       -0.0454744116545281,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.24096119926019421,
+       0.009638540648240072,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.022414735147998778,
+      -0.019879443309450913
+     ],
+     "last_cmd": 1.0,
+     "drawer": 0.0,
+     "held_step": 67,
+     "held_ee": [
+      -0.08343985524538104,
+      -0.003542501628895546,
+      0.9230553385910387
+     ],
+     "held_segments": 1,
+     "held_end": true,
+     "onset_canon": {
+      "foot": [
+       -0.2876370459493549,
+       -3.8125699754085734e-17,
+       0.003682771432783727
+      ],
+      "ee": [
+       -0.28215437632257434,
+       0.002743580444316027,
+       0.018055338591038694
+      ],
+      "cyaw": 2.290380967260782,
+      "zrest": 0.9089068886029357
+     },
+     "min_dxy_held": 0.03531281858645358,
+     "pgate": {
+      "event_step": 67,
+      "event_segments": 1,
+      "event_end": true,
+      "steps": 108,
+      "agree": 108,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 11
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.534902095794678,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.15429503594527008,
+       0.09210401849634334,
+       0.9084834059418685
+      ],
+      "cream_cheese_1": [
+       -0.17387602883194042,
+       -0.10654966725847827,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.007920314389543597,
+       0.015557159055381136,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.11188663071543706,
+       0.19800603854693824,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.027009520154891477,
+      -0.03999548319150231
+     ],
+     "last_cmd": -0.9870598316192627,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": null,
+      "event_segments": 0,
+      "event_end": false,
+      "steps": 301,
+      "agree": 301,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 12
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.807045221328735,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.06696020529964537,
+       0.10841900548129055,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.1651498646256044,
+       -0.09693523894124816,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.03665107741297583,
+       -0.030377605785334463,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.23077300835223058,
+       0.06067157796619201,
+       0.9121245805514397
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03686620685532668,
+      -0.03995385126495565
+     ],
+     "last_cmd": -0.9759615659713745,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": null,
+      "event_segments": 0,
+      "event_end": false,
+      "steps": 301,
+      "agree": 301,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 13
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.95528531074524,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.1264464359538924,
+       0.0914505729885084,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.18554345057137592,
+       -0.11173187712996938,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       -0.2758372481630411,
+       0.05331874599447089,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.07467631700070793,
+       0.047107856198175854,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03947496432702564,
+      -0.03978990081054181
+     ],
+     "last_cmd": -0.9976909160614014,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": null,
+      "event_segments": 0,
+      "event_end": false,
+      "steps": 301,
+      "agree": 301,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 14
+    },
+    {
+     "success": true,
+     "steps": 106,
+     "calls": 22,
+     "secs": 4.079740524291992,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 68,
+     "final": {
+      "akita_black_bowl_1": [
+       0.10594980430306246,
+       0.17444256975171227,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.2209576094955382,
+       0.21399147508154814,
+       0.9407462683517036
+      ],
+      "wine_bottle_1": [
+       0.02726590004014511,
+       0.04275094425163808,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.25494335625032444,
+       0.02177496708561001,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.019810852608429304,
+      -0.021991370717261732
+     ],
+     "last_cmd": 1.0,
+     "drawer": 0.0,
+     "held_step": 67,
+     "held_ee": [
+      -0.09314590930715842,
+      -0.049482328361021705,
+      0.9258696304377894
+     ],
+     "held_segments": 1,
+     "held_end": true,
+     "onset_canon": {
+      "foot": [
+       -0.3227176073093127,
+       -2.593415639339827e-17,
+       0.0068422544966662
+      ],
+      "ee": [
+       -0.31252906530561775,
+       0.015565601628808483,
+       0.020869630437789333
+      ],
+      "cyaw": 2.2109304682620805,
+      "zrest": 0.908660163124767
+     },
+     "min_dxy_held": 0.04651263153191957,
+     "pgate": {
+      "event_step": 67,
+      "event_segments": 1,
+      "event_end": true,
+      "steps": 108,
+      "agree": 108,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 15
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.416558980941772,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 85,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.21932305573109456,
+       0.047304263656488175,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.19005009795412392,
+       0.19968003664415868,
+       0.9357616263443808
+      ],
+      "wine_bottle_1": [
+       -0.111938820861031,
+       -0.09478149779416646,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.12568127915875446,
+       0.20903234694007475,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.038891425244696326,
+      -0.039422363537562795
+     ],
+     "last_cmd": -0.9536048173904419,
+     "drawer": 0.0,
+     "held_step": 83,
+     "held_ee": [
+      0.09916806539579914,
+      0.003266068143029684,
+      0.9292350576490013
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.41634696319644376,
+       -3.560086127166897e-17,
+       0.004811484289897194
+      ],
+      "ee": [
+       -0.4210124034395063,
+       -0.0026417545628249586,
+       0.024235057649001246
+      ],
+      "cyaw": 2.6207687148668297,
+      "zrest": 0.9089068886029357
+     },
+     "min_dxy_held": 0.08707397020043843,
+     "pgate": {
+      "event_step": 82,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 285,
+      "event_only": 11,
+      "oracle_only": 5
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 16
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.273169755935669,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.11410166560617914,
+       -0.019845769231615826,
+       0.8984041501888531
+      ],
+      "cream_cheese_1": [
+       -0.26896839418652707,
+       0.0438259408579293,
+       0.908906924090983
+      ],
+      "wine_bottle_1": [
+       -0.04840001344677216,
+       0.08771323593067726,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.11864079631906602,
+       0.16851948171099154,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.039352697978200325,
+      -0.03980379987506136
+     ],
+     "last_cmd": -0.9930497407913208,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 35,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 288,
+      "event_only": 13,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 17
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.316999912261963,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.09418843382897209,
+       -0.015482438339315405,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.2291171821559619,
+       0.06694455294234393,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.0791798289988365,
+       0.19241184632207112,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.08916352399470015,
+       -0.016041691744262954,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.04000667674327135,
+      -0.039836064955685375
+     ],
+     "last_cmd": -0.9912986159324646,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 34,
+      "event_segments": 4,
+      "event_end": false,
+      "steps": 301,
+      "agree": 285,
+      "event_only": 16,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 18
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.790951490402222,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.11046163526150578,
+       0.16285463381285029,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.14306252085987284,
+       -0.09716395511315988,
+       0.9089069537876633
+      ],
+      "wine_bottle_1": [
+       0.10025944358006275,
+       -0.046830745768169,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.19974431511765925,
+       0.07187970629003117,
+       0.9161916466830052
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.25196961180216754,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.010933345785432516,
+      -0.010408276833962461
+     ],
+     "last_cmd": 0.14528988301753998,
+     "drawer": 0.0016594101868881565,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 297,
+      "event_segments": 1,
+      "event_end": true,
+      "steps": 301,
+      "agree": 298,
+      "event_only": 3,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 19
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.484541416168213,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 85,
+     "final": {
+      "akita_black_bowl_1": [
+       0.07693688823312096,
+       0.19974733714128018,
+       0.8984041501888531
+      ],
+      "cream_cheese_1": [
+       -0.15797503165914642,
+       0.24049131150896713,
+       0.9320520661100699
+      ],
+      "wine_bottle_1": [
+       -0.004150465391415047,
+       0.051048919896487646,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.1876389198361073,
+       0.03525642830267073,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03855820841811135,
+      -0.03976704745361646
+     ],
+     "last_cmd": 0.07181037217378616,
+     "drawer": 0.0,
+     "held_step": 82,
+     "held_ee": [
+      0.10702252896946475,
+      0.05818156352834059,
+      0.9204291171520922
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.4088605711427615,
+       -2.899608449202583e-17,
+       0.00011114210850859951
+      ],
+      "ee": [
+       -0.40414773053106534,
+       -0.000782953835383922,
+       0.015429117152092164
+      ],
+      "cyaw": 2.753306676062471,
+      "zrest": 0.9089068886029357
+     },
+     "min_dxy_held": 0.12847112325019977,
+     "pgate": {
+      "event_step": 82,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 289,
+      "event_only": 7,
+      "oracle_only": 5
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 20
+    },
+    {
+     "success": true,
+     "steps": 86,
+     "calls": 18,
+     "secs": 3.3236682415008545,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 49,
+     "final": {
+      "akita_black_bowl_1": [
+       0.12408598391348792,
+       -0.043090273048268866,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.24997785555520038,
+       0.22413000424151425,
+       0.9359192735925874
+      ],
+      "wine_bottle_1": [
+       0.045668097558966315,
+       0.06641493467514129,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.2727159109188093,
+       -0.020219017141507784,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.023031100359214827,
+      -0.019023980381186557
+     ],
+     "last_cmd": 1.0,
+     "drawer": 0.0,
+     "held_step": 47,
+     "held_ee": [
+      -0.1263055503514646,
+      0.0030123111986657715,
+      0.922130001864208
+     ],
+     "held_segments": 1,
+     "held_end": true,
+     "onset_canon": {
+      "foot": [
+       -0.2664169259025003,
+       2.293263114098787e-17,
+       0.002122290013544359
+      ],
+      "ee": [
+       -0.25043157846442593,
+       0.014551694498685071,
+       0.01713000186420799
+      ],
+      "cyaw": 2.225885697576426,
+      "zrest": 0.9086898622089378
+     },
+     "min_dxy_held": 0.022090040253622312,
+     "pgate": {
+      "event_step": 47,
+      "event_segments": 1,
+      "event_end": true,
+      "steps": 88,
+      "agree": 88,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 21
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.918622493743896,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.27221259345355725,
+       0.04648105745425143,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.1990317454679074,
+       -0.0863393842015612,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       -0.06206326685983115,
+       0.08471616202998178,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.11385094174274765,
+       0.09759578513692801,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.04000963908105876,
+      -0.039793840298073146
+     ],
+     "last_cmd": -1.0,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": null,
+      "event_segments": 0,
+      "event_end": false,
+      "steps": 301,
+      "agree": 301,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 22
+    },
+    {
+     "success": true,
+     "steps": 81,
+     "calls": 17,
+     "secs": 3.153034210205078,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 31,
+     "final": {
+      "akita_black_bowl_1": [
+       0.07688581383297478,
+       0.1796533327251805,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.2463824336197227,
+       0.19906257290325452,
+       0.9407040364144156
+      ],
+      "wine_bottle_1": [
+       0.10558603651027834,
+       0.004400847613686182,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.08647433216061556,
+       0.048312371915963895,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.0265610646960554,
+      -0.016305496020339417
+     ],
+     "last_cmd": -0.9593286514282227,
+     "drawer": 0.0,
+     "held_step": 36,
+     "held_ee": [
+      -0.2655191137982459,
+      -0.04728763737662501,
+      0.9206391799570652
+     ],
+     "held_segments": 1,
+     "held_end": true,
+     "onset_canon": {
+      "foot": [
+       -0.25479484310876405,
+       1.6919713903631205e-17,
+       0.0006849755459967799
+      ],
+      "ee": [
+       -0.25709261439284126,
+       -0.01856850101966846,
+       0.015639179957065208
+      ],
+      "cyaw": 1.5057476896606332,
+      "zrest": 0.9087317726442613
+     },
+     "min_dxy_held": 0.023857222388186047,
+     "pgate": {
+      "event_step": 36,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 83,
+      "agree": 82,
+      "event_only": 0,
+      "oracle_only": 1
+     },
+     "roles": [
+      "cream_cheese_1",
+      "flat_stove_1_cook_region"
+     ],
+     "trial": 23
+    }
+   ]
+  }
+ }
+}

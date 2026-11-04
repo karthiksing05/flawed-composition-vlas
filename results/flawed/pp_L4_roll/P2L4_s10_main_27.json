@@ -1,0 +1,1944 @@
+{
+ "ckpt": "pp_full_L4_s10/P.npz",
+ "name": "P2L4",
+ "ckpt_meta": {
+  "tag": "full_L4",
+  "seed": 10,
+  "tasks": [
+   "K1",
+   "K2",
+   "K3",
+   "K4",
+   "K5",
+   "K6",
+   "K7"
+  ],
+  "center": [
+   -0.08299244195222855,
+   0.007330365478992462,
+   1.0714426040649414
+  ],
+  "steps": 30000,
+  "decouple": true,
+  "reuse": "tgt:full_L1",
+  "pgate": {
+   "tw": 0.0025343644694657995,
+   "lift": 0.01
+  },
+  "roles": {
+   "situations": {
+    "put the bowl on the plate": [
+     "akita_black_bowl_1",
+     "plate_1"
+    ],
+    "put the bowl on the stove": [
+     "akita_black_bowl_1",
+     "flat_stove_1_cook_region"
+    ],
+    "put the bowl on top of the cabinet": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "put the wine bottle on top of the cabinet": [
+     "wine_bottle_1",
+     "wooden_cabinet_1_top_side"
+    ],
+    "put the wine bottle on the rack": [
+     "wine_bottle_1",
+     "wine_rack_1_top_region"
+    ],
+    "put the cream cheese in the bowl": [
+     "cream_cheese_1",
+     "akita_black_bowl_1"
+    ],
+    "open the top drawer and put the bowl inside": [
+     "akita_black_bowl_1",
+     "wooden_cabinet_1_top_region"
+    ]
+   },
+   "ref": {
+    "bottle": "wine_bottle_1",
+    "bowl": "akita_black_bowl_1",
+    "cabinet": "wooden_cabinet_1_top_side",
+    "of": "wooden_cabinet_1_top_side",
+    "wine": "wine_bottle_1",
+    "and": "wooden_cabinet_1_top_region",
+    "cheese": "cream_cheese_1",
+    "cream": "cream_cheese_1",
+    "drawer": "wooden_cabinet_1_top_region",
+    "in": "cream_cheese_1",
+    "inside": "wooden_cabinet_1_top_region",
+    "open": "wooden_cabinet_1_top_region",
+    "plate": "plate_1",
+    "rack": "wine_rack_1_top_region",
+    "stove": "flat_stove_1_cook_region"
+   },
+   "pg": {
+    "bottle": 1.0,
+    "bowl": 0.8,
+    "cabinet": 0.0,
+    "of": 0.0,
+    "wine": 1.0,
+    "and": 0.0,
+    "cheese": 1.0,
+    "cream": 1.0,
+    "drawer": 0.0,
+    "in": 1.0,
+    "inside": 0.0,
+    "open": 0.0,
+    "plate": 0.0,
+    "rack": 0.0,
+    "stove": 0.0
+   },
+   "pr": {
+    "bottle": 0.0,
+    "bowl": 0.2,
+    "cabinet": 1.0,
+    "of": 1.0,
+    "wine": 0.0,
+    "and": 1.0,
+    "cheese": 0.0,
+    "cream": 0.0,
+    "drawer": 1.0,
+    "in": 0.0,
+    "inside": 1.0,
+    "open": 1.0,
+    "plate": 1.0,
+    "rack": 1.0,
+    "stove": 1.0
+   }
+  },
+  "arm": "P",
+  "horizon": 8,
+  "rank": 32,
+  "tsize": false,
+  "aframe": 0,
+  "psupport": true,
+  "tscale": true,
+  "nmode": 3,
+  "rtransport": true,
+  "bbnom": true,
+  "bbnosize": true,
+  "tnear": false
+ },
+ "phase": "main",
+ "host": "walle.cc.gatech.edu",
+ "tasks": {
+  "27": {
+   "language": "put the wine bottle in the bowl",
+   "success_rate": 0.25,
+   "episodes": [
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.848665714263916,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.2632965805400462,
+       0.029428786628087372,
+       0.898404150188855
+      ],
+      "cream_cheese_1": [
+       -0.1540857453133151,
+       -0.11569016632860772,
+       0.9221524060350589
+      ],
+      "wine_bottle_1": [
+       -0.10635118233305746,
+       0.07078244348285027,
+       0.9028816364758563
+      ],
+      "plate_1": [
+       0.10281873306038677,
+       0.09284453984391887,
+       0.9024998346667857
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.025037512841312882,
+      -0.023329223710460242
+     ],
+     "last_cmd": -0.8060144186019897,
+     "drawer": 0.0,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 44,
+      "event_segments": 4,
+      "event_end": false,
+      "steps": 301,
+      "agree": 289,
+      "event_only": 12,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 4
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 11.176878452301025,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 70,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.2714761011071688,
+       -0.0533337925246332,
+       0.8984041501888531
+      ],
+      "cream_cheese_1": [
+       -0.10958020419799432,
+       -0.07411705988344928,
+       0.908900730417771
+      ],
+      "wine_bottle_1": [
+       -0.17954866530974076,
+       -0.10951444569716952,
+       0.9223492669374707
+      ],
+      "plate_1": [
+       0.12201991346138602,
+       0.14830934161877932,
+       0.9024998346667839
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.25193133624248815,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.0400347403103581,
+      -0.03892046675222949
+     ],
+     "last_cmd": -1.0,
+     "drawer": 0.0016211346272087606,
+     "held_step": 65,
+     "held_ee": [
+      -0.00900024638222481,
+      -0.00023531461422617896,
+      1.010316698881872
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.2838272652385571,
+       -4.6201611957784564e-17,
+       0.0073559288231292985
+      ],
+      "ee": [
+       -0.26778678548857093,
+       0.001805596536861569,
+       0.11191254869301892
+      ],
+      "cyaw": -2.9352453921535857,
+      "zrest": 0.898860691959308
+     },
+     "min_dxy_held": 0.07983551965113188,
+     "pgate": {
+      "event_step": 66,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 301,
+      "agree": 298,
+      "event_only": 0,
+      "oracle_only": 3
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 5
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.609924077987671,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 54,
+     "final": {
+      "akita_black_bowl_1": [
+       0.0882456034552318,
+       0.07149729423217056,
+       0.8984041501888531
+      ],
+      "cream_cheese_1": [
+       0.1231090406603848,
+       0.19819989427588608,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       -0.01121241044951248,
+       0.0015681806712635627,
+       0.9216224607219363
+      ],
+      "plate_1": [
+       -0.27597335188598343,
+       0.0017590660994722424,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03937527523407848,
+      -0.04002073933246232
+     ],
+     "last_cmd": -0.9797865152359009,
+     "drawer": 0.0,
+     "held_step": 107,
+     "held_ee": [
+      -0.020505206264602685,
+      0.07557863773666616,
+      1.0389167801689247
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.11949652438122185,
+       -1.5814120794997845e-18,
+       0.013803747373375086
+      ],
+      "ee": [
+       -0.1274972429278229,
+       -0.002839471023433749,
+       0.14051262998007175
+      ],
+      "cyaw": -0.3649387932226266,
+      "zrest": 0.8957088566900657
+     },
+     "min_dxy_held": 0.026094868521910772,
+     "pgate": {
+      "event_step": 52,
+      "event_segments": 3,
+      "event_end": false,
+      "steps": 301,
+      "agree": 291,
+      "event_only": 9,
+      "oracle_only": 1
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 6
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.757667541503906,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.1248129781739571,
+       -0.040815628542021705,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.2254427151872302,
+       0.058375227045273065,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       -0.05845277050419851,
+       0.09732622423117931,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.11793608853195361,
+       0.17857614909196542,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2519878361297265,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.04023824876262623,
+      -0.03932221954225735
+     ],
+     "last_cmd": -0.9792366623878479,
+     "drawer": 0.0016738662125335012,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 44,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 297,
+      "event_only": 4,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 7
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 11.388241052627563,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.05113989734960242,
+       -0.09680862180265977,
+       0.904365927043312
+      ],
+      "cream_cheese_1": [
+       -0.15824387378207744,
+       0.18138449609495155,
+       0.9274198469658216
+      ],
+      "wine_bottle_1": [
+       0.12348201852507887,
+       0.1946956219194671,
+       0.8988609548408879
+      ],
+      "plate_1": [
+       -0.18745205830846906,
+       -0.013882757203047883,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2516664036418566,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.04002875258344018,
+      -0.03907128062006442
+     ],
+     "last_cmd": -0.9944859743118286,
+     "drawer": 0.0013562020265771777,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 80,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 295,
+      "event_only": 6,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 8
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 11.86208200454712,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 56,
+     "final": {
+      "akita_black_bowl_1": [
+       0.0947199183640984,
+       -0.027496723783640015,
+       0.8983884191890692
+      ],
+      "cream_cheese_1": [
+       -0.09482098358701133,
+       -0.0858082403331096,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.07734758654146556,
+       -0.06535949275331887,
+       0.9272807707545989
+      ],
+      "plate_1": [
+       -0.2588138925081197,
+       -0.02393134673165828,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.24708814587739422,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03971681496804013,
+      -0.039912034950563904
+     ],
+     "last_cmd": -1.0,
+     "drawer": -0.0031648853421549243,
+     "held_step": 57,
+     "held_ee": [
+      -0.09369569261810229,
+      0.038897449441789134,
+      1.0620985153722193
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.20012337925022192,
+       -4.835543260220454e-18,
+       0.039393762030523805
+      ],
+      "ee": [
+       -0.20010119798305034,
+       0.014888861374705895,
+       0.16369436518336633
+      ],
+      "cyaw": -0.2812781955937068,
+      "zrest": 0.89620476226599
+     },
+     "min_dxy_held": 0.02882990034843691,
+     "pgate": {
+      "event_step": 53,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 301,
+      "agree": 295,
+      "event_only": 4,
+      "oracle_only": 2
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 9
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.328051805496216,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 71,
+     "final": {
+      "akita_black_bowl_1": [
+       0.08953955615369852,
+       0.0013112146883077509,
+       0.9405229507903214
+      ],
+      "cream_cheese_1": [
+       -0.17064190389565498,
+       -0.11248271335128641,
+       0.9089069548371672
+      ],
+      "wine_bottle_1": [
+       0.0314681317562354,
+       -0.0360442380584645,
+       0.9278854658485058
+      ],
+      "plate_1": [
+       -0.1693304103765354,
+       0.06554119573440316,
+       0.9121304821105388
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.023561982890840563,
+      -0.02479407063242113
+     ],
+     "last_cmd": -0.8466180562973022,
+     "drawer": 0.0,
+     "held_step": 68,
+     "held_ee": [
+      -0.02182746344361712,
+      0.10562067345899367,
+      1.0428994355876187
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.15563873787543012,
+       2.4392594123229386e-18,
+       0.010280100709791795
+      ],
+      "ee": [
+       -0.18169763841892153,
+       -0.018908182680961835,
+       0.14449528539876566
+      ],
+      "cyaw": -0.8044617022332418,
+      "zrest": 0.8962803010298015
+     },
+     "min_dxy_held": 0.014108195616947622,
+     "pgate": {
+      "event_step": 68,
+      "event_segments": 4,
+      "event_end": false,
+      "steps": 301,
+      "agree": 293,
+      "event_only": 6,
+      "oracle_only": 2
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 10
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 11.68500542640686,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.06753353540000784,
+       0.14291612727150682,
+       0.8984041501888531
+      ],
+      "cream_cheese_1": [
+       -0.07262876610518668,
+       0.0034241316114903553,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.032424397477061134,
+       -0.10029312114150923,
+       0.9064959202745313
+      ],
+      "plate_1": [
+       -0.24096119926019632,
+       0.00963854064824799,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.25193008417774154,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.040022360407596824,
+      -0.0392050694199503
+     ],
+     "last_cmd": -1.0,
+     "drawer": 0.0016198799299827528,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 110,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 301,
+      "agree": 298,
+      "event_only": 3,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 11
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.102542638778687,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 90,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.1542950359452699,
+       0.09210401849634325,
+       0.9084834059418685
+      ],
+      "cream_cheese_1": [
+       -0.17387602883194042,
+       -0.10654966725847827,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.01140884766448493,
+       -0.03590063595123151,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.11188663071543706,
+       0.19800603854693824,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.23632189305689807,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03747554417918263,
+      -0.03683020299029822
+     ],
+     "last_cmd": 1.0,
+     "drawer": -0.013954152307427062,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 86,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 292,
+      "event_only": 9,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 12
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 11.173273801803589,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.06696020529964537,
+       0.10841900548129055,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.1651498646256044,
+       -0.09693523894124816,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.0363665306802153,
+       -0.030748820417683696,
+       0.8981009546911518
+      ],
+      "plate_1": [
+       -0.23077300835223055,
+       0.06067157796619161,
+       0.9121245805514396
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2500598328779404,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.04004135173896643,
+      -0.03880284623532679
+     ],
+     "last_cmd": -1.0,
+     "drawer": -0.00025036873733899373,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": null,
+      "event_segments": 0,
+      "event_end": false,
+      "steps": 301,
+      "agree": 301,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 13
+    },
+    {
+     "success": true,
+     "steps": 145,
+     "calls": 30,
+     "secs": 5.60088586807251,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 101,
+     "final": {
+      "akita_black_bowl_1": [
+       0.12412418782729928,
+       0.09385270404667172,
+       0.904573320366204
+      ],
+      "cream_cheese_1": [
+       -0.18554345057137592,
+       -0.11173187712996938,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.11457922184569745,
+       0.10526294412603152,
+       0.9098133702028742
+      ],
+      "plate_1": [
+       -0.07467631700070793,
+       0.047107856198175854,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03121297478244712,
+      -0.030032158721255205
+     ],
+     "last_cmd": -0.9605750441551208,
+     "drawer": 0.0,
+     "held_step": 98,
+     "held_ee": [
+      -0.28605717836149563,
+      0.05226105923330771,
+      0.9698091343893851
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.4092613130655091,
+       -3.832472781712288e-18,
+       0.0086471993255538
+      ],
+      "ee": [
+       -0.4142103872853076,
+       0.011171610294983573,
+       0.0714049842005321
+      ],
+      "cyaw": 0.12168408207706127,
+      "zrest": 0.8970962249468949
+     },
+     "min_dxy_held": 0.03377700216507267,
+     "pgate": {
+      "event_step": 47,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 147,
+      "agree": 137,
+      "event_only": 5,
+      "oracle_only": 5
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 14
+    },
+    {
+     "success": true,
+     "steps": 101,
+     "calls": 21,
+     "secs": 4.002644300460815,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 70,
+     "final": {
+      "akita_black_bowl_1": [
+       0.10595928414745946,
+       0.17443759427086597,
+       0.8984204414946121
+      ],
+      "cream_cheese_1": [
+       -0.08642738808684833,
+       -0.06834162040384995,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.10095838110628338,
+       0.17263232119247388,
+       0.9085797357148814
+      ],
+      "plate_1": [
+       -0.25494335625032444,
+       0.02177496708561001,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.01536573004005948,
+      -0.015859212091301176
+     ],
+     "last_cmd": -0.980247974395752,
+     "drawer": 0.0,
+     "held_step": 84,
+     "held_ee": [
+      0.023873304791691724,
+      0.12006179225642984,
+      1.1901336877449502
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.09500532880311921,
+       2.6613506429560088e-18,
+       0.16477024877547886
+      ],
+      "ee": [
+       -0.09134001622922232,
+       0.036753532731927434,
+       0.2917295375560972
+      ],
+      "cyaw": 0.9677132983284072,
+      "zrest": 0.8958830689739938
+     },
+     "min_dxy_held": 0.006404933991311003,
+     "pgate": {
+      "event_step": 67,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 103,
+      "agree": 85,
+      "event_only": 17,
+      "oracle_only": 1
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 15
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 11.110074520111084,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.21932305573109456,
+       0.047304263656488175,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       0.09609835054716992,
+       0.00816130560961359,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       -0.11409605627075976,
+       -0.09262143810401179,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       0.12568127915875446,
+       0.20903234694007475,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2519358504929206,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.04003802767429872,
+      -0.03873629943442812
+     ],
+     "last_cmd": -0.9969106316566467,
+     "drawer": 0.0016256488776412242,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 87,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 295,
+      "event_only": 6,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 16
+    },
+    {
+     "success": true,
+     "steps": 100,
+     "calls": 21,
+     "secs": 4.005746364593506,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 59,
+     "final": {
+      "akita_black_bowl_1": [
+       0.11414545989828476,
+       -0.019674507462438543,
+       0.9028626747876096
+      ],
+      "cream_cheese_1": [
+       -0.2544682788655172,
+       0.05184627134766631,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.10239216753815632,
+       -0.011870649322295847,
+       0.9106089823925435
+      ],
+      "plate_1": [
+       0.11864079631906602,
+       0.16851948171099154,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.015251368957394108,
+      -0.015858763334296134
+     ],
+     "last_cmd": -0.8881566524505615,
+     "drawer": 0.0,
+     "held_step": 60,
+     "held_ee": [
+      -0.06410625898098643,
+      0.07857334739654015,
+      1.034393196309531
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.17994284304740735,
+       -5.951885075898238e-18,
+       0.009606821711845348
+      ],
+      "ee": [
+       -0.2032074575163761,
+       0.012292929401150086,
+       0.13598904612067797
+      ],
+      "cyaw": -0.4441644683948646,
+      "zrest": 0.897004092261573
+     },
+     "min_dxy_held": 0.015053391026683736,
+     "pgate": {
+      "event_step": 61,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 102,
+      "agree": 100,
+      "event_only": 0,
+      "oracle_only": 2
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 17
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.66016173362732,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.09418843382897209,
+       -0.015482438339315407,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.22618828157943516,
+       0.07778132022116807,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.07915214228633713,
+       0.1924258405232087,
+       0.8988609548408878
+      ],
+      "plate_1": [
+       -0.08916352399470015,
+       -0.016041691744262954,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.25194373916109836,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.040030082434635926,
+      -0.03922503437403316
+     ],
+     "last_cmd": -0.9648752212524414,
+     "drawer": 0.001633537545818977,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 108,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 301,
+      "agree": 298,
+      "event_only": 3,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 18
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 11.418304681777954,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.11046433115843851,
+       0.16286073071906365,
+       0.8984089902881018
+      ],
+      "cream_cheese_1": [
+       -0.13438509114984767,
+       -0.09984438901133957,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.09469846195821156,
+       -0.03931921397781495,
+       0.9200043319672502
+      ],
+      "plate_1": [
+       -0.19974431511765914,
+       0.07187970629003093,
+       0.9161916466830051
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2511636936432214,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.04002035937217898,
+      -0.03941968366012616
+     ],
+     "last_cmd": -1.0,
+     "drawer": 0.0008534920279419691,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": null,
+      "event_segments": 0,
+      "event_end": false,
+      "steps": 301,
+      "agree": 301,
+      "event_only": 0,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 19
+    },
+    {
+     "success": true,
+     "steps": 108,
+     "calls": 22,
+     "secs": 4.167571067810059,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 76,
+     "final": {
+      "akita_black_bowl_1": [
+       0.07734941667266046,
+       0.19955222702524533,
+       0.9007002570322885
+      ],
+      "cream_cheese_1": [
+       0.11253571369747767,
+       0.058320372737985904,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.07381380020316498,
+       0.18626719964591565,
+       0.9116900407783382
+      ],
+      "plate_1": [
+       -0.18763891983609818,
+       0.03525642830263339,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.015494597888865612,
+      -0.015537787366102068
+     ],
+     "last_cmd": -0.9416946172714233,
+     "drawer": 0.0,
+     "held_step": 73,
+     "held_ee": [
+      -0.03100843038236311,
+      0.04583865040461023,
+      1.0375779155945064
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.167242625688452,
+       -7.966221447649321e-18,
+       0.012484225561044116
+      ],
+      "ee": [
+       -0.18683845090067855,
+       0.020771830179888984,
+       0.1391737654056534
+      ],
+      "cyaw": 1.0698792093645753,
+      "zrest": 0.8966075725661308
+     },
+     "min_dxy_held": 0.015007179330776858,
+     "pgate": {
+      "event_step": 72,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 110,
+      "agree": 108,
+      "event_only": 1,
+      "oracle_only": 1
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 20
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.940995693206787,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 163,
+     "final": {
+      "akita_black_bowl_1": [
+       0.12408598391348792,
+       -0.043090273048268866,
+       0.898404150188853
+      ],
+      "cream_cheese_1": [
+       -0.10292079996275572,
+       0.011996742528002008,
+       0.9089069548372153
+      ],
+      "wine_bottle_1": [
+       0.059843809216569926,
+       -0.10951581341344359,
+       0.8990871305752733
+      ],
+      "plate_1": [
+       -0.2727159109188093,
+       -0.020219017141507784,
+       0.9024998346667837
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.03867071857373218,
+      -0.03972614538083
+     ],
+     "last_cmd": -0.9747363924980164,
+     "drawer": 0.0,
+     "held_step": 161,
+     "held_ee": [
+      0.0036096473760105705,
+      0.07971587645152489,
+      1.049497440140232
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.12649400119317564,
+       3.8024548180461384e-18,
+       0.009765717476069802
+      ],
+      "ee": [
+       -0.1718994663854554,
+       -0.0068169991090572665,
+       0.15109328995137894
+      ],
+      "cyaw": -0.8346105712586057,
+      "zrest": 0.8966658605343722
+     },
+     "min_dxy_held": 0.04008269192490497,
+     "pgate": {
+      "event_step": 95,
+      "event_segments": 2,
+      "event_end": false,
+      "steps": 301,
+      "agree": 297,
+      "event_only": 4,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 21
+    },
+    {
+     "success": true,
+     "steps": 86,
+     "calls": 18,
+     "secs": 3.3635194301605225,
+     "error": null,
+     "bound": "wine_bottle_1",
+     "bound_step": 51,
+     "final": {
+      "akita_black_bowl_1": [
+       -0.27266694427286625,
+       0.04792750642310932,
+       0.8977248875501788
+      ],
+      "cream_cheese_1": [
+       -0.1990317454679074,
+       -0.0863393842015612,
+       0.9089069548371622
+      ],
+      "wine_bottle_1": [
+       -0.2789906758035765,
+       0.06526469364645501,
+       0.9081700183836848
+      ],
+      "plate_1": [
+       0.11385094174273935,
+       0.09759578513696125,
+       0.9024998346666636
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2503102016152794,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.0201299814395721,
+      -0.01956805884394667
+     ],
+     "last_cmd": -0.9454751014709473,
+     "drawer": 0.0,
+     "held_step": 49,
+     "held_ee": [
+      -0.053601699851193785,
+      0.07330430075878133,
+      1.041701226737549
+     ],
+     "held_segments": 1,
+     "held_end": false,
+     "onset_canon": {
+      "foot": [
+       -0.2222176587753255,
+       -3.994766077309877e-17,
+       0.010238027894130752
+      ],
+      "ee": [
+       -0.21980308381264968,
+       0.014029024536552274,
+       0.14329707654869595
+      ],
+      "cyaw": -2.955765359053385,
+      "zrest": 0.898860691959308
+     },
+     "min_dxy_held": 0.008764979405052772,
+     "pgate": {
+      "event_step": 49,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 88,
+      "agree": 86,
+      "event_only": 0,
+      "oracle_only": 2
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 22
+    },
+    {
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 10.736352920532227,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "final": {
+      "akita_black_bowl_1": [
+       0.07686995688851221,
+       0.17969567773168085,
+       0.8984271453900285
+      ],
+      "cream_cheese_1": [
+       -0.2674412588619991,
+       0.002592632453405158,
+       0.9089069548372172
+      ],
+      "wine_bottle_1": [
+       0.10781902588188202,
+       0.019451025155542215,
+       0.9191264821984594
+      ],
+      "plate_1": [
+       -0.09019742088362395,
+       0.06017947731102109,
+       0.9024998346667857
+      ],
+      "flat_stove_1_cook_region": [
+       -0.267336611084815,
+       0.21046825161347532,
+       0.905
+      ],
+      "wooden_cabinet_1_top_side": [
+       0.021066057580419295,
+       -0.2547002016152794,
+       1.12652
+      ],
+      "wine_rack_1_top_region": [
+       -0.25661973518232173,
+       -0.18061494280510043,
+       1.1374499999999999
+      ],
+      "wooden_cabinet_1_top_region": [
+       0.021326057580419295,
+       -0.2519691638419215,
+       1.09063
+      ],
+      "main_table_stove_front_region": [
+       -0.05,
+       0.21,
+       0.895
+      ]
+     },
+     "final_grip": [
+      0.040025253699723234,
+      -0.039181829102750865
+     ],
+     "last_cmd": -1.0,
+     "drawer": 0.0016589622266420458,
+     "held_step": null,
+     "held_ee": null,
+     "held_segments": 0,
+     "held_end": false,
+     "onset_canon": null,
+     "min_dxy_held": null,
+     "pgate": {
+      "event_step": 98,
+      "event_segments": 1,
+      "event_end": false,
+      "steps": 301,
+      "agree": 297,
+      "event_only": 4,
+      "oracle_only": 0
+     },
+     "roles": [
+      "wine_bottle_1",
+      "akita_black_bowl_1"
+     ],
+     "trial": 23
+    }
+   ]
+  }
+ }
+}
