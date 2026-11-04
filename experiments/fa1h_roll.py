@@ -39,6 +39,13 @@ def episode(model, bddl, state, lang, seed_base):
     dj = FC.drawer_joint(env)
     con = FB.Contact(env, [oe])
     hm, cn = FB.Held(), FK.Canon()
+    # LADDER_RESULTS 1 (L1): with model.pgate, the POLICY's gate, Canon, rot0 and d0t follow the proprioceptive event; the oracle
+    # signal above is still stepped and logged (the read's instrument).  pgate None: exactly the L0 episode.
+    pg = getattr(model, "pgate", None)
+    if pg:
+        from lifelong_ood.policy.parts_flow import ProprioHeld
+        det, cnp = ProprioHeld(pg["tw"], pg["lift"]), FK.Canon()
+        ptr = dict(on=False, step=None, segs=0, agree=0, n=0, ev_only=0, or_only=0)
     t, calls, done, err, plan = 0, 0, False, None, []
     prev, bound, bound_step, start_pos, t0 = -1.0, None, None, None, time.time()
     held_step, held_ee, onset_c, segs, h_on, off, zr, cy = None, None, None, 0, False, np.zeros(3), 0.0, 0.0
@@ -52,6 +59,25 @@ def episode(model, bddl, state, lang, seed_base):
         h, o = hm.step(*con.touching(oe), con.pos(oe), obs["robot0_eef_pos"])
         z, c = cn.step(h, con.pos(oe), tgt)
         return h, o, z, c
+
+    def policy_gate(h, z, c):
+        """L1: the policy's (held, zrest, cyaw) from the proprioceptive event (demo rows' features: scene grip and ee_pos);
+        pgate None: the oracle's, unchanged."""
+        if not pg:
+            return h, z, c
+        sc = FC.scene(env, obs, dj)
+        hp = det.step(sc["grip"], prev, sc["ee_pos"][2])
+        zp, cp = cnp.step(hp, con.pos(oe), tgt)
+        ptr["n"] += 1
+        ptr["agree"] += int(hp == h)
+        ptr["ev_only"] += int(hp and not h)
+        ptr["or_only"] += int(h and not hp)
+        if hp and not ptr["on"]:
+            ptr["segs"] += 1
+            if ptr["step"] is None:
+                ptr["step"] = t - WAIT
+        ptr["on"] = hp
+        return hp, zp, cp
 
     def onset_d(h, was, d0):
         """PARTS_RESULTS 33 (P_ts): the horizontal object-to-target distance at the hold's onset (None while not held)."""
@@ -71,12 +97,14 @@ def episode(model, bddl, state, lang, seed_base):
                 t += 1
                 if t == WAIT:
                     h_on, off, zr, cy = track()
-                    rot0 = onset_rot(h_on, False, None)
-                    d0t = onset_d(h_on, False, None)
+                    p_on, p_zr, p_cy = policy_gate(h_on, zr, cy)
+                    rot0 = onset_rot(p_on, False, None)
+                    d0t = onset_d(p_on, False, None)
                     ee0 = FC.scene(env, obs, dj)["ee_pos"].copy()        # the episode start (PARTS_RESULTS 27, P_hs)
                 continue
             if not plan:
-                b = FF.batch_from_scene(FC.scene(env, obs, dj), oi, ti, prev, held=float(h_on), off=off, zrest=zr, cyaw=cy, rot0=rot0)
+                b = FF.batch_from_scene(FC.scene(env, obs, dj), oi, ti, prev, held=float(p_on), off=off, zrest=p_zr, cyaw=p_cy,
+                                        rot0=rot0)
                 if float(getattr(model, "hscale", 0.0)) > 0:
                     b["ee0"] = torch.tensor(np.asarray(ee0), dtype=torch.float32)[None]
                 if bool(getattr(model, "tscale", False)) and d0t is not None:   # not held: the model uses the current distance
@@ -88,10 +116,11 @@ def episode(model, bddl, state, lang, seed_base):
             act = plan.pop(0)
             obs, _, done, _ = env.step(act.tolist())
             prev = float(act[6])
-            was = h_on
+            was, p_was = h_on, p_on
             h_on, off, zr, cy = track()
-            rot0 = onset_rot(h_on, was, rot0)
-            d0t = onset_d(h_on, was, d0t)
+            p_on, p_zr, p_cy = policy_gate(h_on, zr, cy)
+            rot0 = onset_rot(p_on, p_was, rot0)
+            d0t = onset_d(p_on, p_was, d0t)
             if h_on and not was:
                 segs += 1
                 if held_step is None:
@@ -120,10 +149,14 @@ def episode(model, bddl, state, lang, seed_base):
         err = repr(ex)
     sc = FC.scene(env, obs, dj)
     env.close()
-    return dict(success=bool(done), steps=t - WAIT, calls=calls, secs=time.time() - t0, error=err, bound=bound, bound_step=bound_step,
-                final={e: sc["pos"][i].tolist() for i, e in enumerate(FC.ENT)}, final_grip=sc["grip"].tolist(), last_cmd=prev,
-                drawer=sc["drawer"], held_step=held_step, held_ee=held_ee, held_segments=segs, held_end=bool(h_on), onset_canon=onset_c,
-                min_dxy_held=min_dxy)
+    out = dict(success=bool(done), steps=t - WAIT, calls=calls, secs=time.time() - t0, error=err, bound=bound, bound_step=bound_step,
+               final={e: sc["pos"][i].tolist() for i, e in enumerate(FC.ENT)}, final_grip=sc["grip"].tolist(), last_cmd=prev,
+               drawer=sc["drawer"], held_step=held_step, held_ee=held_ee, held_segments=segs, held_end=bool(h_on), onset_canon=onset_c,
+               min_dxy_held=min_dxy)
+    if pg:                                                                  # L1: the event's trace next to the oracle's
+        out["pgate"] = dict(event_step=ptr["step"], event_segments=ptr["segs"], event_end=bool(ptr["on"]), steps=ptr["n"],
+                            agree=ptr["agree"], event_only=ptr["ev_only"], oracle_only=ptr["or_only"])
+    return out
 
 
 def main():

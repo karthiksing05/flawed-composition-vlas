@@ -63,10 +63,52 @@ def d0t_rows(D, held, oi, ti):
     return out
 
 
-def rows(dev, tasks=None, k=None):
-    """-> (batch dict of tensors, actions, centre, size) over the demo rows of `tasks` (compound names; None = all), first k demos."""
+def pgate_held(D, pg):
+    """Ladder L1 (LADDER_RESULTS 1.2): the proprioceptive event over every demo row (stepped per demo; no oracle label)."""
+    key = D["task"].astype(np.int64) * 1000 + D["demo"]
+    return PF.pgate_rows(key, D["grip"], D["prev_grip"], D["ee_pos"][:, 2], pg["tw"], pg["lift"])
+
+
+def pgate_fit_tasks(tasks):
+    """Ladder L1: the event's threshold by the fixed rule, on the rows of the build's own training tasks."""
+    D = np.load(os.path.join(FC.DATA, "demos.npz"))
+    keep = np.isin(D["task"], [list(FC.KNOWN).index(c) for c in tasks])
+    return PF.pgate_fit(D["grip"][keep], D["prev_grip"][keep])
+
+
+def pgate_agreement(D, held_p, held_o, keep):
+    """Ladder L1: the event against the oracle label on the kept demo rows, per task and pooled (reported, no criterion)."""
+    key = D["task"].astype(np.int64) * 1000 + D["demo"]
+    out = {}
+    names = list(FC.KNOWN)
+    for t in sorted({int(x) for x in D["task"][keep]}) + [None]:
+        m = keep & (np.ones(len(key), bool) if t is None else D["task"] == t)
+        p, o = held_p[m] > 0.5, held_o[m] > 0.5
+        on_lag, off_lag, miss, extra = [], [], 0, 0
+        for kk in np.unique(key[m]):
+            r = np.nonzero(m & (key == kk))[0]
+            hp, ho = held_p[r] > 0.5, held_o[r] > 0.5
+            if ho.any() and hp.any():
+                on_lag.append(int(np.argmax(hp)) - int(np.argmax(ho)))
+                off_lag.append(int(len(hp) - 1 - np.argmax(hp[::-1])) - int(len(ho) - 1 - np.argmax(ho[::-1])))
+            miss += int(ho.any() and not hp.any())
+            extra += int(hp.any() and not ho.any())
+        q = lambda v: [float(x) for x in np.quantile(v, [0.1, 0.5, 0.9])] if v else None   # noqa: E731
+        out["all" if t is None else names[t]] = dict(
+            rows=int(m.sum()), accuracy=float((p == o).mean()), held_frac_event=float(p.mean()), held_frac_oracle=float(o.mean()),
+            event_given_oracle=float(p[o].mean()) if o.any() else None, oracle_given_event=float(o[p].mean()) if p.any() else None,
+            onset_lag_rows_q10_50_90=q(on_lag), last_held_lag_rows_q10_50_90=q(off_lag), demos_oracle_held_event_never=miss,
+            demos_event_held_oracle_never=extra)
+    return out
+
+
+def rows(dev, tasks=None, k=None, pgate=None):
+    """-> (batch dict of tensors, actions, centre, size) over the demo rows of `tasks` (compound names; None = all), first k demos.
+    pgate (ladder L1): {tw, lift} -> every use of held takes the proprioceptive event instead of demos_b.npz's contact label."""
     D = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
     Db = dict(np.load(os.path.join(FC.DATA, "demos_b.npz")))
+    if pgate:
+        Db["held"] = pgate_held(D, pgate)
     n2 = json.load(open(os.path.join(ROOT, "results", "flawed", "n2_tasks.json"), encoding="utf-8"))
     lang = {t["compound"]: t["language"] for t in n2["tasks"]}
     rl = [FC.roles(lang[c]) for c in FC.KNOWN]
@@ -356,6 +398,7 @@ def main():
     ap.add_argument("--bbnom", action="store_true")                       # PARTS_RESULTS 44: P_nom (backbone-alone path reads no m)
     ap.add_argument("--bbnosize", action="store_true")                    # PARTS_RESULTS 47: P_nsz (backbone-alone path reads no size)
     ap.add_argument("--tnear", action="store_true")                       # PARTS_RESULTS 50: P_rel (release region unstretched)
+    ap.add_argument("--pgate", action="store_true")                       # LADDER_RESULTS 1: L1 (proprioceptive held event)
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -369,7 +412,14 @@ def main():
     os.makedirs(d, exist_ok=True)
     if a.mode == "build":
         tasks = [c for c in FC.KNOWN if c not in a.exclude.split("+")]
-        b, act, center, size, n, _ = rows(dev, tasks)
+        pg, pg_agree = None, None
+        if a.pgate:                                                        # LADDER_RESULTS 1: the event's threshold, fixed rule
+            pg = pgate_fit_tasks(tasks)
+            Dz = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
+            keep = np.isin(Dz["task"], [list(FC.KNOWN).index(c) for c in tasks])
+            pg_agree = pgate_agreement(Dz, pgate_held(Dz, pg), np.load(os.path.join(FC.DATA, "demos_b.npz"))["held"], keep)
+            print("[pp_p] pgate", json.dumps(pg), "agreement", json.dumps(pg_agree["all"]), flush=True)
+        b, act, center, size, n, _ = rows(dev, tasks, pgate=pg)
         D0 = np.load(os.path.join(FC.DATA, "demos.npz"))
         home = D0["ee_pos"][D0["step"] == 0].mean(0).tolist()               # the demos' mean end effector at step 0 (P_af)
         rclip = hscale = 0.0
@@ -423,8 +473,10 @@ def main():
             groups = [g for g in groups if g]
         params = [p for p in m.parameters() if p.requires_grad]
         ema, curve, secs = fit(m, params, b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}", groups=groups)
-        ema.cpu().save(os.path.join(d, "P.npz"), dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps,
-                                                      decouple=a.decouple, reuse=a.reuse or None))
+        smeta = dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps, decouple=a.decouple, reuse=a.reuse or None)
+        if pg is not None:                                                 # flag off: the meta is L0's, key for key
+            smeta["pgate"] = dict(tw=pg["tw"], lift=pg["lift"])
+        ema.cpu().save(os.path.join(d, "P.npz"), smeta)
         rep = dict(mode="build", tag=a.tag, seed=a.seed, tasks=tasks, n_rows=n, steps=a.steps, secs=secs, curve=curve,
                    decouple=a.decouple, reuse=a.reuse or None, reused_role=reused, interface=inv,
                    rclip=rclip, rtclip=rtclip, hscale=hscale, rclip_p=None if ro is None else list(ro), rtclip_p=None if rt is None else list(rt),
@@ -432,6 +484,8 @@ def main():
                    params_total=int(sum(p.numel() for p in m.parameters())), part_params=dict(obj=m.obj.part_params(), tgt=m.tgt.part_params()),
                    backbone_params=dict(obj=int(sum(p.numel() for p in m.obj.backbone_parameters())),
                                         tgt=int(sum(p.numel() for p in m.tgt.backbone_parameters()))))
+        if pg is not None:
+            rep.update(pgate=pg, pgate_agreement=pg_agree)
         fn = os.path.join(ROOT, "results", "flawed", f"pp_train_{a.tag}_s{a.seed}.json")
     else:
         m, meta = PF.PartsFlow.load(os.path.join(d, "P.npz"))
@@ -460,7 +514,8 @@ def main():
                     keepj = p.grad[j].clone()
                     p.grad.zero_()
                     p.grad[j] = keepj
-        b, act, _, _, n, demos = rows(dev, [a.task], a.k)
+        assert not a.pgate or meta.get("pgate"), "--pgate creation needs a --pgate library"
+        b, act, _, _, n, demos = rows(dev, [a.task], a.k, pgate=meta.get("pgate"))   # L1: the library's event, not refitted
         assert len(demos) == a.k, ("demos", demos)
         radius = None
         if m.psupport:                                               # P_pp: the created part's own radius, from its k demos only

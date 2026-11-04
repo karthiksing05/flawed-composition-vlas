@@ -12,6 +12,8 @@ init) on the backbone's four hidden Linear layers.  A task activates exactly its
 part in the target term; nothing else is atom-specific.  Parameters per part: EMB + RANK * sum over the 4 layers of (in + out).
 None of stages 1l-1p's executor devices (occupancy, free space, the object-unit end-effector input) is present.
 Oracle state, frames and the contact gate stay (Layer 3 removes them).
+Ladder L1 (docs/LADDER_RESULTS.md section 1; default off): with a checkpoint's meta "pgate", c is the proprioceptive event
+ProprioHeld (finger width, last gripper command, hand height) instead of the sim-contact gate, in training rows and rollouts.
 """
 from __future__ import annotations
 
@@ -28,6 +30,51 @@ EMB, RANK, WIDTH = 16, 8, 352
 OBJ_ATOMS = ["akita_black_bowl_1", "cream_cheese_1", "wine_bottle_1", "plate_1"]
 TGT_ATOMS = ["plate_1", "flat_stove_1_cook_region", "wooden_cabinet_1_top_side", "wine_rack_1_top_region", "wooden_cabinet_1_top_region",
              "main_table_stove_front_region", "akita_black_bowl_1"]
+
+
+PG_LIFT = 0.01                                                      # fa1b_common.LIFT, the oracle rule's own constant
+
+
+class ProprioHeld:
+    """Ladder L1 (LADDER_RESULTS 1.2): the held event from proprioception only, stepped once per step (per kept demo row).
+    Inputs: grip = the two finger joint positions (width w = grip[0] - grip[1]), cmd = the last gripper command (> 0 closes),
+    z = the hand's height.  Command open: off, close reference cleared.  Command closing: z_min = the lowest hand height since the
+    close began; turns ON when w >= tw and z - z_min >= lift; turns OFF when w < tw.  Reads no object pose, contact or identity."""
+
+    def __init__(self, tw, lift=PG_LIFT):
+        self.tw, self.lift = float(tw), float(lift)
+        self.on, self.zmin = False, None
+
+    def step(self, grip, cmd, z):
+        w, z = float(grip[0]) - float(grip[1]), float(z)
+        if not float(cmd) > 0:
+            self.on, self.zmin = False, None
+            return False
+        self.zmin = z if self.zmin is None else min(self.zmin, z)
+        if not self.on and w >= self.tw and z - self.zmin >= self.lift:
+            self.on = True
+        elif self.on and w < self.tw:
+            self.on = False
+        return self.on
+
+
+def pgate_fit(grip, cmd):
+    """LADDER_RESULTS 1.2's fixed rule on a build's demo rows: tw = (min width + 1st pct of the width on close-commanded rows) / 2."""
+    w = np.asarray(grip, np.float64)[:, 0] - np.asarray(grip, np.float64)[:, 1]
+    c = np.asarray(cmd) > 0
+    return dict(tw=float(0.5 * (w.min() + np.quantile(w[c], 0.01))), lift=PG_LIFT, w_min=float(w.min()),
+                w_close_q01=float(np.quantile(w[c], 0.01)))
+
+
+def pgate_rows(key, grip, cmd, z, tw, lift=PG_LIFT):
+    """The event per row, ProprioHeld stepped over each episode's rows in order (key = episode id per row) -> float32 0/1."""
+    out = np.zeros(len(key), np.float32)
+    det = None
+    for i in range(len(key)):
+        if i == 0 or key[i] != key[i - 1]:
+            det = ProprioHeld(tw, lift)
+        out[i] = float(det.step(grip[i], cmd[i], z[i]))
+    return out
 
 
 class LoRALinear(nn.Module):
@@ -341,7 +388,11 @@ class PartsFlow(nn.Module):
         sd.setdefault("rtclip_p", torch.zeros(len(TGT_ATOMS)))
         m.load_state_dict(sd)
         m.eval()
+        if meta.get("pgate"):                                                   # ladder L1: the build's proprioceptive event
+            m.pgate = dict(tw=float(meta["pgate"]["tw"]), lift=float(meta["pgate"]["lift"]))
         return m, meta
+
+    pgate = None                                                            # ladder L1 off: the rollout steps the oracle gate only
 
 
 def _to2(Qp, Qr, x):
