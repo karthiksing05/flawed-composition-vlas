@@ -32,6 +32,7 @@ def rows_check(old_path):
     spec = importlib.util.spec_from_file_location("pp_p_train_L0", old_path)
     old = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(old)
+    old.ROOT = ROOT                                                         # the extracted copy lives outside the repo
     dev = torch.device("cpu")
     res = {}
     cases = [(c, [k for k in FC.KNOWN if k not in ex], None) for c, ex in BUILDS.items()] + [("create_K4", ["K4"], 10),
