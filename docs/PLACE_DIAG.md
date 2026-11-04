@@ -178,7 +178,7 @@ tilted or still-gripped object.
 
 **Weakness in the matching.** I defined the release state at the first open command. In many episodes there is none, because the check passes on
 touch-down with the gripper still closed: 55 of 60 in K1 familiar. Those episodes share the `none` stratum with episodes that never let go. In the new
-layout, `none` holds K1's 11 of 22 successes against N1's 17 of 19, so most of N1 − K1's gap sits inside one mixed stratum. SAME-STATE here therefore
+layout, `none` succeeds in 11 of K1's 22 episodes against 17 of N1's 19, so most of N1 − K1's gap sits inside one mixed stratum. SAME-STATE here therefore
 means "the registered strata did not explain it", and is weaker evidence than its name suggests.
 
 ### 3.5 3F with m conditioning (PLAN_PARTS §10.14; post-hoc, no verdict; P_min)
