@@ -367,3 +367,8 @@ The plan is adopted. Each layer is still pre-registered before its first read (ย
       as such. The registered rule's verdict was "holds".
     - **Order.** No new rung starts until the coverage arm reads out.
     - **Scope.** Why K5 and N4 moved at L4 is not established.
+
+14. **(User, 2026-11-04) 3F: report both, the frozen estimator decides.** The frozen estimator pools an object's factors over its
+    known pairings, and since item 5 those pairings can run under different grasp modes (COVERAGE_RESULTS ยง3.5).
+    - **Reads.** Every later read reports an m-conditioned 3F beside the frozen one, labelled post-hoc, with no verdict of its own.
+    - **Unchanged.** The frozen estimator decides every criterion.
