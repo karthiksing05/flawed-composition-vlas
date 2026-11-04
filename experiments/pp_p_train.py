@@ -474,12 +474,14 @@ def main():
             lex = PF.role_lexicon(build_situations(tasks, Dz, pgate_held(Dz, pg)))
             lang = instructions()
             parsed = {c: PF.role_parse(lex, lang[c]) for c in tasks}
-            lex_rep = dict(lexicon=lex, parsed=parsed, no_roles=[c for c in tasks if parsed[c] is None])
+            # LADDER_RESULTS 5.3 (corrected): a task trains iff it has a contact event (a situation) and an induced parse
+            trained = [c for c in tasks if parsed[c] is not None and lang[c] in lex["situations"]]
+            lex_rep = dict(lexicon=lex, parsed=parsed, trained=trained, untrained=[c for c in tasks if c not in trained])
             print("[pp_p] iroles", json.dumps(lex_rep), flush=True)
             if a.reuse:                                                    # LADDER_RESULTS 5.6: the reuse precondition
-                diff = [c for c in tasks if parsed[c] is not None and tuple(parsed[c]) != tuple(FC.roles(lang[c]))]
+                diff = [c for c in trained if tuple(parsed[c]) != tuple(FC.roles(lang[c]))]
                 assert not diff, ("--reuse: induced roles differ from the donor's on trained tasks", diff)
-            tasks = [c for c in tasks if parsed[c] is not None]
+            tasks = trained
         b, act, center, size, n, _ = rows(dev, tasks, pgate=pg, roles=lex)
         D0 = np.load(os.path.join(FC.DATA, "demos.npz"))
         home = D0["ee_pos"][D0["step"] == 0].mean(0).tolist()               # the demos' mean end effector at step 0 (P_af)

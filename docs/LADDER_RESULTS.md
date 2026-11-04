@@ -486,6 +486,12 @@ carry. N8 is the same.
 - So the induced assignment cannot equal the given one on every task, and the "holds trivially" case does not apply if K8 parses
   as predicted.
 
+**Correction (made after the smoke's `roles` run, before any build, rollout or read).** A task now trains iff it has a contact event
+(a situation) **and** an induced parse. As first written, only the parse decided. The smoke showed why that is not enough: in the
+nobottle library, "the" refers to the bowl, because every remaining event task involves the bowl. So K8 parses there as (bowl, cook
+region), with no contact evidence at all, and its push rows would train the bowl's part. A task with no event gives the rule no
+evidence, so it trains nothing. This does not change any parse.
+
 ### 5.4 Comparison with the given assignment (reported, no criterion)
 
 `experiments/pp_L4_smoke.py roles` compares the induced roles with `FC.roles`, which only that script reads:
