@@ -1,8 +1,10 @@
 # flawed-composition-vlas (formerly vla-operator-binding, lifelong-ood-learner)
 
-**Current direction (2026-10-26), docs/PLAN_BIND.md: compositional operators, holistic binding.** Flow VLAs compose in their
-motor operators (pose-equivariant, shared across objects) but bind instruction roles to scene entities holistically, by
-exemplar. The project measures this and designs a binding-only repair. The text below describes the earlier framing.
+**Current direction: isolate the flaws in VLAs architecturally, then resolve them by composing sparse parts.** The plan and
+every decision on it are in [docs/PLAN_PARTS.md](docs/PLAN_PARTS.md), and the theory is in
+[docs/FLAWED_COMPOSITION.md](docs/FLAWED_COMPOSITION.md). Results: [docs/PARTS_RESULTS.md](docs/PARTS_RESULTS.md) (its last
+section summarises the part library), [docs/LADDER_RESULTS.md](docs/LADDER_RESULTS.md) (removing supervision) and
+[docs/COVERAGE_RESULTS.md](docs/COVERAGE_RESULTS.md) (the demo-coverage test). The text below describes earlier framings.
 
 **How far can composition carry a frozen policy on new tasks?** A frozen flow-matching robot policy meets tasks it was never
 trained on and takes them on by composing what it already holds, creating new units only where nothing it holds explains the
@@ -56,7 +58,7 @@ concepts on the policy's own training demonstrations. Threats: [paper/DRAFT.md](
 
 | what | where |
 |---|---|
-| the paper page, every figure and number | https://claude.ai/artifact/9TTYizddrmLnsA6GxuLeQk (built by `experiments/paper_page.py`) |
+| the current results page | https://claude.ai/artifact/9TTYizddrmLnsA6GxuLeQk (hand-written; `archive-full.html` there is the earlier paper page, built by `experiments/paper_page.py`) |
 | the paper draft | [paper/DRAFT.md](paper/DRAFT.md) |
 | every read, in order, with its ledger tags | [docs/RESULTS.md](docs/RESULTS.md) |
 | the documents | [docs/README.md](docs/README.md); the active plan [docs/PLAN_Z.md](docs/PLAN_Z.md) |

@@ -256,7 +256,7 @@ each is reported as such.
 - **Rungs L2-L3 depend on pi0.5 features localising objects.** Earlier work found VLAs under-use language, but not vision.
   F1's vision-token profile tells us early.
 
-## 10. Decisions (user, 2026-11-01)
+## 10. Decisions (user, from 2026-11-01; each later item carries its own date)
 
 1. **Budget:** no fixed cap; use overcap as needed. Phase 2 and the ladder are committed.
 2. **Part size and k grid:** rank-8 adapters; k ∈ {1, 5, 10, 50}. One larger part size stays a secondary arm (§9).
