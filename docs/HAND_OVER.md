@@ -188,3 +188,31 @@ The budget says P tolerates about 0.02 m. This read asks whether positions move 
 - **Grasp offset**, reported with no verdict: object minus end effector at the hand-over, horizontal, from the H tracks, per VLA and object.
 
 The mean comes from the same states it is scored on, so this is the most favourable case for a table. Passing it would not show a table works on unseen states. Prediction: NEEDS PERCEPTION for objects in both layouts; for targets, NEEDS PERCEPTION in both, because the scene's placement regions span several centimetres.
+
+### 9.1 Result (2026-11-05)
+
+**Familiar layout: A TABLE SUFFICES for targets and objects. New layout: NEEDS PERCEPTION for both.** My prediction held on the new layout and failed on the familiar one. `results/flawed/pp_read_h.json`.
+
+| 95th percentile radius, m | plate | stove | cabinet | bowl | cheese | bottle |
+|---|---|---|---|---|---|---|
+| familiar | .016 | 0 | 0 | .017 | .019 | .016 |
+| new | .237 | 0 | 0 | .289 | .250 | .181 |
+
+The bowl's row counts it wherever it appears, as target or as object. Grasp offset at the hand-over, p95, familiar: pi0.5 .015 cheese, .029 bottle, .015 bowl; GR00T .019, .028, .016. New layout: pi0.5 .023, .113, .062; GR00T .041, .051, .035.
+
+**What follows.**
+
+1. **The VLAs' failure is not a shortage of position information.** In the familiar layout every position sits within 0.02 m of a constant. The VLA places these same targets on known tasks at .98-1.00, and the new pairings use targets at the same places. The break is in recombining what it already does.
+2. **The fix's oracle positions are a weaker crutch in the familiar layout than they look.** A table of positions could plausibly stand in for them there. I did not run that arm, because a per-target constant is exactly the task-specific constant the standing rule bars as a fix, and a table cannot survive the new layout's spread.
+3. **Perception matters in the new layout only.** There it needs roughly a tenfold reduction in error, from about 0.2 m of spread to 0.02 m, for the plate, the bowl, the cheese and the bottle. Stove and cabinet never move in either layout.
+4. **Bottle offsets exceed the budget.** At .03 in the familiar layout and .05-.11 in the new one, they would need measuring at the hand-over, for example from the wrist camera. A table will not do.
+
+## 10. Where I stopped, and why
+
+Each remaining step needs the user's decision, so I stopped here and ran nothing further.
+
+1. **Perception (L2).** LADDER_RESULTS §4 names plan-level choices: a supervised or unsupervised locator, depth and calibration, and the scope of what gets perceived. This section's numbers give it a target: 0.02 m on the plate, bowl, cheese and bottle, plus the bottle's grasp offset.
+2. **New-layout grasps.** Part of the ceiling is a block for a fixed approach. Getting past it needs an obstacle-aware approach, which the standing rule bars from executors and teachers.
+3. **A confirmatory read.** The hand-over has only development reads. A fresh-seed read needs the user's approval.
+4. **Replace or repair.** H replaces the VLA's place chunk. Whether the VLA's own place chunk can be repaired is untested, and whether that matters is a question about the claim.
+5. **Terms.** Within-chunk = grasp + release and cross-chunk = hand-off + transport remain my reading of the user's terms.
