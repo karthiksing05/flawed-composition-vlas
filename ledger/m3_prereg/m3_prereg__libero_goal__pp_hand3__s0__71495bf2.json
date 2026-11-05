@@ -1,0 +1,59 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: closed-loop locator (docs/LOCATOR.md 10)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "jill.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4523568",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "71495bf28bcb5f9ef215ed6eacd39f42dd0e8f20",
+  "short": "71495bf2"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/LOCATOR.md": "9531ea6eeafd0afadd1f8833ed0b82c6ec9e663d3ae01314aced18ea591e6a73",
+   "experiments/pp_hand3_client.py": "dc5e128d2db11a69fa6c9789f45457bc4a3b2f145df7aba55be7b5df3989751a",
+   "experiments/pp_hand3_read.py": "514d43716342e61027a94a36d91b29848d9855d17d620d91d4d3a276651f51ed",
+   "experiments/pp_hand3_roll.sh": "2b72e12cff689e45acfcded1983d36e4d664f267aceef474d55d4391ec8f0d4e",
+   "experiments/pp_loc.py": "4e940c3035d215cfd29bc5f9d78564711af426adc7bae80a604a93f3b56c27cd",
+   "experiments/pp_loc2.py": "96bccaecf8fc71be4111b30662cc7ad344ec5272bcf135712c145ff3cb19271b"
+  },
+  "labelled": "post hoc; development read; no training; the 20 states shaped the locator; changes no earlier verdict; the test approved by the user, details not reviewed",
+  "mapping": "per VLA and layout, N2 N3 N5 pooled over locator seeds: RAISES iff s(LS)-s(intact) has CI lower bound above 0 and exceeds 0.10; PERCEPTION HOLDS iff RAISES and s(H1)-s(LS) <= 0.10; PERCEPTION COSTS iff RAISES and s(H1)-s(LS) > 0.10; NO FIX iff not RAISES. KNOWN COST qualifies the verdict iff K4 and K6 lose more than 0.05 against H1",
+  "oracle_kept": "object height and rest height, yaw and size, target positions, role assignment, camera matrices",
+  "prediction": "PERCEPTION HOLDS on all four; the bottle in the new layout does worst",
+  "states": "dev only: N2 main states 4-23",
+  "status": "PRE-REGISTERED closed-loop locator",
+  "written_before": "any rollout outside the smoke, which uses smoke states 0-3"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_hand3__s0__71495bf2",
+ "schema": 1,
+ "script": "experiments/prereg/pp_hand3.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T16:36:43+00:00",
+ "stream": null,
+ "tag": "pp_hand3"
+}

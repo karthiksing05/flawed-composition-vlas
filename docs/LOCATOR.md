@@ -220,3 +220,34 @@ Held-object error therefore combines the locator's error with how far the grasp 
 **Prediction (mine; my record is poor).** PERCEPTION HOLDS on all four, because N2 and N5 stayed at 1.00 under a 0.04 m constant error (HAND_OVER §8.2). The bottle in the new layout does worst, because the grasp moves it most.
 
 **What this cannot show.** No plate or bowl target, so it says nothing about N1, N4 or N6. It does not remove the camera, the height or the target positions. N2, N3 and N5 are among the easier new pairings, as §8.2 shows. Three tasks on one scene, with development states that shaped the locator.
+
+### 10.1 Results (2026-11-05)
+
+All 12 run jobs and the read completed. `results/flawed/pp_hand3_read.json`.
+
+**Registered verdicts: GR00T familiar PERCEPTION HOLDS, with KNOWN COST. The other three NO FIX.** My prediction held on one of four.
+
+| N2, N3, N5 | intact | H1 | LS | LS − intact [95% CI] | H1 − LS [95% CI] | known, H1 → LS | verdict |
+|---|---|---|---|---|---|---|---|
+| pi0.5, familiar | .55 | .92 | .87 | +.32 [−.07, +.75] | .05 [.00, +.20] | .95 → .87 | NO FIX, KNOWN COST |
+| GR00T, familiar | .30 | .98 | .98 | +.68 [+.35, +.95] | .00 [.00, .00] | .98 → .88 | PERCEPTION HOLDS, KNOWN COST |
+| pi0.5, new | .38 | .53 | .44 | +.06 [−.17, +.31] | .09 [.00, +.22] | .28 → .24 | NO FIX |
+| GR00T, new | .12 | .38 | .29 | +.17 [−.01, +.36] | .09 [−.03, +.27] | .28 → .19 | NO FIX, KNOWN COST |
+
+| success per task, H1 → LS | N2 | N3 | N5 | K4 | K6 |
+|---|---|---|---|---|---|
+| pi0.5, familiar | 1.00 → 1.00 | .75 → .60 | 1.00 → 1.00 | 1.00 → 1.00 | .90 → .73 |
+| GR00T, familiar | 1.00 → 1.00 | 1.00 → 1.00 | .95 → .95 | 1.00 → 1.00 | .95 → .77 |
+| pi0.5, new | .55 → .47 | .50 → .35 | .55 → .50 | .15 → .15 | .40 → .33 |
+| GR00T, new | .30 → .30 | .50 → .27 | .35 → .30 | .20 → .18 | .35 → .20 |
+
+**How to read the verdicts.**
+
+- **The registered loss never exceeds 0.10.** It stays at .00-.09 on all four, so no verdict reads PERCEPTION COSTS. The three NO FIX verdicts fail on `RAISES`. On pi0.5 familiar the point estimate is +.32, and three tasks leave the CI wide. In the new layout, grasping limits both H1 and LS.
+- **Locator seeds barely differ.** Per-task success varies by at most .05 across the three seeds.
+- **Estimate error,** horizontal, 50th and 95th percentile. At the hand-over: cheese .014-.018, .020-.034; bottle .011-.019, .018-.034. Maximum over the carry: cheese .016-.018, .025-.038; bottle .013-.021, .027-.037. So 95th percentiles sit above the 0.02 m budget.
+
+**Where the cost falls, no verdict.**
+
+- **Tasks with tight targets lose most.** The stove tasks N2 and N5 lose .00-.08. The cabinet task N3 and the bowl task K6 lose .15-.23, apart from N3 on GR00T familiar, which loses nothing. This fits HAND_OVER §8.2, where the stove tolerated 0.04 m and the bowl did not, though §8.2 tested constant errors on pi0.5 alone.
+- **A likely design flaw in the estimate, untested.** In the new layout pi0.5 hands over in .88 of LS episodes, and only .50 of those succeed. The event can fire on an empty close (LADDER_RESULTS §4 reports this on 25% of its new-layout episodes). In that case my estimate moves with the empty hand and then freezes in the wrong place, so a regrasp heads to the wrong spot. H1 reads the true position and can recover. GRASP failures do rise under LS on all four, by .00-.05. I did not separate this cause from the rest.
