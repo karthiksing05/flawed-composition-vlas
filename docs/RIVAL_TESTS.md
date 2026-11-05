@@ -70,3 +70,79 @@ The start radius, target radius and m stay at the k = 1 values, so this removes 
 - Otherwise TIED.
 
 **Prediction (mine, before data).** L1a: PART ADDS for the plate and the bottle in the familiar layout. L1b: SERVO BEATS P_MIN in the new layout and TIED in the familiar one.
+
+## 3. Results (2026-11-04; registered in commit 8fc4764e; results/flawed/pp_v1_read.json, pp_l1_read.json)
+
+### 3.1 V1: HELD-OBJECT BINDING
+
+840 episodes, no errors. Three jobs were preempted and requeued. Finished tasks were kept, and an interrupted task reran from its start. The intact arm agrees with N2's recorded episodes on success in all 240 episodes.
+
+| layout | arm | s | g | p |
+|---|---|---|---|---|
+| familiar | intact | 0.50 | 0.97 | 0.52 |
+| familiar | A | 0.53 | 0.97 | 0.55 |
+| familiar | S | 0.53 | 0.98 | 0.55 |
+| familiar | W | 0.00 | 0.96 | 0.00 |
+| new | intact | 0.30 | 0.64 | 0.47 |
+| new | A | 0.30 | 0.63 | 0.47 |
+| new | S | 0.27 | 0.65 | 0.41 |
+
+- **RECOVERS: no.** Δp_A = +0.03 [−0.16, +0.23] in the familiar layout. The interval is wide and still contains a gain above the 0.10 threshold, so the call is "no recovery shown". It does not establish zero. New layout: +0.01 [−0.11, +0.15].
+- **STEERS: yes.** Δsteer = +0.67 [+0.45, +0.86]. A known instruction naming another target moves the held object to that target.
+- **Verdict: HELD-OBJECT BINDING.** My prediction, INSTRUCTION BINDING, was wrong.
+- **S against intact, no verdict.** Familiar Δs = +0.03 [−0.27, +0.30]. New −0.03 [−0.16, +0.07]. Phase switching alone does not solve the task.
+
+Per-task familiar success, no verdict:
+
+| arm | N1 | N2 | N3 | N4 | N5 | N6 |
+|---|---|---|---|---|---|---|
+| intact | 0.10 | 0.20 | 0.60 | 0.85 | 0.85 | 0.40 |
+| A | 0.15 | 0.50 | 0.30 | 0.80 | 0.95 | 0.50 |
+| S | 0.30 | 0.20 | 0.05 | 0.75 | 1.00 | 0.90 |
+
+The pooled null hides opposing moves: N2 gains under A, N3 loses under both, N6 gains under S. Twenty states per task cannot separate these from noise, and I did not register a per-task call.
+
+**A correction to how I have quoted this model.** The pi0.5 figure "0.99 to 0.38, g 0.79, p 0.47" in ADVERSARIAL_STUDY is N2's "new" cell over N1-N8, which includes the drawer and push tasks. On the six pick-and-place pairings tested here, intact is s 0.50, g 0.97, p 0.52. The bottle on the plate and the stove already reach 0.85. The failure concentrates in N1 and N2 (cheese on plate, on stove).
+
+### 3.2 L1a: PART ADDS, both atoms, both layouts
+
+| atom | layout | k = 0 | k = 1 | Δ [95% CI] |
+|---|---|---|---|---|
+| bottle | familiar | 0.04 | 0.83 | +0.78 [+0.64, +0.91] |
+| bottle | new | 0.05 | 0.38 | +0.33 [+0.19, +0.47] |
+| plate | familiar | 0.56 | 0.94 | +0.38 [+0.28, +0.47] |
+| plate | new | 0.23 | 0.44 | +0.21 [+0.13, +0.30] |
+
+My prediction held for the familiar layout and the mapping also returns PART ADDS for the new one. The zeroed checkpoint keeps the part's fitted numbers (start radius, target radius, m), so k = 0 is a floor on the weights alone. On the plate, the backbone with those numbers already reaches 0.56 in the familiar layout.
+
+### 3.3 L1b: mixed; my prediction was half right
+
+| pairings | layout | servo | P_min | Δ [95% CI] | verdict |
+|---|---|---|---|---|---|
+| known | familiar | 0.83 | 0.90 | +0.07 [+0.01, +0.13] | TIED |
+| known | new | 0.67 | 0.46 | −0.21 [−0.27, −0.14] | SERVO BEATS P_MIN |
+| new | familiar | 0.62 | 0.92 | +0.29 [+0.21, +0.38] | P_MIN BEATS SERVO |
+| new | new | 0.31 | 0.37 | +0.06 [−0.03, +0.14] | TIED |
+
+Two tasks carry two of these calls. These exclusions are post hoc and change no verdict.
+- **K5.** Known/new: K5 is servo 0.85 against P_min 0.00. Without K5, Δ is −0.08.
+- **N3.** The servo gets 0.12 in both layouts, against P_min's 1.00 and 0.42. A composed-keypoint fault in the servo is possible for this pairing; I have not diagnosed it. Without N3, new/familiar is still +0.18 and new/new is +0.01.
+
+**The fact to carry forward.** The scripted planner reads exact object and target positions and has no learned binding. It still falls from 0.62 to 0.31 on new pairings when the layout moves, and from 0.83 to 0.67 on known ones. It has no obstacle avoidance, and I have not traced why its episodes fail. So some of the new-layout gap is not evidence about binding at all, and P_min's new-layout scores should be read against this reference rather than against 1.0.
+
+## 4. V1 arrival read (design fixed 2026-11-04, after §3, before this read; m3_prereg tag pp_rival2)
+
+HELD-OBJECT BINDING leaves one question that decides the solution's shape: when pi0.5 grasps and fails, does the object reach the target and fail to seat, or does it never arrive? V1's track files already hold the final positions. No new episodes.
+
+**Estimator.** Intact arm, familiar layout, pooled N1-N6, episodes with g = 1 and no success. `arrive` is the share whose object ends within 0.10 m horizontally of the true target. The CI is the bootstrap over tasks and states, 2,000 draws.
+
+**Mapping.**
+- ARRIVES, FAILS TO SEAT iff the CI lower bound is above 0.5.
+- DOES NOT ARRIVE iff the CI upper bound is below 0.5.
+- MIXED otherwise.
+
+**Reported with no verdict.** The same share for A; the new layout; the share within 0.03 m (the success check's horizontal radius); the share still held at the end; per-task values.
+
+**Prediction (mine).** MIXED, with the bottle's failures arriving and the cheese's not.
+
+**What this cannot show.** A final position is one instant. An object that passed the target and was carried away counts as not arriving. The 0.10 m radius is V1's steering radius; the plate is about that wide, so an object resting on the plate's rim counts as arrived.
