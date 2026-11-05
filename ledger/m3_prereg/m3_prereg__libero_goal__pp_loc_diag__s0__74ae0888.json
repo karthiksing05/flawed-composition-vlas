@@ -1,0 +1,54 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: locator diagnostic (docs/LOCATOR.md 8)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4522600",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "74ae0888cbf1b6a66e98633a8174349e8d2528ca",
+  "short": "74ae0888"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/LOCATOR.md": "b8eb57ff8e3c333bc909716fcf1e3098517bab1b8444bc7eba9db8656582e8c2",
+   "experiments/pp_loc_diag.py": "545e0f6305c86852987e0a0601041247a277cf6fe0b9fff1dc778180a235ec17"
+  },
+  "labelled": "post hoc; development read; no training; changes no verdict in LOCATOR 7",
+  "mapping": "per arm and head, new layout: FEW STATES iff every seed has at most 3 of 20 states with horizontal error above 0.05 m after removing the head's mean label shift and its median error is at most 0.02 m; otherwise BROAD",
+  "prediction": "FEW STATES on all of A's heads and on C's heads except the bottle; bad states repeat across seeds and come from occlusion",
+  "states": "dev only: N2 main states 4-23, new layout",
+  "status": "PRE-REGISTERED locator diagnostic",
+  "written_before": "the read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_loc_diag__s0__74ae0888",
+ "schema": 1,
+ "script": "experiments/prereg/pp_loc_diag.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T14:44:52+00:00",
+ "stream": null,
+ "tag": "pp_loc_diag"
+}

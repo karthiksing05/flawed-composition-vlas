@@ -106,3 +106,18 @@ A state is **bad** for a head and seed when its horizontal error, after removing
 Reported with no verdict: each bad state's index; whether it repeats across seeds and arms; whether the prediction sits within 0.05 m of another entity; that state's oracle height. The figure shows the worst states with oracle and predicted points, for a visual check of occlusion.
 
 Prediction: FEW STATES on all of A's heads, and on C's heads except the bottle, with bad states repeated across seeds and caused by occlusion.
+
+### 8.1 Result (2026-11-05)
+
+`results/flawed/pp_loc_diag.json`, `pp_loc_diag.png`. **Arm A: FEW STATES on all five heads. Arm C: FEW STATES on the bowl's object head, BROAD on the other four.** My prediction held on A and on C's bottle, and failed on C's cheese, plate and bowl target heads. It also failed on the cause.
+
+| bad states of 20 per seed, new layout | cheese | bottle | bowl, object | plate, target | bowl, target |
+|---|---|---|---|---|---|
+| A | 0, 0, 0 | 0, 0, 0 | 0, 0, 0 | 1, 3, 2 | 0, 0, 0 |
+| C | 3, 6, 6 | 1, 1, 1 | 2, 3, 1 | 4, 5, 9 | 2, 2, 6 |
+
+- **The failure is confusion, and the figure shows little occlusion.** Most bad predictions land on or near another object: C's plate head always lands within 0.05 m of the bowl, its bowl heads mostly on the cheese, and its cheese head mostly near the bottle or bowl. In all 13 states drawn, the head's own target is visible. No training image shows these objects anywhere else, so the network may be using surroundings or scale to tell them apart. That explanation is a reading of the figure, untested.
+- **A's plate failures come from two kinds of state.** On states 13 and 19 the plate rests tilted against the stove (oracle height up to 0.014 m above its flat height), and its appearance changes. On state 20 the bottle partly covers it. A's other four heads have no bad state on any seed.
+- **C's bottle head has one bad state, repeated across seeds, at .055-.065 m.** It fails on its median error, .017-.022 m, and the label height, 0.105 m above the bottle's body origin, may contribute.
+
+**Where this leaves route C.** With exact labels, appearance alone places four of five heads within about 0.02 m in a layout the network never saw, and A's verdict rests on the plate alone. So the architecture can locate these objects, and C's costs come from its labels. Label noise also blurs what the network learns about each object, which fits C's confusions, though this read does not separate the two. All of it uses the simulator's camera matrices, and the 95th percentile still decides §7's verdict, which stands.
