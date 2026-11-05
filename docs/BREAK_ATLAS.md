@@ -69,3 +69,53 @@ A stage counts as a composition error only if it breaks more on the new pairing 
 - P_min runs on oracle state and the servo on exact positions, so neither row shows that parts fix a VLA's vision. Their rows show which stages those structures clear.
 - This pass does not re-test the object × target reversal in RIVAL_TESTS §5.4, which needs arm W with tracking.
 - One scene and two models.
+
+## 5. Registered result (2026-11-04; results/flawed/pp_atlas_read.json), held pending §6
+
+Rollouts agree with N2's recorded success on 1.00 of pi0.5's episodes and 0.995 of GR00T's.
+
+| model | layout | within-chunk E [95% CI] | cross-chunk E [95% CI] | verdict |
+|---|---|---|---|---|
+| pi0.5 | familiar | +0.18 [+0.05, +0.33] | +0.33 [+0.13, +0.53] | **BOTH** |
+| GR00T | familiar | +0.39 [+0.15, +0.66] | +0.43 [+0.19, +0.67] | **BOTH** |
+| pi0.5 | new | +0.05 [−0.13, +0.21] | −0.00 [−0.15, +0.14] | **NEITHER** |
+| GR00T | new | +0.04 [−0.16, +0.24] | +0.04 [−0.09, +0.18] | **NEITHER** |
+
+My prediction for the familiar layout (WITHIN-CHUNK) was wrong under this mapping, and my prediction for the new layout (NEITHER) held. In the familiar layout HANDOFF and RELEASE break for both models; GRASP, TRANSPORT and PHYSICS do not.
+
+Two features of this output need checking before the familiar verdict carries an interpretation. §6 registers those checks.
+
+## 6. Two checks on the atlas (design fixed 2026-11-04, after §5; m3_prereg tag pp_atlas2)
+
+Both use the recorded tracks. No new episodes. They change no registered verdict in §5; check A decides how the cross-chunk half of it may be read.
+
+### 6.1 Check A: does HANDOFF mean what its label says?
+
+**Why.** The rule calls an episode HANDOFF when, over held steps, the object stayed over 0.10 m from the target and `d` shrank by less than half. It carries the reading "held, and never went to the target". But N1 is HANDOFF on 0.55 of pi0.5's episodes, and RIVAL_TESTS §4.1 found 14 of its 18 grasped failures ending within 0.10 m. The rule looks only at held steps, so an object that drops early and still lands near the target would carry this label.
+
+**Estimator.** VLA HANDOFF episodes, familiar layout, N1-N6, per model: the share whose object ends within 0.10 m of the target.
+
+**Mapping, per model.**
+- LABEL FAILS iff the share is above 0.5.
+- LABEL HOLDS iff the share is below 0.25.
+- AMBIGUOUS otherwise.
+
+**Reported with no verdict.** Per task: the same share; `d` at the onset; `dmin` over held steps and over all steps; final `d`; lift and the end effector's distance to the object at the last held step; whether the policy had commanded the gripper open by the last held step.
+
+**Prediction (mine).** LABEL FAILS for pi0.5, because of the conflict above. No prediction for GR00T.
+
+### 6.2 Check B: is there a state-locked grasp ceiling in the new layout?
+
+**Why.** In the new layout the servo's GRASP rate is 0.50 on each of N1-N6, K4 and K6, and P_min's is 0.48-0.50. Identical rates across tasks suggest that one set of start states blocks the grasp of the cheese and the bottle whatever the system.
+
+**Estimator.** New layout, the eight cheese and bottle tasks. Per state, the GRASP rate over those tasks for the servo and for P_min (three seeds). `L` holds states with both rates ≥ 0.9, and `C` holds states with both rates ≤ 0.1.
+
+**Mapping.**
+- STATE-LOCKED iff |L| ≥ 8 and |L| + |C| ≥ 18.
+- NOT STATE-LOCKED otherwise.
+
+**Reported with no verdict.** The states in `L`; each system's success and GRASP on `L` and `C`, including K1-K3; the same sets computed for the familiar layout; start positions in `L` and `C`; in the servo's episodes, the object's largest lift and the end effector's closest approach to it.
+
+**Prediction (mine).** STATE-LOCKED.
+
+**What this cannot show.** A state-locked failure shared by a planner and P_min says the state is hard for those two. It does not show why, or that no system could grasp there. A VLA doing better on `L` would disprove a strict ceiling, and I report that comparison.
