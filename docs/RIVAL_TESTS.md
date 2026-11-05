@@ -162,3 +162,44 @@ Registered in m3_prereg `pp_rival2`; results/flawed/pp_v1_arrive.json. Intact, f
 - **New layout:** intact, 41 failures, `arrive` 0.24 [0.03, 0.50], none within 0.03 m. The two layouts fail differently: in the new layout the object mostly does not get there.
 
 The per-object split is descriptive. It was reported with no verdict, and I read it after the pooled call.
+
+## 5. V1 offset read (design fixed 2026-11-04, after §4.1, before any miss direction was computed; m3_prereg tag pp_rival3)
+
+### 5.1 The question
+
+Does pi0.5 release at the end-effector position its instruction's known task uses, without correcting for the object in hand? The keypoints use EE = object + grasp_off at the grasp and EE = target + release_off at the release. So a policy that does not correct ends with
+
+    object − target = release_off(the known task with this target) − grasp_off(the held object)
+
+Correct relocation would instead put the object on the target. Everything is horizontal, in world coordinates, and the keypoints are the demo-fitted `a1g_keypoints.json`. No new episodes: V1's track files hold the final positions. So far I have read only distances from these files, never directions.
+
+### 5.2 Two calls
+
+Each slope is 1 if the prediction holds exactly and 0 if the miss does not follow it. Episodes count if grasped (g = 1) and ending within 0.15 m of the reference target. This radius is wider than the 0.10 m used earlier, so the miss is not truncated near its predicted size. CIs bootstrap the states jointly across tasks, 2,000 draws, tasks fixed.
+
+**Call 1, cheese fit.** Arm A, familiar layout, N1-N3. Its prompt is literally the bowl's task while the cheese is held. With `d` the object's final position minus the true target's and `p` = release_off(K1, K2 or K3) − grasp_off(K6): `β1 = Σ d·p / Σ p·p`.
+
+**Call 2, object contrast.** Every cheese partner is a bowl task, so call 1 alone cannot separate the offset from a constant bias in the same direction. Arm W can: the same prompt and target, with a different object in hand, and its episodes are not ended by success. W's target is K1's plate for N2, N3 (cheese) and N5, N6 (bottle), and K2's stove for N1 (cheese) and N4 (bottle). With `d` measured from W's target, `c` is the mean over the two targets of mean `d`(bottle) − mean `d`(cheese), and `q` = grasp_off(K6) − grasp_off(K4). `β2 = c·q / q·q`.
+
+Each call is:
+- **yes** iff its CI lower bound is above 0.5;
+- **no** iff its CI upper bound is below 0.5;
+- **unclear** otherwise, or if |p| or |q| is under 0.02 m (not testable), or if any cell has fewer than 5 episodes.
+
+**Verdict.**
+
+| call 1 | call 2 | verdict | reading |
+|---|---|---|---|
+| yes | yes | **OFFSET CARRIES** | pi0.5 releases where the instruction's task would and does not correct for the held object. A within-chunk part must supply the held object's offset |
+| no | no | **NOT THE OFFSET** | this account of the miss fails. Run V2 |
+| any other | | **UNRESOLVED** | this data does not decide it. A rollout recording the end effector at release would |
+
+**Reported with no verdict.** Per-task `d` and `p`; the slope on `p` rotated by 90° (a placebo, expected near 0); β1 in the intact arm; the share still held at the end; episode counts.
+
+**Prediction (mine; my record on this project is poor).** UNRESOLVED: call 1 yes, call 2 unclear, because a tall bottle may topple on release and add noise.
+
+### 5.3 What this cannot show
+
+- The final position is one instant, after any fall or roll. A toppled bottle moves its origin well away from where it was released, and the track files do not hold orientation.
+- `grasp_off` is the demo's value. The episode's actual grasp is not recorded, and a new pairing may grasp differently.
+- Three cheese pairings on one scene, one model, oracle-timed switch. The new layout is out of scope, because objects there mostly do not arrive.
