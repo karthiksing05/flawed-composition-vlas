@@ -176,7 +176,7 @@ All jobs completed. `results/flawed/pp_loc2.json`.
 
 **Mechanism reading, no verdict.**
 
-- **P does most of the work on demo labels.** Going from C to CP, the cheese falls from .260 to .015 and the bottle from .038 to .005, both inside the budget on every seed but no worse than §7's A. The bowl's heads fall from .176 and .163 to .028 and .033. So my prediction on where the gain comes from held. Moved objects do address the confusion §8.1 found.
+- **P does most of the work on demo labels.** Going from C to CP, the cheese falls from .260 to .015 and the bottle from .038 to .005, both inside the budget on every seed. The bowl's heads fall from .176 and .163 to .028 and .033. So my prediction on where the gain comes from held. Moved objects do address the confusion §8.1 found.
 - **S adds little on top of P.** CP and CPS sit level on four heads, and S makes the plate worse. One CPS seed has 2 bad cheese states that CP lacks. On its own, S helps the bowl's heads and leaves the cheese and plate failing.
 - **The plate is C's remaining failure.** It keeps 3-5 bad states under P on demo labels, against 0-1 under AP. AP's disc sits centred on the plate; C's label sits about 0.04 m off centre (§7's `b`), so its disc is lopsided. That is a likely cause, and it is untested.
 - **P adds a shift on the bowl.** In the new layout the bowl's median error rises under P from .005-.018 to .017-.027 on both label types, with `e` close to the median. That looks like a near-constant shift in this layout, with no bad states. The cause is unknown.
