@@ -1,0 +1,62 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: second hand-over round and Read G (docs/HAND_OVER.md 7)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4517511",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "59b872a4eb185cbdb0759137de524692f3c6d5e9",
+  "short": "59b872a4"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/HAND_OVER.md": "198a9c1d41f41945fe4c702620ecb01a4e0ec387ecbdf67928c1cace9372f163",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/fc_n2_client.py": "5709a33ad3d0cd1a6211bf1ecdac251fba26faaf804c85c3d910119cbc7b9013",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_hand2_client.py": "808b77cf8c4ce19e80b799a459eda933d8193f1f5f1eb451bea0ff5f277579f1",
+   "experiments/pp_hand2_read.py": "cef6781d9cfb91c9ed95990f9af30646e2f3a68e7e80dd3f4861d0cfd5b74ab3",
+   "experiments/pp_hand2_roll.sh": "cebd7f175f2cfee31db02d698d3f7652573816409068674af36589730b9a338a",
+   "experiments/pp_read_g.py": "011a7e032756ea65a268163159c85cb030dcd74365252a866795a83192472abb",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b"
+  },
+  "labelled": "post hoc; development read; no training; changes no earlier verdict; not reviewed by the user, who is away and asked to keep iterating",
+  "mapping": "7.1 per VLA, familiar, seeds 11 and 12 pooled: REPLICATES iff the pp_hand mapping returns FIXED. 7.2 per VLA, familiar: CONTACT NOT NEEDED iff the pp_hand mapping on H1 returns FIXED and s(Hs10) - s(H1) <= 0.10, else CONTACT MATTERS. 7.3 pi0.5, familiar, N1-N6, per factor T and O: the budget is the largest radius, going up from 0.01 m with no skipped radius, whose s stays within 0.10 of s(Hs10); none reads BELOW 0.01 M. 7.4 per object on the 120-step hold rate over the servo's GRASP states: NOT A BLOCK above 0.5, BLOCK below 0.2, otherwise MIXED",
+  "prediction": "7.1 REPLICATES on both; 7.2 CONTACT NOT NEEDED on both; 7.3 0.02 m on both factors; 7.4 NOT A BLOCK on both",
+  "states": "dev only: N2 main states 4-23, N2 seeds; no confirmatory or sealed read; demos never executed",
+  "status": "PRE-REGISTERED the second hand-over round and Read G",
+  "written_before": "any main run of this round or Read G"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_hand2__s0__59b872a4",
+ "schema": 1,
+ "script": "experiments/prereg/pp_hand2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T07:23:55+00:00",
+ "stream": null,
+ "tag": "pp_hand2"
+}
