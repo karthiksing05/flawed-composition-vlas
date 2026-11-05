@@ -178,7 +178,7 @@ T3 suggests the new-layout loss follows what happens between the grasp and the a
 | SP | servo | P_min | P_min from the hold's onset |
 | SS | servo | servo | P_min from above the release point |
 
-- **Grasp by servo:** T3's phases 1-3 until the oracle reads a hold. Then the carry owner takes over. P_min's steps total at most 300.
+- **Grasp by servo:** T3's phases 1-3 until the oracle reads a hold. Then the carry owner takes over. P_min's steps total at most 300. If the servo's grasp fails, P_min still runs, and a later pick-up by P_min does not count as a hold in that cell's primary outcome (added after the smoke, before registration).
 - **Carry by servo:** phases 3-4, 120 steps each at most, and then P_min runs regardless. No arrival filter.
 - **Keypoint fix, new pairings only:** carry height = the target task's + (object task's `grasp_off` z − target task's `grasp_off` z). So the carried object rides at about the height the target's demos use. Known tasks keep their own. Checked on smoke states before registration.
 - **Logged at arrival within 0.10 m and at the first open command:** object tilt and object-to-target distance. Also rack clearance at the start.
@@ -204,3 +204,40 @@ Reported with no verdict: unconditional success, hold rate, the familiar layout'
 **Limit.** With four object groups, the CI has few independent units, and the bootstrap will be rough. Servo carries use oracle positions.
 
 **Prediction.** CARRY OWNS IT, with C about +.25 and G within the margin. My record here is poor.
+
+## 6. T3b results (2026-11-05; results/flawed/sc_t3b_read.json; rollouts results/flawed/sc_t3b)
+
+**Registered verdict: NEITHER.** My prediction failed. PP disagrees with T3's A on 0.2% of episodes. As registered, this leaves the split into contact and transit without support, and I report to the user before T4.
+
+| new layout, success given an owned hold | estimate | CI |
+|---|---|---|
+| G: servo grasp, P_min carries | +.09 | [−.01, +.17] |
+| C: P_min grasps, servo carries | +.07 | [−.05, +.28] |
+| SS against PP (reported) | +.19 | [+.02, +.42] |
+
+With four object groups, the CI has few independent units.
+
+| cell | familiar: hold | s given hold | all episodes | new: reached | hold | s given hold | all episodes |
+|---|---|---|---|---|---|---|---|
+| PP | .91 | .90 | .82 | .79 | .79 | .65 | .40 |
+| PS | .91 | .84 | .76 | .79 | .79 | .72 | .45 |
+| SP | .85 | .93 | .87 | .79 | .78 | .74 | .52 |
+| SS | .86 | .94 | .88 | .79 | .78 | .84 | .58 |
+
+Familiar reach is 1.00 in every cell. Intact P_min scores .91 and .42.
+
+**Readings, post hoc, on development states of one kitchen.**
+
+| new layout, all episodes | PP | PS | SP | SS | what limits it |
+|---|---|---|---|---|---|
+| bowl, K1-K3 | .61 | .61 | .77 | .83 | the grasp, then the carry: s given hold .65, .64, .81, .88 |
+| cheese, K6 N1-N3 | .39 | .43 | .43 | .44 | getting a hold: reach .62, and hold .81 (P_min) or .65 (servo). No owner helps |
+| bottle, K4 N4-N6 | .36 | .34 | .54 | .52 | P_min's grasp: hold .58 against the servo's .73, with reach .75 |
+| bottle side-on, K5 | .02 | .47 | .07 | .65 | the carry: P_min's own carry almost never arrives |
+
+- **The new layout has no single owner.** Each object group loses at a different place, and pooling hides it. A split by timescale does not sort them, and three of the four causes sit at or before the grasp.
+- **Oracle control of everything before the final descent reaches .58 against .88 familiar.** In SS, reach (.79) and hold (.78 against .86) cost more than the continuation (.84 against .94). So on this hand, this servo and this fixed grasp pose, much of the gap comes before any policy question about carrying.
+- **The cheese cap may be physical.** No state within 0.10 m of the rack by site distance reaches the pre-pose, and cheese stays near .44 in every cell. FC 5.29 found that only 5 of 10 near layouts give the generator a grasp that holds, and HAND_OVER 7.4 found the hand stopping on the rack. No test yet separates a collision-free grasp that a policy could learn from no such grasp existing.
+- **Tilt tracks the bowl's failure.** Bowl tilt at the first open command has median 31° in new PP and 17° in SS, against 14° and 13° familiar. It is an association only.
+- **A servo carry can hurt in the familiar layout.** N6 falls .68 to .18 and N1 .95 to .65 under PS. A part does not always accept a state its demos never produced, which is a limit on swapping skills at a seam.
+- **The design consequence.** PLAN_SCAFFOLD §3.3's hypothesis, as written, is not supported: oracle transit to the pre-pose recovers nothing alone (.40 against .42 intact), and neither oracle grasp nor oracle carry passes as the owner. I withdraw it as the basis for T4's split. The record does not refute a role for a shared carry, which K5 shows clearly, and it leaves the bottle and bowl grasps as measured targets.
