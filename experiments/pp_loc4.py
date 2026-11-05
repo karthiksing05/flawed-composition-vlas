@@ -79,6 +79,12 @@ def centre_pix(F):
     return out
 
 
+def bank4(F, pix, pool, arm, dev):
+    """pp_loc3's bank, searched with the hand's labels as in centre_pix.  A label is its cutout's centre, so every offset is zero."""
+    cuts, off, BG, ALPHA = L3.bank3(F, _to_pix(F, "C"), pool, arm, dev)
+    return cuts, np.zeros_like(off), BG, ALPHA
+
+
 def heights(F):
     """Head heights from the hand: each object's mean hand height at the close; the bowl target as the bowl; the plate at the lowest of the three."""
     tr = F["demo"] < L.N_TRAIN_DEMO
@@ -132,7 +138,7 @@ def read():
 if __name__ == "__main__":
     if sys.argv[1] == "train":
         L.to_pix = lambda F, arm: centre_pix(F)
-        L2.make_bank = L3.bank3
+        L2.make_bank = bank4
         L2.ck = lambda a, s: ck4(s)
         L2.train("CP", int(sys.argv[2]))
     else:
