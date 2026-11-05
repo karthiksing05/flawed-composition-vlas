@@ -251,3 +251,35 @@ All 12 run jobs and the read completed. `results/flawed/pp_hand3_read.json`.
 
 - **Tasks with tight targets lose most.** The stove tasks N2 and N5 lose .00-.08. The cabinet task N3 and the bowl task K6 lose .07-.23, apart from N3 on GR00T familiar, which loses nothing. This fits HAND_OVER §8.2, where the stove tolerated 0.04 m and the bowl did not, though §8.2 tested constant errors on pi0.5 alone.
 - **A likely design flaw in the estimate, untested.** In the new layout pi0.5 hands over in .88 of LS episodes, and only .50 of those succeed. The event can fire on an empty close (LADDER_RESULTS §4 reports this on 25% of its new-layout episodes). In that case my estimate moves with the empty hand and then freezes in the wrong place, so a regrasp heads to the wrong spot. H1 reads the true position and can recover. GRASP failures do rise under LS on all four, by .00-.05. I did not separate this cause from the rest.
+
+## 11. Looking while the hand is open (m3_prereg `pp_hand4`)
+
+Design fixed 2026-11-05 after §10.1, with the user's go-ahead and their instruction to keep iterating. Development states, no training. Client `experiments/pp_hand4_client.py`, read `experiments/pp_hand4_read.py`.
+
+**Arm LR.** LS with one change: the estimate keeps updating whenever no hold is on and the gripper command is open.
+
+- Every 5 steps under those conditions, the network looks once. The estimate is the elementwise median of up to the last 3 looks.
+- At an onset of the event, the offset comes from that estimate and the buffer clears. During a hold the estimate is the hand plus the offset, as in LS.
+- After a hold ends, the estimate stays put until the next look.
+
+This addresses two things together, and the read cannot split them: the stale estimate after a false event, and the object being nudged before the grasp. The looks run during the VLA's approach too, though P still acts only after the hand-over. No look runs while the gripper closes, because the network's training frames stop at the close.
+
+**Everything else as §10:** tasks, seeds, states, what stays oracle. The same 1,200 episodes.
+
+**Verdict: §10's mapping, unchanged, with LR in place of LS.** Reported with no verdict: LR − LS, and everything §10 reports.
+
+**Prediction (mine; my record is poor).** LR recovers most of LS's loss in the new layout and on K6. PERCEPTION HOLDS on both familiar cases; NO FIX stays in the new layout, because grasping limits it.
+
+## 12. A plate cutout from figure and ground (m3_prereg `pp_loc3`)
+
+Design fixed 2026-11-05, before this training. Offline development read. `experiments/pp_loc3.py` → `results/flawed/pp_loc3.json`.
+
+**The change.** §9.1 blames the plate's lopsided disc, untested. No K1-K6 demo moves the plate, so first-against-last differencing cannot cut it out. Instead, in each K1 demo's first frame, the table's colour is the median colour of a ring 60-70 px from the label. The plate is the connected region near the label that differs from that colour by more than 20/255, with gaps closed, holes filled and thin bridges opened. Its anchor and head offset then work as for the other objects. The empty scene stays as in §9.
+
+**Arms.** **CP3**: demo labels, as CP with this cutout; three seeds. **AP3**: simulator labels, as a reference. Label cleaning is dropped, because §9.1 found it adds little and makes the plate worse.
+
+**Verdict: §5's mapping, unchanged, on CP3 alone.** AP3 takes the label as a report.
+
+**Prediction (mine; my record is poor).** CP3 BEATS A TABLE, OVER BUDGET: the plate within .05 m, with the bowl's shift and the familiar bottle still over budget.
+
+**Limit.** The rule works on an object that contrasts with the table and sits apart from others, as the plate does in the familiar layout. It would not separate touching objects. The 20 states keep shaping the design, so unseen states stay untested.
