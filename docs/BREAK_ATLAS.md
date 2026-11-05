@@ -188,3 +188,24 @@ The user is away and asked me to keep iterating, so I make these calls on the st
 **Reported with no verdict.** Each system's grasp failure and success on `L` and `C`, which tests a ceiling directly because a VLA holding the object on `L` would disprove one; states where no system ever holds the object; start position, yaw and nearest other movable in `L` and `C`; the end effector's closest approach.
 
 **Prediction (mine).** OBJECT-STATE LOCKED, with `L` states showing a close neighbour or an unusual yaw.
+
+### 8.3 Results (registered in m3_prereg `pp_atlas3`; results/flawed/pp_atlas_reads2.json)
+
+**Read C: MIXED for both models; my prediction (REAL DROP) was wrong.** On pi0.5, 12 of 18 episodes (exactly 2/3, and the cut was above 2/3) are missed carries. It splits by task: N2's 9 episodes have a median carried share of 0.89, while N1's 6 and N3's 3 have 0.04 and 0.10. So part of pi0.5's cross-chunk `E` is the hold signal losing a carry. The rest is the object moving by some other route, which I have not established. GR00T has 2 such episodes of its 47, so its cross-chunk `E` barely depends on this.
+
+**Read D: NOT LOCKED; my prediction was wrong, though narrowly.** Cheese |L| = 8, |C| = 7, which misses 16 by one. Bottle |L| = 6, |C| = 4. The servo alone is fully bimodal by object and state, at 0 or 1 on all 40 cells. P_min is less so.
+
+Reported with no verdict, new layout:
+
+| object | system | grasp failure on `L` / `C` | success on `L` / `C` |
+|---|---|---|---|
+| cheese | pi0.5 | 0.72 / 0.18 | 0.16 / 0.54 |
+| cheese | GR00T | 0.91 / 0.36 | 0.03 / 0.21 |
+| bottle | pi0.5 | 0.58 / 0.13 | 0.08 / 0.38 |
+| bottle | GR00T | 0.88 / 0.44 | 0.00 / 0.13 |
+
+- **No hard ceiling.** VLAs sometimes succeed on `L`, so these states are not impossible. No system ever holds the object on 5 of 20 cheese states and 2 of 20 bottle states.
+- **All four systems fail on the same states.** The VLAs fail on `L` about two to five times as often as on `C`, though `L` was picked using only the servo and P_min.
+- **A spatial pattern, post hoc.** Cheese `L` states all start at y below −0.07 m, and `C` states all start at y above 0. Bottle `L` states all start at x above 0, and `C` states all start at x below 0. Yaw and the nearest neighbour show no such split, so my guess about them was wrong.
+
+**Reading.** Much of the new layout's grasp failure tracks where the object starts. It appears in a planner with exact positions and has no connection to pairing, which agrees with the atlas's NEITHER. I have not established why these regions block the grasp.
