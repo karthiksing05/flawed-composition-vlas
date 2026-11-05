@@ -152,3 +152,34 @@ A first draft used 96 px square patches. A smoke-run drawing showed them carryin
 **Prediction (mine; my record is poor).** CPS BEATS A TABLE, OVER BUDGET, with most of the gain from P. AP also BEATS A TABLE, because moving a flat plate's patch cannot show it tilted.
 
 **What this cannot show.** Any verdict here has the §6 limits. A pass needs a check on states no design has seen, and confirmatory states need the user's approval. The rescale ignores the change in viewing angle. P already removes most label noise on pasted samples, so S has less to do in CPS than in CS, and the two controls do not cleanly split their credit. The plate cannot be seen tilted, and the plate's disc carries a ring of table. The smoke drawing `results/flawed/pp_loc2_patches_CP.png` still shows small remnants of the bottle in the emptied scene.
+
+### 9.1 Results (2026-11-05)
+
+All jobs completed. `results/flawed/pp_loc2.json`.
+
+**Registered verdict on CPS: NO BETTER THAN A TABLE.** My prediction failed: only the plate head stops CPS from beating a table, and its `e` of .563 m is worse than a constant. As reports, CP and CS read the same, and AP reads BEATS A TABLE, OVER BUDGET. My prediction for AP held, though its reason did not: AP's plate has 0, 1, 0 bad states, so moved flat plates help even on tilted ones.
+
+| new layout, `e`, m (median error in brackets) | cheese | bottle | bowl, object | plate, target | bowl, target | bad states per seed, plate |
+|---|---|---|---|---|---|---|
+| C, §7 | .260 (.017) | .038 (.021) | .176 (.012) | .310 (.009) | .163 (.018) | 4, 5, 9 |
+| CS | .267 (.014) | .034 (.020) | .038 (.006) | .309 (.006) | .030 (.011) | 6, 5, 5 |
+| CP | .015 (.005) | .005 (.003) | .028 (.023) | .318 (.012) | .033 (.027) | 4, 3, 5 |
+| **CPS** | .014 (.007) | .005 (.002) | .027 (.022) | **.563** (.014) | .033 (.024) | 5, 5, 5 |
+| A, §7 | .020 (.007) | .006 (.003) | .021 (.005) | .304 (.005) | .019 (.005) | 1, 3, 2 |
+| AP | .015 (.004) | .012 (.008) | .020 (.017) | .025 (.005) | .022 (.020) | 0, 1, 0 |
+
+| familiar layout, `e`, m | cheese | bottle | bowl, object | plate, target | bowl, target |
+|---|---|---|---|---|---|
+| CP | .012 | .026 | .007 | .009 | .017 |
+| CPS | .013 | .029 | .006 | .011 | .012 |
+| AP | .003 | .003 | .002 | .001 | .002 |
+
+**Mechanism reading, no verdict.**
+
+- **P does most of the work on demo labels.** Going from C to CP, the cheese falls from .260 to .015 and the bottle from .038 to .005, both inside the budget on every seed but no worse than §7's A. The bowl's heads fall from .176 and .163 to .028 and .033. So my prediction on where the gain comes from held. Moved objects do address the confusion §8.1 found.
+- **S adds little on top of P.** CP and CPS sit level on four heads, and S makes the plate worse. One CPS seed has 2 bad cheese states that CP lacks. On its own, S helps the bowl's heads and leaves the cheese and plate failing.
+- **The plate is C's remaining failure.** It keeps 3-5 bad states under P on demo labels, against 0-1 under AP. AP's disc sits centred on the plate; C's label sits about 0.04 m off centre (§7's `b`), so its disc is lopsided. That is a likely cause, and it is untested.
+- **P adds a shift on the bowl.** In the new layout the bowl's median error rises under P from .005-.018 to .017-.027 on both label types, with `e` close to the median. That looks like a near-constant shift in this layout, with no bad states. The cause is unknown.
+- **C's familiar bottle exceeds the budget,** at .026-.029, and exceeds the table's .016, with one seed at .010-.013.
+
+**Where this leaves route C.** The two objects the new pairings carry, the cheese and the bottle, sit within 0.015 m in the new layout on demo labels and the simulator's camera. Plate and bowl targets do not yet. The stove and cabinet need no perception. So tasks N2, N3 and N5 could run closed-loop on located objects today, with the familiar bottle's error as the known risk.

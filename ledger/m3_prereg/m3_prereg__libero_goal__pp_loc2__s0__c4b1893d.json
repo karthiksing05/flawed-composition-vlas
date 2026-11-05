@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: locator round two (docs/LOCATOR.md 9)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "nestor.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4522858",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c4b1893d1100b88507c8f6d3b8b98cca91c8b119",
+  "short": "c4b1893d"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/LOCATOR.md": "9aed9f7e65123b4b20529ba973fd4ed16954bd3b24e0e21da48d60fcc188a0d9",
+   "experiments/pp_loc2.py": "96bccaecf8fc71be4111b30662cc7ad344ec5272bcf135712c145ff3cb19271b"
+  },
+  "labelled": "post hoc; development read; no rollouts; the 20 states shaped this design, so a pass is not evidence on unseen states; changes no earlier verdict; the two mechanisms approved by the user, details not reviewed",
+  "mapping": "on arm CPS alone: LOCATOR 5's mapping unchanged, first match: WITHIN BUDGET iff every head has e <= 0.02 m in both layouts; BEATS A TABLE, OVER BUDGET iff every head has e <= T/2 in the new layout; otherwise NO BETTER THAN A TABLE. CP, CS and AP are controls and take labels only as a report",
+  "oracle_kept": "simulator camera matrices in every arm",
+  "prediction": "CPS BEATS A TABLE, OVER BUDGET, with most of the gain from P; AP also BEATS A TABLE",
+  "states": "dev only: N2 main states 4-23, never in training; training on K1-K6 demos 0-39, familiar layout",
+  "status": "PRE-REGISTERED locator round two",
+  "written_before": "any of this round's training or its read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_loc2__s0__c4b1893d",
+ "schema": 1,
+ "script": "experiments/prereg/pp_loc2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T15:14:58+00:00",
+ "stream": null,
+ "tag": "pp_loc2"
+}
