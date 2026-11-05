@@ -75,7 +75,7 @@ The start radius, target radius and m stay at the k = 1 values, so this removes 
 
 ### 3.1 V1: HELD-OBJECT BINDING
 
-840 episodes, no errors. Three jobs were preempted and requeued. Finished tasks were kept, and an interrupted task reran from its start. The intact arm agrees with N2's recorded episodes on success in all 240 episodes.
+840 episodes, no errors. Arm W's job was preempted twice and requeued. Its finished tasks were kept, and the interrupted task reran from its start. The intact arm agrees with N2's recorded episodes on success in all 240 episodes.
 
 | layout | arm | s | g | p |
 |---|---|---|---|---|
@@ -146,3 +146,19 @@ HELD-OBJECT BINDING leaves one question that decides the solution's shape: when 
 **Prediction (mine).** MIXED, with the bottle's failures arriving and the cheese's not.
 
 **What this cannot show.** A final position is one instant. An object that passed the target and was carried away counts as not arriving. The 0.10 m radius is V1's steering radius; the plate is about that wide, so an object resting on the plate's rim counts as arrived.
+
+### 4.1 Result: MIXED, with the direction opposite to my prediction
+
+Registered in m3_prereg `pp_rival2`; results/flawed/pp_v1_arrive.json. Intact, familiar: 56 grasped failures, `arrive` 0.55 [0.16, 0.81]; within 0.03 m 0.13; still held at the end 0.05. Arm A: 52 failures, `arrive` 0.67 [0.32, 0.95].
+
+| intact, familiar | N1 | N2 | N3 | N4 | N5 | N6 |
+|---|---|---|---|---|---|---|
+| grasped failures | 18 | 15 | 5 | 3 | 3 | 12 |
+| within 0.10 m | 14 | 11 | 4 | 0 | 0 | 2 |
+| within 0.03 m | 6 | 1 | 0 | 0 | 0 | 0 |
+
+- **Cheese:** 29 of 38 failures end within 0.10 m of the target and 7 within 0.03 m. The cheese arrives and misses by a few centimetres.
+- **Bottle:** 2 of 18 failures arrive. N4 and N5 rarely fail in the familiar layout. N6's 12 failures end elsewhere.
+- **New layout:** intact, 41 failures, `arrive` 0.24 [0.03, 0.50], none within 0.03 m. The two layouts fail differently: in the new layout the object mostly does not get there.
+
+The per-object split is descriptive. It was reported with no verdict, and I read it after the pooled call.
