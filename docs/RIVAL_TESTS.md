@@ -203,3 +203,21 @@ Each call is:
 - The final position is one instant, after any fall or roll. A toppled bottle moves its origin well away from where it was released, and the track files do not hold orientation.
 - `grasp_off` is the demo's value. The episode's actual grasp is not recorded, and a new pairing may grasp differently.
 - Three cheese pairings on one scene, one model, oracle-timed switch. The new layout is out of scope, because objects there mostly do not arrive.
+
+### 5.4 Result: UNRESOLVED, and call 2 could not test what I designed it to test
+
+Registered in m3_prereg `pp_rival3`; results/flawed/pp_v1_offset.json.
+
+- **Call 1: no.** β1 = 0.26 [0.19, 0.33], with |p| 0.05-0.09 m and 52 episodes. The cheese's miss follows the bowl-partner prediction only weakly. My prediction (yes) was wrong. In the intact arm β1 = 0.33 [0.27, 0.40]. The placebo slope is −0.16 [−0.28, −0.01], so a real part of the miss lies off this axis.
+- **Call 2: unclear, not testable.** |q| = 0.009 m, below the 0.02 m floor. In the demos the cheese and the bottle are grasped at nearly the same offset, so this contrast could never separate them. **That is my design error**: the keypoints were available and I did not compute q before registering. β2 = 1.08 [−0.69, 2.77] has no meaning, and it should not be read as support for the offset.
+
+Under the mapping the verdict is UNRESOLVED. The plain reading of call 1 is that the additive offset account explains little of the cheese's miss.
+
+**A post hoc observation, with no verdict and no CI.** The same prompt and target leave the held objects in different places, and the direction reverses with the target. Mean final position relative to W's target, in metres:
+
+| W's target | cheese | bottle | bottle − cheese |
+|---|---|---|---|
+| plate (N2, N3 / N5, N6) | (−0.043, +0.022) | (+0.035, +0.001) | (+0.078, −0.021) |
+| stove (N1 / N4) | (+0.019, −0.004) | (−0.039, +0.019) | (−0.058, +0.023) |
+
+These contrasts are six to nine times |q|. β2's value comes from averaging two large opposite contrasts. Within the plate group, the two pairings of each object land within about 0.02 m of each other despite different pre-hold instructions. An additive per-object offset cannot produce a sign reversal, so this looks like an object × target interaction. It is a pattern I noticed after the read. A toppled bottle moves its origin, the counts are 10-23 episodes per object and target, and it needs its own registered test before it carries weight.
