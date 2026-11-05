@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: demo-labelled locator (docs/LOCATOR.md)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA A40",
+  "host": "voltron.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4522478",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "851f1cbb61c57ddbf93741224820228a93e40883",
+  "short": "851f1cbb"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/LOCATOR.md": "246e59a43719dca7f93a69a4c86ff65149954700d3e1e794133b92bcd2faef94",
+   "experiments/pp_loc.py": "4e940c3035d215cfd29bc5f9d78564711af426adc7bae80a604a93f3b56c27cd"
+  },
+  "labelled": "post hoc; development read; no rollouts; changes no earlier verdict; route chosen by the user, details not reviewed",
+  "mapping": "per arm C and A, e = 95th percentile over 20 states of horizontal error after removing the head's mean label shift, median over 3 seeds; T = the same for the mean training label; first match: WITHIN BUDGET iff every head has e <= 0.02 m in both layouts; BEATS A TABLE, OVER BUDGET iff every head has e <= T/2 in the new layout; otherwise NO BETTER THAN A TABLE",
+  "oracle_kept": "simulator camera matrices, in both arms; rest height, sizes, yaw and roles untouched",
+  "prediction": "both arms BEATS A TABLE, OVER BUDGET; familiar e near 0.02 m, new e near 0.05 m; grasp displacement under 0.02 m familiar, over it new",
+  "states": "dev only: N2 main states 4-23, never in training; training on K1-K6 demos 0-39, familiar layout",
+  "status": "PRE-REGISTERED locator read",
+  "written_before": "any training or read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_loc__s0__851f1cbb",
+ "schema": 1,
+ "script": "experiments/prereg/pp_loc.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T14:33:31+00:00",
+ "stream": null,
+ "tag": "pp_loc"
+}

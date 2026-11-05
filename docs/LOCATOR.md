@@ -73,3 +73,36 @@ Arm C's label is where the hand closed or opened, which is a fixed distance from
 - It leaves the camera matrices, rest height, sizes, yaw and roles oracle.
 - Removing `b` assumes the shift stays constant. A rim grasp on a rotated bowl would break that. The bowl's object head matters only for known tasks.
 - The new layout's states are a development set, and one scene.
+
+## 7. Results (2026-11-05)
+
+All jobs completed. `results/flawed/pp_loc.json`. One K4 demo gave no full hold and was dropped. 3,644 demo frames. One pixel is 0.0037 m at the table, so the budget is about 5 pixels.
+
+**Registered verdict: arm C NO BETTER THAN A TABLE. Arm A NO BETTER THAN A TABLE.** My prediction failed on both.
+
+| `e`, 95th percentile, m (new-layout median error in brackets) | cheese | bottle | bowl, object | plate, target | bowl, target |
+|---|---|---|---|---|---|
+| A, familiar | .001 | .004 | .001 | .001 | .001 |
+| A, new | .020 (.007) | .006 (.003) | .021 (.005) | **.304** (.005) | .019 (.005) |
+| C, familiar | .019 | .035 | .013 | .008 | .034 |
+| C, new | **.260** (.017) | .038 (.021) | **.176** (.012) | **.310** (.009) | **.163** (.018) |
+| table, new | .271 | .371 | .261 | .322 | .258 |
+
+Reading across arms, as registered: A does much better than C on four heads, and A's plate head fails in the same way. So the demo labels cost accuracy, and something else also breaks the plate.
+
+Other reported numbers:
+
+- **Label noise,** p95 of label − oracle − `b`: cheese .033, bottle .032, bowl object .030, plate .024, bowl target .114. Every head's labels are noisier than the budget.
+- **A's plate head** varies by seed: .038, .305, .304.
+- **Heights.** New-layout oracle heights vary by up to 0.019 m for cheese, plate and bowl, so "same height in both layouts" fails on some states.
+- **Grasp displacement,** p95, m. Familiar: pi0.5 .016 cheese, .027 bottle, .021 bowl; GR00T .013, .015, .022. New: pi0.5 .026, .067, .032; GR00T .040, .026, .034. Medians run .004-.019. My prediction failed on the familiar side: pi0.5's bottle and both bowls exceed 0.02 m. The start look does not fully give the offset at the 95th percentile.
+
+## 8. Diagnostic: a few states, or a broad failure (m3_prereg `pp_loc_diag`)
+
+Design fixed after §7, before this read. Post hoc. No training, and it changes no verdict in §7. `experiments/pp_loc_diag.py` → `results/flawed/pp_loc_diag.json`, `pp_loc_diag.png`. The same checkpoints and 20 new-layout states.
+
+A state is **bad** for a head and seed when its horizontal error, after removing `b`, exceeds 0.05 m. **Verdict per arm and head: FEW STATES iff every seed has at most 3 bad states of 20 and its median error is at most 0.02 m. Otherwise BROAD.**
+
+Reported with no verdict: each bad state's index; whether it repeats across seeds and arms; whether the prediction sits within 0.05 m of another entity; that state's oracle height. The figure shows the worst states with oracle and predicted points, for a visual check of occlusion.
+
+Prediction: FEW STATES on all of A's heads, and on C's heads except the bottle, with bad states repeated across seeds and caused by occlusion.
