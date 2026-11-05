@@ -121,3 +121,34 @@ Prediction: FEW STATES on all of A's heads, and on C's heads except the bottle, 
 - **C's bottle head has one bad state, repeated across seeds, at .055-.065 m.** It fails on its median error, .017-.022 m, and the label height, 0.105 m above the bottle's body origin, may contribute.
 
 **Where this leaves route C.** With exact labels, appearance alone places four of five heads within about 0.02 m in a layout the network never saw, and A's verdict rests on the plate alone. So the architecture can locate these objects, and C's costs come from its labels. Label noise also blurs what the network learns about each object, which fits C's confusions, though this read does not separate the two. All of it uses the simulator's camera matrices, and the 95th percentile still decides §7's verdict, which stands.
+
+## 9. Round two: objects in new places, cleaner labels (m3_prereg `pp_loc2`)
+
+Design fixed 2026-11-05 after §8.1, before any of this training, with the user's go-ahead for the two changes. Offline development read, no rollouts. These 20 states have now shaped the design, so a pass here is not evidence on unseen states. `experiments/pp_loc2.py` → `results/flawed/pp_loc2.json`.
+
+**Mechanism P, moved objects.** No training image shows an object anywhere else. So for 80% of samples, all four objects move to random positions in the workspace, which is the bounding box of the hand's horizontal positions over the K1-K6 demos. The rest of training stays as §4.
+
+- **Cutouts.** An object is what changed when the robot moved it. For the cheese, bottle and bowl, each training demo's first and last frames differ where the object left. The connected region near that demo's label, with holes filled, is the cutout, with no simulator mask. No K1-K6 demo moves the plate, so its cutout is a disc of radius 40 px, large enough to hold the whole plate under arm C's off-centre label.
+- **The empty scene.** A background image fills each object's usual place from the median of late frames, and fills the plate's disc by interpolating across each row. Every moved sample starts from its own frame with those places replaced.
+- **Pasting.** A random cutout of each object lands at a random position on the head's label height, rescaled by the ratio of camera depths. The trained head's object goes last, so nothing covers it. Its new label is that head's mean offset from the cutout's centre, added to the position. So arm C's pasted labels no longer carry per-demo label noise, except on the plate's disc.
+
+A first draft used 96 px square patches. A smoke-run drawing showed them carrying neighbouring objects, which left unlabelled copies of each head's target. I replaced it before registration and before any full training. No error was measured on either version.
+
+**Mechanism S, cleaner labels.** A first network trains on the arm's labels. For each demo and head, the median of its peak over the demo's training frames replaces the label, unless it lies more than 20 px (about 0.07 m) from that frame's original label, in which case the original stays. A fresh network then trains on the new labels, from new weights. `b` and `T` are recomputed from those labels per seed, lifted at the same height.
+
+**Arms, three seeds each.**
+
+| arm | labels | P | S | role |
+|---|---|---|---|---|
+| **CPS** | demo | yes | yes | **the verdict's arm** |
+| CP | demo | yes | no | removal control for S; CPS's first network |
+| CS | demo | no | yes | removal control for P; first network is §7's C |
+| AP | simulator | yes | no | what P gives with exact labels |
+
+**Verdict: §5's mapping, unchanged, on CPS alone.** WITHIN BUDGET, BEATS A TABLE, OVER BUDGET, or NO BETTER THAN A TABLE. The other arms get the same label as a report, and picking the best of them would not count. §8's FEW STATES or BROAD is reported for every arm with no further standing.
+
+**Mechanism reading, no verdict.** Compare new-layout `e` and bad-state counts across C, CP, CS and CPS. Compare A and AP on the plate.
+
+**Prediction (mine; my record is poor).** CPS BEATS A TABLE, OVER BUDGET, with most of the gain from P. AP also BEATS A TABLE, because moving a flat plate's patch cannot show it tilted.
+
+**What this cannot show.** Any verdict here has the §6 limits. A pass needs a check on states no design has seen, and confirmatory states need the user's approval. The rescale ignores the change in viewing angle. P already removes most label noise on pasted samples, so S has less to do in CPS than in CS, and the two controls do not cleanly split their credit. The plate cannot be seen tilted, and the plate's disc carries a ring of table. The smoke drawing `results/flawed/pp_loc2_patches_CP.png` still shows small remnants of the bottle in the emptied scene.
