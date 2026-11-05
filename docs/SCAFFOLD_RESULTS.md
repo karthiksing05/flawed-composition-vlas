@@ -241,3 +241,119 @@ Familiar reach is 1.00 in every cell. Intact P_min scores .91 and .42.
 - **Tilt tracks the bowl's failure.** Bowl tilt at the first open command has median 31° in new PP and 17° in SS, against 14° and 13° familiar. It is an association only.
 - **A servo carry can hurt in the familiar layout.** N6 falls .68 to .18 and N1 .95 to .65 under PS. A part does not always accept a state its demos never produced, which is a limit on swapping skills at a seam.
 - **The design consequence.** PLAN_SCAFFOLD §3.3's hypothesis, as written, is not supported: oracle transit to the pre-pose recovers nothing alone (.40 against .42 intact), and neither oracle grasp nor oracle carry passes as the owner. I withdraw it as the basis for T4's split. The record does not refute a role for a shared carry, which K5 shows clearly, and it leaves the bottle and bowl grasps as measured targets.
+
+## 7. F: how much of the layout gap is physically closable? (protocol fixed 2026-11-05, before any dev rollout; m3_prereg sc_feas)
+
+The user approved this on 2026-11-05. `experiments/sc_feas.py`. No training. `fa1l_cgen.episode`, unchanged: a scripted oracle-state planner with eight grasp options (yaw 0, 90, ±45; tilt 25° and 40° away from the nearest fixture). Objects on their own known tasks: bowl K1, cheese K6, bottle K4, both layouts, dev states 4-23, 3 noise seeds per option, 2,880 episodes. Grasp options are for measurement only, and nothing here enters any data file. The tilt's direction uses simulator positions and hand-set sizes. The approach is still a straight line.
+
+**Per state:** an option counts if it holds through the lift in at least 2 of 3 noise seeds. A hold means the planner's `held_lift` or a full-task success, because the smoke showed `held_lift`, sampled once, reading false on episodes that succeed (changed after the smoke, before registration). `hold_any` = share of states with some counting option. `hold_base` = the same with the fixed pose (0, 0) alone. Gain = hold_any − hold_base, CI over states, 2000 draws.
+
+**Verdict, first match.** INSTRUMENT FAILS iff familiar `hold_any` is below .90 on any object. GAIN iff some object's new-layout gain is at least .10 with the CI's lower bound above 0. Otherwise NO GAIN.
+
+**Reported with no verdict:** full-task success under any option and the fixed pose, each option's hold rate, and the blocked states.
+
+**What it decides.** GAIN opens T5 (entity-based obstacle terms under one rule) as the user allowed. NO GAIN closes it. `sc_feas_states.json` lists the new-layout states with a counting option, and those define the reachable set for the restated claim.
+
+**Limits.** The options are not exhaustive and the path is straight, so hold_any is a lower bound on physical feasibility, and a blocked state may be open to some other approach. Three noise seeds per option are few.
+
+**Prediction.** GAIN on the cheese, with `hold_any` about .75 against about .45 fixed; no gain on the bowl; familiar clears the floor, with the bottle at risk.
+
+## 8. D: does the part inventory come out of the demos? (protocol fixed 2026-11-05, before the read; m3_prereg sc_disc)
+
+The user's requirement: "learn parts in a very unsupervised and reusable way". `experiments/sc_disc.py`, GPU, no rollouts.
+
+**Build U40.** `pp_p_train.py build --tag sc_u40 --steps 30000 --rank 32 --rtclip --psupport --tscale --decouple --rtransport --bbnom --bbnosize --pgate --iroles --nosize --demos 40`, seeds 10-12. L4's arm with three things removed: the hand-set sizes, the grasp message m, and demos 40-49 (kept for the decisions). The event's threshold still reads all 50 demos' widths. Starting with one candidate part per (role, moved or nearby slot), which comes from the demos through L4's sites. What it still assumes: the entity list and oracle positions.
+
+**Decisions, all on held-out demos 40-49, with common noise, per seed.**
+- **k = 0:** the part zeroed, to see what it adds at all.
+- **Split gain:** refit one part on one of its tasks' training rows, 4000 steps, with everything else frozen. gain = (loss(shared) − loss(refit)) / loss(shared) on that task's held-out rows.
+- **Noise floor:** the same refit for parts with only one task. They have nothing to split, so their gain is what refitting alone gives. Floor = the largest such gain that seed.
+- **Split** iff a part with several tasks has gain above the floor and a demo-resampled CI above 0.
+- **Merge cost:** use part p on part q's held-out rows, cost = (loss(p) − loss(q)) / loss(p). **Merge** iff the CI's upper bound is at or below the floor's magnitude.
+
+A split or merge stands iff at least 2 of 3 seeds agree. Given roles and atom names score the result, and nothing else.
+
+**Verdict on the inventory, first match.** UNDER-SPLITS iff no bottle object split stands (K4 or K5). OVER-SPLITS iff at least 2 splits stand on anything other than the bottle. Otherwise RECOVERS. Merges are reported with no verdict: a merge is what reusable parts should produce, and it needs a behavioural test.
+
+**What it decides.** RECOVERS: the build's inventory replaces the hand-listed atoms and m, with one rule. UNDER-SPLITS: this rule misses the one pair dependence we know is real, so held-out flow loss is the wrong criterion for parts, and I report that before T4. OVER-SPLITS: parts do not come out as atoms by this rule, and that counts against sparse reuse.
+
+**Next, registered only after this read.** T4: behavioural builds on all 50 demos from the discovered inventory; removal controls for k = 0, psupport, tscale, rtransport and rank; the reference is P_min, and reuse is S3 creation from held-out atoms under the same unsupervised recipe.
+
+**Limits.** Flow loss averages over all rows, including far rows where a part is off, which dilutes gains. Low loss does not guarantee success. These instructions and demos shaped the earlier design. The refit noise floor is one heuristic among several, and six single-task parts make a small sample.
+
+**Prediction.** UNDER-SPLITS is my main fear. I predict RECOVERS with the K5 bottle split at low margin, with few merges among objects and some among fixture targets.
+
+## 9. F and D results (2026-11-05; results/flawed/sc_feas_read.json, sc_feas_states.json, sc_disc_read.json)
+
+### 9.1 F: GAIN
+
+Registered verdict: **GAIN**, through the bottle. My prediction named the wrong object.
+
+| new layout | hold, fixed pose | hold, any option | gain | CI | success, fixed | success, any | blocked states |
+|---|---|---|---|---|---|---|---|
+| bowl | .90 | 1.00 | +.10 | [.00, +.25] | .55 | .95 | 0 of 20 |
+| cheese | .40 | .40 | .00 | [.00, .00] | .40 | .40 | 12 of 20 |
+| bottle | .60 | 1.00 | +.40 | [+.20, +.60] | .60 | 1.00 | 0 of 20 |
+
+Familiar hold_any is 1.00 on every object, and the fixed pose already reaches it.
+
+- **The cheese's limit may be physical, up to these eight straight-line options.** No option helps, and 12 of 20 states are blocked: 4, 5, 9, 10, 12, 13, 14, 15, 18, 19, 20, 22. So under the restated claim, reachable new-layout cheese states are 8 of 20 at this lower bound.
+- **The bottle and bowl are physically open.** With the right yaw the scripted planner completes the bottle on all 20 states and the bowl on 19. Bottle yaw ±45 or 90 holds at .68-.78 against .57 at 0. Bowl success rises from .55 to .95, more than its hold does.
+- **This opens T5** under the user's condition. Grasp options stay out of training.
+
+A choice among poses has to read the scene, so a policy cannot get this gain with a fixed pose. Whether it needs obstacle terms, or a wider set of demos, stays open.
+
+### 9.2 D: OVER-SPLITS
+
+Registered verdict: **OVER-SPLITS**. My prediction failed. Splits standing in 2 of 3 seeds: bowl K1, bowl K7, bottle K4, bottle K5. No merges in any seed.
+
+| refit gain (seeds 10, 11, 12) | |
+|---|---|
+| bowl K7 | +.041, +.047, +.039 |
+| bottle K4 | +.025, +.024, +.024 |
+| bowl K1 | +.020, +.021, +.020 |
+| bowl K2 | +.013, +.017, +.017 (CI spans 0) |
+| bowl K3 | +.011, +.014, +.008 (CI spans 0) |
+| bottle K5 | +.014, +.013, +.014 |
+| cabinet K3 | +.013, +.014, +.016 (CI spans 0) |
+| cabinet K4 | −.029, −.034, −.034 |
+| single-task parts (the floor) | −.02 to −.05 |
+
+**Reading, post hoc.**
+- **The criterion fails its one known case.** K5's 81° grasp is the pair dependence the record is surest of, and its gain is the smallest of the four splits. The rule does not separate it from K1, where nothing is known to differ. Flow loss averages over every row, and the turn occupies a small share of them.
+- **The floor is badly designed.** It sits below zero, because a 4000-step refit does worse than the 30,000-step joint fit, so almost any positive gain clears it. I chose it, and it did not act as a noise estimate.
+- **K7's split is believable.** Its object rows include opening the drawer, which is a different skill. That agrees with the sequencing evidence, and it is the one case where flow loss flags a real structural difference at a clear margin.
+- **Parts are distinct and they matter.** No substitution comes within the noise on any pair. Zeroing a part costs target parts .53-.65 of their rows' loss and object parts .12-.22, on seeds 10-12.
+
+**Consequence.**
+- **Flow loss alone will not produce the inventory.** I do not patch the rule on these same demos. The slot-keyed inventory (one part per role and per slot that demos move or approach) stays, and it comes from L4's sites.
+- **A correction to PLAN_SCAFFOLD's amendment.** I listed m as hand-given, and that overstated it. Its inventory and values are fitted from demos by `grasp_inventory`, with no labels. What was chosen by hand is the feature, the grasp's yaw turn, and I chose it after seeing K5. So m stays in T4 as a demo-fitted device with a removal control, and its form is disclosed as post hoc.
+
+## 10. T4: the rebuild under the unsupervised recipe (protocol fixed 2026-11-05, before any non-smoke build; m3_prereg sc_t4)
+
+`experiments/sc_t4.py`. The user approved T4 and asked for parts learned in a "very unsupervised and reusable way". Seeds 10-12, all 50 demos, 30,000 steps, K1-K7 by L4's rule (K8 has no event). Rollouts: K1-K6, N1-N6, both layouts, dev states 4-23, oracle positions. No transit split. No hold oracle or given roles enter the policy.
+
+**Arm U.** L4's arm without hand-set sizes: `--rank 32 --rtclip --psupport --tscale --decouple --imode --rtransport --bbnom --bbnosize --pgate --iroles --nosize`. What it still assumes: the entity list and oracle positions, and the features chosen for m and the frames.
+
+| removal | how | question |
+|---|---|---|
+| Unm | no `--imode` | does the demo-fitted grasp message earn its place? |
+| Unp | no `--psupport` | per-part radii, never ablated |
+| Unt | no `--tscale` | carry scale frame |
+| Unr | no `--rtransport --bbnom --bbnosize` | role-level transport, never ablated |
+| Ur8 | `--rank 8` | rank 32, never ablated |
+| U0 | U's checkpoint with every part zeroed | do parts add anything over the backbones? (the plan's k = 0) |
+
+**Verdicts.** Each cell is a layout × task group (known K1-K6, new pairings N1-N6). Differences are in success, with a CI by resampling tasks and states, paired, 2000 draws. Task resampling overstates independence where tasks share an object (T3's flaw 2), so these intervals run somewhat narrow.
+
+- **V1, U against L4** (`pp_L4_roll/P2L4`, hand-set sizes kept), familiar layout. First match: COSTS iff either familiar cell's CI lies wholly below −.10. HOLDS iff both lower bounds are at or above −.10. Otherwise UNRESOLVED. New-layout cells are reported with the same labels and no decision.
+- **V2, each removal against U.** KEEP iff in any of the four cells the difference is below −.10 and its CI's upper bound is below 0. Otherwise DROP (no measured loss). Six tests at 4 cells each, uncorrected, so a KEEP on one cell is weak.
+- **V3, reuse.** Builds without the bottle (`--exclude K4+K5`) and without the plate (`--exclude K1`), then creation from k = 1, 5, 10 demos of K4 or K1. Cells: K4, N4, N5, N6 and K1, N1, N4. Difference = success under the created part − success under full U, by layout and k, familiar and new. TRANSFERS at k = 1 iff the familiar lower bounds are at or above −.10 on both atoms. Otherwise NOT YET. Old tasks' parameters stay bitwise unchanged, which the creation code asserts.
+
+**Storage** (no verdict): `lifelong_ood/scaffold/stores.py`'s report for U, counting shared backbones.
+
+**What it decides.** HOLDS means hand-set sizes can go, and the recipe's labels drop to the entity list and positions. DROP removes a device from the final store. KEEP keeps it, and that device needs a stated principle. TRANSFERS is the reuse claim for one object and one target. It says nothing about pixels, which T2 and T7 own.
+
+**Limits.** Development states have shaped all of this. Fixed pose: T5 has not run, so new-layout cells carry F's gap. Cheese is capped at 8 of 20 states at F's lower bound. Two held-out atoms are few.
+
+**Prediction.** V1 HOLDS. KEEP on Unm (K5), Unr and U0; DROP on Unp and Ur8; KEEP on Unt through N4. V3 TRANSFERS on the plate and NOT YET on the bottle.

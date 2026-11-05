@@ -447,6 +447,8 @@ def main():
     ap.add_argument("--tnear", action="store_true")                       # PARTS_RESULTS 50: P_rel (release region unstretched)
     ap.add_argument("--pgate", action="store_true")                       # LADDER_RESULTS 1: L1 (proprioceptive held event)
     ap.add_argument("--iroles", action="store_true")                      # LADDER_RESULTS 5: L4 (roles induced from contact events)
+    ap.add_argument("--demos", type=int, default=None)                    # SCAFFOLD_RESULTS 8: build on the first N demos per task
+    ap.add_argument("--nosize", action="store_true")                      # SCAFFOLD_RESULTS 8: no hand-set sizes (all zero)
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -471,7 +473,7 @@ def main():
         if a.iroles:                                                       # LADDER_RESULTS 5.2: the build's lexicon
             assert pg is not None, "--iroles reads L1's event: it needs --pgate"
             Dz = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
-            lex = PF.role_lexicon(build_situations(tasks, Dz, pgate_held(Dz, pg)))
+            lex = PF.role_lexicon(build_situations(tasks, Dz, pgate_held(Dz, pg), a.demos))
             lang = instructions()
             parsed = {c: PF.role_parse(lex, lang[c]) for c in tasks}
             # LADDER_RESULTS 5.3 (corrected): a task trains iff it has a contact event (a situation) and an induced parse
@@ -482,7 +484,9 @@ def main():
                 diff = [c for c in trained if tuple(parsed[c]) != tuple(FC.roles(lang[c]))]
                 assert not diff, ("--reuse: induced roles differ from the donor's on trained tasks", diff)
             tasks = trained
-        b, act, center, size, n, _ = rows(dev, tasks, pgate=pg, roles=lex)
+        b, act, center, size, n, _ = rows(dev, tasks, a.demos, pgate=pg, roles=lex)
+        if a.nosize:
+            size = np.zeros_like(size)
         D0 = np.load(os.path.join(FC.DATA, "demos.npz"))
         home = D0["ee_pos"][D0["step"] == 0].mean(0).tolist()               # the demos' mean end effector at step 0 (P_af)
         rclip = hscale = 0.0
@@ -537,6 +541,8 @@ def main():
         params = [p for p in m.parameters() if p.requires_grad]
         ema, curve, secs = fit(m, params, b, act, a.steps, 512, 3e-4, a.seed, 1e-4, log=f"build {a.tag} s{a.seed}", groups=groups)
         smeta = dict(tag=a.tag, seed=a.seed, tasks=tasks, center=center, steps=a.steps, decouple=a.decouple, reuse=a.reuse or None)
+        if a.demos is not None or a.nosize:                                # flags off: the meta is unchanged
+            smeta.update(demos=a.demos, nosize=a.nosize)
         if pg is not None:                                                 # flag off: the meta is L0's, key for key
             smeta["pgate"] = dict(tw=pg["tw"], lift=pg["lift"])
         if lex is not None:

@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: D, part discovery (docs/SCAFFOLD_RESULTS.md 8)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4526516",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "1ef46fd6eb95129df30681785942115ac36c2d47",
+  "short": "1ef46fd6"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "17598013768c71dbdcccb1eb211f195e15a4681f168709e3ec5e244fce1248d3",
+   "experiments/pp_p_train.py": "0a6534556012a60bd101dea6b0ad9a4ab7218556c5196c6eec249bed84cce8cb",
+   "experiments/sc_disc.py": "bfd2f7b8f830207f15d8e29f2ae57dbfe2b2b95539ff22cbf8b2b6a5e9a6cb91",
+   "lifelong_ood/policy/parts_flow.py": "b51b01eb2998424b240e8b23ca791c6e9dc55611fb3869b051130431ef4cafae"
+  },
+  "labelled": "development read, no rollouts; demos 40-49 held out from build U40; these demos and instructions shaped earlier design; the user asked for unsupervised reusable parts on 2026-11-05 and has not reviewed these rules",
+  "mapping": "split iff a part with several tasks has refit gain above the seed's noise floor (largest gain among single-task parts) and CI lower bound above 0; a split stands iff 2 of 3 seeds agree. First match: UNDER-SPLITS iff no bottle object split stands; OVER-SPLITS iff at least 2 splits stand on anything other than the bottle; else RECOVERS. Merges reported with no verdict",
+  "prediction": "RECOVERS with the K5 bottle split at low margin; few merges among objects, some among fixture targets",
+  "status": "PRE-REGISTERED D",
+  "written_before": "any non-smoke build or score of D"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_disc__s0__1ef46fd6",
+ "schema": 1,
+ "script": "experiments/prereg/sc_fd.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T21:39:20+00:00",
+ "stream": null,
+ "tag": "sc_disc"
+}

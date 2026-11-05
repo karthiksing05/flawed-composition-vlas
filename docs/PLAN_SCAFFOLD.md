@@ -2,6 +2,26 @@
 
 Draft for the user's review, 2026-11-05. Nothing here has run. It follows three independent reviews of the record (FLAWED_COMPOSITION; PLAN_PARTS, PARTS_RESULTS, LADDER_RESULTS, COVERAGE_RESULTS; ADVERSARIAL_STUDY, RIVAL_TESTS, PLACE_DIAG, BREAK_ATLAS, HOLD_GATE, HAND_OVER). I checked the main claims against the sources. Section marks cite those files.
 
+## Amendment, 2026-11-05 (after T3b; user's decisions)
+
+- **The user's standing requirement:** "this study should be strongly generalizable and we should learn parts in a very unsupervised and reusable way". Parts must come out of the demo stream. A hand-labelled library is a reference arm only.
+- **§3.3's contact and transit split is withdrawn** as T4's basis (SCAFFOLD_RESULTS 6). New-layout loss differs by object, and no timescale sorts it.
+- **Entity-based obstacle terms are allowed** if F shows a gain, under one rule in every scene. Scene constants, clearance-stratified data and grasp-option teachers stay barred from training.
+- **New layouts stay in the claim.** If F finds many states blocked, the claim is success among physically reachable states.
+- **T4 is redesigned below**, in SCAFFOLD_RESULTS 8.
+
+**What P_min is still given by hand, and what replaces it:**
+
+| given today | replacement | status |
+|---|---|---|
+| Contact gate | L1's proprioceptive event | exists, tested |
+| Roles of each task | L4's sites and lexicon, with refusal | exists, S1 |
+| Which part a task uses (named atoms, `OBJ_ATOMS`, `TGT_ATOMS`) | One part per role and per slot that L4's sites find; the name is only an index. D's split rule failed (SCAFFOLD_RESULTS 9.2) | **slot-keyed; a better split rule is open** |
+| Grasp-mode message m | Its values are fitted from demos with no labels; its feature (yaw turn) was hand-chosen after seeing K5. D's flow-loss rule did not replace it (SCAFFOLD_RESULTS 9.2) | **kept, with a removal control** |
+| Hand-set sizes (`FC.SIZE`) | Remove; the part's embedding carries what it needs | **to test by removal** |
+| The list of entities | The entity store, from what moved in demos | locator rounds, offline only |
+| Oracle positions | Entity keys on VLM features (T2) | not started |
+
 ## 0. Thesis
 
 **What a policy stores decides what it can generalize to.** A policy that stores tasks entangled in its weights must interpolate on a new combination. A policy that stores typed parts and fixed rules reaches a new combination by lookup. So composition, encoded in the structure of memory, scaffolds generalization in several senses at once: new pairings, new parts, new sequences and new layouts.

@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: F, physical feasibility (docs/SCAFFOLD_RESULTS.md 7)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4526516",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "1ef46fd6eb95129df30681785942115ac36c2d47",
+  "short": "1ef46fd6"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "17598013768c71dbdcccb1eb211f195e15a4681f168709e3ec5e244fce1248d3",
+   "experiments/fa1l_cgen.py": "d7c264fdb36c4d8034842001f6568c37440e1ab63e4bdc8d80fede59645327b5",
+   "experiments/sc_feas.py": "b7b41b83e7d5a9c5b1cd8664d72b375d9ce611b4dd46204e2553f5fe891a4597"
+  },
+  "labelled": "development read, no training; the user approved this test on 2026-11-05 and has not reviewed these rules; a hold means held_lift or success, set after the smoke",
+  "mapping": "per state, an option counts if it holds in at least 2 of 3 noise seeds. First match: INSTRUMENT FAILS iff familiar hold_any < .90 on any object; GAIN iff some object's new-layout hold_any - hold_base >= .10 with CI lower bound above 0; else NO GAIN",
+  "prediction": "GAIN on the cheese, hold_any about .75 against about .45; no gain on the bowl; familiar over the floor, bottle at risk",
+  "states": "dev only: N2 main states 4-23; smoke state 0 read before this row",
+  "status": "PRE-REGISTERED F",
+  "written_before": "any F run outside the smoke"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_feas__s0__1ef46fd6",
+ "schema": 1,
+ "script": "experiments/prereg/sc_fd.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T21:39:19+00:00",
+ "stream": null,
+ "tag": "sc_feas"
+}
