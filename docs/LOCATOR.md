@@ -183,3 +183,40 @@ All jobs completed. `results/flawed/pp_loc2.json`.
 - **C's familiar bottle exceeds the budget,** at .026-.029, and exceeds the table's .016, with one seed at .010-.013.
 
 **Where this leaves route C.** The two objects the new pairings carry, the cheese and the bottle, sit within 0.015 m in the new layout on demo labels and the simulator's camera. Plate and bowl targets do not yet. The stove and cabinet need no perception. So tasks N2, N3 and N5 could run closed-loop on located objects today, with the familiar bottle's error as the known risk.
+
+## 10. Closed loop on located objects (m3_prereg `pp_hand3`)
+
+Design fixed 2026-11-05 after §9.1, before any of these runs, with the user's go-ahead for the test. Development states, no training. The 20 states have shaped the locator, so this does not test unseen states. Client `experiments/pp_hand3_client.py`, read `experiments/pp_hand3_read.py`.
+
+**The question.** Does the hand-over survive when the part's object position comes from one look with the demo-labelled locator?
+
+**Arm LS.** H1 from HAND_OVER §7.2 (the frozen VLA until L1's proprioceptive event, then the L1 build `pp_full_L1_s10`), with one change to what P sees about the object.
+
+1. **One look.** At the first tracked step, after the same settle steps, CP's network (§9) reads one agentview image and gives the object's horizontal position. The head is the cheese's or the bottle's, chosen by the task's role.
+2. **No shift removed.** The raw output goes in, with no `b`, because `b` comes from the simulator. So P sees where a demo's hand closes, up to the network's error. §9.1's raw errors in the new layout are .019 m for the cheese and .014 m for the bottle.
+3. **During a hold.** At each onset of the event, the offset is the current estimate minus the hand's horizontal position. While the event stays on, the estimate is the hand plus that offset.
+4. **After a hold.** The estimate stays frozen at its last value, with no second look. A dropped object's estimate goes stale.
+
+Held-object error therefore combines the locator's error with how far the grasp moved the object (§7).
+
+**What stays oracle.** The object's height, and so its rest height; its yaw and size; every target's position; the role assignment; the camera matrices, through the network's labels and lifting. The stove and cabinet never move, so their target positions could come from a table, which the standing rule bars as a fix. Read's Rec still uses simulator contact as an instrument only.
+
+**Pairing.** P never acts before the hand-over, so every episode matches its H1 episode until then, with the same seeds. Any difference comes from what P does with the estimate.
+
+**Tasks.** N2, N3, N5 (cheese→stove, cheese→cabinet, bottle→stove), with K4 and K6 as known controls. K6 places on the bowl, whose position stays oracle here. Both layouts, both VLAs, 20 states, three locator seeds: 1,200 episodes, about 10 A40-h. One P seed, as in H1.
+
+**Verdict per VLA and layout,** on N2, N3, N5 pooled over locator seeds. CIs bootstrap tasks and states jointly, 2,000 draws, paired; three tasks make these coarse. `RAISES`: `s(LS) − s(intact)` has CI lower bound above 0 and exceeds 0.10. `LOSS`: `s(H1) − s(LS)`.
+
+| RAISES | LOSS | verdict |
+|---|---|---|
+| yes | ≤ 0.10 | **PERCEPTION HOLDS** |
+| yes | > 0.10 | **PERCEPTION COSTS** |
+| no | any | **NO FIX** |
+
+**Damage control, no verdict unless it fails.** On K4 and K6, `s(LS)` must stay within 0.05 of `s(H1)`. A larger loss is reported as KNOWN COST and qualifies the verdict.
+
+**Reported with no verdict.** Per task and locator seed; the share handed over and success among those; stage counts; the estimate's horizontal error against the oracle at the hand-over and its maximum over the carry, 50th and 95th percentile per object and layout.
+
+**Prediction (mine; my record is poor).** PERCEPTION HOLDS on all four, because N2 and N5 stayed at 1.00 under a 0.04 m constant error (HAND_OVER §8.2). The bottle in the new layout does worst, because the grasp moves it most.
+
+**What this cannot show.** No plate or bowl target, so it says nothing about N1, N4 or N6. It does not remove the camera, the height or the target positions. N2, N3 and N5 are among the easier new pairings, as §8.2 shows. Three tasks on one scene, with development states that shaped the locator.
