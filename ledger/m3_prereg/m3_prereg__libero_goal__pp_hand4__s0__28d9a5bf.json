@@ -1,0 +1,57 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: arm LR (docs/LOCATOR.md 11)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4524113",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "28d9a5bfb4cb9de037b5084bdf48cc233cbcd907",
+  "short": "28d9a5bf"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/LOCATOR.md": "42dd5f69336fa334941d6097e0f70bce169b142a86541547278923b72b67a2a5",
+   "experiments/pp_hand3_client.py": "dc5e128d2db11a69fa6c9789f45457bc4a3b2f145df7aba55be7b5df3989751a",
+   "experiments/pp_hand4_client.py": "9535f6dbadfff54b1f076708f6f3e9332d5386984bd7282204beb5ecdf1ef9db",
+   "experiments/pp_hand4_read.py": "876565fff1e63afa0568ac0906894f45da9880b02f4cda3acfca8a507cc94314",
+   "experiments/pp_handx_roll.sh": "0e2ba12d7a9d9ddc6bf5e4ca741217d7595e04629e682b650c80312cee359cce"
+  },
+  "labelled": "post hoc; development read; no training; the 20 states shaped the locator; changes no earlier verdict; the user asked to fix the estimate and keep iterating, details not reviewed",
+  "mapping": "per VLA and layout, N2 N3 N5 pooled over locator seeds: RAISES iff s(LR)-s(intact) has CI lower bound above 0 and exceeds 0.10; PERCEPTION HOLDS iff RAISES and s(H1)-s(LR) <= 0.10; PERCEPTION COSTS iff RAISES and s(H1)-s(LR) > 0.10; NO FIX iff not RAISES. KNOWN COST qualifies iff K4 and K6 lose more than 0.05 against H1",
+  "prediction": "LR recovers most of LS's loss in the new layout and on K6; PERCEPTION HOLDS on both familiar cases; NO FIX in the new layout",
+  "states": "dev only: N2 main states 4-23",
+  "status": "PRE-REGISTERED arm LR",
+  "written_before": "any rollout outside the smoke"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_hand4__s0__28d9a5bf",
+ "schema": 1,
+ "script": "experiments/prereg/pp_hand4.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T17:38:11+00:00",
+ "stream": null,
+ "tag": "pp_hand4"
+}

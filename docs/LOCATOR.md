@@ -283,3 +283,39 @@ Design fixed 2026-11-05, before this training. Offline development read. `experi
 **Prediction (mine; my record is poor).** CP3 BEATS A TABLE, OVER BUDGET: the plate within .05 m, with the bowl's shift and the familiar bottle still over budget.
 
 **Limit.** The rule works on an object that contrasts with the table and sits apart from others, as the plate does in the familiar layout. It would not separate touching objects. The 20 states keep shaping the design, so unseen states stay untested.
+
+## 13. Results of §11 and §12 (2026-11-05)
+
+All jobs completed. `results/flawed/pp_hand4_read.json`, `results/flawed/pp_loc3.json`.
+
+**§11, registered verdicts on arm LR.** PERCEPTION HOLDS on three of four, each with KNOWN COST. My prediction held on both familiar cases, failed on GR00T new, and overstated the recovery.
+
+| N2, N3, N5 | intact | H1 | LS | LR | LR − intact [95% CI] | H1 − LR | LR − LS [95% CI] | K4 and K6, H1 → LR | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| pi0.5, familiar | .55 | .92 | .87 | .91 | +.36 [+.03, +.75] | .01 | +.04 [.00, +.14] | .95 → .86 | PERCEPTION HOLDS, KNOWN COST |
+| GR00T, familiar | .30 | .98 | .98 | .98 | +.68 [+.35, +.95] | .00 | .00 | .98 → .87 | PERCEPTION HOLDS, KNOWN COST |
+| pi0.5, new | .38 | .53 | .44 | .49 | +.11 [−.08, +.34] | .04 | +.05 [.00, +.12] | .28 → .21 | NO FIX, KNOWN COST |
+| GR00T, new | .12 | .38 | .29 | .31 | +.19 [+.05, +.35] | .07 | +.02 [−.05, +.14] | .28 → .18 | PERCEPTION HOLDS, KNOWN COST |
+
+- **K6 does not recover.** It stays at .72, .73, .27, .18, against H1's .90, .95, .40, .35. K4 holds level with H1. So the known cost sits on the bowl target, and the stale estimate does not explain it.
+- **Looks sometimes go badly wrong.** At the 95th percentile the estimate's error over the carry reaches .32 m on the cheese and .12 m on the bottle, against .03-.04 m under LS. Median errors stay near LS's, except GR00T's new-layout cheese at .037 m, and the familiar bottle rises to .024-.026 m at the hand-over. The hand near the object probably confuses the head. Success still rises, so the gain outweighs these errors on these tasks.
+
+**§12, registered verdict on CP3: NO BETTER THAN A TABLE.** My prediction failed. The plate worsens to `e` .312 m, median .049 m, with 7-10 bad states per seed. CP had median .012 m and 3-5 bad states. AP3 reads BEATS A TABLE, OVER BUDGET, with the plate at .030 m and 0, 1, 0 bad states. The other heads barely move. A tight cutout with a label about 12 px off its centre does worse than a loose disc. So the off-centre label looks like the problem, and the cutout's shape does not.
+
+## 14. Labels at the object's centre (m3_prereg `pp_loc4`)
+
+Design fixed 2026-11-05 after §13, before this training. Offline development read. `experiments/pp_loc4.py` → `results/flawed/pp_loc4.json`.
+
+**The reasoning.** Three problems may share one cause: where the hand closes or opens is not the object's centre. The plate's label sits off its centre (§13). The raw locator carries that shift into P, which trained on body positions, and that may explain K6's cost, because the bowl tolerates little error (HAND_OVER §8.2). The bowl's constant shift under P (§9.1) may come from a fixed pixel offset between label and cutout. A centre label removes that offset.
+
+**Arm CC.** As CP3, with one change to the labels. Each demo's label is the centre of its own cutout, in pixels. The hand no longer supplies the position, only the demo events and the region to search.
+
+- **Cheese, bottle, bowl as object:** the centre of the first-against-last cutout, per demo. A demo with no cutout takes its head's mean.
+- **Plate as target:** the centre of the figure-and-ground cutout, per K1 demo, with the same fallback.
+- **Bowl as target:** K6 demos do not move the bowl, so this head takes the bowl's mean centre from K1-K3 on every K6 frame.
+
+**Lifting heights, still from the hand.** Each object head uses its mean hand height at the close. The bowl-as-target head uses the bowl's. No demo grasps the plate, so the plate uses the lowest of those three heights, as the nearest thing to the table the hand has reached. The plate's true height is about 0.016 m lower, which adds a small constant shift.
+
+**Verdict: §5's mapping, unchanged, on CC.** Reported with no verdict: raw error and `b`, because raw error is what P will see. Three seeds. No simulator-labelled arm: arm A's labels are already at the body positions.
+
+**Prediction (mine; my record is poor).** BEATS A TABLE, OVER BUDGET, with the plate under .05 m. Raw error below CP's on the plate and the bowl. The familiar bottle stays near .02 m.

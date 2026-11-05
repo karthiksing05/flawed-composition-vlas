@@ -1,0 +1,56 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: figure-ground plate (docs/LOCATOR.md 12)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4524113",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "28d9a5bfb4cb9de037b5084bdf48cc233cbcd907",
+  "short": "28d9a5bf"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/LOCATOR.md": "42dd5f69336fa334941d6097e0f70bce169b142a86541547278923b72b67a2a5",
+   "experiments/pp_loc.py": "4e940c3035d215cfd29bc5f9d78564711af426adc7bae80a604a93f3b56c27cd",
+   "experiments/pp_loc2.py": "96bccaecf8fc71be4111b30662cc7ad344ec5272bcf135712c145ff3cb19271b",
+   "experiments/pp_loc3.py": "ca231f827e570eb3bdc116ec4ac611243ed215c40ed07a12ca49a0e532df94f6"
+  },
+  "labelled": "post hoc; development read; no rollouts; the 20 states shaped this design; changes no earlier verdict; the user asked to keep iterating, details not reviewed",
+  "mapping": "on arm CP3 alone, LOCATOR 5's mapping, first match: WITHIN BUDGET iff every head has e <= 0.02 m in both layouts; BEATS A TABLE, OVER BUDGET iff every head has e <= T/2 in the new layout; otherwise NO BETTER THAN A TABLE. AP3 takes the label as a report",
+  "prediction": "CP3 BEATS A TABLE, OVER BUDGET; the plate within 0.05 m; the bowl's shift and the familiar bottle still over budget",
+  "states": "dev only: N2 main states 4-23, never in training; training on K1-K6 demos 0-39, familiar layout",
+  "status": "PRE-REGISTERED figure-ground plate",
+  "written_before": "any non-smoke training of CP3 or AP3"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_loc3__s0__28d9a5bf",
+ "schema": 1,
+ "script": "experiments/prereg/pp_hand4.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T17:38:11+00:00",
+ "stream": null,
+ "tag": "pp_loc3"
+}
