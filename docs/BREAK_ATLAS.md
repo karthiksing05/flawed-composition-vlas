@@ -166,3 +166,25 @@ The servo's blocked episodes do reach above the object (horizontal approach abou
 - **Familiar layout, both VLAs: new pairings break at two stages where known tasks do not.** The hold ends before the object is carried to the target (`E` +0.31 for pi0.5, +0.39 for GR00T), and objects that do arrive are released badly (`E` +0.16, +0.38). Grasps do not break.
 - **New layout, both VLAs: composition adds no measurable break** over the known partners, which already fail at similar rates, mostly at the grasp. The CIs allow up to about +0.2.
 - **P_min (oracle state, no verdict):** in the familiar layout its excess at the two VLA stages is +0.00 and +0.04, on the same states. In the new layout it fails to grasp the cheese and the bottle in about half of its episodes, as does a servo with exact positions.
+
+## 8. Reads C and D (design fixed 2026-11-04, after §7, before these reads; m3_prereg tag pp_atlas3)
+
+The user is away and asked me to keep iterating, so I make these calls on the standing rules. Recorded tracks only, no new episodes.
+
+### 8.1 Read C: on pi0.5's cheese, a drop or a missed carry?
+
+**Estimator.** VLA HANDOFF episodes ending within 0.10 m of the target, familiar layout, per model. After the last held step, an object step counts as carried if the object is lifted at least 0.01 m, the gripper is commanded closed, and the end effector is within the episode's median held gap + 0.02 m. An episode is a missed carry iff over half its object travel after the last held step is carried.
+
+**Mapping, per model.** Share of episodes above 2/3: MISSED CARRY, and the cross-chunk `E` overstates that model. Below 1/3: REAL DROP, and the object was moved after the hold ended. Otherwise MIXED.
+
+**Prediction (mine).** REAL DROP on pi0.5. GR00T has only 2 such episodes, so its call means little.
+
+### 8.2 Read D: does each state block one object?
+
+**Estimator.** New layout, per object (cheese N1, N2, N3, K6; bottle N4, N5, N6, K4), per state: the grasp-failure rate for the servo and for P_min. `L` holds states with both rates ≥ 0.9, and `C` holds states with both ≤ 0.1.
+
+**Mapping.** OBJECT-STATE LOCKED iff for both objects |L| ≥ 6 and |L| + |C| ≥ 16. Otherwise NOT LOCKED.
+
+**Reported with no verdict.** Each system's grasp failure and success on `L` and `C`, which tests a ceiling directly because a VLA holding the object on `L` would disprove one; states where no system ever holds the object; start position, yaw and nearest other movable in `L` and `C`; the end effector's closest approach.
+
+**Prediction (mine).** OBJECT-STATE LOCKED, with `L` states showing a close neighbour or an unusual yaw.
