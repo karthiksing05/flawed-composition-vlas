@@ -319,3 +319,17 @@ Design fixed 2026-11-05 after §13, before this training. Offline development re
 **Verdict: §5's mapping, unchanged, on CC.** Reported with no verdict: raw error and `b`, because raw error is what P will see. Three seeds. No simulator-labelled arm: arm A's labels are already at the body positions.
 
 **Prediction (mine; my record is poor).** BEATS A TABLE, OVER BUDGET, with the plate under .05 m. Raw error below CP's on the plate and the bowl. The familiar bottle stays near .02 m.
+
+### 14.1 Result (2026-11-05)
+
+All jobs completed. `results/flawed/pp_loc4.json`. All 279 demos gave a cutout. **Registered verdict on CC: BEATS A TABLE, OVER BUDGET.** My prediction held on the verdict and on raw error, and failed on the plate's `e` (.059 m).
+
+| CC, m | cheese | bottle | bowl, object | plate, target | bowl, target |
+|---|---|---|---|---|---|
+| `e`, new | .015 | .021 | .032 | .059 | .034 |
+| raw, new | .015 | .051 | .013 | .018 | .014 |
+| raw median, new | .013 | .043 | .005 | .006 | .006 |
+| `e`, familiar | .004 | .006 | .029 | .057 | .013 |
+| raw, familiar | .011 | .056 | .008 | .098 | .040 |
+
+**Reading, untested.** In the new layout, raw errors sit near or inside the budget on every head except the bottle, and that is the first read where the plate gets there. `e` looks worse than raw because `b`, estimated on familiar-layout demos, moves correct predictions away: the plate's `b` is .052 m, and its 14-17 bad states per seed come with a raw median of .006 m. The familiar plate reads .098 m raw, so the network or its labels may be wrong around the plate's familiar position, perhaps because the figure-and-ground cutout merges with something nearby. The bottle's raw shift of about .05 m may come from lifting its centre at the grasp height. I did not diagnose either. This work is now paused under `docs/PLAN_SCAFFOLD.md`.
