@@ -163,6 +163,8 @@ Registered in m3_prereg `pp_rival2`; results/flawed/pp_v1_arrive.json. Intact, f
 
 The per-object split is descriptive. It was reported with no verdict, and I read it after the pooled call.
 
+**Corrected 2026-11-04 (BREAK_ATLAS §6.3).** The reading "the cheese arrives and misses by centimetres" is withdrawn. Most of N1 and N2's failures end their hold well short of the target, so a final position near the target does not show a carry.
+
 ## 5. V1 offset read (design fixed 2026-11-04, after §4.1, before any miss direction was computed; m3_prereg tag pp_rival3)
 
 ### 5.1 The question

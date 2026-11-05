@@ -151,3 +151,50 @@ Both use the recorded tracks. No new episodes. They change no registered verdict
 **Prediction (mine).** STATE-LOCKED.
 
 **What this cannot show.** A state-locked failure shared by a planner and P_min says the state is hard for those two. It does not show why, or that no system could grasp there. A VLA doing better on `L` would disprove a strict ceiling, and I report that comparison.
+
+### 6.3 Results (registered in m3_prereg `pp_atlas2`; results/flawed/pp_atlas_checks.json)
+
+**Check A: pi0.5 AMBIGUOUS, GR00T LABEL HOLDS.** 18 of pi0.5's 37 HANDOFF episodes (0.49) end within 0.10 m of the target; my prediction was LABEL FAILS. 2 of GR00T's 47 (0.04) do.
+
+Medians over HANDOFF episodes, reported with no verdict:
+
+| model, task | n | `d` at onset | `dmin` held | final `d` | lift at last hold | commanded open by last hold |
+|---|---|---|---|---|---|---|
+| pi0.5 N1 | 11 | 0.18 | 0.12 | 0.03 | 0.06 | yes |
+| pi0.5 N2 | 12 | 0.23 | 0.23 | 0.05 | 0.06 | yes |
+| pi0.5 N3 | 4 | 0.38 | 0.25 | 0.07 | 0.06 | yes |
+| pi0.5 N4 | 3 | 0.26 | 0.20 | 0.30 | 0.28 | yes |
+| pi0.5 N5 | 3 | 0.27 | 0.25 | 0.40 | 0.31 | yes |
+| pi0.5 N6 | 4 | 0.12 | 0.11 | 0.22 | 0.28 | yes |
+| GR00T N2 | 16 | 0.24 | 0.23 | 0.23 | 0.07 | yes |
+| GR00T N4 | 9 | 0.26 | 0.24 | 0.24 | 0.27 | yes |
+| GR00T N5 | 12 | 0.26 | 0.25 | 0.37 | 0.26 | yes |
+| GR00T N6 | 10 | 0.13 | 0.12 | 0.19 | 0.27 | half |
+
+What these medians establish:
+- **HANDOFF is mostly not "held and idle".** In almost every row the object is lifted and the policy has commanded the gripper open before it has carried the object far: the hold ends with `d` close to its onset value. The exception is GR00T N6, which often keeps holding to the end of the episode.
+- **The stage's accurate description is "the hold ends before the object is carried to the target".** I keep the registered name and rule, and change this reading.
+- **Unexplained.** On pi0.5's cheese, the median object ends 0.03-0.07 m from the target after a hold that ended 0.12-0.25 m away. Something moves it about 0.1-0.2 m after the hold signal ends. The hold signal also goes off when contact is lost, so this could be a real drop followed by a shove, or a carry the signal misses. These tracks can answer that, and I have not read them for it.
+
+**This corrects RIVAL_TESTS §4.1.** I reported there that the cheese "arrives and misses by centimetres" and later told the user cross-chunk composition looked mostly intact on the cheese. Final position alone cannot show that the object was carried there, and most of N1 and N2's failures end their hold well short of the target. That reading is withdrawn. V1's steering effect (RIVAL_TESTS §3.1) uses final positions as well, so it shows where the object ends under a prompt, and it does not by itself show a carry.
+
+**Check B: NOT STATE-LOCKED.** |L| = 2 and |C| = 2 in the new layout; my prediction was wrong. The registered check used the wrong grain. The servo's per-state rates over the eight tasks are almost all 0, 0.5 or 1, with 0.5 on 12 of 20 states. The eight tasks are four cheese and four bottle, so this suggests each state blocks the cheese, the bottle, both or neither. That is a post hoc observation from the printed rates. I have not tested the object × state version.
+
+The servo's blocked episodes do reach above the object (horizontal approach about 0.02 m) and never lift it. On the cheese the end effector stops about 0.12 m from the object's origin, where the familiar layout reaches 0.01 m. That rests on only two states (`L`), and I have not established the cause. So the possible ceiling on new-layout success is neither shown nor removed.
+
+### 6.4 A flaw in the control
+
+§3 says the two partners make the object mix match. That holds across a pairing's two roles, but not per stage. At GRASP the target partner holds a different object, usually the bowl, and the bowl grasps far better than the cheese and bottle for P_min and the servo. This inflates GRASP's `E` on those two rows, whose printed "WITHIN-CHUNK" labels in the new layout should not be read. They carried no verdict, as registered.
+
+**Effect on the VLA verdicts: none visible.** In the familiar layout the known partners almost never fail at any stage, so any control gives the same answer. In the new layout, comparing GRASP with the object partner alone (post hoc, from the per-task table) also shows no excess:
+
+| model | cheese N1, N2, N3 | K6 | bottle N4, N5, N6 | K4 |
+|---|---|---|---|---|
+| pi0.5 | 0.40, 0.30, 0.50 | 0.40 | 0.35, 0.40, 0.25 | 0.50 |
+| GR00T | 0.65, 0.65, 0.55 | 0.70 | 0.55, 0.65, 0.60 | 0.60 |
+
+## 7. What stands
+
+- **Familiar layout, both VLAs: new pairings break at two stages where known tasks do not.** The hold ends before the object is carried to the target (`E` +0.31 for pi0.5, +0.39 for GR00T), and objects that do arrive are released badly (`E` +0.16, +0.38). Grasps do not break.
+- **New layout, both VLAs: composition adds no measurable break** over the known partners, which already fail at similar rates, mostly at the grasp. The CIs allow up to about +0.2.
+- **P_min (oracle state, no verdict):** in the familiar layout its excess at the two VLA stages is +0.00 and +0.04, on the same states. In the new layout it fails to grasp the cheese and the bottle in about half of its episodes, as does a servo with exact positions.

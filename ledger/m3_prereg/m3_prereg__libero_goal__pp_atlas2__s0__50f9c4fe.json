@@ -1,0 +1,55 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: checks on the break atlas (docs/BREAK_ATLAS.md 6)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4515960",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "50f9c4fe156d65dd9f26a2bb7173ab1696ed8b50",
+  "short": "50f9c4fe"
+ },
+ "keys": {},
+ "metrics": {
+  "A_mapping": "VLA HANDOFF episodes, familiar, per model, share ending within 0.10 m of the target: > 0.5 LABEL FAILS; < 0.25 LABEL HOLDS; else AMBIGUOUS",
+  "B_mapping": "new layout, eight cheese and bottle tasks, per state GRASP rate for servo and P_min; L both >= 0.9, C both <= 0.1; STATE-LOCKED iff |L| >= 8 and |L| + |C| >= 18; else NOT STATE-LOCKED",
+  "files_sha256": {
+   "docs/BREAK_ATLAS.md": "d0a1752b9ee909498db0cd1e276dc66390c6eab187e45224e8b7130c1f0b821e",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_atlas_checks.py": "fa0cd0bdfd33c687ab512775caee6cd39127c49a47cc261c8afbe12295b9939c"
+  },
+  "labelled": "post hoc; development read of recorded tracks; changes no registered verdict",
+  "prediction": "A LABEL FAILS for pi0.5, none for GR00T; B STATE-LOCKED",
+  "status": "PRE-REGISTERED checks A and B",
+  "written_before": "these reads"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_atlas2__s0__50f9c4fe",
+ "schema": 1,
+ "script": "experiments/prereg/pp_atlas2.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T04:11:25+00:00",
+ "stream": null,
+ "tag": "pp_atlas2"
+}
