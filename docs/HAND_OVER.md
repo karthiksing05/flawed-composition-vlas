@@ -129,3 +129,62 @@ The servo's reach phases time out after 40 steps and close wherever the hand is,
 **Verdict per object, on the 120-step hold rate over those states: NOT A BLOCK above 0.5; BLOCK below 0.2; otherwise MIXED.** A control hold rate well above 0 would mean this loop does not reproduce the atlas's servo, and I report it as such. Prediction: NOT A BLOCK on both.
 
 3,360 rollouts, about 11 A40-h, plus Read G on CPU.
+
+## 8. Results of the second round (2026-11-05)
+
+All 30 run jobs and both reads completed. `results/flawed/pp_hand2_read.json`, `results/flawed/pp_read_g.json`. Audits 0/0 at the commit before this section.
+
+### 8.1 Replication and contact
+
+**REPLICATES on both VLAs. CONTACT NOT NEEDED on both VLAs.** Predictions held.
+
+| familiar, N1-N6 | intact | H, s10 | H, s11 + s12 | H1, event | H1 − H s10 | within `E`, H1 | cross `E`, H1 | known, H1 |
+|---|---|---|---|---|---|---|---|---|
+| pi0.5 | .50 | .96 | .94 | .88 | −.08 [−.18, .00] | +.06 [−.03, +.17] | +.02 [.00, +.06] | .98 |
+| GR00T | .17 | .93 | .93 | .92 | −.01 [−.10, +.08] | +.05 [−.03, +.17] | +.01 [.00, +.05] | .99 |
+
+H1 uses the build's own weights, trained with the event. It still reads oracle positions: the object's and target's positions, and rest height from the object's pose, all remain. P does not read the grasp offset `b["off"]`, so that oracle quantity in `fa1h_roll.episode`'s call never reaches it. H1 removes contact from the hand-over and from P's gate, and from nothing else.
+
+New layout, no verdict: pi0.5 .30 → .54 (s11 + s12), .49 (H1); GR00T .08 → .30, .34. Known tasks in that layout: pi0.5 .37 → .47, .54; GR00T .20 → .34, .42.
+
+### 8.2 Perception budget
+
+**Target: 0.02 m. Held object: 0.02 m.** Predictions held. pi0.5 only, `s(Hs10)` = .96. Because P does not read `b["off"]`, the O arms act through the object position alone.
+
+| constant error | 0.01 m | 0.02 m | 0.04 m |
+|---|---|---|---|
+| target position | .91 | .88 | .72 |
+| held object position | .92 | .88 | .63 |
+
+Tasks differ, with no verdict on this: at 0.04 m, N2 and N5 (stove) stay at 1.00 under both factors, and N1, N4 (plate) and N6 (bowl) fall to .15-.55.
+
+### 8.3 Read G: is the new-layout grasp failure a physical block
+
+**BLOCK on both objects, against my prediction.** Hold rate over the servo's failed states is 0 of 10 for the cheese and 0 of 10 for the bottle, at 120 steps as at 40 steps. So the timer does not explain the servo's failures, and this loop reproduces the atlas's servo (control 0).
+
+Contacts at the closest approach, 120-step run, no verdict:
+
+- **Cheese.** On 7 of 10 states the hand touches the wine rack and stops 0.09-0.12 m from the grasp point.
+- **Bottle.** On 3 states the hand touches the cabinet, about 0.05 m short. On 3 others it reaches the grasp point within 0.005 m with a joint at its limit, touching nothing. The rest brush the bottle or stop short.
+
+This is a block for one approach: the demo's fixed grasp rotation, from directly above. It is not shown to be a block for every approach, because the VLAs sometimes succeed on these object × state pairs (BREAK_ATLAS §8.3: pi0.5 .16 on cheese, .08 on bottle). It matches the post hoc spatial split in read D, and it gives that split a mechanism: in the new layout some start positions place the object under the rack or cabinet, or at the arm's limit. Getting past this needs an obstacle-aware approach. The standing rule bars giving an executor occupancy or free-space inputs, so I stop here and leave this to the user. A VLA already sees the obstacle, which makes this a place where its vision could earn its keep.
+
+### 8.4 Where this leaves the goal
+
+| | familiar layout | new layout |
+|---|---|---|
+| Where VLAs break on new pairings | within-chunk and cross-chunk, all after the first hold | no excess over known tasks; both fail, mostly at the grasp |
+| Does a part fix it | yes on both VLAs, three part seeds, simulator contact removed | raises success; grasp sets the ceiling, and part of that is a physical block for a fixed approach |
+| What the fix still takes from the simulator | object and target positions (budget 0.02 m), rest height, sizes, roles | the same |
+
+## 9. Read H: how much perception would a fix need (m3_prereg `pp_read_h`)
+
+Design fixed 2026-11-05, before the read. No rollouts. `experiments/pp_read_h.py` → `results/flawed/pp_read_h.json`.
+
+The budget says P tolerates about 0.02 m. This read asks whether positions move by more than that, using first-tracked positions from the atlas tracks over the 20 states.
+
+- **Target.** Per target and layout, the 95th percentile of distance from that target's mean horizontal position, over the tasks using it. **Verdict per layout: A TABLE SUFFICES iff every target is within 0.02 m, otherwise NEEDS PERCEPTION.**
+- **Object.** The same on the first-tracked position of the cheese and the bottle. Same verdict rule.
+- **Grasp offset**, reported with no verdict: object minus end effector at the hand-over, horizontal, from the H tracks, per VLA and object.
+
+The mean comes from the same states it is scored on, so this is the most favourable case for a table. Passing it would not show a table works on unseen states. Prediction: NEEDS PERCEPTION for objects in both layouts; for targets, NEEDS PERCEPTION in both, because the scene's placement regions span several centimetres.
