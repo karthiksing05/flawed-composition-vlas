@@ -20,9 +20,9 @@ Layout enters as its own sense. The record suggests that scene novelty lives mos
 | Object-to-motor fit | one chunk | Does the motion fit the bound object? | Sharing one place term across targets hurt (K1 0.97→0.73; FC §5.9). Restoring target identity helped (FC §5.16). A known place instruction steers the held object by +.67 and recovers the place by only +.03 (RT §3.1) | Thin on real VLAs |
 | Role-filler | one chunk to one skill | Do known objects and targets combine? | VLAs lose the place on new pairings (BA §7). The part policy holds near known rates in the familiar layout (PR §54) | Strongest, with caveats (§4) |
 | Referential binding | one look | Does a phrase pick the right thing? | Slots bind at 0.72-0.73 on held-out compounds and layouts, flat across compound divergence; success stays at 0.03 against a predicted 0.44 (FC §1.2) | Binding alone does not deliver success |
-| Sequential | across skills | Does one skill lead into the next? | The event gate beats the command gate by +.21 (FC §5.6). The hold event replaces contact (LR §3; HO §8.1). The drawer stays at 0 for factored arms, and push at 0.00-0.05 | **Two phases only.** Actions per query never varied |
-| Scene | episode | Does a known skill survive a new arrangement? | P_min 0.90→0.46 on known tasks (PR §54). VLAs fall about as far (AS §2) | Causes partly known (§3) |
-| Lifetime | across tasks | Does a new part reach every partner, at no cost to the old? | Six of six familiar cells, two of six new (CR §3.2). Old tasks bitwise unchanged (PR §54) | On simulator state only |
+| Sequential | across skills | Does one skill lead into the next? | The event gate beats the command gate by +.21 (FC §5.6). The hold event replaces contact (LR §3; HO §8.1). P_min scores the drawer K7 .27, N7 .00 and push K8 .20, N8 .02 in the familiar layout (CR competence table) | **Two phases only.** Actions per query never varied |
+| Scene | episode | Does a known skill survive a new arrangement? | P_min 0.90→0.46 on known tasks (PR §53-54). VLAs reach .28 and .14 on known pairings (AS §2) | Causes partly known (§3) |
+| Lifetime | across tasks | Does a new part reach every partner, at no cost to the old? | S3 passes six of six familiar cells, two of six new (PR §53). Old tasks bitwise unchanged (PR §54) | On simulator state only |
 
 ## 2. How the earlier experiments scaffold this plan
 
@@ -35,7 +35,7 @@ Layout enters as its own sense. The record suggests that scene novelty lives mos
 | Layer 2, P_min | Sparse parts with a fixed rule compose in the familiar layout. A one-demo part costs 35-68 GPU-s. Baselines reach at most 0.09 on unseen pairings | P_min is the starting part store | GO false for every arm. Sixteen post hoc rounds on reporting states. No confirmatory read. No pixels, no language |
 | Ladder L1, L4 | Hold event from proprioception works. A cross-situational rule parses roles exactly on 12 read tasks | Event sequencer and the lexicon's first version | Lexicon rule designed with these instructions in view. Withholding K4 gives a silent wrong parse (LR §5). Event holds without a real hold in 25% of new-layout episodes |
 | Coverage test | More demos raise known tasks (+.18; K5 0→.60). New pairings gain +.03 [−.06, +.13] | More data alone will not deliver the layout claim. It also costs familiar K4 .18-.25 | Teacher kept only .45-.88, so a limit of the class stays possible |
-| Place diagnostic | Place failures depend on the pair (N4, N6; PD §3.5, §6.1) | Parts need a sparse route for pair dependence (§3.1) | Rotation-cause evidence is post hoc |
+| Place diagnostic | The target term cannot tell objects apart. Familiar gaps N4 − K1 and N6 − K6 read RELEASE-STATE (PD §3.2). New-layout verdicts are NOISE or UNMEASURED | Look first at the state the object arrives in. A pair-keyed place store has no support yet (§3.1) | All three of my predictions failed. Cause not established (PD §3.1) |
 | Break atlas | Familiar: failures come after the first hold. New: fail alike at the grasp | The target for what the sequencer and parts must fix | E's control is flawed (BA §6.4). HANDOFF overcounts on pi0.5. Stage groups are behaviour, unrelated to action chunks |
 | Hold gate, hand-over | A VLA's pick composes with an external place part (.50→.96, .17→.93). Holding shut does not fix it | Skill boundaries are real seams. A VLM-backed skill can feed a part | Replacement, on oracle positions, one development pass |
 | Reads E, G, H | New-layout grasps fail by not reaching. Servo blocked 0/10 on a fixed approach | Separates a physical approach problem from a composition problem | Blocks one approach only; VLAs sometimes pass |
@@ -43,21 +43,29 @@ Layout enters as its own sense. The record suggests that scene novelty lives mos
 
 ## 3. What the record changes in the design
 
-**3.1 Parts cannot be purely (role, atom).** The bottle's grasp depends on its target: K5 turns about 81°, every other task 1.9-3.7° (PR §37). Place depends on the pair (PD §6.1). A store with no slot for this will fail on exactly these cases. So the design adds a **sparse exception store**, keyed by a pair and created only when a measured gap justifies it. Its size is counted, and its growth is itself a test: if exceptions grow with pairs, the thesis fails.
+**3.1 Parts may not be purely (role, atom), and only one case is firm.** The bottle's grasp depends on its target: K5 turns about 81°, every other task 1.9-3.7° (PR §37). That case stands. The place evidence is weaker. An early P lost N4 at the place interface against a single-task fit (place on arrival .34 against .77, PR §22, instrument v2), and the device tscale later bought +.23 of it back (PR §53). P_min's only familiar 3F failure is N5, which runs above its prediction. The registered place diagnostic reads the remaining familiar gaps as RELEASE-STATE, which points at the arriving object and away from a pair-keyed place term. So the design adds a **sparse exception store**, keyed by a pair and created only when a measured gap justifies it, starting from the one case that needs it. Its size is counted, and its growth is itself a test: if exceptions grow with pairs, the thesis fails.
 
-**3.2 "Small part" hides a large shared store.** A rank-8 part is 2.4% of a backbone and needs it. Single-task fits on planner carries fail (PR §11). Transport moved into the backbone (PP §10.6). So the store has shared role backbones as a first-class type, and every byte count includes them.
+**3.2 "Small part" hides a large shared store.** A rank-8 part adds about 2.4% of a backbone (PR §5) and depends on it. Transport moved into the backbone (rtransport, round 13, bottle hold in the new layout +.28 [.12, .44]; PR §41-42). So the store has shared role backbones as a first-class type, and every byte count includes them. One competing fact: a single-task fit on servoing carries matches P's class on K1 and K4 (1.00 and .72 against .97 and .63), so the class fits a task alone. The backbone's value lies in sharing, and only the removal ladder measures that.
 
 **3.3 New layouts split by timescale.** This is the plan's main hypothesis about layouts, and it is untested.
 
 - Most new-layout gaps PR §54 lists concern getting there: no far rows, stalls, carries starting beyond support.
-- Failures near fixtures are stark: Ao1 succeeds in 0 of 54 episodes with the cheese within 0.10 m of the rack, and 41 of 66 elsewhere (FC §5.29).
-- Once the hand holds the object, parts do well: success when handed over .80 and .79 in the new layout (HO §6.1).
+- Failures near fixtures are stark on an earlier policy: Ao1 succeeds in 0 of 54 episodes with the cheese within 0.10 m of the rack, and 41 of 66 elsewhere (FC §5.29). P_min has not been stratified this way.
+- Once the hand holds the object, parts do well: success when handed over .80 and .79 in the new layout (HO §6.1). That figure is conditional on the VLA's grasp succeeding, so it selects easier states.
+- Fixture targets hold up: P_min K3 scores .87 in the new layout (CR competence table).
 
-**Hypothesis.** Contact-local skills are close to layout-invariant in their own object frame. Layout novelty sits in the long-range transit and the approach. So the store separates a **short, atom-specific contact part** from a **shared transit field**, which moves between pre-poses and treats other entities as obstacles. Frames alone failed because they were asked to carry both timescales in one term (my reading; PR §17).
+**Hypothesis.** Contact-local skills are close to layout-invariant in their own object frame. Layout novelty sits in the long-range transit and the approach. So the store separates a **short, atom-specific contact part** from a **shared transit field**, which moves between pre-poses and treats other entities as obstacles. The approach frame alone did not help (+.00 [−.07, +.06], PR §14-15), which I read as one term carrying both timescales. That reading is untested.
+
+**Evidence against the hypothesis, already in the record.**
+- Place on arrival falls in the new layout on P_min: K1 1.00→.51, N4 .84→.59, N6 .86→.70, N1 .98→.84, with K6 nearly level at .98→.93 (PD §3.3). K1's failures include a bowl still held at the end, and one at 175° of tilt. These episodes arrived, so a transit field alone will not repair them. They may reflect the state the object arrives in, which T3 can separate by starting from correct pre-poses.
+- Grasp itself falls: new-layout failures cluster at the grasp on both VLAs, and a scripted servo halves too (.62→.31, PR §54).
+- More near-rack data did not help. Stage 1p, on clean data, doubled near-rack carries and stayed at 1 of 27 on K6 and on N1; the registered falsification fired (FC §5.30). Only 5 of 10 near layouts gave the generator any grasp option that held (FC §5.29). So part of this gap may be a physical limit or a limit of that generator's options, and the record does not separate them.
+
+I hold this hypothesis at less than even odds. T0 and T3 can kill it for little compute, which is why they come first.
 
 **3.4 Obstacles become a composition question.** The transit field composes with avoidance terms built from entities in the entity store: each entity in view contributes one term, and the same rule applies in any scene. The standing rule bars occupancy and free-space inputs, and 1l-1m supports caution: a global scene input keyed on far entities (FC §5.23). But those rounds trained on the defective data, and no ablation was rerun after the fix. **This needs the user's decision** (§8).
 
-**3.5 Sequencing has almost no positive evidence.** Factored arms never open the drawer. Push never hands over, because no event fires. P_min scores K7 .27, K8 .20, N7 .00, N8 .02. Schemas must first show they can do a three-phase task. Actions per query becomes per-skill only if the timescale test supports it.
+**3.5 Sequencing has almost no positive evidence.** Push never hands over, because no event fires (every K8 demo keeps the gripper open; FC §5.5). P_min scores K7 .27, K8 .20, N7 .00, N8 .02 in the familiar layout. Schemas must first show they can do a three-phase task. Actions per query becomes per-skill only if the timescale test supports it.
 
 **3.6 The VLM must not become a bypass.** Language reaches parts only through the lexicon, and each part sees only its own entity. Proposition 2's warning still applies: a part denied what it needs takes a proxy (C1 fell .705→.441). Each part therefore gets its own pure route to what it needs, such as local visual features around its entity.
 
@@ -70,7 +78,7 @@ Layout enters as its own sense. The record suggests that scene novelty lives mos
 - **Every piece earns its place by removal.** psupport, imode, rtransport and rank 32 were never ablated (PR §53). P_min's part contribution needs a k = 0 control (AS §3).
 - **An equivalence test.** 3F passes when a CI contains 0, so noise rewards it. Use a margin of ±.05 with enough partners per target (AS §7).
 - **Audit data pipelines** before reading results. The dwell bug hid for eight rounds.
-- **No diagnose-and-patch rounds.** Four diagnoses were refuted by their own rounds (FC §5.13-5.30). Each new mechanism needs a named weakness measured beforehand, one principle and a removal control.
+- **No diagnose-and-patch rounds.** Diagnoses repeatedly failed their own rounds: the K5 rise, the cheese hold rise, the height account (FC §5.26-5.27), the coverage account (FC §5.30). Each new mechanism needs a named weakness measured beforehand, one principle and a removal control.
 - **Do not reuse flawed measures:** E's control, the .99→.38 baseline that pools N7 and N8, F1's target-into-grasp floor, "cheese misses by centimetres".
 
 ## 5. Architecture
@@ -99,7 +107,7 @@ No task is stored. A task is a path through these stores.
 
 ## 7. Tests, cheapest decisive first
 
-Each gets its own registration when it starts, with a single verdict mapping.
+Each gets its own registration when it starts, with a single verdict mapping. Costs are my estimates.
 
 | | question | design | cost | what it decides |
 |---|---|---|---|---|
