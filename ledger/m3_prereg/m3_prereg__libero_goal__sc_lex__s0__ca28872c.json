@@ -1,0 +1,54 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: S1, the lexicon's refusal (docs/SCAFFOLD_RESULTS.md 3)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "siri.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4525390",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ca28872c777539c1d26cc1f14ca36294b28d0cb3",
+  "short": "ca28872c"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "cee1a8f122ae4d1def24121e419c1d46f4b2df41689ac139a12adae35c89e726",
+   "experiments/sc_lex.py": "a21840cb58888949b57c61a86b72e9c48fb87c6eda7616d664eed8dde7c16c1c",
+   "lifelong_ood/scaffold/stores.py": "14b92e214bdba76f2f6358e0b60acf238ebc9b6d72c043fec1b2427608b43cb4"
+  },
+  "labelled": "development read, no rollouts; these instructions shaped L4's rule; the user has not reviewed these rules",
+  "mapping": "first match: OVER-REFUSES iff the full lexicon is exact on fewer than 12 read tasks; SILENT WRONG iff any leave-one-out or one-demo lexicon gives a wrong parse on a read task; else REFUSES SAFELY",
+  "prediction": "SILENT WRONG survives somewhere, because a token grounded to the wrong slot passes both refusal checks",
+  "status": "PRE-REGISTERED S1",
+  "written_before": "S1's read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_lex__s0__ca28872c",
+ "schema": 1,
+ "script": "experiments/prereg/sc_lex.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T20:19:39+00:00",
+ "stream": null,
+ "tag": "sc_lex"
+}
