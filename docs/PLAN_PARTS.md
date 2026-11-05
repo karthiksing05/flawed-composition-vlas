@@ -387,3 +387,4 @@ The plan is adopted. Each layer is still pre-registered before its first read (ย
       scene shortcuts, memorised or overtrained bindings, and support coverage. A null is reportable.
     - **End goal.** A solution that resolves composition within chunks and across chunks. Diagnosis serves this goal.
     - **Next.** The phase-switched instruction test on pi0.5 (ADVERSARIAL_STUDY ยง7, V1) and the library floors (L1). The grasp-mode purification does not run.
+19. **(User, 2026-11-04) The goal in the user's words.** "my goal is to find where VLAs break, and see how a partonomic architecture can fix them. I recognize this as identifying within-chunk binding errors as well as cross-chunk composition errors". Item 18's rival causes serve this split.
