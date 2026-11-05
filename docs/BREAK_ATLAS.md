@@ -70,38 +70,6 @@ A stage counts as a composition error only if it breaks more on the new pairing 
 - This pass does not re-test the object × target reversal in RIVAL_TESTS §5.4, which needs arm W with tracking.
 - One scene and two models.
 
-## 5. Frozen read: BOTH in the familiar layout, NEITHER in the new layout
-
-Registered in m3_prereg `pp_atlas`; results/flawed/pp_atlas_read.json. My prediction for the familiar layout was wrong: I predicted WITHIN-CHUNK carried by RELEASE, and HAND-OFF has the larger `E` in both models. My prediction for the new layout held.
-
-| model, layout | within `E` | cross `E` | verdict |
-|---|---|---|---|
-| pi0.5, familiar | +0.18 [+0.05, +0.33] | +0.33 [+0.13, +0.53] | **BOTH** |
-| GR00T, familiar | +0.39 [+0.15, +0.66] | +0.43 [+0.19, +0.67] | **BOTH** |
-| pi0.5, new | +0.05 [−0.13, +0.21] | −0.00 [−0.15, +0.14] | **NEITHER** |
-| GR00T, new | +0.04 [−0.16, +0.24] | +0.04 [−0.09, +0.18] | **NEITHER** |
-
-Stages that break, familiar: pi0.5 HAND-OFF +0.31 [+0.13, +0.51] and RELEASE +0.16 [+0.03, +0.33]; GR00T HAND-OFF +0.39 [+0.13, +0.65] and RELEASE +0.38 [+0.14, +0.64]. GRASP and PHYSICS break in no VLA row. Known partners are near-perfect in the familiar layout, at success 0.95-1.00, so the familiar `E` is close to the new pairing's raw rate. Recorded episodes agree at 1.00 for pi0.5 and 0.995 for GR00T.
-
-**The registered estimator has a flaw that only the new layout and the reference rows reach.** `E` is not a pure interaction. If a stage's rate is additive in object and target, `E` is half the object difference plus half the target difference, because a target partner holds a different object. GRASP in the new layout shows it: P_min and the servo read +0.19 and +0.15 there, but both fail GRASP on N1-N6 at the same rate as the object partner (P_min 0.48-0.50 against 0.48-0.50; servo 0.50 against 0.50), so those rows' WITHIN-CHUNK labels are an object main effect with no pairing effect. The bowl is the easy object. The two reference rows carry no verdict, so this changes no call.
-
-**Post hoc, no verdict.** The servo, with exact positions, fails GRASP on exactly 0.50 of cheese and bottle states in the new layout, and P_min on 0.48-0.50. That pattern points to a fixed subset of new-layout states where these objects are hard to grasp, in any system. I have not checked which states these are.
-
-## 6. Sensitivity read (design fixed after §5, before this read; m3_prereg tag `pp_atlas_sens`)
-
-The frozen read and RIVAL_TESTS §4.1 disagree on one number. §4.1 has 29 of pi0.5's 38 grasped cheese failures in the familiar layout ending within 0.10 m. The frozen read's RELEASE rates put about 11 of 42 failures there. The likely reason is the definition: §4.1 used the final position and the atlas uses `dmin` over `Held` steps, so an object that gets close outside a `Held` step reads as HAND-OFF. This read checks whether the cross-chunk half of BOTH depends on that choice. It reclassifies the same tracks and runs no new episodes. The frozen verdict stays on record.
-
-- **S1, carried.** The hold signal becomes `Held`, or, after the onset, the gripper commanded closed with the end effector within the episode's median held gap plus 0.02 m of the object. The rule is otherwise unchanged. This asks whether `Held` drops out during a carry.
-- **S2, final position.** A frozen HAND-OFF or TRANSPORT whose object ends within 0.10 m of the target becomes RELEASE. This is §4.1's definition.
-
-**Mapping, per VLA and layout.** ROBUST iff S1's and S2's verdicts both equal the frozen verdict under the same `E` rule; otherwise INSTRUMENT-DEPENDENT. P_min and the servo get no call.
-
-**Reported with no call.** For frozen HAND-OFF and TRANSPORT episodes, per task: the median `d` at onset, `dmin`, `d` at the last held step, final `d`, the smallest `d` from onset, held runs, counts with `dmin` ≤ 0.15 and ≤ 0.20 m, and how many each variant moves.
-
-**Prediction (mine).** pi0.5 familiar INSTRUMENT-DEPENDENT, with S2 giving WITHIN-CHUNK and S1 no change. GR00T familiar ROBUST. Both new-layout rows ROBUST. I wrote this after seeing the frozen read, so it is weak evidence.
-
-**What this cannot show.** S2 calls any object ending within 0.10 m a release failure, including one dropped early that rolled there. S1 can count an object pushed by a closed gripper as carried.
-
 ## 5. Registered result (2026-11-04; results/flawed/pp_atlas_read.json), held pending §6
 
 Rollouts agree with N2's recorded success on 1.00 of pi0.5's episodes and 0.995 of GR00T's.
@@ -184,7 +152,7 @@ The servo's blocked episodes do reach above the object (horizontal approach abou
 
 ### 6.4 A flaw in the control
 
-§3 says the two partners make the object mix match. That holds across a pairing's two roles, but not per stage. At GRASP the target partner holds a different object, usually the bowl, and the bowl grasps far better than the cheese and bottle for P_min and the servo. This inflates GRASP's `E` on those two rows, whose printed "WITHIN-CHUNK" labels in the new layout should not be read. They carried no verdict, as registered.
+§3 says the two partners make the object mix match. That holds across a pairing's two roles, but not per stage. At GRASP the target partner holds a different object, usually the bowl, and the bowl grasps far better than the cheese and bottle for P_min and the servo. This inflates GRASP's `E` on those two rows, whose printed "WITHIN-CHUNK" labels in the new layout should not be read. They carried no verdict, as registered. More generally `E` is not a pure interaction: if a stage's rate is additive in object and target, `E` equals half the object difference plus half the target difference. (Another session working on this repo made this point first, in eb550475.)
 
 **Effect on the VLA verdicts: none visible.** In the familiar layout the known partners almost never fail at any stage, so any control gives the same answer. In the new layout, comparing GRASP with the object partner alone (post hoc, from the per-task table) also shows no excess:
 
