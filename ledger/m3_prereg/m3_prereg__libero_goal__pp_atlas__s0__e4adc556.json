@@ -1,0 +1,65 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: the break atlas (docs/BREAK_ATLAS.md; PLAN_PARTS 10.19)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4514809",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e4adc5567b88a16d9af1db6148dd5b98fb439f53",
+  "short": "e4adc556"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/BREAK_ATLAS.md": "f73e88475dc6071e0e3d1254401029cf584b560588b3ee7a8224f3af784b9a3d",
+   "docs/PLAN_PARTS.md": "a8bba5e2793030661a43e5a5795915aec082373146bc250686443e62ace00034",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/fc_n2_client.py": "5709a33ad3d0cd1a6211bf1ecdac251fba26faaf804c85c3d910119cbc7b9013",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_atlas_client.py": "3b79c59b78f46eb25cf3be131322054f1eae3b35ec45a6c80f71070f3c50bb03",
+   "experiments/pp_atlas_roll.sh": "dbf3cd2333a7b1d7a3e942a6f4036fd2d78b1944a1cd04e713ddae17d14f4186",
+   "experiments/pp_l1_floor.py": "d9464685b2b098bbc73ab6eae1cb64f98c70c17fe53e5637d2e58e615162ce1e",
+   "experiments/pp_n4d.py": "cde3340289af3441d27b4178cc3b5610bfe56dd626519aa0b6bb111be10a7c2c",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b"
+  },
+  "groups": "within-chunk = GRASP + RELEASE; cross-chunk = HANDOFF + TRANSPORT",
+  "labelled": "post hoc; development read; no training; changes no earlier verdict",
+  "mapping": "per model (pi05, groot) and layout: E = new pairing's rate minus the mean of its object and target partners; a group BREAKS iff CI lower > 0 and E > 0.10. within only WITHIN-CHUNK; cross only CROSS-CHUNK; both BOTH; neither NEITHER. P_min and servo reported with no verdict",
+  "prediction": "WITHIN-CHUNK for both models in the familiar layout, carried by RELEASE; NEITHER in the new layout",
+  "stage_rule": "failures, first match: GRASP never held; HANDOFF held, dmin > 0.10, d shrank < half; TRANSPORT held, dmin > 0.10, shrank >= half; RELEASE dmin <= 0.10 and still held at end or last held > 0.03; PHYSICS dmin <= 0.10 and last held <= 0.03",
+  "states": "dev only: N2 main states 4-23, N2 seeds; no confirmatory or sealed read; demos never executed",
+  "status": "PRE-REGISTERED the break atlas",
+  "written_before": "any main atlas run or read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_atlas__s0__e4adc556",
+ "schema": 1,
+ "script": "experiments/prereg/pp_atlas.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T02:36:26+00:00",
+ "stream": null,
+ "tag": "pp_atlas"
+}
