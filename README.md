@@ -5,7 +5,7 @@ every decision on it are in [docs/PLAN_PARTS.md](docs/PLAN_PARTS.md), and the th
 [docs/FLAWED_COMPOSITION.md](docs/FLAWED_COMPOSITION.md). Results: [docs/PARTS_RESULTS.md](docs/PARTS_RESULTS.md) (its last
 section summarises the part library), [docs/LADDER_RESULTS.md](docs/LADDER_RESULTS.md) (removing supervision),
 [docs/COVERAGE_RESULTS.md](docs/COVERAGE_RESULTS.md) (the demo-coverage test) and [docs/PLACE_DIAG.md](docs/PLACE_DIAG.md) (why placing
-depends on the pair). [docs/LAYER2_WRITEUP.md](docs/LAYER2_WRITEUP.md) is the self-contained Layer 2 report. [docs/ADVERSARIAL_STUDY.md](docs/ADVERSARIAL_STUDY.md) reviews the claim, [docs/RIVAL_TESTS.md](docs/RIVAL_TESTS.md) holds the rival-cause tests that follow from it, and [docs/BREAK_ATLAS.md](docs/BREAK_ATLAS.md) locates where VLAs break on new pairings. The text below describes earlier framings.
+depends on the pair). [docs/LAYER2_WRITEUP.md](docs/LAYER2_WRITEUP.md) is the self-contained Layer 2 report. [docs/ADVERSARIAL_STUDY.md](docs/ADVERSARIAL_STUDY.md) reviews the claim, [docs/RIVAL_TESTS.md](docs/RIVAL_TESTS.md) holds the rival-cause tests that follow from it, and [docs/BREAK_ATLAS.md](docs/BREAK_ATLAS.md) locates where VLAs break on new pairings, and [docs/HOLD_GATE.md](docs/HOLD_GATE.md) and [docs/HAND_OVER.md](docs/HAND_OVER.md) test fixes on the real VLAs. The text below describes earlier framings.
 
 **How far can composition carry a frozen policy on new tasks?** A frozen flow-matching robot policy meets tasks it was never
 trained on and takes them on by composing what it already holds, creating new units only where nothing it holds explains the

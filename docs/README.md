@@ -2,7 +2,7 @@
 
 **Current work:** [PLAN_PARTS.md](PLAN_PARTS.md) (the plan and decisions), [FLAWED_COMPOSITION.md](FLAWED_COMPOSITION.md) (the
 theory), [PARTS_RESULTS.md](PARTS_RESULTS.md), [LADDER_RESULTS.md](LADDER_RESULTS.md), [COVERAGE_RESULTS.md](COVERAGE_RESULTS.md) and
-[PLACE_DIAG.md](PLACE_DIAG.md) (the results), [LAYER2_WRITEUP.md](LAYER2_WRITEUP.md) (the self-contained Layer 2 report), [ADVERSARIAL_STUDY.md](ADVERSARIAL_STUDY.md) (the review of the claim), [RIVAL_TESTS.md](RIVAL_TESTS.md) (the rival-cause tests), [BREAK_ATLAS.md](BREAK_ATLAS.md) (where VLAs break on new pairings). The rest of this index describes the earlier paper.
+[PLACE_DIAG.md](PLACE_DIAG.md) (the results), [LAYER2_WRITEUP.md](LAYER2_WRITEUP.md) (the self-contained Layer 2 report), [ADVERSARIAL_STUDY.md](ADVERSARIAL_STUDY.md) (the review of the claim), [RIVAL_TESTS.md](RIVAL_TESTS.md) (the rival-cause tests), [BREAK_ATLAS.md](BREAK_ATLAS.md) (where VLAs break on new pairings), [HOLD_GATE.md](HOLD_GATE.md) and [HAND_OVER.md](HAND_OVER.md) (fixes tested on the real VLAs). The rest of this index describes the earlier paper.
 
 Organised as the paper is: the question, the split, the two schemes, the results, what composition is, and what it costs.
 **[FRAMEWORK.md](FRAMEWORK.md)** is the active framework (symbolic TRELLIS-style composition over diffusion prototypes), tested by **[DESIGN.md](DESIGN.md)** (claims, factorial benchmarks, baselines); [PLAN_F.md](PLAN_F.md) holds its first probes. [PLAN_Z.md](PLAN_Z.md) is the plan it builds on; [PLAN_D.md](PLAN_D.md) (what prototypes donate vs what the demonstration teaches; the full baseline set) and [PLAN_CONV.md](PLAN_CONV.md) (composition converges faster on unseen tasks) extend it. Superseded plans are in [history/](history/).

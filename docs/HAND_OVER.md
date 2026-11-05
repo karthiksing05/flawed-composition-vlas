@@ -99,3 +99,33 @@ My prediction held on the VLAs and failed on the servo: nothing gets pushed. Med
 ### 6.3 Read F: does the gated policy stall
 
 **pi0.5 STALLS** (21 of 33 under G, median net motion 0.011 m, final `d` 0.20 m, none ever within 3 cm). **GR00T KEEPS MOVING** (17 of 79 stall, median net motion 0.060 m, final `d` 0.14 m, 8% ever within 3 cm). My prediction held on pi0.5 only. Under the gate pi0.5 stops 20 cm short, and GR00T keeps moving without getting there. Either way the frozen VLA does not deliver the object.
+
+## 7. The second round: replication, less oracle, a perception budget (m3_prereg `pp_hand2`)
+
+Design fixed 2026-11-05 after §6, before any of these runs. Post hoc, development states, no training. The user has not reviewed it. L2 of the ladder (position perception) stays paused for the user's decision (LADDER_RESULTS §4), because its plan-level choices are theirs. §7.3 only measures what such a perception step would have to deliver.
+
+Client `experiments/pp_hand2_client.py`, read `experiments/pp_hand2_read.py`. Everything below uses the mapping in §3 where it says "same mapping". All arms run from the same starts and seeds as §2.
+
+### 7.1 Replication on other part seeds
+
+Arm H on `pp_full_naf_s11` and `pp_full_naf_s12`, both VLAs, all 11 tasks, both layouts, pooled over the two seeds. **Verdict per VLA, familiar: REPLICATES iff the same mapping returns FIXED.** Prediction: REPLICATES on both.
+
+### 7.2 Hand-over without simulator contact
+
+Arm H1 uses L1's build `pp_full_L1_s10` (LADDER_RESULTS §1, the rung that held). The hand-over and P's gate both follow L1's event from gripper width and proprioception, stepped exactly as `fa1h_roll.episode` steps it. Oracle `Held` stays the read's instrument only. Both VLAs, all 11 tasks, both layouts. An event firing on an empty close hands over early, and P may then grasp on its own.
+
+**Verdict per VLA, familiar: CONTACT NOT NEEDED iff the same mapping returns FIXED and `s(Hs10) − s(H1)` ≤ 0.10. Otherwise CONTACT MATTERS.** Prediction: CONTACT NOT NEEDED on both.
+
+### 7.3 Perception budget
+
+Arm H on seed 10, pi0.5, N1-N6, familiar. Each episode draws one horizontal direction from `seed_base`, and it stays fixed through the episode. Arms T01, T02, T04 move the target position P sees by 0.01, 0.02, 0.04 m in that direction. Arms O01, O02, O04 move the held object's position and grasp offset P sees by the same amounts. Everything else stays oracle. This is a constant error, the case a calibration fault or a poor locator would produce, and it says nothing about jitter.
+
+**Verdict per factor: the budget is the largest radius, going up from 0.01 m with no skipped radius, whose `s` stays within 0.10 of `s(Hs10)`. None qualifying reads BELOW 0.01 M.** Prediction: 0.02 m on both, because LIBERO's `On` allows 0.03 m.
+
+### 7.4 Read G: is the new-layout grasp failure a physical block
+
+The servo's reach phases time out after 40 steps and close wherever the hand is, so Read E's NEVER REACHED on the servo may reflect that timer. `experiments/pp_read_g.py` reruns phases 0-3 of `pp_n4d.plan_episode` on the states where the servo's atlas track on N1 (cheese) and N4 (bottle), new layout, reads GRASP. It uses the same seeds and the timeout as the only change: 40 (control) and 120 steps. The episode cap stays at 300. Reported with no verdict: contacts at the closest approach, whether a joint is within 0.05 rad of its limit, and the closest approach itself.
+
+**Verdict per object, on the 120-step hold rate over those states: NOT A BLOCK above 0.5; BLOCK below 0.2; otherwise MIXED.** A control hold rate well above 0 would mean this loop does not reproduce the atlas's servo, and I report it as such. Prediction: NOT A BLOCK on both.
+
+3,360 rollouts, about 11 A40-h, plus Read G on CPU.
