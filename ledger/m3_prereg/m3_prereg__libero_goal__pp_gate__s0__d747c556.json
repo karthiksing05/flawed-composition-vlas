@@ -1,0 +1,60 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: the hold gate (docs/HOLD_GATE.md)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4516281",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d747c55628b3e04c751a022d24199a5729485536",
+  "short": "d747c556"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/HOLD_GATE.md": "e3788213b1d443243a7c852b52430e7276f06a80a04685f570c6bd54f2555f73",
+   "experiments/fc_n2_client.py": "5709a33ad3d0cd1a6211bf1ecdac251fba26faaf804c85c3d910119cbc7b9013",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_gate_client.py": "0cbe62ea866cdbefb216dbb65e4456d7ab5c1639e828ae5da58bdc5114dfeafe",
+   "experiments/pp_gate_read.py": "fa5884f68a53348b12a741929839535acba21f467347071f4ade6440b62a06c2",
+   "experiments/pp_gate_roll.sh": "9b8e075de5ac63d81b930851437d7e46aa673ea70f3e44eddbc2791f12e75706",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b"
+  },
+  "labelled": "post hoc; development read; no training; oracle signal; changes no earlier verdict; not reviewed by the user, who is away and asked to keep iterating",
+  "mapping": "per model, familiar, pooled N1-N6, success: GATE RECOVERS iff s(G) - s(intact) CI lower > 0 and > 0.10; PROMPT ADDS iff s(GA) - s(G) CI lower > 0 and > 0.10. yes/yes TIMING AND BINDING; yes/no TIMING; no/yes BINDING NEEDS THE GATE; no/no NOT TIMING. Known tasks losing > 0.05 under G: GATE DAMAGES KNOWN TASKS",
+  "prediction": "pi0.5 TIMING; GR00T NOT TIMING",
+  "states": "dev only: N2 main states 4-23, N2 seeds; no confirmatory or sealed read; demos never executed",
+  "status": "PRE-REGISTERED the hold gate",
+  "written_before": "any main gate run or read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_gate__s0__d747c556",
+ "schema": 1,
+ "script": "experiments/prereg/pp_gate.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T04:47:04+00:00",
+ "stream": null,
+ "tag": "pp_gate"
+}
