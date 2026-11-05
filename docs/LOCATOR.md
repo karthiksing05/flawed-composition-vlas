@@ -249,5 +249,5 @@ All 12 run jobs and the read completed. `results/flawed/pp_hand3_read.json`.
 
 **Where the cost falls, no verdict.**
 
-- **Tasks with tight targets lose most.** The stove tasks N2 and N5 lose .00-.08. The cabinet task N3 and the bowl task K6 lose .15-.23, apart from N3 on GR00T familiar, which loses nothing. This fits HAND_OVER §8.2, where the stove tolerated 0.04 m and the bowl did not, though §8.2 tested constant errors on pi0.5 alone.
+- **Tasks with tight targets lose most.** The stove tasks N2 and N5 lose .00-.08. The cabinet task N3 and the bowl task K6 lose .07-.23, apart from N3 on GR00T familiar, which loses nothing. This fits HAND_OVER §8.2, where the stove tolerated 0.04 m and the bowl did not, though §8.2 tested constant errors on pi0.5 alone.
 - **A likely design flaw in the estimate, untested.** In the new layout pi0.5 hands over in .88 of LS episodes, and only .50 of those succeed. The event can fire on an empty close (LADDER_RESULTS §4 reports this on 25% of its new-layout episodes). In that case my estimate moves with the empty hand and then freezes in the wrong place, so a regrasp heads to the wrong spot. H1 reads the true position and can recover. GRASP failures do rise under LS on all four, by .00-.05. I did not separate this cause from the rest.
