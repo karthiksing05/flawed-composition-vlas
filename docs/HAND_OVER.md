@@ -58,3 +58,44 @@ Verdict per system: the class holding more than half of its GRASP failures, othe
 - The VLA's grasp may differ from a P_min grasp, so the hand-over tests P_min on grasps it did not train on. This is part of what is being tested.
 - `E`'s control carries the flaw noted in BREAK_ATLAS §6.4.
 - One P_min seed, one scene, two models, 20 states.
+
+## 6. Results (2026-11-05)
+
+All eight run jobs and both read jobs completed with no requeue. `results/flawed/pp_hand_read.json`, `results/flawed/pp_gate_reads2.json`.
+
+### 6.1 Hand-over
+
+**Registered verdict: FIXED on both VLAs. No KNOWN COST.** My prediction held on the familiar layout and undershot it.
+
+| familiar, N1-N6 | intact | H | H − intact | within `E`, intact → H | cross `E`, intact → H | known, intact → H |
+|---|---|---|---|---|---|---|
+| pi0.5 | .50 | .96 | +.46 [+.18, +.73] | +.18 → +.02 [−.04, +.10] | +.33 → +.01 [.00, +.05] | 1.00 → .98 |
+| GR00T | .17 | .93 | +.76 [+.53, +.93] | +.39 → +.04 [−.05, +.16] | +.43 → +.01 [.00, +.05] | .98 → .98 |
+
+Success per task under H, familiar layout (N1 to N6): pi0.5 1.00, 1.00, .85, 1.00, 1.00, .90; GR00T 1.00, 1.00, 1.00, .80, .95, .80. P_min alone on seed 10 scores .92, so H sits level with it: +.04 [−.07, +.18] and +.01 [−.10, +.12]. The VLAs hand over in 98% of episodes, and 97% and 94% of those succeed. The grasps of two VLAs with different vision and action models, which P_min never trained on, carry straight into its place part.
+
+**New layout, no verdict.** The atlas found no break here, so the printed FIXED label carries no meaning.
+
+| new layout, N1-N6 | intact | H | H − intact | handed over | success when handed over | P_min s10 alone |
+|---|---|---|---|---|---|---|
+| pi0.5 | .30 | .51 | +.21 [+.05, +.40] | .63 | .80 | .35 |
+| GR00T | .08 | .31 | +.23 [+.10, +.37] | .39 | .79 | .35 |
+
+Grasping sets this ceiling. On pi0.5, H's point estimate sits above P_min alone (+.16 [−.03, +.33]), which is a lead that the CI does not settle.
+
+**What this does and does not establish.** On this scene the two measured breaks sit entirely after the first hold: replacing that one chunk removes both, and the pick chunk composes with no change. The fix runs on oracle contact and oracle positions, and it replaces the VLA's place chunk without repairing it. It is one P_min seed on development states.
+
+### 6.2 Read E: why new-layout grasps fail
+
+| system | GRASP failures | PUSHED | NEVER REACHED | NO CLOSE | CLOSED, NO HOLD | verdict | median min `a` |
+|---|---|---|---|---|---|---|---|
+| pi0.5 | 44 | .02 | .55 | .09 | .34 | NEVER REACHED | .073 |
+| GR00T | 73 | .01 | .63 | .21 | .15 | NEVER REACHED | .085 |
+| P_min s10 | 66 | .05 | .41 | .05 | .50 | MIXED | .045 |
+| servo | 60 | 0 | .55 | .05 | .40 | NEVER REACHED | .058 |
+
+My prediction held on the VLAs and failed on the servo: nothing gets pushed. Median closest approaches sit near the 0.05 m line, so the split between NEVER REACHED and CLOSED, NO HOLD depends on that threshold. The servo has oracle positions and a demo keypoint and still fails on half its failures this way, so vision does not explain all of this.
+
+### 6.3 Read F: does the gated policy stall
+
+**pi0.5 STALLS** (21 of 33 under G, median net motion 0.011 m, final `d` 0.20 m, none ever within 3 cm). **GR00T KEEPS MOVING** (17 of 79 stall, median net motion 0.060 m, final `d` 0.14 m, 8% ever within 3 cm). My prediction held on pi0.5 only. Under the gate pi0.5 stops 20 cm short, and GR00T keeps moving without getting there. Either way the frozen VLA does not deliver the object.
