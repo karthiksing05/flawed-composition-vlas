@@ -961,3 +961,29 @@ Development read, oracle positions, one kitchen, 3 seeds, 20 states per task. Th
 | N8 bowl push | new | .067 [0, .183] | .983 |
 
 **What this does and does not establish.** K8 trained on its own 50 demos, so K8 measures the generalized event and shows nothing about composition. The composition test in this block is N8, the push verb on an object the push demos never touch, and N8 fails as predicted. The new layout falls for K8 as it does for grasps. The rarest-word rule and the event's constants came after I read the demos, and the user has not reviewed them.
+
+## 25. T12: the verb as a slot (protocol fixed 2026-11-06, before any non-smoke rollout; m3_prereg sc_t12)
+
+**Weakness, read from T11's rollouts.** On N8 the bowl's part closes the hand near step 47, because grasping is all it has learned. The hold event then hands over to the push target part, which commands an open hand, because K8 never closes. The bowl drops a few centimetres along: it ends near y = .05 against a target near y = .21. K8's demos show the hand dragging the plate by its rim with the fingers open, and K1's grasp site on the bowl sits at the same kind of rim offset. So the bowl's part already reaches a site from which an open hand can drag. The word "push" never reaches the gripper.
+
+**One principle.** How the hand moves an object is one more slot of the situation, learned the way the entity slots are.
+
+**The rule, three steps, no retraining.**
+1. **Mode per instruction, from the demos.** A task reads `close` if over half its demos show a hold event, `open` otherwise. K1-K7 read `close`, K8 reads `open`.
+2. **Word binding.** A token binds to a mode if every instruction containing it has that mode. An instruction takes the mode of its rarest bound token, the same preference as T11's rarest rule. All 16 instructions parse as expected: only K8 and N8 read `open`.
+3. **Execution under `open`.** The gripper command stays open for the whole episode. The first close the policy commands marks arrival and turns the gate on for the rest of the episode, so the target part takes over. Under `close` the code path is the earlier episode.
+
+Arrival reuses the part's own close command as a signal. It needs no contact label, no grasp-option teacher and no scene constant.
+
+**A defect the smoke caught.** My first version excluded the entity lexicon's words from binding. The lexicon had bound "push", "to" and "front" to the stove-front target, since those three only occur in K8, so the exclusion erased the verb and both push tasks parsed to no mode. I replaced the exclusion with the rarest-token rule before registering.
+
+**Limits I can name now.** One push task cannot separate "push" from "to" and "front": all three bind `open`, so "put the bowl to the front of the stove" would also read `open`. N8 is one task on one object, in a scene whose bowl-to-target direction may suit a drag. The goal predicate reads the object's final position, so it scores the outcome and does not check the verb; the mode rule itself guarantees an open hand.
+
+**Arm V.** T11's Um checkpoints with the mode applied, seeds 10-12, K8 and N8, both layouts, dev states 4-23. T11's Um rollouts serve as the comparator.
+
+**Verdicts, familiar.**
+- **N8 over states.** VERB COMPOSES iff the mean is at or above .50 and the CI lower bound at or above .25. VERB PARTIAL iff the lower bound exceeds .05. Otherwise VERB DOES NOT COMPOSE. The same bars as T11's push.
+- **K8, V − Um.** K8 HOLDS iff the CI lower bound is at or above −.10. Otherwise K8 HURT.
+- **Reported with no verdict.** The new layout, how often arrival fires, where the object ends.
+
+**Prediction, after reading smoke.** The smoke read seed 10 on states 0-1: N8 2 of 2, K8 2 of 2. I predict VERB COMPOSES with N8 near .70 familiar, K8 HOLDS with a delta near 0, and N8 near .20 on the new layout, in line with K8's .23 there.

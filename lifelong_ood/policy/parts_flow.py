@@ -169,6 +169,29 @@ def role_parse(lex, instruction):
     return obj, lex["ref"][[w for w in tg if lex["pr"][w] == best][-1]]     # ties: the latest token
 
 
+def verb_words(modes):
+    """SCAFFOLD_RESULTS 25: modes = {instruction: "close" | "open"}, how its demos moved the object.  -> {token: (mode, situations it appears in)}
+    for each token that only ever appears under one mode.  The same cross-situational reading as role_lexicon, on one more slot."""
+    toks = {s: set(s.lower().split()) for s in modes}
+    out = {}
+    for w in sorted(set.union(*toks.values())):
+        has = [s for s in modes if w in toks[s]]
+        seen = {modes[s] for s in has}
+        if len(seen) == 1:
+            out[w] = (next(iter(seen)), len(has))
+    return out
+
+
+def verb_parse(words, instruction):
+    """-> the mode of the instruction's rarest bound token (role_lexicon's rarest rule), or None when it has none or the rarest tokens disagree."""
+    bound = [words[w] for w in instruction.lower().split() if w in words]
+    if not bound:
+        return None
+    least = min(n for _, n in bound)
+    seen = {m for m, n in bound if n == least}
+    return next(iter(seen)) if len(seen) == 1 else None
+
+
 class LoRALinear(nn.Module):
     """A frozen-able base Linear plus per-atom low-rank deltas; the atom of each row selects its delta."""
 

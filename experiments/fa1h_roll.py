@@ -30,7 +30,10 @@ OUT = os.path.join(ROOT, "results", "flawed")
 MAX_STEPS, WAIT, REPLAN = 300, 10, 5
 
 
-def episode(model, bddl, state, lang, seed_base):
+def episode(model, bddl, state, lang, seed_base, verb=None):
+    """verb "open" (SCAFFOLD_RESULTS 25): the hand never closes; the first close the policy commands marks arrival and turns the gate on for the
+    rest of the episode.  verb None: exactly the earlier episode."""
+    arrive = None
     lex = getattr(model, "role_lex", None)                                  # LADDER_RESULTS 5 (L4): roles from the library's lexicon
     if lex:
         from lifelong_ood.policy.parts_flow import role_parse
@@ -85,6 +88,7 @@ def episode(model, bddl, state, lang, seed_base):
                 from lifelong_ood.policy.parts_flow import HandMoved
                 mv = HandMoved(sc["pos"][oi])
             hp = bool(mv.step(sc["pos"][oi], prev)) or hp
+        hp = hp or arrive is not None
         zp, cp = cnp.step(hp, con.pos(oe), tgt)
         ptr["n"] += 1
         ptr["agree"] += int(hp == h)
@@ -132,6 +136,11 @@ def episode(model, bddl, state, lang, seed_base):
                 plan = [np.clip(x, -1.0, 1.0) for x in ch[:REPLAN]]
                 calls += 1
             act = plan.pop(0)
+            if verb == "open":
+                if act[6] > 0 and arrive is None:
+                    arrive = t - WAIT
+                act = act.copy()
+                act[6] = -1.0
             obs, _, done, _ = env.step(act.tolist())
             prev = float(act[6])
             was, p_was = h_on, p_on
@@ -176,6 +185,8 @@ def episode(model, bddl, state, lang, seed_base):
                             agree=ptr["agree"], event_only=ptr["ev_only"], oracle_only=ptr["or_only"])
     if lex:
         out["roles"] = [oe, te]
+    if verb is not None:
+        out["arrive"] = arrive
     return out
 
 
