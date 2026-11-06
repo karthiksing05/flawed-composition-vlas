@@ -1167,3 +1167,15 @@ So a VLA that matches U is decisive against the thesis, because the VLA carries 
 **What this means.** Opening is `HandMoved` on the drawer's slot, with the mode T12 already reads, so one event covers the grasp, the push and the pull. It differs from the push in one way: "open the top drawer" names no target entity. The clause's target is where the moved slot ended, relative to where it started.
 
 **Why I stopped.** That needs one new slot, a target defined relative to the moved slot's start, and rows split at the first hold. A new slot changes the entity store's shape and invalidates every checkpoint's slot encoding unless it is guarded, and the object part for a drawer changes the atom lists. I am leaving this decision for the user, together with whether N7 belongs in the claim. U alone reads K7 .30 and N7 .00.
+
+**User's decisions, 2026-11-06.** K7 and N7 join the claim, so the slot gets built. Grasp poses come from new demos that show them. T1 runs, because no such experiment exists in the repo. Fresh states are allowed. On moved objects, in the user's words: "if something's moved, it's assumed that it should move because of the robot (no other active actors in the scene)". I read that as keeping scenes with fixtures moved at reset out of the claim. The goal, in their words: "adopt structure into the traditional VLA routine to promote native composition in the hopes of being better than traditional VLAs at it". So the oracle library counts as evidence for mechanisms, and the claim rests on a VLA trained with that structure against a plain retrained VLA.
+
+## 32. T1: actions per query on frozen VLAs (protocol fixed 2026-11-06, before any rollout; m3_prereg sc_t1)
+
+**Question.** Does the composition failure follow chunk length? The plan's reading: if failures follow chunks, a VLA with variable chunking may fix them, which weakens the case for structure.
+
+**Arms.** Frozen `pi05_libero` and `ar0s/groot_libero`, `serve_guided.py` in mode `ours`, seed 13, at 2 and 10 actions per query. The frozen read at 5 is the comparator. K1-K6 and N1-N6, both layouts, dev states 4-23. Same harness as the frozen read apart from `--replan`. Replanning at 1 is left out for cost.
+
+**Verdict, per model and setting, new pairings, familiar, against 5.** GAIN iff the CI lower bound exceeds +.10. LOSS iff the upper bound falls below −.10. Otherwise NO CLEAR CHANGE. **Overall:** CHUNK-SENSITIVE iff any GAIN, otherwise NO GAIN FROM CHUNKING. **Also reported:** known tasks, the new layout, and the rate of grasping the right object.
+
+**Prediction.** NO GAIN FROM CHUNKING, all four settings NO CLEAR CHANGE. The break atlas places the failures at the carry's binding, which a shorter query does not supply.
