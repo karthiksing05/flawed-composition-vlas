@@ -136,7 +136,9 @@ def episode(model, bddl, state, clauses, seed_base, end="still", rho=None):
                     moved = moved or float(np.linalg.norm(p - p0)) > PF.MV_ON
                     hist = (hist + [p])[-(PF.MV_GAP + 1):]
                     ended = moved and len(hist) > PF.MV_GAP and float(np.linalg.norm(p - hist[0])) < PF.MV_STILL
-                    if not last and end == "near":
+                    if end == "nearonly":                                   # SCAFFOLD_RESULTS 29: no end by stillness
+                        ended = not last and moved and float(np.linalg.norm(p[:2] - np.asarray(tgt()[0])[:2])) <= rho
+                    elif not last and end == "near":
                         ended = ended or (moved and float(np.linalg.norm(p[:2] - np.asarray(tgt()[0])[:2])) <= rho)
                     elif not last and end == "goal":
                         ended = ended or bool(env.env._eval_predicate(goals[ci]))

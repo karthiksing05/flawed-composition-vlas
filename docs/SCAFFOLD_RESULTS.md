@@ -1105,3 +1105,13 @@ Development read, oracle positions, one kitchen, 3 seeds, 20 states per chain.
 **First goal at the transition, R:** M1 .55, M2 .52, M3 .67, against T14's .28, .27, .43. The stop roughly doubles it, and the demo radius matches the goal predicate, so the deployable rule loses nothing to the ceiling. Yet the ceiling itself reaches only about .53 on plate chains, against .85 for K8 alone.
 
 **So overshoot was part of the cause.** Next suspect, post hoc: the stillness rule I kept in both arms. A solo push may pause and resume, as the gate's two segments in T11's episodes suggest, and the clause then ends too early. On smoke state 1, a clause ended by stillness at step 168, the step at which a solo K8 reached its goal on that state in T12's smoke. §29 removes the rule.
+
+## 29. T15b: no end by stillness (protocol fixed 2026-11-06, before any rollout; m3_prereg sc_t15b)
+
+**One change from T15's R.** An open clause that is not last ends only within rho of its target, or at 300 steps. A last clause runs as before. Same chains, states and checkpoints. No smoke read: this arm differs from R by one removed condition.
+
+**Verdict, familiar, six chains.** Chain minus product, as before: BREAKS iff the CI upper bound falls below −.10; HOLDS iff the lower bound is at or above −.10; otherwise UNRESOLVED. **Also reported:** the arm against R, D1 and D2, the new layout, the rate at which the first clause ends, and episodes past the env's horizon.
+
+**Prediction.** UNRESOLVED, chains near .60. On M1, M2, D1 and D2 the first goal at the transition rises from about .54 to about .75. M3 stays near 0 because of the cheese.
+
+**This closes the block on these chains.** T14, T15 and T15b have all read the same chains and states, each fix designed on the last failure. I will not iterate further on them whatever the label, because the states have stopped being evidence for a stop rule.
