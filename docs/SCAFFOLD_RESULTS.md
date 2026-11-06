@@ -592,3 +592,34 @@ Identical scenes succeed or fail by sampling noise, and this is the first scene-
 **Limits.** Return takes about 50 steps, so 300 steps allow about two attempts, and T5a's four-attempt ceiling is out of reach. A failed attempt can move objects, and the retry inherits that scene. Episodes that hold and then fail never trigger a return unless the event stays off for T afterwards. Oracle positions still enter the policy. The smoke read states 0-1 on four combos.
 
 **Prediction.** NOT YET, with a positive difference on bowl and bottle. T5a's ceiling assumes independent fresh scenes and four tries, and this has two tries in scenes that may be disturbed.
+
+### 14.1 T5b result: NOT YET (2026-11-05; results/flawed/sc_t5b_read.json; rollouts sc_t5b)
+
+| Ur − U | Ur | U | difference | CI |
+|---|---|---|---|---|
+| known, familiar | .872 | .872 | .000 | [−.011, +.011] |
+| new pairings, familiar | .892 | .894 | −.003 | [−.017, .000] |
+| known, new layout | .400 | .433 | −.033 | [−.092, .000] |
+| new pairings, new layout | .383 | .381 | +.003 | [.000, +.011] |
+
+The verdict matched my prediction and the reason I gave did not: bowl fell (−.07 [−.15, −.01]) and bottle sat at .00.
+
+| new layout | share retried | success after one attempt | success after a retry |
+|---|---|---|---|
+| bowl | .25 | .69 | .00 |
+| cheese | .47 | .70 | .00 |
+| bottle | .30 | .47 | .00 |
+
+No second attempt succeeded, out of about 246. The rule costs bowl tasks late first-attempt holds, which U keeps. A return at T = 147 usually starts the second attempt near step 200, leaving about 100 steps against a median success of 107-128 steps. So this read cannot separate a too-short budget from a disturbed scene. The familiar guard works: retries fire on under 1% of bowl and cheese familiar episodes, and they cost nothing there.
+
+## 15. T5c: the same rule with room to work (protocol fixed 2026-11-05, before any non-smoke rollout; m3_prereg sc_t5c)
+
+`experiments/sc_t5c.py`. U's policy, 12 tasks, new layout, dev states 4-23, seeds 10-12. Both arms get 600 steps: **Ur600** with T5b's unchanged rule and T = the same demo fit, **U600** alone, so late holds count for U as well.
+
+**Verdict.** RETRY PAYS iff Ur600 − U600 is at least +.10 with CI lower bound above 0 in either cell (known, new pairings). Otherwise RETRY DOES NOT PAY.
+
+**Reported with no verdict:** per-object differences, attempts, success and holds after a retry, U600's late holds.
+
+**What it decides.** RETRY PAYS adds a schema-level failure transition to the architecture, with the time cost stated. RETRY DOES NOT PAY closes retry as the way to reach T5a's ceiling, because scenes after a failed attempt differ from fresh ones. I then stop this line and report to the user. 600 steps is twice the budget of every earlier read, so these numbers do not compare with them.
+
+**Prediction.** RETRY DOES NOT PAY on the group cells, with some gain on the bottle. U600 itself should gain from the extra time.
