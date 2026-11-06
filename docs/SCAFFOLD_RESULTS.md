@@ -1008,3 +1008,17 @@ Development read, oracle positions, one kitchen, 3 seeds, 20 states per task.
 - "Push", "to" and "front" stay confounded (§25).
 - Success reads the object's final position. The open hand comes from the rule, and I have not watched the episodes.
 - The arrival rule and the word rule came after I read T11's failure, and the user has not reviewed them.
+
+## 26. T13: how far the push verb reaches (protocol fixed 2026-11-06, before any non-smoke rollout; m3_prereg sc_t13)
+
+**Question.** T12 rests on one object whose rim suits a drag. Does the same rule work on objects with other geometry? Two new instructions: P1 "push the cream cheese to the front of the stove" (a low box) and P2 "push the wine bottle to the front of the stove" (a tall object that can tip). Neither appears in any demo or in T12. Each BDDL is the shared template with its language and goal replaced, and each uses the same 24 start states as K8.
+
+**A change to the word rule.** Working through P1 by hand, "cream" and "push" tie as rarest tokens with opposite modes, so T12's rule would give no mode. A word the object slot already explains should not vote on how the hand moves. So tokens with `pg` > 0 in the entity lexicon no longer bind a mode. On the smoke run all 16 existing instructions keep their mode, and P1 and P2 read `open`. T12's committed read used the earlier rule, and the two agree on K8 and N8.
+
+**Arm V.** T11's Um checkpoints, no retraining, seeds 10-12, P1 and P2, both layouts, dev states 4-23. No comparator: without the mode, a push has no way to stay open.
+
+**Verdicts, familiar, per task.** VERB COMPOSES iff the mean is at or above .50 and the CI lower bound at or above .25. VERB PARTIAL iff the lower bound exceeds .05. Otherwise VERB DOES NOT COMPOSE. **Reach:** GENERAL iff both tasks are at least partial, SOME OBJECTS iff one is, BOWL ONLY iff neither.
+
+**Reported with no verdict.** The new layout, how often arrival fires, and where the object ends.
+
+**Prediction, after reading smoke.** The smoke read seed 10 on states 0-1: P1 2 of 2, P2 0 of 2, with the bottle knocked away and arrival firing early, near step 27. I predict P1 VERB COMPOSES near .70, P2 VERB DOES NOT COMPOSE near .05, reach SOME OBJECTS.

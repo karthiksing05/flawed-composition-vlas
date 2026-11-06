@@ -169,15 +169,16 @@ def role_parse(lex, instruction):
     return obj, lex["ref"][[w for w in tg if lex["pr"][w] == best][-1]]     # ties: the latest token
 
 
-def verb_words(modes):
+def verb_words(modes, explained=()):
     """SCAFFOLD_RESULTS 25: modes = {instruction: "close" | "open"}, how its demos moved the object.  -> {token: (mode, situations it appears in)}
-    for each token that only ever appears under one mode.  The same cross-situational reading as role_lexicon, on one more slot."""
+    for each token that only ever appears under one mode.  The same cross-situational reading as role_lexicon, on one more slot.
+    explained (SCAFFOLD_RESULTS 26): tokens the object slot already explains; they do not vote."""
     toks = {s: set(s.lower().split()) for s in modes}
     out = {}
     for w in sorted(set.union(*toks.values())):
         has = [s for s in modes if w in toks[s]]
         seen = {modes[s] for s in has}
-        if len(seen) == 1:
+        if len(seen) == 1 and w not in explained:
             out[w] = (next(iter(seen)), len(has))
     return out
 
