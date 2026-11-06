@@ -1041,3 +1041,19 @@ P1 **VERB COMPOSES**, P2 **VERB DOES NOT COMPOSE**, reach **SOME OBJECTS**, all 
 **P2.** The bottle ends near its familiar start, about (−.20, −.05). So on average the hand barely moves it, and on the smoke's two states it pushed the bottle further from the target. Arrival fires early on the smoke, near step 27, and I have not separated an early arrival from an open hand's inability to drag a tall object at its grasp site.
 
 **What the verb's reach shows, post hoc.** The verb transfers where the object's learned site lets an open hand drag it: the bowl's rim, and the cheese over a short distance. It does not transfer to a tall object held near its neck. The parts carry a grasp site and nothing about what that site can do with an open hand, so this boundary comes from the part design.
+
+## 27. T14: chains that mix verbs (protocol fixed 2026-11-06, before any non-smoke rollout; m3_prereg sc_t14)
+
+**Question.** Do a verb from one demo set and a sequence no demo shows compose together? T6b tested grasp chains and T12 tested a single push. T14 joins them under one instruction per clause, on T11's Um checkpoints with no retraining.
+
+**Clause rule.** Each clause parses its own roles and mode, and runs its own hold event and arrival. A `close` clause ends at its release, as in T6b. An `open` clause has no release, so it ends once its object has moved 2 cm from where the clause began and then moved under 5 mm over 15 steps, the same constants as `HandMoved`. Boundary between clauses: T6b's arm R. The last clause runs to the goal or 300 steps. Parses use `role_parse` on Um's rarest-rule lexicon, which reads all 18 instructions correctly; this path bypasses S1's refusing `Lexicon`.
+
+**Chains, verdict.** M1 (K8, K2), M2 (K8, N3), M3 (N8, N1), M4 (K4, K8), M5 (K4, N8), M6 (N3, N8). No demo shows any of them, and each pairs a push with a grasp, in both orders. M3, M5 and M6 also use N8's new pairing.
+
+**Chains, descriptive.** D1 (K8, K1) and D2 (K8, N1) place an object on the plate the first clause just pushed. The second skill then sees its target far from where its demos had it. Reported with no verdict.
+
+**Verdict, familiar, over the six chains.** Chain minus the product of each skill alone, the same statistic and margin as T6b: BREAKS iff the CI upper bound falls below −.10; HOLDS iff the lower bound is at or above −.10; otherwise UNRESOLVED. A push alone comes from T12's V and a grasp alone from T11's Um.
+
+**Known bias in the product.** A single push episode stops the instant the object enters the region, while a chain needs the goal to stay true after the hand moves on. So a push's solo rate overstates its chance in a chain. I fixed the statistic to match T6b and flag this before the read.
+
+**Prediction, after reading smoke.** The smoke read seed 10 on states 0-1: M1 1 of 2, M3 1 of 2, D1 1 of 2. On state 0 the first goal was false when the push clause ended. I predict UNRESOLVED, with the chains near .55 against a product near .75, and D1 and D2 near .40.
