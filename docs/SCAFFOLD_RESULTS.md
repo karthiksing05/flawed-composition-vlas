@@ -1115,3 +1115,26 @@ Development read, oracle positions, one kitchen, 3 seeds, 20 states per chain.
 **Prediction.** UNRESOLVED, chains near .60. On M1, M2, D1 and D2 the first goal at the transition rises from about .54 to about .75. M3 stays near 0 because of the cheese.
 
 **This closes the block on these chains.** T14, T15 and T15b have all read the same chains and states, each fix designed on the last failure. I will not iterate further on them whatever the label, because the states have stopped being evidence for a stop rule.
+
+### 29.1 Result: UNRESOLVED (2026-11-06; results/flawed/sc_t15b_read.json; rollouts sc_t15b)
+
+**Familiar, six chains: .567 against .817, −.250 [−.472, −.072]. UNRESOLVED**, as predicted near .60. Against R: +.078 [+.006, +.183]. New layout: .158 against .186, −.028 [−.106, +.036].
+
+| chain | clauses | T14 | R | T15b | product | first goal at transition, T15b |
+|---|---|---|---|---|---|---|
+| M1 | plate push, bowl to stove | .283 | .533 | .783 | .850 | .817 |
+| M2 | plate push, cheese to cabinet | .233 | .483 | .633 | .817 | .750 |
+| M3 | bowl push, cheese to plate | .033 | .017 | .017 | .750 | .700 |
+| M4 | bottle to cabinet, plate push | .767 | .700 | .767 | .850 | .933 |
+| M5 | bottle to cabinet, bowl push | .600 | .617 | .617 | .833 | .917 |
+| M6 | cheese to cabinet, bowl push | .550 | .583 | .583 | .800 | .933 |
+| D1 | plate push, bowl onto plate | .283 | .533 | .783 | .833 | .817 |
+| D2 | plate push, cheese onto plate | .283 | .467 | .617 | .800 | .817 |
+
+**Both removed causes were real.** The first goal at the transition rises on the plate chains from about .28 (T14) to .54 (R) to about .80 (T15b), above my predicted .75. Stopping at the demo's radius and refusing to end by stillness each contributed.
+
+**Dependent chains.** D1 and D2: .700 against .817, −.117 [−.283, 0]. The second skill places an object on a plate at a position where its demos never saw one. This counts as a strong sign that parts read the moved target. It is a descriptive read with no verdict, and it was reached by iterating on these states.
+
+**What remains, post hoc.** M3 stays at .017 because the bowl's drag plows the cheese away, a physical conflict in my chain selection and no failure of a part. Its removal would raise the mean, but the statistic stands as registered. M5 and M6 lose about .22, with the push as the last clause, and I have not explained that. A last clause inherits a scene changed by the first skill and an arm that has already returned, and the solo push's success at .83 starts from a fixed pose. On new layouts the push's own weakness dominates.
+
+**Status of this block.** T11-T15b add a verb to the library with no retraining beyond one event rule, on one kitchen with oracle positions. The stop rule is the only part tuned across repeated reads of the same chains. These states have now shaped it, so any claim about it needs fresh states.
