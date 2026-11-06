@@ -1,0 +1,61 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T5a and T4b (docs/SCAFFOLD_RESULTS.md 12)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4529727",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "5ce7e3399315243dc1f5e2befa05561a6335ddf5",
+  "short": "5ce7e339"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "d23920ab24923f8c68ef0b2440feae1b00f81fba6f784c559affc1bef0e6dfa8",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/sc_t4.py": "9c8bc7160fe95e6b2f8094ca75e803aa24002684b8507712beea481cf5e0ceb1",
+   "experiments/sc_t4b.py": "5159b02483f1e5d82d5f059f01d671115be063cb57c6e9429c5a76abdeff0032",
+   "experiments/sc_t5.py": "8a50c7bde91b04311bee5a435e5855747a9f92f1e3701b8ab1066e07fee0f28f",
+   "lifelong_ood/policy/parts_flow.py": "b51b01eb2998424b240e8b23ca791c6e9dc55611fb3869b051130431ef4cafae"
+  },
+  "labelled": "development read on N2 main states 4-23, which have shaped earlier work; the user asked for iteration and has not reviewed these rules",
+  "mapping_J": "Uj minus U, familiar: COSTS iff either CI lies wholly below -.10; HOLDS iff both lower bounds >= -.10; else UNRESOLVED",
+  "mapping_Jc": "created part minus full Uj, k = 1, familiar: TRANSFERS iff lower bound >= -.10 on both atoms; else NOT YET",
+  "mapping_T5a": "first match: PARTS DO NOT TURN iff for both bowl and bottle the best rotation's familiar hold is below U's hold minus .10; ROTATION PAYS iff on bowl or bottle, new layout, union(U, rotations) minus union(U, repeats) >= +.10 with CI lower > 0; else RETRY ONLY",
+  "mapping_Z": "per atom, created part minus the same part switched off, k = 1, familiar: CREDITED iff >= +.10 with CI lower > 0; else NOT CREDITED",
+  "prediction": "T5a PARTS DO NOT TURN; Z CREDITED on the bottle, NOT CREDITED on the plate; J UNRESOLVED; Jc NOT YET",
+  "states": "dev only: N2 main states 4-23; T5a smoke states 0-1 read before this row",
+  "status": "PRE-REGISTERED T5a T4b",
+  "written_before": "any non-smoke T5a rollout and any T4b build or rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t5__s0__5ce7e339",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t5.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-06T00:42:44+00:00",
+ "stream": null,
+ "tag": "sc_t5"
+}

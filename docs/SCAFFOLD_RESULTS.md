@@ -537,3 +537,58 @@ Union = success in any attempt on that task, seed and state, with U's own episod
 **What it decides.** CREDITED lets the reuse claim name the part. HOLDS on J makes Uj the recipe. COSTS or UNRESOLVED keeps U and restores the devices, and I look at task-level costs before removing any again.
 
 **Prediction.** T5a PARTS DO NOT TURN. Z CREDITED on the bottle and NOT CREDITED on the plate. J UNRESOLVED, on Ur8's cheese loss and Unt's N4 loss. Jc NOT YET.
+
+## 13. T5a and T4b results (2026-11-05; results/flawed/sc_t5_read.json, sc_t4b_read.json; rollouts sc_t5, sc_t4b)
+
+All jobs completed. Three of my four predictions held; the plate's credit was the miss.
+
+### 13.1 T5a: PARTS DO NOT TURN
+
+| hold | U | +45° | −45° | +90° |
+|---|---|---|---|---|
+| bowl, familiar | 1.00 | .30 | .23 | .00 |
+| bowl, new | .86 | .42 | .17 | .01 |
+| cheese, familiar | 1.00 | .04 | .26 | .00 |
+| cheese, new | .48 | .08 | .45 | .00 |
+| bottle, familiar | .87 | .01 | .38 | .00 |
+| bottle, new | .55 | .03 | .22 | .00 |
+
+A trained part does not work in a frame turned away from its demos, even on objects a scripted grasp can take at those angles. So F's pose gain stays out of reach for a part fitted to one pose. Rotation's union also never beats repeating: new-layout differences are bowl −.07, cheese −.10, bottle −.22.
+
+**Retry ceiling** (U plus three repeats, any success; descriptive, attempts run from fresh scenes):
+
+| | one attempt | best of four | gain |
+|---|---|---|---|
+| bowl, new | .58 | .79 | +.21 |
+| cheese, new | .37 | .53 | +.16 |
+| bottle, new | .33 | .59 | +.26 |
+| bottle, familiar | .75 | .98 | +.24 |
+
+Identical scenes succeed or fail by sampling noise, and this is the first scene-agnostic source of gain the study has found. It needs testing as a real sequence, which T5b does.
+
+### 13.2 T4b
+
+| verdict | result | numbers |
+|---|---|---|
+| Z, bottle | CREDITED | created .86, switched off .03, +.83 [+.70, +.94] |
+| Z, plate | CREDITED | created .94, switched off .36, +.58 [+.42, +.74] |
+| J, Uj − U | UNRESOLVED | known −.03 [−.09, +.03]; new pairings −.11 [−.29, +.04] |
+| Jc, reuse in Uj | NOT YET | bottle −.00 [−.12, +.12]; plate +.16 [−.02, +.43] |
+
+- **One demo's part does the work.** Part off, every bottle cell sits at .02-.05. This closes the control T4 lacked. My prediction that the plate would add little was wrong: K1 falls to .52, N1 to .42, N4 to .13.
+- **U stays the recipe.** The registered consequence of UNRESOLVED applies, and N4 familiar shows why: .78 in U, .30 in Uj. Per-part radii, carry scale and rank 32 return. T4's three single DROPs did not survive being combined.
+- **A post-hoc pattern in new layouts.** In Uj, a created bottle part beats the full build (.56 vs .31, CI [+.04, +.48]), and so does the plate (.38 vs .23, CI [+.03, +.29]). In U the same comparison is flat at k = 1 and rises for K4 and N5 at k = 5. Parts fitted to fewer tasks may generalise better to new layouts. This is one comparison with no registered test.
+
+## 14. T5b: a real sequential retry (protocol fixed 2026-11-05, before any non-smoke rollout; m3_prereg sc_t5b)
+
+`experiments/sc_t5b.py`. No training. U's policy, 12 tasks, both layouts, dev states 4-23, seeds 10-12, the same 300-step limit as every other arm.
+
+**The rule, one in every scene.** If the library's proprioceptive event stays off for T steps, the attempt ends: the gripper opens, the hand rises straight up to its start height, returns to its start pose (at most 60 steps), and the policy resumes on fresh noise. T is the 99th percentile of the demos' first event step, fitted without any rollout (147 on seed 10). The rule reads no object, entity or scene constant, and it trains nothing. In the store's terms, it is a schema-level failure transition.
+
+**Verdict, Ur − U, first match.** HARMS iff either familiar cell's CI lies wholly below −.10. PAYS iff both familiar lower bounds are at or above −.10 and, in either new-layout cell (known, new pairings), the difference is at least +.10 with CI lower bound above 0. Otherwise NOT YET. Same bootstrap as T4.
+
+**Reported with no verdict:** per-object differences, attempt counts, success by attempt count.
+
+**Limits.** Return takes about 50 steps, so 300 steps allow about two attempts, and T5a's four-attempt ceiling is out of reach. A failed attempt can move objects, and the retry inherits that scene. Episodes that hold and then fail never trigger a return unless the event stays off for T afterwards. Oracle positions still enter the policy. The smoke read states 0-1 on four combos.
+
+**Prediction.** NOT YET, with a positive difference on bowl and bottle. T5a's ceiling assumes independent fresh scenes and four tries, and this has two tries in scenes that may be disturbed.
