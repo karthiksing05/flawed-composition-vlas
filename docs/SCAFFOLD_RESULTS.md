@@ -1078,3 +1078,17 @@ Development read, oracle positions, one kitchen, 3 seeds, 20 states per chain.
 **Reading, post hoc.** The six chains split by order. With the push last, the chains sit near their product. With the push first, the push's own goal holds at the transition only about .28 of the time, against .85 alone, while the second skill runs well: M1's second goal reaches 1.00. D1 and D2 show the second skill finding a plate the first clause moved, at .83 and .78. That dependent placement is the strongest thing in this table, and the pushed plate's own goal is what sinks both chains.
 
 **The bias I flagged is the likely cause.** A solo push stops when the object enters the region. The push clause keeps running until the object goes still. M3's second goal also falls to .05, and its geometry suggests why: the bowl's path to the region passes near the cheese's start at (−.05, .13). I have not checked either account, and §28 tests the first.
+
+## 28. T15: a push clause that stops (protocol fixed 2026-11-06, before any non-smoke rollout; m3_prereg sc_t15)
+
+**Trace, smoke states only, no stop at the goal.** K8 state 0: the plate enters the goal at step 152, sits 8 mm from the target's centre at step 160, and has left the region by step 180. N8 state 0: the bowl enters at step 90 and has left by step 120. K8's demos end at the goal, with the plate a median 1.8 cm from the target and still moving, so no row teaches the hand to stop. The trace also bears on M3: dragging the bowl moves the cheese from (−.03, .14) to (.04, .34) on state 0, so that chain's second goal starts from a displaced object. That is a physical conflict in the chain I chose, and the arms below do not touch it.
+
+**One principle.** A carry ends where its demos' carries ended. The close mode already has this through its release. The open mode needs it stated.
+
+**Arms, same chains, checkpoints and boundary as T14.** An open clause that is not last still ends when the object goes still, and it now also ends:
+- **R:** once the object sits within rho of its target. Rho is the 90th percentile, over K8's 50 demos, of that distance at the demo's last row: 3.57 cm. Only K8 supplies open-mode demos, so one value serves.
+- **G:** on the clause's own goal predicate. This is a ceiling, and it matches how a solo episode stops. A robot has no such signal.
+
+**Verdict, familiar, six chains, per arm.** Chain minus product, as in T14: BREAKS iff the CI upper bound falls below −.10; HOLDS iff the lower bound is at or above −.10; otherwise UNRESOLVED. R carries the claim and G shows the ceiling. **Also reported:** each arm against T14 on the same chains, D1 and D2, and the new layout, with no verdict.
+
+**Prediction, after reading smoke.** The smoke read seed 10 on states 0-1: both arms M1 1 of 2 and D1 1 of 2, passing state 0, which failed in T14. I predict R UNRESOLVED, chains near .65 against .82, a gain near +.25 over T14; G within .05 of R; D1 and D2 near .65; M3 stays low.

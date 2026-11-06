@@ -51,7 +51,8 @@ def combos():
     return list(itertools.product(CHAINS, T.SEEDS, ("familiar", "new")))
 
 
-def episode(model, bddl, state, clauses, seed_base):
+def episode(model, bddl, state, clauses, seed_base, end="still", rho=None):
+    """end (SCAFFOLD_RESULTS 28), an open clause, besides going still: "near" also ends it when the object is within rho of its target; "goal" also ends it on its own goal predicate."""
     import torch
     import fa1_common as FC
     import fa1b_common as FB
@@ -135,6 +136,10 @@ def episode(model, bddl, state, clauses, seed_base):
                     moved = moved or float(np.linalg.norm(p - p0)) > PF.MV_ON
                     hist = (hist + [p])[-(PF.MV_GAP + 1):]
                     ended = moved and len(hist) > PF.MV_GAP and float(np.linalg.norm(p - hist[0])) < PF.MV_STILL
+                    if not last and end == "near":
+                        ended = ended or (moved and float(np.linalg.norm(p[:2] - np.asarray(tgt()[0])[:2])) <= rho)
+                    elif not last and end == "goal":
+                        ended = ended or bool(env.env._eval_predicate(goals[ci]))
             rep.append(dict(oe=oe, te=te, verb=verb, steps=t, held_step=held_step, arrive=arrive, ended=bool(ended)))
             if last or done:
                 continue
