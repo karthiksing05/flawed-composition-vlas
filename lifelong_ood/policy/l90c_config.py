@@ -25,8 +25,9 @@ CACHE = "/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints"
 L90C = "/coc/flash10/ksingara3/robot/checkpoints_l90c"          # our checkpoints, assets and converted PyTorch weights
 REPO_ID = "lol/libero_l90c"
 BASE_PARAMS = f"{CACHE}/pi05_base/params"
-NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8")
+NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles")
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
+ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)
 FAC_PROMPTS = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "results", "l90c",
                            "fac_prompts.json")
 P_PART, P_NULL = 0.3, 0.1
@@ -53,6 +54,9 @@ def train_config(name, **over):
     if name == "pi05_goal8":                                    # pi05_l90c's recipe on the eight known tasks, its own norm stats
         base = train_config("pi05_l90c")
         return dataclasses.replace(base, name=name, data=dataclasses.replace(base.data, repo_id=GOAL8_REPO), **over)
+    if name == "pi05_goal8_roles":                              # pi05_goal8 with per-frame role prompts
+        base = train_config("pi05_l90c")
+        return dataclasses.replace(base, name=name, data=dataclasses.replace(base.data, repo_id=ROLES_REPO), **over)
     if name == "pi05_l90c_fac":                                 # same data, steps and norm stats as pi05_l90c
         base = train_config("pi05_l90c")
         cfg = dataclasses.replace(base, name=name, data=_fac_data(C, base.data))

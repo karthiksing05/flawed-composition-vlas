@@ -32,7 +32,7 @@ LOG = os.path.join(ROOT, "results", "l90c", "train_log.jsonl")
 
 def config(a):
     from lifelong_ood.policy import l90c_config as LC
-    name = "pi05_goal8" if a.goal8 else "pi05_l90c_lora" if a.lora else "pi05_l90c_fac" if a.fac else "pi05_l90c"
+    name = "pi05_goal8_roles" if a.roles else "pi05_goal8" if a.goal8 else "pi05_l90c_lora" if a.lora else "pi05_l90c_fac" if a.fac else "pi05_l90c"
     import jax
     n = jax.device_count()
     cfg = LC.train_config(name, exp_name=a.exp, batch_size=a.batch, num_train_steps=a.steps,
@@ -110,7 +110,7 @@ def train(a):
 
 def export(a):
     from lifelong_ood.policy import l90c_config as LC
-    name = "pi05_goal8" if a.goal8 else "pi05_l90c_lora" if a.lora else "pi05_l90c_fac" if a.fac else "pi05_l90c"
+    name = "pi05_goal8_roles" if a.roles else "pi05_goal8" if a.goal8 else "pi05_l90c_lora" if a.lora else "pi05_l90c_fac" if a.fac else "pi05_l90c"
     ck = os.path.join(LC.L90C, "jax", name, a.exp)
     steps = sorted(int(p) for p in os.listdir(ck) if p.isdigit())
     step = a.step if a.step is not None else steps[-1]
@@ -136,6 +136,7 @@ if __name__ == "__main__":
     ap.add_argument("--save-interval", type=int, default=1000)
     ap.add_argument("--keep-period", type=int, default=5000)
     ap.add_argument("--goal8", action="store_true", help="pi05_goal8: the eight known LIBERO-Goal tasks (docs/SCAFFOLD_RESULTS.md 30)")
+    ap.add_argument("--roles", action="store_true", help="pi05_goal8_roles: the same frames with per-frame role prompts (docs/SCAFFOLD_RESULTS.md 33)")
     ap.add_argument("--init", default=None, help="a NEW run starts from this JAX params dir (default: the config's loader)")
     ap.add_argument("--export", action="store_true")
     ap.add_argument("--step", type=int, default=None)

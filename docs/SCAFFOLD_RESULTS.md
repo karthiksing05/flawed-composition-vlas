@@ -1179,3 +1179,30 @@ So a VLA that matches U is decisive against the thesis, because the VLA carries 
 **Verdict, per model and setting, new pairings, familiar, against 5.** GAIN iff the CI lower bound exceeds +.10. LOSS iff the upper bound falls below −.10. Otherwise NO CLEAR CHANGE. **Overall:** CHUNK-SENSITIVE iff any GAIN, otherwise NO GAIN FROM CHUNKING. **Also reported:** known tasks, the new layout, and the rate of grasping the right object.
 
 **Prediction.** NO GAIN FROM CHUNKING, all four settings NO CLEAR CHANGE. The break atlas places the failures at the carry's binding, which a shorter query does not supply.
+
+## 33. T16: structure inside the VLA's routine (protocol fixed 2026-11-06, before training starts; m3_prereg sc_t16)
+
+**The question the user set.** Does a VLA trained with composition's structure in its routine compose better than the same VLA trained the traditional way? Arm S against T8b's VLA is that comparison: same model, base weights, frames, batch, steps and harness, both from pixels.
+
+**The one change, with two sides.**
+- **Training.** Each frame's prompt names one role. Before the hold event: "object: the bowl". During it: "target: the plate". Frames are identical to T8b's, and only the per-frame text differs.
+- **Test time.** The instruction parses into the same two prompts, and the event picks one at each query from the proprioceptive state and the last command.
+
+So "put the cream cheese on the plate" reaches the policy as "object: the cream cheese" and then "target: the plate", both trained. At prompt level a new pairing holds nothing new. The carry never sees the object's name, and the reach never sees the target's. That targets the measured failure: V1 and the break atlas found the frozen VLA's carry bound to the held object, and hand-over at the hold repaired it.
+
+**Where the structure comes from.** The lexicon is T11's, read from demos with no labels; the event is `ProprioHeld`, one threshold fit on this dataset's own proprioception. Both the lexicon's situations and T12's modes read simulator positions from recorded demo states, as U's do, and nothing reads them at test time: the policy sees pixels and proprioception, the same inputs as T8b's VLA.
+
+**Limits I can name now.**
+- K7, K8, N7 and N8 keep their whole instruction. Second clauses and open-hand verbs are not routed yet, and §34's K7 work comes after this read.
+- K6's object phrase reads "the cream cheese in", because cheese appears in one training task. Test prompts read "the cream cheese". The mismatch handicaps S on the cheese pairings.
+- The role tags "object:" and "target:" are hand-written. They are the one designed piece of text.
+- Query-level event: the gate updates every 5 steps at test time, against every step in training.
+- One seed per arm. N2 main states have shaped U and the lexicon rules, though neither VLA has ever read them through training.
+
+**Verdicts, S − T8b's VLA.**
+- **Composition, new pairings N1-N6, familiar.** STRUCTURE WINS iff the CI lower bound exceeds +.10. STRUCTURE LOSES iff the upper bound falls below −.10. Otherwise NO CLEAR DIFFERENCE.
+- **Cost, known K1-K6, familiar.** NO COST iff the lower bound is at or above −.10. Otherwise COST.
+
+**Reported with no verdict.** The new layout, per-task rates, K7, K8, N7, N8.
+
+**Prediction.** STRUCTURE WINS: S near .75 on new pairings against the VLA near .45; NO COST, with S near .90 on known; on the new layout S near .25 against the VLA near .15, because the grasp limit there stays untouched.

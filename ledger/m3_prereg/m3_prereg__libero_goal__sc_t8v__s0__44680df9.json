@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T8b (docs/SCAFFOLD_RESULTS.md 30)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4550068",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "44680df9aa1a874b57161b68bb57514ef4d2c353",
+  "short": "44680df9"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "77a393524004a3c7569203f275916e00382deb96fb0a25ede324f7646887b35a",
+   "experiments/c_train_pi05.py": "79c718edd9e20c6f246a85578d3fa4b39d72674b940118aae7a44989eaa04fa9",
+   "experiments/sc_t8v.py": "da9b27955f410befa05492a4ea90ac8a5a85531e349eb71e79a930608cec079c",
+   "lifelong_ood/policy/l90c_config.py": "0f02c12db7f7457fa945929d4373374c286e2a306bf5be0496d6039bc54b0344",
+   "results/flawed/sc_t8v_manifest.json": "11da42956706bfaf132a8e490130aca2c9a92c706cf9b228fbbdd77baa326fca"
+  },
+  "labelled": "development read on N2 main states 4-23, which have shaped U; the VLA reads pixels, U oracle positions; 335 vs 400 demos; one VLA seed against three; the user asked to keep iterating overnight, and PLAN_SCAFFOLD T8 was approved in the plan",
+  "mapping": "new pairings N1-N6, familiar, VLA - U: VLA MATCHES iff CI lower >= -.10; RUNG HOLDS iff CI upper < -.10; else UNRESOLVED. Known K1-K6 upper < -.10 turns RUNG HOLDS into UNDERFIT",
+  "prediction": "RUNG HOLDS; VLA near .95 known, near .45 new pairings against U .894; new layout near .15 new pairings against U .381",
+  "states": "dev only: N2 main states 4-23; no smoke rollouts",
+  "status": "PRE-REGISTERED T8b",
+  "training": "pi05_goal8 from pi05_base, batch 64, 3000 steps, read at step 3000",
+  "written_before": "T8b training"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t8v__s0__44680df9",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t8v.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-06T09:49:13+00:00",
+ "stream": null,
+ "tag": "sc_t8v"
+}
