@@ -1,0 +1,59 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T4, the unsupervised rebuild (docs/SCAFFOLD_RESULTS.md 10)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "claptrap.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4527085",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "8adde9ddb2234e49810f2a80a83d2fbfeec40515",
+  "short": "8adde9dd"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "368a1737fe46bbb474b865b26fc7418c80a1ba19ea6009093602b6f6bc12716e",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/pp_p_train.py": "0a6534556012a60bd101dea6b0ad9a4ab7218556c5196c6eec249bed84cce8cb",
+   "experiments/sc_t4.py": "9c8bc7160fe95e6b2f8094ca75e803aa24002684b8507712beea481cf5e0ceb1",
+   "lifelong_ood/policy/parts_flow.py": "b51b01eb2998424b240e8b23ca791c6e9dc55611fb3869b051130431ef4cafae"
+  },
+  "labelled": "development read on N2 main states 4-23, which have shaped earlier work; the user approved T4 and asked for unsupervised reusable parts on 2026-11-05, and has not reviewed these rules",
+  "mapping_V1": "U minus L4, familiar known and new cells, first match: COSTS iff either CI lies wholly below -.10; HOLDS iff both lower bounds >= -.10; else UNRESOLVED",
+  "mapping_V2": "each of Unm, Unp, Unt, Unr, Ur8, U0 minus U: KEEP iff in any of 4 cells the difference < -.10 and its CI upper < 0; else DROP",
+  "mapping_V3": "created part minus full U, k = 1, familiar: TRANSFERS iff the lower bound >= -.10 on both atoms; else NOT YET",
+  "prediction": "V1 HOLDS; KEEP on Unm, Unr, U0, Unt; DROP on Unp, Ur8; V3 TRANSFERS on the plate, NOT YET on the bottle, so NOT YET overall",
+  "states": "dev only: N2 main states 4-23; smoke states 0-1, with 50-step builds, read before this row",
+  "status": "PRE-REGISTERED T4",
+  "written_before": "any non-smoke build or rollout of T4"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t4__s0__8adde9dd",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t4.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-05T22:47:28+00:00",
+ "stream": null,
+ "tag": "sc_t4"
+}

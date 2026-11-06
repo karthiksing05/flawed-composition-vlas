@@ -357,3 +357,131 @@ Registered verdict: **OVER-SPLITS**. My prediction failed. Splits standing in 2 
 **Limits.** Development states have shaped all of this. Fixed pose: T5 has not run, so new-layout cells carry F's gap. Cheese is capped at 8 of 20 states at F's lower bound. Two held-out atoms are few.
 
 **Prediction.** V1 HOLDS. KEEP on Unm (K5), Unr and U0; DROP on Unp and Ur8; KEEP on Unt through N4. V3 TRANSFERS on the plate and NOT YET on the bottle.
+
+**Smoke note.** The smoke changed the command separator from `+` to `~`, because `K4+K5` was being split, and removed LIBERO from the openpi venv's path, which had caused a silent exit 1. Both fixes came before the ledger row.
+
+## 11. T4 results (2026-11-05; results/flawed/sc_t4_read.json; rollouts results/flawed/sc_t4)
+
+All 673 tasks completed: 24 builds, 18 creations, 630 rollout files, 12,600 episodes, no episode errors. Every episode induced roles from the lexicon.
+
+### 11.1 V1: HOLDS, at the edge
+
+| U minus L4 | U | L4 | difference | CI |
+|---|---|---|---|---|
+| known, familiar | .872 | .872 | .000 | [−.056, +.056] |
+| new pairings, familiar | .894 | .928 | −.033 | [−.100, +.028] |
+| known, new layout | .433 | .433 | .000 | [−.089, +.095] |
+| new pairings, new layout | .381 | .403 | −.022 | [−.089, +.039] |
+
+The new-pairing lower bound sits exactly on the −.10 margin, and these intervals run somewhat narrow, so the pass is a narrow one. The two exact zeros are coincidences of the group mean: per-task values differ (K4 1.00 → .93, K5 .32 → .38). The rule removes hand-set sizes. The cost, if real, sits on the bottle: N4 .88 → .78 and N5 1.00 → .93.
+
+### 11.2 V2: three devices stay, three go
+
+| removal | verdict | cell that decided it | difference | CI | my prediction |
+|---|---|---|---|---|---|
+| U0, parts zeroed | KEEP | new pairings, familiar | −.725 | [−.903, −.519] | right |
+| Unr, no role-level transport | KEEP | known, new layout | −.194 | [−.336, −.067] | right |
+| Unm, no grasp message | KEEP | known, new layout | −.111 | [−.231, −.011] | right verdict, wrong reason |
+| Unt, no carry scale | DROP | none | | | wrong |
+| Unp, no per-part radii | DROP | none | | | right |
+| Ur8, rank 8 | DROP | none | | | right |
+
+Per-task success. Familiar layout:
+
+| | L4 | U | Unm | Unp | Unt | Unr | Ur8 | U0 |
+|---|---|---|---|---|---|---|---|---|
+| K1 | .98 | 1.00 | .98 | 1.00 | 1.00 | .98 | .90 | .70 |
+| K2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | .98 | 1.00 |
+| K3 | 1.00 | .98 | .98 | .95 | .98 | .97 | .98 | .95 |
+| K4 | 1.00 | .93 | .75 | .93 | .93 | .88 | .98 | .42 |
+| K5 | .32 | .38 | .42 | .32 | .40 | .63 | .42 | .00 |
+| K6 | .93 | .93 | .95 | .93 | .97 | .93 | .80 | .03 |
+| N1 | 1.00 | .98 | .98 | .98 | .88 | .97 | .90 | .03 |
+| N2 | .95 | .98 | .98 | .98 | .98 | .98 | .88 | .07 |
+| N3 | .98 | .98 | .98 | 1.00 | 1.00 | .98 | .87 | .07 |
+| N4 | .88 | .78 | .58 | .85 | .47 | .85 | .87 | .30 |
+| N5 | 1.00 | .93 | .72 | .95 | .93 | .88 | .98 | .43 |
+| N6 | .75 | .70 | .55 | .70 | .70 | .73 | .78 | .12 |
+
+New layout:
+
+| | L4 | U | Unm | Unp | Unt | Unr | Ur8 | U0 |
+|---|---|---|---|---|---|---|---|---|
+| K1 | .43 | .35 | .25 | .37 | .27 | .23 | .50 | .28 |
+| K2 | .55 | .63 | .53 | .58 | .75 | .33 | .63 | .55 |
+| K3 | .65 | .77 | .52 | .62 | .73 | .37 | .68 | .65 |
+| K4 | .55 | .47 | .27 | .48 | .50 | .18 | .40 | .27 |
+| K5 | .00 | .00 | .00 | .00 | .13 | .00 | .00 | .00 |
+| K6 | .42 | .38 | .37 | .38 | .42 | .32 | .30 | .00 |
+| N1 | .30 | .32 | .32 | .30 | .40 | .28 | .33 | .00 |
+| N2 | .33 | .28 | .37 | .32 | .35 | .30 | .37 | .02 |
+| N3 | .48 | .50 | .43 | .52 | .52 | .42 | .32 | .03 |
+| N4 | .33 | .32 | .17 | .28 | .23 | .13 | .27 | .12 |
+| N5 | .60 | .50 | .27 | .50 | .52 | .18 | .40 | .32 |
+| N6 | .37 | .37 | .20 | .35 | .33 | .10 | .23 | .07 |
+
+**Reading, post hoc.**
+- **Parts carry new pairings.** With every part zeroed, N1-N3 fall to .03-.07 and K6 to .03. This is the strongest removal result in the study: the sparse store is what makes cheese tasks and their recombinations work.
+- **The backbone stores the bowl, against the sparse claim.** With every part zeroed, K2 stays at 1.00 and K3 at .95. New-layout K2 and K3 lose only .08 and .12. The majority object lives in the shared store, so the bowl part and these two target parts add little behaviourally. D found that zeroing target parts costs .53-.65 of flow loss, so the loss and the behaviour disagree here.
+- **The grasp message earns its place on the upright bottle, and it does nothing for K5.** I predicted K5 would carry this verdict. K5 is .38 with m and .42 without. The loss falls on K4, N4, N5 and N6 instead, in both layouts. The device was motivated by the case it fails to help, so its principle still needs stating.
+- **K5 remains unsolved.** It stays at .38 familiar and .00 new in U. Removing role-level transport raises it to .63 familiar, which is the largest gain from any removal and goes against that device's overall verdict. Transport helps new layouts generally (known .43 → .24 without it) and costs K5's familiar scenes.
+- **Two DROPs hide task-level costs.** Rule V2 tests group means. Unt loses .31 on N4 familiar and Ur8 loses about .10 on N1-N3 and K6 familiar, offset elsewhere. Both verdicts stand as registered, and neither removal has been tested jointly with the others.
+
+### 11.3 V3: NOT YET
+
+| created minus full U, k = 1 | created | U | difference | CI |
+|---|---|---|---|---|
+| bottle, familiar (K4, N4, N5, N6) | .858 | .838 | +.021 | [−.129, +.175] |
+| plate, familiar (K1, N1, N4) | .939 | .922 | +.017 | [−.061, +.133] |
+| bottle, new layout | .388 | .413 | −.025 | [−.175, +.129] |
+| plate, new layout | .350 | .328 | +.022 | [−.122, +.178] |
+
+Success by demos, per cell:
+
+| | U | k = 1 | k = 5 | k = 10 |
+|---|---|---|---|---|
+| K4 familiar | .93 | .90 | .85 | .82 |
+| N4 familiar | .78 | .85 | .80 | .78 |
+| N5 familiar | .93 | .88 | .85 | .82 |
+| N6 familiar | .70 | .80 | .62 | .60 |
+| K4 new | .47 | .43 | .67 | .62 |
+| N4 new | .32 | .32 | .35 | .35 |
+| N5 new | .50 | .45 | .67 | .62 |
+| N6 new | .37 | .35 | .40 | .50 |
+| K1 familiar | 1.00 | 1.00 | 1.00 | 1.00 |
+| N1 familiar | .98 | .97 | .95 | .97 |
+| N4 familiar (plate) | .78 | .85 | .90 | .92 |
+| K1 new | .35 | .27 | .25 | .27 |
+| N1 new | .32 | .33 | .27 | .32 |
+| N4 new (plate) | .32 | .45 | .25 | .30 |
+
+The plate passes. The bottle fails on interval width with a positive point estimate: its lower bound is −.129 against a −.10 margin, over 4 tasks. The registered label stands, and my prediction matched it.
+
+**Limits on what this establishes.**
+- **The control is missing.** V3 compares a created part with a full build. It never measures the same build with the created part switched off. U0 shows that K1, K2 and K3 survive without parts, so a created plate could pass while doing little. Crediting the part needs a k = 0 arm.
+- **K5 is outside the bottle's cells.** The side grasp, the bottle's hardest use, never entered this test.
+- **More demos do not help familiar scenes.** Bottle familiar falls from k = 1 to k = 10 on all four cells, and the same seeds do not rescue it. New-layout K4 and N5 rise to .67, above full U's .47-.50. A bottle part fitted to K4 alone may beat one shared with K5, which agrees with D's bottle split. This is a post-hoc hypothesis from one comparison.
+
+### 11.4 Storage (registered, no verdict)
+
+| | total parameters | one object part | one target part | backbones |
+|---|---|---|---|---|
+| U | 1,781,632 | 82,928 | 82,608 | 871,664 |
+| Ur8 | 1,099,288 | 20,744 | 20,664 | 871,664 |
+
+One part is 4.7% of U's total, and backbones are 49%. Adding an atom costs one part. Reaching that atom's cells needs the backbones already in place.
+
+### 11.5 New layouts on F's reachable states (post hoc, under the user's restated claim)
+
+| U, new layout | all 20 states | F-reachable states | F-blocked states |
+|---|---|---|---|
+| bowl tasks | .58 | .58 (20) | none |
+| cheese tasks | .37 | .70 (8) | .15 (12) |
+| bottle tasks | .41 | .41 (20) | none |
+| pooled | | .53 | |
+
+F's upper limit on reachable states is close to 1.00, against .53 here, so roughly half of the restated claim's gap remains. The policy succeeds on 15% of the "blocked" cheese states, so F's blocked list over-counts: it reflects the eight scripted options and these states are not physically impossible.
+
+### 11.6 What T4 decides
+
+Hand-set sizes go. Per-part radii, rank 32 and the carry scale frame go under the registered rule, pending a joint test because each was removed alone. Parts, role-level transport and the grasp message stay. The labels left in the recipe are the entity list, oracle positions, and the features chosen for m and the frames. New layouts stay the largest gap.
