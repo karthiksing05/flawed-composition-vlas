@@ -1159,3 +1159,11 @@ So a VLA that matches U is decisive against the thesis, because the VLA carries 
 **Reported with no verdict.** The new layout; VLA − frozen `pi05_libero` on the same cells; K7, K8, N7, N8.
 
 **Prediction.** RUNG HOLDS: VLA near .95 on known, near .45 on new pairings against U's .894; new layout near .15 on new pairings against U's .381. Near .45 follows the frozen read's .50 for pi0.5 on these pairings, with less data to generalize from.
+
+## 31. K7's two phases: measured, not built (2026-11-06, offline on the demos)
+
+**What the demos show.** The slot `wooden_cabinet_1_top_region` moves with the drawer, by .156 m along +y before the bowl's hold, and no other slot moves over 1.3 cm. The drawer starts moving near step 40 and stops near step 59. The hand sits at (−.008, +.151, +.015) from the slot throughout, with a spread of 7 mm in y. The first hold comes near step 127. Pre-hold rows carry a close command 9% of the time, so most demos pull with an open hand.
+
+**What this means.** Opening is `HandMoved` on the drawer's slot, with the mode T12 already reads, so one event covers the grasp, the push and the pull. It differs from the push in one way: "open the top drawer" names no target entity. The clause's target is where the moved slot ended, relative to where it started.
+
+**Why I stopped.** That needs one new slot, a target defined relative to the moved slot's start, and rows split at the first hold. A new slot changes the entity store's shape and invalidates every checkpoint's slot encoding unless it is guarded, and the object part for a drawer changes the atom lists. I am leaving this decision for the user, together with whether N7 belongs in the claim. U alone reads K7 .30 and N7 .00.
