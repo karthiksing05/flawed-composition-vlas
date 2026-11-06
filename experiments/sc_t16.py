@@ -191,6 +191,7 @@ class Routed:
         P = prompts(self.X["lex"], self.X["words"], str(o["prompt"]))
         if P is not None:
             o["prompt"] = P[int(on)]
+        logging.info(f"[routed] t={o.get('meta/t')} held={on} prompt={o['prompt']!r}")
         r = self.p.infer(o)
         self.prev = float(np.asarray(r["actions"])[self.replan - 1, 6])
         return r

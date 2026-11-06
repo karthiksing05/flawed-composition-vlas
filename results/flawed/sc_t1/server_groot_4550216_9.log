@@ -1,0 +1,404 @@
+The Groot policy is a wrapper around Nvidia's GR00T N1.5 model.
+Loading pretrained model from: /coc/flash10/ksingara3/robot/data/hf/home/hub/models--ar0s--groot_libero/snapshots/ca2ab7c0daa2b68e5e2818b4bde3489765df3662
+Detected fine-tuned LeRobot checkpoint, loading with state dict...
+[GROOT] Flash Attention not available: No module named 'flash_attn'
+[GROOT] Will use fallback attention mechanism
+Loading pretrained dual brain from nvidia/GR00T-N1.5-3B
+Tune backbone vision tower: False
+Tune backbone LLM: False
+Tune action head projector: True
+Tune action head DiT: True
+`torch_dtype` is deprecated! Use `dtype` instead!
+[GROOT] Copying vendor Eagle files to cache: /coc/flash10/ksingara3/robot/groot/.venv/lib/python3.11/site-packages/lerobot/policies/groot/eagle2_hg_model -> /coc/flash10/ksingara3/robot/data/hf/home/lerobot/lerobot/eagle2hg-processor-groot-n1p5
+[GROOT] Assets repo: lerobot/eagle2hg-processor-groot-n1p5 
+ Cache dir: /coc/flash10/ksingara3/robot/data/hf/home/lerobot/lerobot/eagle2hg-processor-groot-n1p5
+2026-11-06 05:03:17,663 min_dynamic_tiles: 1
+2026-11-06 05:03:17,663 max_dynamic_tiles: 12
+2026-11-06 05:03:17,664 vision_config is None. Initializing the InternVisionConfig with default values.
+2026-11-06 05:03:17,664 text_config is None. Initializing the LlamaConfig config with default values (`LlamaConfig`).
+2026-11-06 05:03:17,664 min_dynamic_tiles: 1
+2026-11-06 05:03:17,664 max_dynamic_tiles: 6
+2026-11-06 05:03:17,834 num_image_token: 256
+2026-11-06 05:03:17,834 mlp_checkpoint: False
+Tune backbone llm: False
+Tune backbone visual: True
+Total number of DiT parameters:  550386688
+Total number of SelfAttentionTransformer parameters:  201433088
+Tune action head projector: True
+Tune action head diffusion model: True
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  5.01it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:01<00:00,  1.55it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:02<00:00,  1.10s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:02<00:00,  1.07it/s]
+Tune backbone llm: False
+Tune backbone visual: False
+Warning: No backbone trainable parameters found.
+Tune action head projector: True
+Tune action head diffusion model: True
+Loading weights from local directory
+`use_fast` is set to `True` but the image processor class does not have a fast version.  Falling back to the slow version.
+The tokenizer you are loading from '/coc/flash10/ksingara3/robot/data/hf/home/lerobot/lerobot/eagle2hg-processor-groot-n1p5' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+2026-11-06 05:03:53,645 GrootBackbone(/coc/flash10/ksingara3/robot/data/hf/home/hub/models--ar0s--groot_libero/snapshots/ca2ab7c0daa2b68e5e2818b4bde3489765df3662: H=16, A=32, real=7, dim=112, steps=4, n_params=2,413,522,880, expert=550,386,688, load 36.5s)
+The tokenizer you are loading from '/coc/flash10/ksingara3/robot/data/hf/home/lerobot/lerobot/eagle2hg-processor-groot-n1p5' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+2026-11-06 05:03:55,071 [serve] warm-up 2 calls in 1.4s
+2026-11-06 05:03:55,104 Creating server (host: 0.0.0.0, port: 9889)
+2026-11-06 05:03:55,106 server listening on 0.0.0.0:9889
+2026-11-06 05:04:00,118 connection open
+2026-11-06 05:04:00,118 Connection from ('127.0.0.1', 37150) opened
+/coc/flash10/ksingara3/flawed-composition-vlas/lifelong_ood/policy/backbone_groot.py:198: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  img = lambda k: torch.from_numpy(np.ascontiguousarray(o[k])).permute(2, 0, 1)[None].float() / 255.0   # noqa: E731
+2026-11-06 05:04:11,122 [serve] 50 calls, 124 ms each
+2026-11-06 05:04:18,301 [serve] 100 calls, 113 ms each
+2026-11-06 05:04:25,511 [serve] 150 calls, 109 ms each
+2026-11-06 05:04:34,587 [serve] 200 calls, 107 ms each
+2026-11-06 05:04:41,453 [serve] 250 calls, 105 ms each
+2026-11-06 05:04:48,236 [serve] 300 calls, 104 ms each
+2026-11-06 05:04:57,279 [serve] 350 calls, 103 ms each
+2026-11-06 05:05:04,347 [serve] 400 calls, 103 ms each
+2026-11-06 05:05:11,175 [serve] 450 calls, 103 ms each
+2026-11-06 05:05:20,055 [serve] 500 calls, 102 ms each
+2026-11-06 05:05:28,896 [serve] 550 calls, 102 ms each
+2026-11-06 05:05:35,952 [serve] 600 calls, 102 ms each
+2026-11-06 05:05:42,869 [serve] 650 calls, 102 ms each
+2026-11-06 05:05:51,620 [serve] 700 calls, 101 ms each
+2026-11-06 05:05:58,430 [serve] 750 calls, 101 ms each
+2026-11-06 05:06:05,266 [serve] 800 calls, 101 ms each
+2026-11-06 05:06:13,869 [serve] 850 calls, 101 ms each
+2026-11-06 05:06:20,803 [serve] 900 calls, 101 ms each
+2026-11-06 05:06:27,811 [serve] 950 calls, 101 ms each
+2026-11-06 05:06:36,428 [serve] 1000 calls, 101 ms each
+2026-11-06 05:06:43,210 [serve] 1050 calls, 101 ms each
+2026-11-06 05:06:49,955 [serve] 1100 calls, 100 ms each
+2026-11-06 05:07:00,578 [serve] 1150 calls, 100 ms each
+2026-11-06 05:07:07,311 [serve] 1200 calls, 100 ms each
+2026-11-06 05:07:14,037 [serve] 1250 calls, 100 ms each
+2026-11-06 05:07:22,655 [serve] 1300 calls, 100 ms each
+2026-11-06 05:07:29,613 [serve] 1350 calls, 100 ms each
+2026-11-06 05:07:36,448 [serve] 1400 calls, 100 ms each
+2026-11-06 05:07:45,194 [serve] 1450 calls, 100 ms each
+2026-11-06 05:07:51,965 [serve] 1500 calls, 100 ms each
+2026-11-06 05:07:58,741 [serve] 1550 calls, 100 ms each
+2026-11-06 05:08:07,481 [serve] 1600 calls, 100 ms each
+2026-11-06 05:08:16,126 [serve] 1650 calls, 100 ms each
+2026-11-06 05:08:24,937 [serve] 1700 calls, 100 ms each
+2026-11-06 05:08:31,987 [serve] 1750 calls, 100 ms each
+2026-11-06 05:08:39,114 [serve] 1800 calls, 100 ms each
+2026-11-06 05:08:47,619 [serve] 1850 calls, 100 ms each
+2026-11-06 05:08:54,409 [serve] 1900 calls, 100 ms each
+2026-11-06 05:09:01,227 [serve] 1950 calls, 100 ms each
+2026-11-06 05:09:09,795 [serve] 2000 calls, 100 ms each
+2026-11-06 05:09:16,559 [serve] 2050 calls, 100 ms each
+2026-11-06 05:09:23,314 [serve] 2100 calls, 100 ms each
+2026-11-06 05:09:31,923 [serve] 2150 calls, 100 ms each
+2026-11-06 05:09:38,714 [serve] 2200 calls, 100 ms each
+2026-11-06 05:09:45,645 [serve] 2250 calls, 100 ms each
+2026-11-06 05:09:54,495 [serve] 2300 calls, 100 ms each
+2026-11-06 05:10:01,449 [serve] 2350 calls, 100 ms each
+2026-11-06 05:10:08,666 [serve] 2400 calls, 100 ms each
+2026-11-06 05:10:17,586 [serve] 2450 calls, 100 ms each
+2026-11-06 05:10:24,313 [serve] 2500 calls, 100 ms each
+2026-11-06 05:10:31,105 [serve] 2550 calls, 100 ms each
+2026-11-06 05:10:37,686 connection closed
+2026-11-06 05:10:37,686 Connection from ('127.0.0.1', 37150) closed
+2026-11-06 05:10:38,899 connection open
+2026-11-06 05:10:38,899 Connection from ('127.0.0.1', 37256) opened
+2026-11-06 05:10:43,908 [serve] 2600 calls, 100 ms each
+2026-11-06 05:10:50,954 [serve] 2650 calls, 100 ms each
+2026-11-06 05:10:57,848 [serve] 2700 calls, 100 ms each
+2026-11-06 05:11:06,713 [serve] 2750 calls, 100 ms each
+2026-11-06 05:11:13,584 [serve] 2800 calls, 100 ms each
+2026-11-06 05:11:20,369 [serve] 2850 calls, 100 ms each
+2026-11-06 05:11:29,343 [serve] 2900 calls, 100 ms each
+2026-11-06 05:11:36,480 [serve] 2950 calls, 100 ms each
+2026-11-06 05:11:43,268 [serve] 3000 calls, 100 ms each
+2026-11-06 05:11:51,930 [serve] 3050 calls, 100 ms each
+2026-11-06 05:11:58,950 [serve] 3100 calls, 100 ms each
+2026-11-06 05:12:05,945 [serve] 3150 calls, 100 ms each
+2026-11-06 05:12:14,839 [serve] 3200 calls, 100 ms each
+2026-11-06 05:12:21,929 [serve] 3250 calls, 100 ms each
+2026-11-06 05:12:28,945 [serve] 3300 calls, 100 ms each
+2026-11-06 05:12:37,811 [serve] 3350 calls, 100 ms each
+2026-11-06 05:12:44,670 [serve] 3400 calls, 100 ms each
+2026-11-06 05:12:53,319 [serve] 3450 calls, 100 ms each
+2026-11-06 05:13:00,323 [serve] 3500 calls, 100 ms each
+2026-11-06 05:13:07,459 [serve] 3550 calls, 100 ms each
+2026-11-06 05:13:16,189 [serve] 3600 calls, 100 ms each
+2026-11-06 05:13:22,983 [serve] 3650 calls, 100 ms each
+2026-11-06 05:13:29,757 [serve] 3700 calls, 100 ms each
+2026-11-06 05:13:38,474 [serve] 3750 calls, 100 ms each
+2026-11-06 05:13:47,227 [serve] 3800 calls, 100 ms each
+2026-11-06 05:13:54,201 [serve] 3850 calls, 100 ms each
+2026-11-06 05:14:01,075 [serve] 3900 calls, 100 ms each
+2026-11-06 05:14:10,041 [serve] 3950 calls, 100 ms each
+2026-11-06 05:14:17,256 [serve] 4000 calls, 100 ms each
+2026-11-06 05:14:24,357 [serve] 4050 calls, 100 ms each
+2026-11-06 05:14:33,061 [serve] 4100 calls, 100 ms each
+2026-11-06 05:14:39,845 [serve] 4150 calls, 100 ms each
+2026-11-06 05:14:46,761 [serve] 4200 calls, 100 ms each
+2026-11-06 05:14:55,464 [serve] 4250 calls, 100 ms each
+2026-11-06 05:15:02,285 [serve] 4300 calls, 100 ms each
+2026-11-06 05:15:09,182 [serve] 4350 calls, 100 ms each
+2026-11-06 05:15:18,177 [serve] 4400 calls, 100 ms each
+2026-11-06 05:15:25,194 [serve] 4450 calls, 100 ms each
+2026-11-06 05:15:34,109 [serve] 4500 calls, 100 ms each
+2026-11-06 05:15:41,171 [serve] 4550 calls, 100 ms each
+2026-11-06 05:15:49,969 [serve] 4600 calls, 100 ms each
+2026-11-06 05:15:56,744 [serve] 4650 calls, 100 ms each
+2026-11-06 05:16:03,529 [serve] 4700 calls, 100 ms each
+2026-11-06 05:16:12,219 [serve] 4750 calls, 100 ms each
+2026-11-06 05:16:19,114 [serve] 4800 calls, 100 ms each
+2026-11-06 05:16:26,042 [serve] 4850 calls, 100 ms each
+2026-11-06 05:16:34,825 [serve] 4900 calls, 100 ms each
+2026-11-06 05:16:41,712 [serve] 4950 calls, 100 ms each
+2026-11-06 05:16:48,722 [serve] 5000 calls, 100 ms each
+2026-11-06 05:16:57,522 [serve] 5050 calls, 100 ms each
+2026-11-06 05:17:04,355 [serve] 5100 calls, 100 ms each
+2026-11-06 05:17:11,114 [serve] 5150 calls, 100 ms each
+2026-11-06 05:17:19,714 [serve] 5200 calls, 100 ms each
+2026-11-06 05:17:26,551 [serve] 5250 calls, 100 ms each
+2026-11-06 05:17:33,509 [serve] 5300 calls, 100 ms each
+2026-11-06 05:17:34,110 connection closed
+2026-11-06 05:17:34,110 Connection from ('127.0.0.1', 37256) closed
+2026-11-06 05:17:35,321 connection open
+2026-11-06 05:17:35,321 Connection from ('127.0.0.1', 57232) opened
+2026-11-06 05:17:46,335 [serve] 5350 calls, 100 ms each
+2026-11-06 05:17:53,196 [serve] 5400 calls, 100 ms each
+2026-11-06 05:18:00,087 [serve] 5450 calls, 100 ms each
+2026-11-06 05:18:09,012 [serve] 5500 calls, 100 ms each
+2026-11-06 05:18:16,093 [serve] 5550 calls, 100 ms each
+2026-11-06 05:18:23,065 [serve] 5600 calls, 100 ms each
+2026-11-06 05:18:32,171 [serve] 5650 calls, 100 ms each
+2026-11-06 05:18:39,859 [serve] 5700 calls, 100 ms each
+2026-11-06 05:18:47,438 [serve] 5750 calls, 100 ms each
+2026-11-06 05:18:56,539 [serve] 5800 calls, 100 ms each
+2026-11-06 05:19:03,467 [serve] 5850 calls, 100 ms each
+2026-11-06 05:19:10,475 [serve] 5900 calls, 100 ms each
+2026-11-06 05:19:19,384 [serve] 5950 calls, 100 ms each
+2026-11-06 05:19:26,365 [serve] 6000 calls, 100 ms each
+2026-11-06 05:19:33,325 [serve] 6050 calls, 100 ms each
+2026-11-06 05:19:42,325 [serve] 6100 calls, 100 ms each
+2026-11-06 05:19:51,260 [serve] 6150 calls, 100 ms each
+2026-11-06 05:19:58,125 [serve] 6200 calls, 100 ms each
+2026-11-06 05:20:05,035 [serve] 6250 calls, 100 ms each
+2026-11-06 05:20:14,056 [serve] 6300 calls, 100 ms each
+2026-11-06 05:20:20,976 [serve] 6350 calls, 100 ms each
+2026-11-06 05:20:27,805 [serve] 6400 calls, 100 ms each
+2026-11-06 05:20:36,539 [serve] 6450 calls, 100 ms each
+2026-11-06 05:20:45,247 [serve] 6500 calls, 100 ms each
+2026-11-06 05:20:52,300 [serve] 6550 calls, 100 ms each
+2026-11-06 05:21:00,994 [serve] 6600 calls, 100 ms each
+2026-11-06 05:21:08,006 [serve] 6650 calls, 100 ms each
+2026-11-06 05:21:14,839 [serve] 6700 calls, 100 ms each
+2026-11-06 05:21:23,816 [serve] 6750 calls, 100 ms each
+2026-11-06 05:21:30,631 [serve] 6800 calls, 100 ms each
+2026-11-06 05:21:37,441 [serve] 6850 calls, 100 ms each
+2026-11-06 05:21:46,055 [serve] 6900 calls, 100 ms each
+2026-11-06 05:21:52,942 [serve] 6950 calls, 100 ms each
+2026-11-06 05:21:59,854 [serve] 7000 calls, 100 ms each
+2026-11-06 05:22:08,534 [serve] 7050 calls, 100 ms each
+2026-11-06 05:22:15,460 [serve] 7100 calls, 99 ms each
+2026-11-06 05:22:24,367 [serve] 7150 calls, 99 ms each
+2026-11-06 05:22:31,442 [serve] 7200 calls, 100 ms each
+2026-11-06 05:22:38,302 [serve] 7250 calls, 100 ms each
+2026-11-06 05:22:46,934 [serve] 7300 calls, 100 ms each
+2026-11-06 05:22:53,679 [serve] 7350 calls, 99 ms each
+2026-11-06 05:23:00,451 [serve] 7400 calls, 99 ms each
+2026-11-06 05:23:09,026 [serve] 7450 calls, 99 ms each
+2026-11-06 05:23:15,786 [serve] 7500 calls, 99 ms each
+2026-11-06 05:23:22,518 [serve] 7550 calls, 99 ms each
+2026-11-06 05:23:31,257 [serve] 7600 calls, 99 ms each
+2026-11-06 05:23:38,279 [serve] 7650 calls, 99 ms each
+2026-11-06 05:23:45,189 [serve] 7700 calls, 99 ms each
+2026-11-06 05:23:53,897 [serve] 7750 calls, 99 ms each
+2026-11-06 05:24:00,698 [serve] 7800 calls, 99 ms each
+2026-11-06 05:24:07,559 [serve] 7850 calls, 99 ms each
+2026-11-06 05:24:16,211 [serve] 7900 calls, 99 ms each
+2026-11-06 05:24:22,960 [serve] 7950 calls, 99 ms each
+2026-11-06 05:24:29,714 [serve] 8000 calls, 99 ms each
+2026-11-06 05:24:31,378 connection closed
+2026-11-06 05:24:31,378 Connection from ('127.0.0.1', 57232) closed
+2026-11-06 05:24:32,858 connection open
+2026-11-06 05:24:32,858 Connection from ('127.0.0.1', 53598) opened
+2026-11-06 05:24:42,781 [serve] 8050 calls, 99 ms each
+2026-11-06 05:24:49,772 [serve] 8100 calls, 99 ms each
+2026-11-06 05:24:56,588 [serve] 8150 calls, 99 ms each
+2026-11-06 05:25:05,374 [serve] 8200 calls, 99 ms each
+2026-11-06 05:25:12,249 [serve] 8250 calls, 99 ms each
+2026-11-06 05:25:19,114 [serve] 8300 calls, 99 ms each
+2026-11-06 05:25:28,004 [serve] 8350 calls, 99 ms each
+2026-11-06 05:25:34,852 [serve] 8400 calls, 99 ms each
+2026-11-06 05:25:41,666 [serve] 8450 calls, 99 ms each
+2026-11-06 05:25:50,448 [serve] 8500 calls, 99 ms each
+2026-11-06 05:25:57,242 [serve] 8550 calls, 99 ms each
+2026-11-06 05:26:04,129 [serve] 8600 calls, 99 ms each
+2026-11-06 05:26:12,877 [serve] 8650 calls, 99 ms each
+2026-11-06 05:26:19,786 [serve] 8700 calls, 99 ms each
+2026-11-06 05:26:26,681 [serve] 8750 calls, 99 ms each
+2026-11-06 05:26:35,553 [serve] 8800 calls, 99 ms each
+2026-11-06 05:26:42,404 [serve] 8850 calls, 99 ms each
+2026-11-06 05:26:49,183 [serve] 8900 calls, 99 ms each
+2026-11-06 05:26:57,958 [serve] 8950 calls, 99 ms each
+2026-11-06 05:27:04,768 [serve] 9000 calls, 99 ms each
+2026-11-06 05:27:11,603 [serve] 9050 calls, 99 ms each
+2026-11-06 05:27:20,420 [serve] 9100 calls, 99 ms each
+2026-11-06 05:27:27,376 [serve] 9150 calls, 99 ms each
+2026-11-06 05:27:34,224 [serve] 9200 calls, 99 ms each
+2026-11-06 05:27:42,887 [serve] 9250 calls, 99 ms each
+2026-11-06 05:27:49,721 [serve] 9300 calls, 99 ms each
+2026-11-06 05:27:56,642 [serve] 9350 calls, 99 ms each
+2026-11-06 05:28:05,265 [serve] 9400 calls, 99 ms each
+2026-11-06 05:28:12,059 [serve] 9450 calls, 99 ms each
+2026-11-06 05:28:18,940 [serve] 9500 calls, 99 ms each
+2026-11-06 05:28:27,649 [serve] 9550 calls, 99 ms each
+2026-11-06 05:28:36,546 [serve] 9600 calls, 99 ms each
+2026-11-06 05:28:43,423 [serve] 9650 calls, 99 ms each
+2026-11-06 05:28:50,381 [serve] 9700 calls, 99 ms each
+2026-11-06 05:28:59,243 [serve] 9750 calls, 99 ms each
+2026-11-06 05:29:06,114 [serve] 9800 calls, 99 ms each
+2026-11-06 05:29:13,054 [serve] 9850 calls, 99 ms each
+2026-11-06 05:29:21,766 [serve] 9900 calls, 99 ms each
+2026-11-06 05:29:28,726 [serve] 9950 calls, 99 ms each
+2026-11-06 05:29:35,758 [serve] 10000 calls, 99 ms each
+2026-11-06 05:29:44,688 [serve] 10050 calls, 99 ms each
+2026-11-06 05:29:51,344 [serve] 10100 calls, 99 ms each
+2026-11-06 05:29:58,200 [serve] 10150 calls, 99 ms each
+2026-11-06 05:30:06,984 [serve] 10200 calls, 99 ms each
+2026-11-06 05:30:13,763 [serve] 10250 calls, 99 ms each
+2026-11-06 05:30:20,596 [serve] 10300 calls, 99 ms each
+2026-11-06 05:30:29,293 [serve] 10350 calls, 99 ms each
+2026-11-06 05:30:36,195 [serve] 10400 calls, 99 ms each
+2026-11-06 05:30:43,001 [serve] 10450 calls, 99 ms each
+2026-11-06 05:30:51,609 [serve] 10500 calls, 99 ms each
+2026-11-06 05:30:58,437 [serve] 10550 calls, 99 ms each
+2026-11-06 05:31:05,315 [serve] 10600 calls, 99 ms each
+2026-11-06 05:31:14,133 [serve] 10650 calls, 99 ms each
+2026-11-06 05:31:21,085 [serve] 10700 calls, 99 ms each
+2026-11-06 05:31:27,981 [serve] 10750 calls, 99 ms each
+2026-11-06 05:31:36,734 [serve] 10800 calls, 99 ms each
+2026-11-06 05:31:43,597 [serve] 10850 calls, 99 ms each
+2026-11-06 05:31:50,539 [serve] 10900 calls, 99 ms each
+2026-11-06 05:31:56,883 connection closed
+2026-11-06 05:31:56,884 Connection from ('127.0.0.1', 53598) closed
+2026-11-06 05:31:58,730 connection open
+2026-11-06 05:31:58,731 Connection from ('127.0.0.1', 58832) opened
+2026-11-06 05:32:03,927 [serve] 10950 calls, 99 ms each
+2026-11-06 05:32:10,852 [serve] 11000 calls, 99 ms each
+2026-11-06 05:32:17,833 [serve] 11050 calls, 99 ms each
+2026-11-06 05:32:27,420 [serve] 11100 calls, 99 ms each
+2026-11-06 05:32:34,748 [serve] 11150 calls, 99 ms each
+2026-11-06 05:32:42,106 [serve] 11200 calls, 99 ms each
+2026-11-06 05:32:51,441 [serve] 11250 calls, 99 ms each
+2026-11-06 05:32:58,708 [serve] 11300 calls, 99 ms each
+2026-11-06 05:33:06,081 [serve] 11350 calls, 99 ms each
+2026-11-06 05:33:15,574 [serve] 11400 calls, 99 ms each
+2026-11-06 05:33:22,809 [serve] 11450 calls, 99 ms each
+2026-11-06 05:33:30,037 [serve] 11500 calls, 99 ms each
+2026-11-06 05:33:39,384 [serve] 11550 calls, 99 ms each
+2026-11-06 05:33:46,593 [serve] 11600 calls, 99 ms each
+2026-11-06 05:33:53,919 [serve] 11650 calls, 99 ms each
+2026-11-06 05:34:03,058 [serve] 11700 calls, 99 ms each
+2026-11-06 05:34:10,184 [serve] 11750 calls, 100 ms each
+2026-11-06 05:34:17,517 [serve] 11800 calls, 100 ms each
+2026-11-06 05:34:26,807 [serve] 11850 calls, 100 ms each
+2026-11-06 05:34:33,736 [serve] 11900 calls, 100 ms each
+2026-11-06 05:34:41,292 [serve] 11950 calls, 100 ms each
+2026-11-06 05:34:50,729 [serve] 12000 calls, 100 ms each
+2026-11-06 05:34:57,829 [serve] 12050 calls, 100 ms each
+2026-11-06 05:35:05,065 [serve] 12100 calls, 100 ms each
+2026-11-06 05:35:14,418 [serve] 12150 calls, 100 ms each
+2026-11-06 05:35:21,490 [serve] 12200 calls, 100 ms each
+2026-11-06 05:35:28,881 [serve] 12250 calls, 100 ms each
+2026-11-06 05:35:38,219 [serve] 12300 calls, 100 ms each
+2026-11-06 05:35:45,391 [serve] 12350 calls, 100 ms each
+2026-11-06 05:35:52,644 [serve] 12400 calls, 100 ms each
+2026-11-06 05:36:01,918 [serve] 12450 calls, 100 ms each
+2026-11-06 05:36:09,061 [serve] 12500 calls, 100 ms each
+2026-11-06 05:36:16,232 [serve] 12550 calls, 100 ms each
+2026-11-06 05:36:25,464 [serve] 12600 calls, 100 ms each
+2026-11-06 05:36:32,633 [serve] 12650 calls, 100 ms each
+2026-11-06 05:36:40,072 [serve] 12700 calls, 100 ms each
+2026-11-06 05:36:49,855 [serve] 12750 calls, 100 ms each
+2026-11-06 05:36:57,471 [serve] 12800 calls, 100 ms each
+2026-11-06 05:37:05,156 [serve] 12850 calls, 100 ms each
+2026-11-06 05:37:14,901 [serve] 12900 calls, 100 ms each
+2026-11-06 05:37:22,331 [serve] 12950 calls, 100 ms each
+2026-11-06 05:37:29,833 [serve] 13000 calls, 100 ms each
+2026-11-06 05:37:39,468 [serve] 13050 calls, 100 ms each
+2026-11-06 05:37:46,978 [serve] 13100 calls, 100 ms each
+2026-11-06 05:37:54,466 [serve] 13150 calls, 100 ms each
+2026-11-06 05:38:04,041 [serve] 13200 calls, 100 ms each
+2026-11-06 05:38:11,474 [serve] 13250 calls, 100 ms each
+2026-11-06 05:38:19,187 [serve] 13300 calls, 100 ms each
+2026-11-06 05:38:28,897 [serve] 13350 calls, 100 ms each
+2026-11-06 05:38:36,153 [serve] 13400 calls, 100 ms each
+2026-11-06 05:38:43,670 [serve] 13450 calls, 100 ms each
+2026-11-06 05:38:53,813 [serve] 13500 calls, 100 ms each
+2026-11-06 05:39:01,129 [serve] 13550 calls, 100 ms each
+2026-11-06 05:39:08,516 [serve] 13600 calls, 100 ms each
+2026-11-06 05:39:18,015 [serve] 13650 calls, 100 ms each
+2026-11-06 05:39:25,272 [serve] 13700 calls, 100 ms each
+2026-11-06 05:39:32,762 [serve] 13750 calls, 100 ms each
+2026-11-06 05:39:42,331 [serve] 13800 calls, 100 ms each
+2026-11-06 05:39:49,605 [serve] 13850 calls, 100 ms each
+2026-11-06 05:39:57,124 [serve] 13900 calls, 100 ms each
+2026-11-06 05:40:04,076 connection closed
+2026-11-06 05:40:04,077 Connection from ('127.0.0.1', 58832) closed
+2026-11-06 05:40:06,149 connection open
+2026-11-06 05:40:06,149 Connection from ('127.0.0.1', 44932) opened
+2026-11-06 05:40:11,638 [serve] 13950 calls, 100 ms each
+2026-11-06 05:40:19,424 [serve] 14000 calls, 100 ms each
+2026-11-06 05:40:27,209 [serve] 14050 calls, 101 ms each
+2026-11-06 05:40:36,833 [serve] 14100 calls, 101 ms each
+2026-11-06 05:40:44,236 [serve] 14150 calls, 101 ms each
+2026-11-06 05:40:52,284 [serve] 14200 calls, 101 ms each
+2026-11-06 05:41:02,288 [serve] 14250 calls, 101 ms each
+2026-11-06 05:41:11,919 [serve] 14300 calls, 101 ms each
+2026-11-06 05:41:19,551 [serve] 14350 calls, 101 ms each
+2026-11-06 05:41:27,207 [serve] 14400 calls, 101 ms each
+2026-11-06 05:41:36,726 [serve] 14450 calls, 101 ms each
+2026-11-06 05:41:44,197 [serve] 14500 calls, 101 ms each
+2026-11-06 05:41:51,747 [serve] 14550 calls, 101 ms each
+2026-11-06 05:42:01,583 [serve] 14600 calls, 101 ms each
+2026-11-06 05:42:08,991 [serve] 14650 calls, 101 ms each
+2026-11-06 05:42:16,794 [serve] 14700 calls, 101 ms each
+2026-11-06 05:42:26,728 [serve] 14750 calls, 101 ms each
+2026-11-06 05:42:34,142 [serve] 14800 calls, 101 ms each
+2026-11-06 05:42:41,250 [serve] 14850 calls, 101 ms each
+2026-11-06 05:42:50,384 [serve] 14900 calls, 101 ms each
+2026-11-06 05:42:57,529 [serve] 14950 calls, 101 ms each
+2026-11-06 05:43:04,573 [serve] 15000 calls, 101 ms each
+2026-11-06 05:43:13,594 [serve] 15050 calls, 101 ms each
+2026-11-06 05:43:20,655 [serve] 15100 calls, 101 ms each
+2026-11-06 05:43:27,642 [serve] 15150 calls, 101 ms each
+2026-11-06 05:43:36,696 [serve] 15200 calls, 101 ms each
+2026-11-06 05:43:43,712 [serve] 15250 calls, 101 ms each
+2026-11-06 05:43:50,676 [serve] 15300 calls, 101 ms each
+2026-11-06 05:43:59,564 [serve] 15350 calls, 101 ms each
+2026-11-06 05:44:06,444 [serve] 15400 calls, 101 ms each
+2026-11-06 05:44:13,708 [serve] 15450 calls, 101 ms each
+2026-11-06 05:44:22,917 [serve] 15500 calls, 101 ms each
+2026-11-06 05:44:30,042 [serve] 15550 calls, 101 ms each
+2026-11-06 05:44:37,312 [serve] 15600 calls, 101 ms each
+2026-11-06 05:44:46,615 [serve] 15650 calls, 101 ms each
+2026-11-06 05:44:53,776 [serve] 15700 calls, 101 ms each
+2026-11-06 05:45:00,996 [serve] 15750 calls, 101 ms each
+2026-11-06 05:45:10,190 [serve] 15800 calls, 101 ms each
+2026-11-06 05:45:17,435 [serve] 15850 calls, 101 ms each
+2026-11-06 05:45:24,809 [serve] 15900 calls, 101 ms each
+2026-11-06 05:45:34,081 [serve] 15950 calls, 101 ms each
+2026-11-06 05:45:41,215 [serve] 16000 calls, 101 ms each
+2026-11-06 05:45:48,587 [serve] 16050 calls, 101 ms each
+2026-11-06 05:45:57,702 [serve] 16100 calls, 101 ms each
+2026-11-06 05:46:04,702 [serve] 16150 calls, 101 ms each
+2026-11-06 05:46:11,503 [serve] 16200 calls, 101 ms each
+2026-11-06 05:46:20,285 [serve] 16250 calls, 101 ms each
+2026-11-06 05:46:26,995 [serve] 16300 calls, 101 ms each
+2026-11-06 05:46:34,020 [serve] 16350 calls, 101 ms each
+2026-11-06 05:46:42,523 [serve] 16400 calls, 101 ms each
+2026-11-06 05:46:49,269 [serve] 16450 calls, 101 ms each
+2026-11-06 05:46:55,976 [serve] 16500 calls, 101 ms each
+2026-11-06 05:47:04,615 [serve] 16550 calls, 101 ms each
+2026-11-06 05:47:11,427 [serve] 16600 calls, 101 ms each
+2026-11-06 05:47:18,244 [serve] 16650 calls, 101 ms each
+2026-11-06 05:47:26,949 [serve] 16700 calls, 101 ms each
+2026-11-06 05:47:33,675 [serve] 16750 calls, 101 ms each
+2026-11-06 05:47:40,347 [serve] 16800 calls, 101 ms each
+2026-11-06 05:47:47,391 connection closed
+2026-11-06 05:47:47,391 Connection from ('127.0.0.1', 44932) closed

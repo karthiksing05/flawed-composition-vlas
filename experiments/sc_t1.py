@@ -39,6 +39,8 @@ def read():
     def eps(m, r, c, l):
         t = tid(meta, c, l)
         p = os.path.join(OUT, "n2_roll", f"{m}_main_{t}.json") if r == 5 else os.path.join(OD, f"{m}_r{r}_{t}.json")
+        if os.path.isdir(p):                                                # t1_roll.sh's mv landed inside the client's video folder, named from --out
+            p = os.path.join(p, os.path.basename(p) + ".tmp")
         by = {int(e["trial"]): e for e in json.load(open(p, encoding="utf-8"))["tasks"][str(t)]["episodes"]}
         return [by[k] for k in ks], meta["tasks"][t]["object"]
 

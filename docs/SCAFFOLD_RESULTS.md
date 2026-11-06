@@ -1180,6 +1180,29 @@ So a VLA that matches U is decisive against the thesis, because the VLA carries 
 
 **Prediction.** NO GAIN FROM CHUNKING, all four settings NO CLEAR CHANGE. The break atlas places the failures at the carry's binding, which a shorter query does not supply.
 
+### 32.1 Result: NO GAIN FROM CHUNKING (2026-11-06; results/flawed/sc_t1_read.json; rollouts sc_t1)
+
+| model | actions per query | new pairings, familiar | against 5 | grasped the right object | known, familiar | new pairings, new layout |
+|---|---|---|---|---|---|---|
+| pi0.5 | 5 (frozen read) | .500 | | .967 | .992 | .300 |
+| pi0.5 | 2 | .450 | −.050 [−.250, +.150] | .950 | .983 | .183 |
+| pi0.5 | 10 | .458 | −.042 [−.200, +.100] | .967 | .992 | .308 |
+| GR00T | 5 (frozen read) | .167 | | .992 | .958 | .083 |
+| GR00T | 2 | .158 | −.008 [−.117, +.100] | .975 | .950 | .067 |
+| GR00T | 10 | .250 | +.083 [−.025, +.233] | .992 | .933 | .100 |
+
+All four settings NO CLEAR CHANGE, as predicted. Overall **NO GAIN FROM CHUNKING**.
+
+**Reading.** On new pairings in familiar scenes both VLAs grasp the right object at .95-.99 and then succeed far less often, at every setting. So query length does not move the failure, which comes after the grasp. This agrees with the break atlas and gives T16 its target.
+
+**Limits.** The intervals allow an effect up to about +.15 for pi0.5 and +.23 for GR00T, so this rules out a large gain and leaves a modest one open. Replanning at 1 stayed out for cost. One lower bound falls under zero outside the verdict: pi0.5 at 2 on new pairings, new layout, −.117 [−.250, −.025].
+
+**A bug in my job script, no data lost.** The client names a video folder from `--out`, so `x.json.tmp` produced a folder `x.json`, and my `mv` placed each result at `x.json/x.json.tmp`. The first read crashed on this, and I changed its path lookup after registration. The statistics did not change.
+
+### 30.1 Training incident (2026-11-06)
+
+T8b lost its node at 05:58 with a checkpoint at step 500. Its three chained retries and all of T16s's first attempts ran out of GPU memory at startup on gundam and kitt, within minutes. On starrysky the same config ran at 6.9 s/step. My job script exited 0 regardless, so Slurm showed them COMPLETED, and I reported training as running while nothing ran for about nine hours. I do not know why those two nodes ran out of memory. The replacement script logs GPU memory at start, refuses a GPU already holding over 1 GB, returns the real exit code, and excludes both nodes. T8b resumed from step 500 on cyborg at 15:34, on the same recipe and data.
+
 ## 33. T16: structure inside the VLA's routine (protocol fixed 2026-11-06, before training starts; m3_prereg sc_t16)
 
 **The question the user set.** Does a VLA trained with composition's structure in its routine compose better than the same VLA trained the traditional way? Arm S against T8b's VLA is that comparison: same model, base weights, frames, batch, steps and harness, both from pixels.
