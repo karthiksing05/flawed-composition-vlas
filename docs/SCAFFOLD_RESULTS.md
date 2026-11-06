@@ -1138,3 +1138,24 @@ Development read, oracle positions, one kitchen, 3 seeds, 20 states per chain.
 **What remains, post hoc.** M3 stays at .017 because the bowl's drag plows the cheese away, a physical conflict in my chain selection and no failure of a part. Its removal would raise the mean, but the statistic stands as registered. M5 and M6 lose about .22, with the push as the last clause, and I have not explained that. A last clause inherits a scene changed by the first skill and an arm that has already returned, and the solo push's success at .83 starts from a fixed pose. On new layouts the push's own weakness dominates.
 
 **Status of this block.** T11-T15b add a verb to the library with no retraining beyond one event rule, on one kitchen with oracle positions. The stop rule is the only part tuned across repeated reads of the same chains. These states have now shaped it, so any claim about it needs fresh states.
+
+## 30. T8b: the retrained VLA (protocol fixed 2026-11-06, before training starts; m3_prereg sc_t8v)
+
+**Why now.** PLAN_SCAFFOLD §7's stop rule reads: "If T8's retrained VLA matches the full system, the thesis as written fails, and we report it." Every VLA arm so far is frozen, and T8a had no VLA in its ladder. This read is the one that can refute the thesis.
+
+**The arm.** pi0.5 trained from `pi05_base` on K1-K8 only, with `pi05_l90c`'s recipe and its own norm stats: `pi05_goal8` in `lifelong_ood/policy/l90c_config.py`. Batch 64, 3,000 steps, four A40s, about 45 A40-h, one seed, read at step 3,000. That length gives about 24k samples per task and 4.6 passes over the data. `pi05_l90c@5000` reached .959 parity at about 4k samples per task, so this budget is generous by that comparison.
+
+**The data, and how it differs from U's.**
+- The demos come from `physical-intelligence/libero`, the set `pi05_libero` trained on: 335 episodes, 41,569 frames (K1 49, K2 48, K3 46, K4 47, K5 36, K6 40, K7 36, K8 33). That set dropped some raw demos, while U fits all 50 per task. So the VLA sees about 16% fewer demos, which departs from the plan's "equal demos".
+- The VLA reads pixels, while U reads oracle positions, also a departure from the plan's "same VLM". U's inputs are the easier ones.
+- One seed against U's three. Comparison intervals resample tasks and states, with U averaged over its seeds.
+
+So a VLA that matches U is decisive against the thesis, because the VLA carries the handicaps. A VLA below U leaves input difference as a live rival: it supports the rung and does not establish it. T7 (the stack from pixels) would be needed to close that.
+
+**Rollouts.** Through the frozen read's harness: `experiments/serve_guided.py` in mode `ours` with seed 13, and `fc_n2_client.py` with `n2_branches_main.json`, all 16 compounds in both layouts, dev states 4-23.
+
+**Verdict, new pairings N1-N6, familiar, VLA − U.** VLA MATCHES iff the CI lower bound is at or above −.10. RUNG HOLDS iff the CI upper bound falls below −.10. Otherwise UNRESOLVED. If the same comparison on known K1-K6 has its upper bound below −.10 and the label would read RUNG HOLDS, the label reads UNDERFIT, as T8a's rule does.
+
+**Reported with no verdict.** The new layout; VLA − frozen `pi05_libero` on the same cells; K7, K8, N7, N8.
+
+**Prediction.** RUNG HOLDS: VLA near .95 on known, near .45 on new pairings against U's .894; new layout near .15 on new pairings against U's .381. Near .45 follows the frozen read's .50 for pi0.5 on these pairings, with less data to generalize from.
