@@ -746,7 +746,16 @@ Median over three one-demo keys of each head's 95th-percentile horizontal error,
 
 - **The registered overall reads C1 RUNGS FAIL.** HF trails U on its own training tasks by +.214 [+.017, +.414], so the first-match rule labels it UNDERFIT and its new-pairing loss cannot count as a pure generalization loss. My prediction of C1 RUNGS HOLD was wrong on that rung.
 - **Ulc is the informative arm, and my prediction there was wrong too.** I predicted NO FALL. Ulc keeps every part and every role and replaces the fixed rule with a small MLP, and roles train jointly. It matches or beats U on known tasks (−.058 [−.192, +.031]) and loses .54 on new pairings. It loses most on the bottle pairings (N4 .08, N5 .22, N6 .00) and less on cheese (N1 .55, N2 .72, N3 .58). It also loses in the new layout on known tasks, +.344 [+.183, +.511].
-- **Reading, post hoc.** Parts alone do not generalize. The fixed combination and separate training carry the new pairings, which supports the thesis on the piece of structure it most depends on. This arm changes two things at once, the rule and joint training, so the read does not separate them.
+- **The fixed rule carries it (post hoc, existing rollouts, same bootstrap).** T4b's Uj trains jointly and keeps the fixed rule, so Uj − Ulc changes the rule alone, and U − Uj changes the training alone.
+
+| new pairings unless marked | U − Uj (joint training) | Uj − Ulc (the rule) |
+|---|---|---|
+| familiar | +.106 [−.036, +.289] | **+.431 [+.217, +.647]** |
+| new layout | +.069 [−.042, +.175] | **+.219 [+.122, +.333]** |
+| known tasks, familiar | +.033 [−.033, +.094] | −.092 [−.222, +.008] |
+| known tasks, new layout | +.061 [−.056, +.186] | **+.283 [+.167, +.422]** |
+
+  With parts, roles and training held equal, learning the combination costs nothing measurable on trained tasks and loses .43 on new pairings. Parts alone do not generalize; the fixed rule carries them. This is the sharpest removal result the thesis has. It remains a development read with oracle inputs, and it compares against one learned-rule form.
 - **Limits.** All arms have oracle inputs and the same demos. RF and HF have about half U's parameters, and they receive contact labels and given roles. No retrained VLA is in the ladder yet, so C1's refuting case remains untested.
 
 ### 20.3 T9: NOT YET (predicted), by .006; NOT FORGOTTEN (predicted)
@@ -771,7 +780,7 @@ Median over three one-demo keys of each head's 95th-percentile horizontal error,
 | N6 | bottle → bowl | **cheese → bowl** | correct |
 | K1, N4, K5 | | refused | K1, N4 correct, K5 refused (no rack part) |
 
-Each misparse uses a word the store has never linked to a part, and §3.7 of the plan requires abstention in exactly this case.
+**Correction to §16, post hoc.** §16 says S1's refusal did not catch this parse. That was wrong: the table above comes from `role_parse`, the rule without refusal, which is what rollouts call. Run on the same stores, S1's `Lexicon` refuses all four, and on U it agrees with `role_parse` on K1-K8 and N1-N7. It also refuses N8 ("push the bowl..."), which `role_parse` on U silently runs as bowl → stove. So the defect is wiring: the rollout path bypasses the refusing store. T6b routes clauses through `Lexicon`.
 
 ## 21. T6 result: BREAKS (2026-11-05 night; results/flawed/sc_t6_read.json; rollouts sc_t6)
 
@@ -789,3 +798,49 @@ Each misparse uses a word the store has never linked to a part, and §3.7 of the
 | C6 N3→K2 | .62 | .98 | .98 | .93 | .93 | 1.00 | .92 | .67 |
 
 The two chains that start with the bottle fail hardest, at the second skill. U alone on the descriptive tasks: K7 .30, N7 .00, N8 .00, K8 refused in every episode (no parse), all familiar. New layout: K7 .03, the others 0.
+
+### 21.1 What broke, post hoc: my transition
+
+Per-episode breakdown, familiar. Second skill's goal at the end, split by whether the scripted return arrived inside its 60 steps.
+
+| chain | return ran out | second goal, return arrived | second goal, return ran out |
+|---|---|---|---|
+| C1 | .10 | .80 | .00 |
+| C2 | .80 | .75 | .04 |
+| C3 | .00 | .87 | |
+| C4 | .00 | .78 | |
+| C5 | .88 | .86 | .09 |
+| C6 | .33 | .93 | .15 |
+
+Three defects sit in the schema I wrote, and the verdict stands as registered with them in it.
+
+- **The return stalls.** A trace on three smoke states of C2 and C5 shows the hand stopping at the same point, about (.079, 0, 1.188), from different starts, with x growing while the command asks for −x. The script rises to the start height first, and that height far from the base extends the arm fully. My reading, from kinematics and with no joint angles logged, is that the elbow reaches its straight limit, where a retract command produces no motion. A second skill then starts far from any start pose it has seen.
+- **The hand leaves too early.** The release event fires with the fingers still near closed (width .02-.03 in the traces), and the script rises at once. The bottle gets dragged: the first goal goes from true to false within 10 steps in three of six traces, and one of those recovers.
+- **The last skill stops at its release.** U alone runs until the goal or 300 steps. So the chain and the product measure different things. Between .02 and .22 of familiar chains end with the last skill released and its goal false.
+
+These defects mean T6 did not test whether skills compose in sequence. It tested this script. The read says nothing yet about moved objects interfering, which was my prediction's mechanism.
+
+## 22. T6b: the boundary rebuilt on hand state (protocol fixed 2026-11-06, before any non-smoke rollout; m3_prereg sc_t6b)
+
+**Weakness, measured in 21.1.** The scripted boundary. **One principle.** The boundary ends on hand state, and a skill runs as it runs alone.
+
+`experiments/sc_t6b.py`. No training, U's checkpoints, seeds 10-12, dev states 4-23, both layouts, T6's six chains and joined goals. Clauses parse through S1's `Lexicon`.
+
+**The stall, measured on smoke states.** A probe of joint angles confirms 21.1's reading. During a stalled return, joint 4 sits at −.07, the Panda's elbow limit, with no contacts. A retract command swings the locked arm upward until it rests near (.016, 0, 1.35). The elbow's link offsets put the limit past the true straight point (my reading from the arm's geometry), so an inward pull presses it against its stop. The grasps of the tall bottle reach this pose because the wrist sits high.
+
+**Boundary, both arms.** At the release event, hold still with the command open until the finger width stops changing (under 1 mm per step, at most 20 steps). Rise 8 cm straight up. The rise height is a hand-set constant, one value in every scene.
+
+| arm | after the rise |
+|---|---|
+| R | a straight line in space to the start pose, until within 2 cm (at most 150 steps), then the second skill. While the elbow sits within .02 rad of its limit, push outward horizontally until it has bent by .25 rad |
+| D | the second skill starts at once, from wherever the hand is, with no elbow rule |
+
+The elbow rule reads the arm's joint angle and its own limit, and no scene input. It names one joint of this arm, so it is robot-specific. D scripts less: no return, so only open and rise. It asks more of the parts, which have seen only one start pose. The last skill runs until the goal or 300 steps, as U alone does.
+
+**Verdict, each arm, familiar, chain − product of U's alone outcomes on matching seeds and states.** BREAKS iff the CI lies wholly below −.10. HOLDS iff the lower bound is at or above −.10. Otherwise UNRESOLVED. T6's verdict stays on the record and this read does not replace it. Reported with no verdict: D − R, the new layout, and per-chain rows for the first goal at release and at the transition, arrival, the second hold and each goal at the end.
+
+**What the smoke showed before this row.** Smoke states 0-2, seed 10, familiar. Before the elbow rule: R succeeds on all nine episodes of C1, C3 and C4, stalls on C2 and C5, and D succeeds only on C4. With it: R succeeds on nine of nine on C1, C2 and C5. The elbow rule and its two constants came from these states. The development states 4-23 have not seen this schema.
+
+**Prediction.** R HOLDS, with a point estimate near −.05, since the smoke is clean and 20 states will be harder. D BREAKS, because the parts have seen one start pose.
+
+**What it decides.** R's HOLDS would say sequence composes at the product of skill competences on two-skill chains, under a scripted boundary. That is C3's chain half, with the drawer still open. A scripted boundary counts as structure the schema holds, so it needs a removal control, which D provides.
