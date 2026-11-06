@@ -1092,3 +1092,16 @@ Development read, oracle positions, one kitchen, 3 seeds, 20 states per chain.
 **Verdict, familiar, six chains, per arm.** Chain minus product, as in T14: BREAKS iff the CI upper bound falls below −.10; HOLDS iff the lower bound is at or above −.10; otherwise UNRESOLVED. R carries the claim and G shows the ceiling. **Also reported:** each arm against T14 on the same chains, D1 and D2, and the new layout, with no verdict.
 
 **Prediction, after reading smoke.** The smoke read seed 10 on states 0-1: both arms M1 1 of 2 and D1 1 of 2, passing state 0, which failed in T14. I predict R UNRESOLVED, chains near .65 against .82, a gain near +.25 over T14; G within .05 of R; D1 and D2 near .65; M3 stays low.
+
+### 28.1 Result: BOTH BREAK (2026-11-06; results/flawed/sc_t15_read.json; rollouts sc_t15)
+
+| arm | six chains, familiar | − product | vs T14 | new layout | D1, D2 familiar |
+|---|---|---|---|---|---|
+| R, demo radius | .489 | −.328 [−.525, −.155] | +.078 [−.028, +.217] | .136 | .500 |
+| G, goal predicate | .483 | −.333 [−.533, −.125] | +.072 [−.011, +.189] | .144 | .467 |
+
+**R BREAKS and G BREAKS.** I predicted R UNRESOLVED near .65 with a gain near +.25, which was wrong. G within .05 of R held, and M3 stayed low as predicted, at .017 for R. D1 and D2 reached about .50 against my .65.
+
+**First goal at the transition, R:** M1 .55, M2 .52, M3 .67, against T14's .28, .27, .43. The stop roughly doubles it, and the demo radius matches the goal predicate, so the deployable rule loses nothing to the ceiling. Yet the ceiling itself reaches only about .53 on plate chains, against .85 for K8 alone.
+
+**So overshoot was part of the cause.** Next suspect, post hoc: the stillness rule I kept in both arms. A solo push may pause and resume, as the gate's two segments in T11's episodes suggest, and the clause then ends too early. On smoke state 1, a clause ended by stillness at step 168, the step at which a solo K8 reached its goal on that state in T12's smoke. §29 removes the rule.

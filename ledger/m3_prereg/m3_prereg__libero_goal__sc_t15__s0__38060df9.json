@@ -1,0 +1,57 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T15 (docs/SCAFFOLD_RESULTS.md 28)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA TITAN Xp",
+  "host": "walle.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4549331",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "38060df91bf3e286b12a1bb7ea7576cbc1305602",
+  "short": "38060df9"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "30367a714e5ff31ddf2a17a849ec68ee08393f1a535dfaaeebada25a7020ec2c",
+   "experiments/sc_t14.py": "a285721fecedb48bd4e3f61f2ecf82ad5135fa595e2ce022ddb242941f443117",
+   "experiments/sc_t15.py": "282d894bbeb2850f3db8c2e3cd445b71635626bf54764da3c0901f15c95d00a6",
+   "lifelong_ood/policy/parts_flow.py": "a8fda7014a9a9b7072bf3c24432e7579005c0bd8339319d213f9f3bef81db626",
+   "results/flawed/sc_t12_modes.json": "7c70adff0fe4b950123e658f9267084c2ef5c1d99b713548fdba3a3521244650"
+  },
+  "labelled": "development read on N2 main states 4-23, the same chains and states T14 just read, so this repeats a read after a fix designed on that failure; the user asked to keep iterating overnight and has not reviewed this rule",
+  "mapping": "per arm, six chains M1-M6, familiar: chain minus product. BREAKS iff CI upper < -.10; HOLDS iff CI lower >= -.10; else UNRESOLVED. R carries the claim, G is the ceiling",
+  "prediction": "R UNRESOLVED, chains near .65, product .82, gain near +.25 over T14; G within .05 of R; D1, D2 near .65; M3 stays low",
+  "states": "dev only: N2 main states 4-23; smoke states 0-1 read before this row: R and G each M1 1/2, D1 1/2 on seed 10",
+  "status": "PRE-REGISTERED T15",
+  "written_before": "any non-smoke T15 rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t15__s0__38060df9",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t15.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-06T09:07:05+00:00",
+ "stream": null,
+ "tag": "sc_t15"
+}
