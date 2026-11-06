@@ -26,6 +26,22 @@ MODES = os.path.join(OUT, "sc_t12_modes.json")
 KNOWN = tuple(f"K{i}" for i in range(1, 9))
 READ_C = tuple(f"K{i}" for i in range(1, 7)) + tuple(f"N{i}" for i in range(1, 7))
 B, MARGIN = 2000, 0.10
+SUP = bool(os.environ.get("SC_SUP"))                                        # SCAFFOLD_RESULTS 33.1: the supervised stage: role phrases given by the task definitions
+if SUP:
+    OD = os.path.join(OUT, "sc_t16s")
+NAME = "pi05_goal8_rsup" if SUP else "pi05_goal8_roles"
+TAG = "sc_t16s" if SUP else "sc_t16"
+PHRASE = dict(akita_black_bowl_1="the bowl", cream_cheese_1="the cream cheese", wine_bottle_1="the wine bottle", plate_1="the plate",
+              flat_stove_1_cook_region="the stove", wooden_cabinet_1_top_side="the cabinet", wine_rack_1_top_region="the rack")
+_GIVEN = {}
+
+
+def given(instruction):
+    """The supervised stage's prompts: the task definition's goal atom named by hand.  None for the drawer and push tasks, whose instructions stay whole."""
+    if not _GIVEN:
+        for t in n2()["tasks"]:
+            _GIVEN[t["language"]] = None if t["compound"] in ("K7", "K8", "N7", "N8") else ("object: " + PHRASE[t["object"]], "target: " + PHRASE[t["target"]])
+    return _GIVEN[instruction]
 
 
 def n2():
@@ -39,6 +55,8 @@ def lang():
 def prompts(lex, words, instruction):
     """-> (object prompt, target prompt), or None for an instruction this routing leaves whole: no parse, a second clause ("and"), or a mode other than close."""
     from lifelong_ood.policy import parts_flow as PF
+    if SUP:
+        return given(instruction)
     toks = instruction.lower().split()
     r = PF.role_parse(lex, instruction)
     if r is None or "and" in toks or PF.verb_parse(words, instruction) != "close":
@@ -102,13 +120,14 @@ def convert():
     X = json.load(open(LEX, encoding="utf-8"))
     L = lang()
     d = D.Demos()
-    root = pathlib.Path(LEROBOT_HOME) / LC.ROLES_REPO
+    REPO = LC.RSUP_REPO if SUP else LC.ROLES_REPO
+    root = pathlib.Path(LEROBOT_HOME) / REPO
     assert not (root / "meta" / "info.json").exists(), f"{root} exists"
     features = {"image": {"dtype": "image", "shape": (256, 256, 3), "names": ["height", "width", "channel"]},
                 "wrist_image": {"dtype": "image", "shape": (256, 256, 3), "names": ["height", "width", "channel"]},
                 "state": {"dtype": "float32", "shape": (8,), "names": ["state"]},
                 "actions": {"dtype": "float32", "shape": (7,), "names": ["actions"]}}
-    ds = LeRobotDataset.create(repo_id=LC.ROLES_REPO, root=root, robot_type="panda", fps=10, features=features, image_writer_threads=8, image_writer_processes=4)
+    ds = LeRobotDataset.create(repo_id=REPO, root=root, robot_type="panda", fps=10, features=features, image_writer_threads=8, image_writer_processes=4)
     k, counts = 0, {}
     for c in KNOWN:
         text = L[c]
@@ -127,8 +146,8 @@ def convert():
             if k % 20 == 0:
                 print(f"[t16] {k} episodes, at {c} ep {e}", flush=True)
     ds.stop_image_writer()
-    with open(os.path.join(OUT, "sc_t16_manifest.json"), "w", encoding="utf-8") as fh:
-        json.dump(dict(repo_id=LC.ROLES_REPO, episodes=k, frames=int(ds.meta.total_frames), frames_per_prompt=counts), fh, indent=1)
+    with open(os.path.join(OUT, f"{TAG}_manifest.json"), "w", encoding="utf-8") as fh:
+        json.dump(dict(repo_id=REPO, episodes=k, frames=int(ds.meta.total_frames), frames_per_prompt=counts), fh, indent=1)
     print("[t16] done", k, "episodes, frames per prompt", json.dumps(counts), flush=True)
 
 
@@ -137,8 +156,9 @@ def norm():
     import openpi.shared.normalize as normalize
     from lifelong_ood.policy import data as D
     from lifelong_ood.policy import l90c_config as LC
-    cfg = LC.train_config("pi05_goal8_roles")
-    root = pathlib.Path(LEROBOT_HOME) / LC.ROLES_REPO
+    cfg = LC.train_config(NAME)
+    REPO = LC.RSUP_REPO if SUP else LC.ROLES_REPO
+    root = pathlib.Path(LEROBOT_HOME) / REPO
     files = sorted((root / "data").rglob("episode_*.parquet"))
     stats = {k: normalize.RunningStats() for k in ("state", "actions")}
     n, tasks = 0, set()
@@ -150,7 +170,7 @@ def norm():
         stats["actions"].update(ac[idx])
         tasks.update(t["task_index"])
         n += len(ac)
-    normalize.save(cfg.assets_dirs / LC.ROLES_REPO, {k: s.get_statistics() for k, s in stats.items()})
+    normalize.save(cfg.assets_dirs / REPO, {k: s.get_statistics() for k, s in stats.items()})
     print(f"[t16] norm over {n} frames of {len(files)} episodes; distinct per-frame task indices {len(tasks)}", flush=True)
 
 
@@ -180,7 +200,7 @@ def serve_cmd(a):
     from lifelong_ood.policy.backbone import PolicyBackbone
     from lifelong_ood.policy.serve import GuidedPolicy, serve, warm
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-    bk = PolicyBackbone("pi05_goal8_roles", checkpoint_dir=a.ckpt, device="cuda")
+    bk = PolicyBackbone(NAME, checkpoint_dir=a.ckpt, device="cuda")
     pol = GuidedPolicy(bk, hooks=None, num_steps=10, seed=a.seed)
     warm(pol)
     serve(Routed(pol, json.load(open(LEX, encoding="utf-8"))), a.port)
@@ -223,7 +243,7 @@ def read():
     res["composition"] = "STRUCTURE WINS" if x["ci"][0] > MARGIN else ("STRUCTURE LOSES" if x["ci"][1] < -MARGIN else "NO CLEAR DIFFERENCE")
     res["cost"] = "NO COST" if kn["ci"][0] >= -MARGIN else "COST"
     print("[t16]", json.dumps(res), flush=True)
-    with open(os.path.join(OUT, "sc_t16_read.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(OUT, f"{TAG}_read.json"), "w", encoding="utf-8") as fh:
         json.dump(res, fh, indent=1)
 
 

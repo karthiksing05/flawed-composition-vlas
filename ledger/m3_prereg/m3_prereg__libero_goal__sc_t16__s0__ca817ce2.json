@@ -1,0 +1,60 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T16 (docs/SCAFFOLD_RESULTS.md 33)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4550315",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ca817ce22dc5e161f5b3ab233fe26e35ed42171b",
+  "short": "ca817ce2"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "4e32615333cb522dfee7480f853a47b64daa945919e773fb3e4a98041858ef00",
+   "experiments/c_train_pi05.py": "6c051eb72f0c59a767be6836db22f830f666657b1556faac308b10b4cfc46e2f",
+   "experiments/sc_t16.py": "10544688202c79a6008a13149189686b01403d014bdf7b796dca49c89cd71130",
+   "lifelong_ood/policy/l90c_config.py": "bd230992c974b463970f80f4084cef08fad86500eea7fc173b78a72c51795abf",
+   "lifelong_ood/policy/parts_flow.py": "a8fda7014a9a9b7072bf3c24432e7579005c0bd8339319d213f9f3bef81db626",
+   "results/flawed/sc_t16_lex.json": "a895852711203fcadfa6d21bb3a8989a37a5255bd9357eb830dd2dff17163bcb",
+   "results/flawed/sc_t16_manifest.json": "33fa731fd8fe29889c2e709d96878a79df12ac4a0c5ddc22c3e85db3f03eec25"
+  },
+  "labelled": "development read on N2 main states 4-23; both VLAs read pixels and proprioception; one seed per arm; the user set this comparison on 2026-11-06 and has not reviewed this design",
+  "mapping": "S - T8b's VLA. New pairings N1-N6, familiar: STRUCTURE WINS iff CI lower > +.10; STRUCTURE LOSES iff CI upper < -.10; else NO CLEAR DIFFERENCE. Known K1-K6, familiar: NO COST iff CI lower >= -.10; else COST",
+  "prediction": "STRUCTURE WINS; S near .75 new pairings against VLA near .45; NO COST, S near .90 known; new layout S near .25 against VLA near .15",
+  "states": "dev only: N2 main states 4-23",
+  "status": "PRE-REGISTERED T16",
+  "training": "pi05_goal8_roles from pi05_base, batch 64, 3000 steps, read at step 3000, as T8b",
+  "written_before": "T16 training"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t16__s0__ca817ce2",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t16.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-06T10:20:14+00:00",
+ "stream": null,
+ "tag": "sc_t16"
+}

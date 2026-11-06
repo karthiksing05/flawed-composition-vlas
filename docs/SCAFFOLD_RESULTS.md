@@ -1206,3 +1206,17 @@ So "put the cream cheese on the plate" reaches the policy as "object: the cream 
 **Reported with no verdict.** The new layout, per-task rates, K7, K8, N7, N8.
 
 **Prediction.** STRUCTURE WINS: S near .75 on new pairings against the VLA near .45; NO COST, with S near .90 on known; on the new layout S near .25 against the VLA near .15, because the grasp limit there stays untouched.
+
+### 33.1 Order changed: supervised first (2026-11-06; m3_prereg sc_t16s)
+
+**User, in their words:** "This should start as supervised and then be unsupervised". I cancelled the training jobs for the arm above before either started, so no steps ran. The row `sc_t16` stays in the ledger, and that arm, with its dataset already built, becomes stage two.
+
+**Stage one, arm Ss.** Everything above, with one change: role phrases come from each task's definition, hand-named from its goal atom ("object: the cream cheese", "target: the plate"). This removes K6's "in" artifact. Dataset `lol/libero_goal8_rsup`, config `pi05_goal8_rsup`.
+
+**What stays unsupervised in this stage, and why.** The hold event stays proprioceptive, in training and at test. A contact label does not exist for these frames: they come from a different filtering of the demos than `demos_b.npz`, and test-time contact would need the simulator, which T8b's VLA does not have. K7, K8, N7 and N8 stay whole, because no phase label exists for these frames either.
+
+**Verdicts and comparator.** The same as above, on Ss − T8b's VLA: composition on new pairings familiar, and cost on known familiar.
+
+**Prediction.** STRUCTURE WINS, Ss near .78 on new pairings against the VLA near .45, a little above the unsupervised arm's predicted .75. NO COST, near .90 on known. New layout near .25.
+
+**Stage two, once stage one reads.** The registered arm above, on its own dataset. Their difference is the cost of learning the phrases, which on these instructions is one word.
