@@ -844,3 +844,47 @@ The elbow rule reads the arm's joint angle and its own limit, and no scene input
 **Prediction.** R HOLDS, with a point estimate near −.05, since the smoke is clean and 20 states will be harder. D BREAKS, because the parts have seen one start pose.
 
 **What it decides.** R's HOLDS would say sequence composes at the product of skill competences on two-skill chains, under a scripted boundary. That is C3's chain half, with the drawer still open. A scripted boundary counts as structure the schema holds, so it needs a removal control, which D provides.
+
+### 22.1 T6b result: R UNRESOLVED, D BREAKS (2026-11-06; results/flawed/sc_t6b_read.json; rollouts sc_t6b)
+
+| arm | familiar chain | product | − product [95% CI] | label | new chain | new product | − product |
+|---|---|---|---|---|---|---|---|
+| R | .869 | .931 | −.061 [−.108, −.017] | UNRESOLVED | .181 | .158 | +.022 [−.056, +.100] |
+| D | .219 | .931 | −.711 [−.917, −.453] | BREAKS | .033 | .158 | −.125 [−.250, −.022] |
+
+- **My prediction on R missed by .008.** I predicted HOLDS near −.05. The point estimate is −.061 and the lower bound is −.108 against −.10. The margin stays where it was registered.
+- **The boundary was most of T6's break.** Familiar chains go from .494 to .869 on the same skills, states and seeds. No skill changed, so the loss in T6 belonged to my transition.
+- **In the new layout, chains reach their product.** That product is low, because the skills themselves fail there. Sequence adds no measurable loss on top.
+- **The return earns its place.** D − R is −.650 [−.858, −.375] familiar and −.147 [−.267, −.044] new. Parts have seen one start pose and cannot take over from another. This is a limit on the parts, and it means the schema holds real structure.
+
+| chain, familiar | R chain | product | first goal at release | first goal at transition | first goal at end | return arrived | second goal at end |
+|---|---|---|---|---|---|---|---|
+| C1 K1→N2 | .97 | .98 | .72 | .98 | .98 | 1.00 | .98 |
+| C2 K4→K1 | .87 | .93 | .70 | .87 | .87 | .98 | .95 |
+| C3 K2→K4 | .88 | .93 | .93 | 1.00 | 1.00 | 1.00 | .88 |
+| C4 N1→K3 | .87 | .97 | .48 | .95 | .95 | .98 | .92 |
+| C5 N4→N2 | .68 | .78 | .42 | .72 | .73 | .97 | .92 |
+| C6 N3→K2 | .95 | .98 | .32 | .98 | .98 | 1.00 | .97 |
+
+**Reading, post hoc.** The goal is often still false at the release event and true once the object settles, which is what waiting for the fingers buys. The first skill now keeps its goal through the rest of the chain: first goal at the transition and at the end agree within .01 on all six chains. So I saw no sign of the second skill disturbing the first object, which was the mechanism in my T6 prediction.
+
+**Limits.** The " then " split, the return, the rise height and the elbow rule are all hand-written, and the elbow rule came from smoke states. The chains were chosen so targets stay free. All inputs are oracle.
+
+## 23. T6c: three skills no demo shows (protocol fixed 2026-11-06, before any non-smoke rollout; m3_prereg sc_t6c)
+
+`experiments/sc_t6c.py`. T6b's arm R, unchanged, on chains of three skills. Seeds 10-12, dev states 4-23, both layouts. No training, U's checkpoints. Three objects go to three different targets, and every order of the objects appears once.
+
+| chain | first | second | third |
+|---|---|---|---|
+| L1 | K1 bowl → plate | N2 cheese → stove | K4 bottle → cabinet |
+| L2 | K4 bottle → cabinet | N1 cheese → plate | K2 bowl → stove |
+| L3 | N4 bottle → plate | K3 bowl → cabinet | N2 cheese → stove |
+| L4 | K2 bowl → stove | N4 bottle → plate | N3 cheese → cabinet |
+| L5 | N1 cheese → plate | N5 bottle → stove | K3 bowl → cabinet |
+| L6 | N3 cheese → cabinet | K1 bowl → plate | N5 bottle → stove |
+
+**Verdict, familiar, chain − product of the three skills' U outcomes on matching seeds and states.** BREAKS iff the CI lies wholly below −.10. HOLDS iff the lower bound is at or above −.10. Otherwise UNRESOLVED. New layout reported with no verdict, with each goal at the end per chain.
+
+**Prediction.** UNRESOLVED, with a chain near .70 against a product near .82, since each boundary costs about .05 and a later skill now meets two placed objects.
+
+**Limits.** As in T6b. No demo holds more than one pick and place here, so this read tests length past anything trained, and the objects and targets are all known.

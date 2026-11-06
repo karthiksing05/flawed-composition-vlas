@@ -106,7 +106,7 @@ def episode(model, bddl, state, clauses, seed_base, arm):
             rep.append(dict(oe=oe, te=te, steps=t, held_step=held_step, released=released))
             if last or done:
                 continue
-            rep[-1]["goal_at_release"] = bool(env.env._eval_predicate(goals[0]))
+            rep[-1]["goal_at_release"] = bool(env.env._eval_predicate(goals[ci]))
             w0 = None                                                       # the boundary: open, hold still, until the fingers stop
             for r in range(OPEN_MAX):
                 sc = FC.scene(env, obs, dj)
@@ -159,7 +159,7 @@ def episode(model, bddl, state, clauses, seed_base, arm):
                     r += 1
                 rep[-1]["return_steps"], rep[-1]["arrived"], rep[-1]["unlock_steps"] = r, arrived, unlocks
             prev = -1.0
-            rep[-1]["first_goal_at_transition"] = bool(env.env._eval_predicate(goals[0]))
+            rep[-1]["first_goal_at_transition"] = bool(env.env._eval_predicate(goals[ci]))  # this clause's goal; clause 0 in T6b
         out_goals = [bool(env.env._eval_predicate(g)) for g in goals]
     except Exception as ex:                                                 # noqa: BLE001
         err, out_goals = repr(ex), []
