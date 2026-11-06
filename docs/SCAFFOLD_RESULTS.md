@@ -1057,3 +1057,24 @@ P1 **VERB COMPOSES**, P2 **VERB DOES NOT COMPOSE**, reach **SOME OBJECTS**, all 
 **Known bias in the product.** A single push episode stops the instant the object enters the region, while a chain needs the goal to stay true after the hand moves on. So a push's solo rate overstates its chance in a chain. I fixed the statistic to match T6b and flag this before the read.
 
 **Prediction, after reading smoke.** The smoke read seed 10 on states 0-1: M1 1 of 2, M3 1 of 2, D1 1 of 2. On state 0 the first goal was false when the push clause ended. I predict UNRESOLVED, with the chains near .55 against a product near .75, and D1 and D2 near .40.
+
+### 27.1 Result: BREAKS (2026-11-06; results/flawed/sc_t14_read.json; rollouts sc_t14)
+
+Development read, oracle positions, one kitchen, 3 seeds, 20 states per chain.
+
+**Familiar, six chains: .411 against a product of .817, −.406 [−.617, −.189]. BREAKS.** I predicted UNRESOLVED near −.20, which was wrong. New layout: .128 against .186, −.058 [−.139, +.011]. The dependent chains D1 and D2: .283 against .817, new layout .042 against .125.
+
+| chain | clauses | chain | product | first goal at transition | first goal at end | second goal at end |
+|---|---|---|---|---|---|---|
+| M1 | plate push, bowl to stove | .283 | .850 | .283 | .283 | 1.00 |
+| M2 | plate push, cheese to cabinet | .233 | .817 | .267 | .267 | .833 |
+| M3 | bowl push, cheese to plate | .033 | .750 | .433 | .433 | .050 |
+| M4 | bottle to cabinet, plate push | .767 | .850 | .933 | .933 | .767 |
+| M5 | bottle to cabinet, bowl push | .600 | .833 | .933 | .933 | .617 |
+| M6 | cheese to cabinet, bowl push | .550 | .800 | .917 | .917 | .567 |
+| D1 | plate push, bowl onto plate | .283 | .833 | .283 | .283 | .833 |
+| D2 | plate push, cheese onto plate | .283 | .800 | .283 | .300 | .783 |
+
+**Reading, post hoc.** The six chains split by order. With the push last, the chains sit near their product. With the push first, the push's own goal holds at the transition only about .28 of the time, against .85 alone, while the second skill runs well: M1's second goal reaches 1.00. D1 and D2 show the second skill finding a plate the first clause moved, at .83 and .78. That dependent placement is the strongest thing in this table, and the pushed plate's own goal is what sinks both chains.
+
+**The bias I flagged is the likely cause.** A solo push stops when the object enters the region. The push clause keeps running until the object goes still. M3's second goal also falls to .05, and its geometry suggests why: the bowl's path to the region passes near the cheese's start at (−.05, .13). I have not checked either account, and §28 tests the first.
