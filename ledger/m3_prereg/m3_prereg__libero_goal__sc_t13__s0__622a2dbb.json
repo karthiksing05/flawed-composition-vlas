@@ -1,0 +1,59 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T13 (docs/SCAFFOLD_RESULTS.md 26)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4548588",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "622a2dbb9c6976c532d22ea213cb8d11193350fb",
+  "short": "622a2dbb"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "9e3c7fcd7a780cb620e7965b010d1ab4bf36c08a768c5e79c1c861d86fa29be7",
+   "experiments/fa1h_roll.py": "3b1f2f43df7014486f02371e14640d16cc7decbb2a18a02b2072700d7dab7c41",
+   "experiments/sc_t13.py": "3239360c5f1bcd241d7099c254a51b7681e1c903c4c630624b4b04889e0b3e8a",
+   "lifelong_ood/policy/parts_flow.py": "a8fda7014a9a9b7072bf3c24432e7579005c0bd8339319d213f9f3bef81db626",
+   "results/flawed/sc_t12_modes.json": "7c70adff0fe4b950123e658f9267084c2ef5c1d99b713548fdba3a3521244650",
+   "results/flawed/sc_t13_bddl/P1.bddl": "8321b3ab1569e2b9ad79de8871b06285993ac573909e4a17f79e22341b88cc27",
+   "results/flawed/sc_t13_bddl/P2.bddl": "1f186dd6f50aedce385de8a79198858a1dc250fbf5854c8e0c39e9aa66b50a80"
+  },
+  "labelled": "development read on N2 main states 4-23, which have shaped earlier work; two new instructions; the word rule changed after working the cheese parse by hand; the user asked to keep iterating overnight and has not reviewed this rule",
+  "mapping": "per task, familiar over states: VERB COMPOSES iff mean >= .50 and CI lower >= .25; VERB PARTIAL iff CI lower > .05; else VERB DOES NOT COMPOSE. Reach: GENERAL iff both tasks at least partial; SOME OBJECTS iff one; BOWL ONLY iff neither",
+  "prediction": "P1 cheese VERB COMPOSES near .70; P2 bottle VERB DOES NOT COMPOSE near .05; reach SOME OBJECTS",
+  "states": "dev only: N2 main states 4-23; smoke states 0-1 read before this row: P1 2/2, P2 0/2 on seed 10",
+  "status": "PRE-REGISTERED T13",
+  "written_before": "any non-smoke T13 rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t13__s0__622a2dbb",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t13.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-06T08:35:58+00:00",
+ "stream": null,
+ "tag": "sc_t13"
+}

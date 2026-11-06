@@ -1022,3 +1022,22 @@ Development read, oracle positions, one kitchen, 3 seeds, 20 states per task.
 **Reported with no verdict.** The new layout, how often arrival fires, and where the object ends.
 
 **Prediction, after reading smoke.** The smoke read seed 10 on states 0-1: P1 2 of 2, P2 0 of 2, with the bottle knocked away and arrival firing early, near step 27. I predict P1 VERB COMPOSES near .70, P2 VERB DOES NOT COMPOSE near .05, reach SOME OBJECTS.
+
+### 26.1 Result: SOME OBJECTS (2026-11-06; results/flawed/sc_t13_read.json; rollouts sc_t13)
+
+Development read, oracle positions, one kitchen, 3 seeds, 20 states per task.
+
+| task | layout | V | arrival fired | object's mean end (x, y) |
+|---|---|---|---|---|
+| P1 cheese push | familiar | .983 [.950, 1.00] | 1.00 | −.045, .172 |
+| P1 cheese push | new | .133 [.033, .250] | .67 | −.101, .042 |
+| P2 bottle push | familiar | 0 [0, 0] | 1.00 | −.207, −.048 |
+| P2 bottle push | new | 0 [0, 0] | .93 | −.012, .069 |
+
+P1 **VERB COMPOSES**, P2 **VERB DOES NOT COMPOSE**, reach **SOME OBJECTS**, all as predicted. P1 came in above my .70.
+
+**Read P1 familiar with care.** The cheese's familiar position sits near (−.05, .13) and the target region starts near y = .17, so the task needs a drag of about 4 cm. It ends at y = .172, barely inside. The bowl's task needs about 17 cm. So .983 mostly shows the verb on an easy case, and it should not count as equal evidence to N8. On the new layout, where the distance is larger, P1 falls to .133 and arrival fires in only two thirds of episodes. N8 holds .517 there.
+
+**P2.** The bottle ends near its familiar start, about (−.20, −.05). So on average the hand barely moves it, and on the smoke's two states it pushed the bottle further from the target. Arrival fires early on the smoke, near step 27, and I have not separated an early arrival from an open hand's inability to drag a tall object at its grasp site.
+
+**What the verb's reach shows, post hoc.** The verb transfers where the object's learned site lets an open hand drag it: the bowl's rim, and the cheese over a short distance. It does not transfer to a tall object held near its neck. The parts carry a grasp site and nothing about what that site can do with an open hand, so this boundary comes from the part design.
