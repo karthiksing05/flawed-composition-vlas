@@ -935,3 +935,29 @@ The elbow rule reads the arm's joint angle and its own limit, and no scene input
 **Prediction.** PUSH PARTIAL, with K8 near .35. A part in the plate's frame has to find the contact point from one approach in the demos. NO COST, with the event quiet on grasp tasks. N8 near 0, because a verb-specific approach is missing.
 
 **The drawer stays for later.** K7's two phases need different objects within one task, which this arm does not do. Its first phase still trains under the bowl's part.
+
+### 24.1 Result: PUSH WORKS, NO COST (2026-11-06; results/flawed/sc_t11_read.json; rollouts sc_t11)
+
+Development read, oracle positions, one kitchen, 3 seeds, 20 states per task. The seed-12 build lost its node once and requeued. All 84 rollouts started after the requeued build finished.
+
+**Push.** K8 familiar .867 [.783, .950]. Registered bar: mean .50, lower bound .25. **PUSH WORKS.** U scores 0 on this task. My prediction was PUSH PARTIAL near .35, which was wrong: a part in the plate's frame found the contact point far more reliably than I expected.
+
+**Cost.** Um − U, familiar: known +.019 [−.039, +.103]; new pairings −.011 [−.069, +.047]. **NO COST**, as predicted.
+
+| group | layout | Um | U | Um − U |
+|---|---|---|---|---|
+| known K1-K6 | familiar | .892 | .872 | +.019 [−.039, +.103] |
+| new pairings N1-N6 | familiar | .883 | .894 | −.011 [−.069, +.047] |
+| known K1-K6 | new | .475 | .433 | +.042 [−.022, +.125] |
+| new pairings N1-N6 | new | .400 | .381 | +.019 [−.072, +.117] |
+
+**Reported with no verdict.**
+
+| task | layout | Um | event fired |
+|---|---|---|---|
+| K8 plate push | familiar | .867 [.783, .950] | .983 |
+| K8 plate push | new | .233 [.083, .400] | 1.00 |
+| N8 bowl push | familiar | .033 [0, .100] | 1.00 |
+| N8 bowl push | new | .067 [0, .183] | .983 |
+
+**What this does and does not establish.** K8 trained on its own 50 demos, so K8 measures the generalized event and shows nothing about composition. The composition test in this block is N8, the push verb on an object the push demos never touch, and N8 fails as predicted. The new layout falls for K8 as it does for grasps. The rarest-word rule and the event's constants came after I read the demos, and the user has not reviewed them.
