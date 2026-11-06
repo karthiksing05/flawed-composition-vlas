@@ -1,0 +1,60 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T8a and T9 (docs/SCAFFOLD_RESULTS.md 16)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4539370",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "89544afd5e2ccb19f1bd77afaf197a8eb153b93c",
+  "short": "89544afd"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "14a3d64c8ae52fa9d7681153b7012f079aebbcf8edc3692a48692220e68f8f9a",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/pp_baselines.py": "3f1ae3aa6f562d974d7b101810d7b01a3dc0fff28c20d568755e7b8683c50b19",
+   "experiments/pp_p_train.py": "4a42b27061b21d2e1dab93f30ffdc5a5a32281d937f8b4ffe14f5c23776174d1",
+   "experiments/sc_t8.py": "29cd4ac138e8d0af82e43f091681de628970cc33ec19e28bec6d24c20081e0b7",
+   "lifelong_ood/policy/parts_flow.py": "cdb1173be8b06b0bd2238946d0a1f605977b42f4ef034b2c0fa5269cb6ba436c"
+  },
+  "labelled": "development read on N2 main states 4-23, which have shaped earlier work; the user asked to keep iterating overnight and has not reviewed these rules",
+  "mapping_ladder": "per arm, U minus arm, first match: UNDERFIT iff known familiar difference > +.10 with CI lower > 0; FALLS iff new pairings familiar CI lower > +.10; else NO FALL. Overall C1 RUNGS HOLD iff RF and HF both FALLS; else C1 RUNGS FAIL. Ulc reported separately",
+  "mapping_old": "final store minus base on K2 K3 K6 N2 N3 familiar: NOT FORGOTTEN iff lower bound >= -.10 in both orders; else FORGETS",
+  "mapping_stream": "final store minus full U on K1 K4 N1 N4 N5 N6 familiar: STREAM HOLDS iff lower bound >= -.10 in both orders; else NOT YET",
+  "prediction": "C1 RUNGS HOLD with Ulc NO FALL; NOT YET; NOT FORGOTTEN",
+  "states": "dev only: N2 main states 4-23; smoke states 0-1 with 50-step builds read before this row",
+  "status": "PRE-REGISTERED T8a T9",
+  "written_before": "any non-smoke build or rollout of T8a or T9"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t8__s0__89544afd",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t8.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-06T03:36:59+00:00",
+ "stream": null,
+ "tag": "sc_t8"
+}

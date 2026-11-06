@@ -237,7 +237,9 @@ def read():
                                                 second_held=float(np.mean([len(e["clauses"]) > 1 and e["clauses"][1]["held_step"] is not None for e in E])),
                                                 second_goal_end=float(np.mean([len(e["goals"]) > 1 and e["goals"][1] for e in E])), first_goal_end=float(np.mean([len(e["goals"]) > 0 and e["goals"][0] for e in E])))
         for c in SEQ:
-            res["seq"][f"{c}|{l}"] = float(np.mean([[e["success"] for e in load(c, s, l)] for s in SEEDS]))
+            E = [e for s in SEEDS for e in json.load(open(os.path.join(OD, f"{c}_s{s}_{l}.json"), encoding="utf-8"))["eps"]]     # descriptive; a lexicon's refusal is a result here (amended after the first read crashed on K8, no verdict depends on it)
+            assert all(e.get("error") in (None, "no induced roles") for e in E), c
+            res["seq"][f"{c}|{l}"] = dict(success=float(np.mean([e["success"] for e in E])), refused=float(np.mean([e.get("error") == "no induced roles" for e in E])), n=len(E))
     x = res["V"]["familiar"]
     res["label"] = "BREAKS" if x["ci"][1] < -MARGIN else ("HOLDS" if x["ci"][0] >= -MARGIN else "UNRESOLVED")
     print("[t6]", json.dumps(res), flush=True)

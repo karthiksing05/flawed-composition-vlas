@@ -714,3 +714,78 @@ Three scene-blind routes tried, none closes the gap: the frame turned offline by
 **Limits.** No fine-tuned head and no refinement beyond the token window. The camera matrices, height and the label shift stay oracle.
 
 **Prediction.** NO BETTER THAN A TABLE, on the plate and on confusion between similar objects, with the median error well below the 95th percentile.
+
+## 20. T2, T8a and T9 results (2026-11-05 night; results/flawed/sc_t2_read.json, sc_t8_read.json; rollouts sc_t8)
+
+All three are development reads on states that have shaped earlier work. The user has not reviewed the rules.
+
+### 20.1 T2: NO BETTER THAN A TABLE (predicted)
+
+Median over three one-demo keys of each head's 95th-percentile horizontal error, in metres, against a 2 cm budget.
+
+| head | familiar | new | constant table, familiar | constant table, new | median error, familiar | median error, new |
+|---|---|---|---|---|---|---|
+| cheese | .332 | .319 | .021 | .271 | .05-.27 | .09-.19 |
+| bottle | .348 | .447 | .016 | .371 | .04-.15 | .18-.25 |
+| bowl | .099 | .543 | .017 | .261 | .03-.05 | .16-.32 |
+| plate | .089 | .425 | .016 | .322 | .03-.09 | .07-.24 |
+| bowl as target | .195 | .383 | .019 | .258 | .02-.04 | .24-.29 |
+
+- **Every head is worse than a constant at the 95th percentile, in both layouts.** A key from 10 demos does not rescue it (new layout .31-.58).
+- **My prediction named the plate.** The plate is one of the better heads in the familiar layout, so that part was wrong. The cheese and bottle fail hardest there.
+- **The stop rule fires.** The entity store stays on a small encoder, which weakens the tie to the VLM. This read tests one key per entity on pooled token features, with no fine-tuned head. It does not rule out VLM features with a trained head.
+
+### 20.2 T8a: C1 RUNGS FAIL, by HF's label; the rungs themselves fall hard
+
+| arm | known familiar | new pairings familiar | known new | new pairings new | U − arm, new pairings familiar | label |
+|---|---|---|---|---|---|---|
+| U | .872 | .894 | .433 | .381 | | |
+| Ulc | .931 | .358 | .089 | .092 | +.536 [+.378, +.692] | FALLS |
+| RF | .742 | .011 | .028 | .003 | +.883 [+.756, +.978] | FALLS |
+| HF | .658 | .003 | .000 | .000 | +.892 [+.772, +.975] | UNDERFIT |
+
+- **The registered overall reads C1 RUNGS FAIL.** HF trails U on its own training tasks by +.214 [+.017, +.414], so the first-match rule labels it UNDERFIT and its new-pairing loss cannot count as a pure generalization loss. My prediction of C1 RUNGS HOLD was wrong on that rung.
+- **Ulc is the informative arm, and my prediction there was wrong too.** I predicted NO FALL. Ulc keeps every part and every role and replaces the fixed rule with a small MLP, and roles train jointly. It matches or beats U on known tasks (−.058 [−.192, +.031]) and loses .54 on new pairings. It loses most on the bottle pairings (N4 .08, N5 .22, N6 .00) and less on cheese (N1 .55, N2 .72, N3 .58). It also loses in the new layout on known tasks, +.344 [+.183, +.511].
+- **Reading, post hoc.** Parts alone do not generalize. The fixed combination and separate training carry the new pairings, which supports the thesis on the piece of structure it most depends on. This arm changes two things at once, the rule and joint training, so the read does not separate them.
+- **Limits.** All arms have oracle inputs and the same demos. RF and HF have about half U's parameters, and they receive contact labels and given roles. No retrained VLA is in the ladder yet, so C1's refuting case remains untested.
+
+### 20.3 T9: NOT YET (predicted), by .006; NOT FORGOTTEN (predicted)
+
+| final store | − full U, six stream tasks, familiar | new layout | − base, five old tasks, familiar | N4, double new, familiar / new |
+|---|---|---|---|---|
+| bp | −.011 [−.106, +.083] | +.042 [−.072, +.158] | .000 [.000, .000] | .82 / .35 |
+| pb | −.011 [−.106, +.083] | +.039 [−.067, +.147] | +.003 [.000, +.020] | .82 / .37 |
+
+- **The registered verdict is NOT YET.** The lower bound −.106 misses −.10 by .006, with a point estimate of −.011. The margin stays where it was registered.
+- **N4 works with both parts created after the base.** It reaches .82 familiar and .35-.37 new, with no demo of bottle on plate and no task in the base that contains either part.
+- **Order makes almost no difference.** Familiar rates match between orders on every task but K6 (.967 and .983), and new-layout rates differ by at most .02.
+- **Old tasks hold.** Parameters stay bitwise unchanged, and no old task's parse moves.
+
+**The parse table shows a defect.** Before the parts arrive, the base lexicon silently misparses four instructions it should refuse.
+
+| task | instruction's content | base parse | final parse |
+|---|---|---|---|
+| K4 | bottle → cabinet | **bowl → cabinet** | correct |
+| N1 | cheese → plate | **cheese → bowl** | correct |
+| N5 | bottle → stove | **bowl → stove** | correct |
+| N6 | bottle → bowl | **cheese → bowl** | correct |
+| K1, N4, K5 | | refused | K1, N4 correct, K5 refused (no rack part) |
+
+Each misparse uses a word the store has never linked to a part, and §3.7 of the plan requires abstention in exactly this case.
+
+## 21. T6 result: BREAKS (2026-11-05 night; results/flawed/sc_t6_read.json; rollouts sc_t6)
+
+**Amendment to the read.** The first read crashed on an assert in the descriptive block, because U's lexicon refuses K8. I changed that block to report refusals, after the chain rollouts and before any verdict had printed. The verdict's code did not change, and the chain block keeps its assert. The registered sha of `experiments/sc_t6.py` is the pre-amendment file.
+
+**Registered verdict, familiar: BREAKS.** Chain .494 against a product of .931, −.436 [−.636, −.244]. My prediction of UNRESOLVED was wrong. New layout, no verdict: .086 against .158, −.072 [−.169, +.019].
+
+| chain | chain | product | first alone | first goal at transition | first goal at end | second alone | second held | second goal at end |
+|---|---|---|---|---|---|---|---|---|
+| C1 K1→N2 | .67 | .98 | 1.00 | .85 | .87 | .98 | 1.00 | .72 |
+| C2 K4→K1 | .13 | .93 | .93 | .53 | .52 | 1.00 | .82 | .18 |
+| C3 K2→K4 | .82 | .93 | 1.00 | .95 | .95 | .93 | 1.00 | .87 |
+| C4 N1→K3 | .62 | .97 | .98 | .77 | .80 | .98 | .95 | .78 |
+| C5 N4→N2 | .12 | .78 | .78 | .63 | .65 | .98 | 1.00 | .18 |
+| C6 N3→K2 | .62 | .98 | .98 | .93 | .93 | 1.00 | .92 | .67 |
+
+The two chains that start with the bottle fail hardest, at the second skill. U alone on the descriptive tasks: K7 .30, N7 .00, N8 .00, K8 refused in every episode (no parse), all familiar. New layout: K7 .03, the others 0.
