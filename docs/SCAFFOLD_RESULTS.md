@@ -646,6 +646,55 @@ No second attempt succeeded, out of about 246. The rule costs bowl tasks late fi
 - **Cheese's 38% that use four attempts never succeed.** That share is close to F's scripted-grasp block, so the rule cannot reach those states.
 - **Retry is closed.** No schema-level failure transition enters the architecture on this evidence.
 
-### 15.2 Where the new-layout line stands
+## 16. T8a and T9 (protocol fixed 2026-11-05, before any non-smoke build; m3_prereg sc_t8)
+
+The user went to bed with "keep iterating towards our goals" and did not choose among the options in §18. So these reads need no new rule. A real VLA retrain waits, because U runs on oracle positions and a pixel VLA does not, so that comparison has no equal inputs until parts run from pixels.
+
+`experiments/sc_t8.py`. Seeds 10-12, 30,000 steps, K1-K6 and N1-N6, both layouts, dev states 4-23.
+
+**T8a, the oracle rungs of C1's ladder.** Same demos and oracle inputs.
+
+| arm | what changes from U |
+|---|---|
+| Ulc | a small MLP combines the two role velocities, the hold and flow time, in place of the fixed rule; roles train jointly |
+| RF | one role-routed head, atom identity as input (`pp_baselines`) |
+| HF | one holistic head (`pp_baselines`) |
+
+RF and HF get contact labels and given roles, so they receive more supervision than U. RF and HF have 888k and 967k parameters against U's 1.78M. Parameter budgets differ, and the plan's equal budget is unmet.
+
+**Verdict per arm, U − arm, first match.** UNDERFIT iff on known tasks, familiar, the difference exceeds +.10 with CI lower bound above 0 (so the arm cannot do even its training tasks). FALLS iff on new pairings, familiar, the CI lower bound exceeds +.10. Otherwise NO FALL. Overall: C1 RUNGS HOLD iff RF and HF both read FALLS. Otherwise C1 RUNGS FAIL. Ulc's label is reported separately, because it keeps the parts.
+
+**T9, a lifelong stream.** A base build without K1, K4 and K5, so with no bottle and no plate. Two parts then arrive one at a time from one demo each, in both orders: bp (bottle from K4, then plate from K1) and pb (the reverse). The second creation starts from the first's checkpoint. N4, bottle on plate, then pairs two parts neither of which was in the base.
+
+- **Stream, each order's final store − full U, on K1, K4, N1, N4, N5, N6, familiar.** STREAM HOLDS iff the lower bound is at or above −.10 in both orders. Otherwise NOT YET.
+- **Forgetting, each order's final store − the base, on K2, K3, K6, N2, N3, familiar.** NOT FORGOTTEN iff the lower bound is at or above −.10 in both orders. Otherwise FORGETS. Old parameters stay bitwise unchanged, which the creation code asserts, so only a change in the lexicon's parses could move these.
+- **Reported with no verdict:** N4's success in both orders, the new layout, and a table of every instruction's parse under the base and final stores. The smoke showed the base parsing "put the cream cheese on the plate" as cheese into bowl, a silent wrong parse that S1's refusal did not catch when two tasks are withheld.
+
+**Prediction.** T8a C1 RUNGS HOLD, with Ulc at NO FALL, because Ulc reads only the role velocities and can learn the switch. T9 STREAM HOLDS is unlikely on six tasks of mixed difficulty: NOT YET in at least one order, through N4. NOT FORGOTTEN.
+
+## 17. T6: chains no demo shows (protocol fixed 2026-11-05, before any non-smoke rollout; m3_prereg sc_t6)
+
+`experiments/sc_t6.py`. No training, U's checkpoints, seeds 10-12, dev states 4-23, both layouts.
+
+**The schema, one rule.** Split the instruction at " then ", parse each clause with the library's lexicon, run the first skill until the release event (hold on, then off with the command open), open the gripper, rise, return to the start pose, and run the second skill. At most 300 steps per skill and 60 for the return. Success means both goals are true at once, judged by a BDDL goal joined from the two tasks.
+
+| chain | first | second |
+|---|---|---|
+| C1 | K1 bowl → plate | N2 cheese → stove |
+| C2 | K4 bottle → cabinet | K1 bowl → plate |
+| C3 | K2 bowl → stove | K4 bottle → cabinet |
+| C4 | N1 cheese → plate | K3 bowl → cabinet |
+| C5 | N4 bottle → plate | N2 cheese → stove |
+| C6 | N3 cheese → cabinet | K2 bowl → stove |
+
+The " then " split is a hand-written grammar rule, and the chains were chosen so each object and target is free when its skill runs. Both are disclosed limits.
+
+**Verdict, familiar.** Chain success − product of the two skills' U outcomes, on matching seeds and state indices. BREAKS iff the CI lies wholly below −.10. HOLDS iff the lower bound is at or above −.10. Otherwise UNRESOLVED. New layout reported with no verdict.
+
+**Reported with no verdict:** the first goal at the transition and at the end, the second skill's hold, and U alone on K7, N7, K8, N8. This read tests sequence by transition. The drawer needs a schema with three phases and stays open.
+
+**Prediction.** UNRESOLVED, with a first skill that holds and a second that loses something to the first's moved objects.
+
+## 18. Where the new-layout line stands
 
 Three scene-blind routes tried, none closes the gap: the frame turned offline by clearance (failed), the frame turned by a part (PARTS DO NOT TURN), and retry (DOES NOT PAY). What remains known: F shows bowl and bottle states are physically open at other poses, and a part fitted to one pose cannot reach them. Giving a part those poses needs either new demos showing them, or geometric data that amounts to a grasp-option teacher, which the rules bar in training. That choice belongs to the user.

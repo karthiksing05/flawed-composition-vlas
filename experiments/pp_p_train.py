@@ -449,6 +449,9 @@ def main():
     ap.add_argument("--iroles", action="store_true")                      # LADDER_RESULTS 5: L4 (roles induced from contact events)
     ap.add_argument("--demos", type=int, default=None)                    # SCAFFOLD_RESULTS 8: build on the first N demos per task
     ap.add_argument("--nosize", action="store_true")                      # SCAFFOLD_RESULTS 8: no hand-set sizes (all zero)
+    ap.add_argument("--lcomb", action="store_true")                       # SCAFFOLD_RESULTS 16: learned combination (T8a)
+    ap.add_argument("--base", default="P.npz")                            # SCAFFOLD_RESULTS 16: create from this file in the build's directory (T9's stream)
+    ap.add_argument("--out", default="")                                  # SCAFFOLD_RESULTS 16: the created checkpoint's file name (T9's stream)
     ap.add_argument("--role", choices=("obj", "tgt"))
     ap.add_argument("--atom")
     ap.add_argument("--task")
@@ -526,7 +529,7 @@ def main():
         m = PF.PartsFlow(8, center=center, size=size, rank=a.rank, tsize=a.tsize, aframe=2 if a.aframe2 else int(a.aframe), home=home,
                          rclip=rclip, rtclip=rtclip, hscale=hscale, psupport=a.psupport, rclip_p=ro, rtclip_p=rt, tscale=a.tscale,
                          nmode=nmode, tmode=tmode, gm=gm, rtransport=a.rtransport, rs_p=rs_p, rrole=rrole, bbnom=a.bbnom, bbnosize=a.bbnosize,
-                         tnear=a.tnear, rrel_p=rrel)
+                         tnear=a.tnear, rrel_p=rrel, lcomb=a.lcomb)
         groups, reused = None, None
         if a.decouple:                                                     # PARTS_RESULTS 35
             hv = torch.unique(b["held"]).cpu().tolist()
@@ -561,7 +564,7 @@ def main():
             rep.update(iroles=lex_rep)
         fn = os.path.join(ROOT, "results", "flawed", f"pp_train_{a.tag}_s{a.seed}.json")
     else:
-        m, meta = PF.PartsFlow.load(os.path.join(d, "P.npz"))
+        m, meta = PF.PartsFlow.load(os.path.join(d, a.base))
         if meta.get("decouple") and not a.decouple:                  # PARTS_RESULTS 35: a decoupled library's parts train deterministically
             deterministic()
         m = m.to(dev)
@@ -653,14 +656,14 @@ def main():
             elif not torch.equal(v, w):
                 changed.append(k)
         assert not changed, ("parameters outside the created part changed", changed)
-        name = f"P_{a.atom}_k{a.k}.npz"
+        name = a.out or f"P_{a.atom}_k{a.k}.npz"
         ema.cpu().save(os.path.join(d, name), dict(meta, created=a.atom, role=a.role, task=a.task, k=a.k, demos=demos))
         rep = dict(mode="create", tag=a.tag, seed=a.seed, atom=a.atom, role=a.role, task=a.task, k=a.k, demos=demos, n_rows=n,
                    steps=CREATE_STEPS, secs=secs, gpu_seconds_to_ready=time.time() - t0, curve=curve, params_added=net.part_params(),
                    old_parameters_changed=0, part_radius=radius, part_mode=cmode, part_start_radius=rstart, part_release_radius=rrel)
         if roles_changed is not None:
             rep.update(iroles=dict(lexicon=lex, library_parses_changed=roles_changed))
-        fn = os.path.join(ROOT, "results", "flawed", f"pp_create_{a.tag}_s{a.seed}_{a.atom}_k{a.k}.json")
+        fn = os.path.join(ROOT, "results", "flawed", f"pp_create_{a.tag}_s{a.seed}_{a.atom}_k{a.k}{'_' + a.out if a.out else ''}.json")
     with open(fn, "w", encoding="utf-8") as fh:
         json.dump(rep, fh, indent=1)
     print(f"[pp_p] wrote {fn}", flush=True)

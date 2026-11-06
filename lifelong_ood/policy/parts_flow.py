@@ -170,8 +170,10 @@ class PartsFlow(nn.Module):
 
     def __init__(self, horizon=8, center=(0.0, 0.0, 0.0), size=None, rank=RANK, tsize=False, aframe=False, home=(0.0, 0.0, 0.0),
                  rclip=0.0, rtclip=0.0, hscale=0.0, psupport=False, rclip_p=None, rtclip_p=None, tscale=False, nmode=0, tmode=None,
-                 gm=None, rtransport=False, rs_p=None, rrole=0.0, bbnom=False, bbnosize=False, tnear=False, rrel_p=None):
+                 gm=None, rtransport=False, rs_p=None, rrole=0.0, bbnom=False, bbnosize=False, tnear=False, rrel_p=None, lcomb=False):
         super().__init__()
+        # SCAFFOLD_RESULTS 16 (T8a): the fixed rule replaced by a learned combination of the two role velocities, the hold and the flow time
+        self.lcomb = bool(lcomb)
         # PARTS_RESULTS 50 (P_rel): with tscale, the carry scale frame leaves the target part's release region unstretched.  rrel_p
         # [target part] = its release radius rho (99th pct of its demos' object-to-target distance at each carry's last held row).
         # For d0 > r_t: phi(d) = d (d <= rho), rho + (d - rho)(r_t - rho)/(d0 - rho) (d > rho); the row's scale is phi(d)/d.
@@ -226,6 +228,8 @@ class PartsFlow(nn.Module):
         dslot = 3 + 2 + 2 + 1                                       # position, (sin, cos) yaw, size, drawer opening: no identity
         self.obj = RoleNet(dprop + dslot + self.nmode + da + dt, da, len(OBJ_ATOMS), rank=rank)
         self.tgt = RoleNet(3 + 1 + 2 + 1 + 6 + 2 * self.tsize + da + dt, da, len(TGT_ATOMS), rank=rank)
+        if self.lcomb:
+            self.comb = nn.Sequential(nn.Linear(2 * da + 1 + dt, WIDTH), nn.SiLU(), nn.Linear(WIDTH, WIDTH), nn.SiLU(), nn.Linear(WIDTH, da))
         # entity index -> part index (-1: no part)
         self.register_buffer("opart", torch.tensor([OBJ_ATOMS.index(e) if e in OBJ_ATOMS else -1 for e in _ENT()], dtype=torch.long))
         self.register_buffer("tpart", torch.tensor([TGT_ATOMS.index(e) if e in TGT_ATOMS else -1 for e in _ENT()], dtype=torch.long))
@@ -375,6 +379,8 @@ class PartsFlow(nn.Module):
             oc = torch.cat([oc[..., :2] / st[:, None, None], oc[..., 2:]], -1)
         vt = chunk_from(Qc, oc)
         g = b["held"][:, None, None]
+        if self.lcomb:
+            return self.comb(torch.cat([flat(vo), flat(vt), b["held"][:, None], te], -1)).reshape(B, self.H, 7)
         return (1 - g) * vo + g * vt
 
     def loss(self, b, a):
@@ -403,7 +409,7 @@ class PartsFlow(nn.Module):
         np.savez(path, __meta__=json.dumps(dict(meta, arm="P", horizon=self.H, rank=self.rank, tsize=self.tsize, aframe=self.aframe,
                                                 psupport=self.psupport, tscale=self.tscale, nmode=self.nmode,
                                                 rtransport=self.rtransport, bbnom=self.bbnom, bbnosize=self.bbnosize,
-                                                tnear=self.tnear)),
+                                                tnear=self.tnear, **(dict(lcomb=True) if self.lcomb else {}))),
                  **{k: v.detach().cpu().numpy() for k, v in self.state_dict().items()})
 
     @classmethod
@@ -413,7 +419,7 @@ class PartsFlow(nn.Module):
         m = cls(meta["horizon"], rank=meta.get("rank", RANK), tsize=meta.get("tsize", False), aframe=meta.get("aframe", False),
                 psupport=meta.get("psupport", False), tscale=meta.get("tscale", False), nmode=meta.get("nmode", 0),
                 rtransport=meta.get("rtransport", False), bbnom=meta.get("bbnom", False), bbnosize=meta.get("bbnosize", False),
-                tnear=meta.get("tnear", False))
+                tnear=meta.get("tnear", False), lcomb=meta.get("lcomb", False))
         sd ={k: torch.from_numpy(z[k]) for k in z.files if k != "__meta__"}
         sd.setdefault("rrel_p", m.rrel_p.clone())                               # checkpoints before P_rel carry no release radii
         sd.setdefault("rs_p", m.rs_p.clone())                                   # checkpoints before P_rtr carry no start radii
