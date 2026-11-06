@@ -698,3 +698,19 @@ The " then " split is a hand-written grammar rule, and the chains were chosen so
 ## 18. Where the new-layout line stands
 
 Three scene-blind routes tried, none closes the gap: the frame turned offline by clearance (failed), the frame turned by a part (PARTS DO NOT TURN), and retry (DOES NOT PAY). What remains known: F shows bowl and bottle states are physically open at other poses, and a part fitted to one pose cannot reach them. Giving a part those poses needs either new demos showing them, or geometric data that amounts to a grasp-option teacher, which the rules bar in training. That choice belongs to the user.
+
+## 19. T2: entity keys on frozen VLM features (protocol fixed 2026-11-05, before any non-smoke read; m3_prereg sc_t2)
+
+`experiments/sc_t2.py`. No training. pi05_libero's image features before language fusion, on LOCATOR's frames, heads, event labels and camera matrices.
+
+**Key, k = 1.** From one demo's first frame, the token under the demo's event label, averaged with its four neighbours (a store of one vector per entity). Three different demos give three repeats. A mean over 10 demos is reported as k = 10.
+
+**Locate.** The most similar token in a development frame, refined by a softmax over its 3 × 3 window at temperature .02, then lifted to the head's mean label height. One token covers 16 px, about .06 m. Errors subtract the simulator's constant label shift, as in LOCATOR's verdict, and raw errors are reported beside them.
+
+**Verdict, LOCATOR's mapping, on the median over repeats of each head's 95th-percentile horizontal error at k = 1, states 4-23.** WITHIN BUDGET iff every head is at or below .02 m in both layouts. BEATS A TABLE, OVER BUDGET iff every head in the new layout is at or below half a constant's error. Otherwise NO BETTER THAN A TABLE.
+
+**What it decides.** Whether the entity store can sit on the VLM, per the plan's stop rule. A failure keeps it on the small encoder, which weakens the tie to the VLM.
+
+**Limits.** No fine-tuned head and no refinement beyond the token window. The camera matrices, height and the label shift stay oracle.
+
+**Prediction.** NO BETTER THAN A TABLE, on the plate and on confusion between similar objects, with the median error well below the 95th percentile.
