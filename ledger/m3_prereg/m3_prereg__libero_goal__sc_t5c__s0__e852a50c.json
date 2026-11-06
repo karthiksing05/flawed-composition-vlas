@@ -1,0 +1,57 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T5c (docs/SCAFFOLD_RESULTS.md 15)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4535478",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "e852a50cdd94bb31c20b20e3763cc739c521556d",
+  "short": "e852a50c"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "8d69d97eaf139d7dd2e22db5c85743ba60c6b7bd4cad54377404a0df50c92fd7",
+   "experiments/fa1h_roll.py": "e52d63c5ac5f54b4c72719a0df211abe71fb5c7b28f8083a5667fd8649141876",
+   "experiments/sc_t5b.py": "c965ffb7e4d9cffd8d78eba64385d8119c5a8b4922cea32f63f6e9a52d67e931",
+   "experiments/sc_t5c.py": "97be2e952b73332afd5be636b655230ae384315f225d20ea631b5d4607904754",
+   "lifelong_ood/policy/parts_flow.py": "b51b01eb2998424b240e8b23ca791c6e9dc55611fb3869b051130431ef4cafae"
+  },
+  "labelled": "development read on N2 main states 4-23, which have shaped earlier work; the user asked for iteration and has not reviewed this rule",
+  "mapping": "Ur600 minus U600, new layout: RETRY PAYS iff in either cell (known, new pairings) the difference >= +.10 with CI lower > 0; else RETRY DOES NOT PAY",
+  "prediction": "RETRY DOES NOT PAY on the group cells, some gain on the bottle; U600 gains from the extra time",
+  "states": "dev only: N2 main states 4-23; smoke states 0-1 on K6 read before this row",
+  "status": "PRE-REGISTERED T5c",
+  "written_before": "any non-smoke T5c rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t5c__s0__e852a50c",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t5c.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-06T02:11:23+00:00",
+ "stream": null,
+ "tag": "sc_t5c"
+}

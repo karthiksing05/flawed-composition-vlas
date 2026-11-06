@@ -623,3 +623,29 @@ No second attempt succeeded, out of about 246. The rule costs bowl tasks late fi
 **What it decides.** RETRY PAYS adds a schema-level failure transition to the architecture, with the time cost stated. RETRY DOES NOT PAY closes retry as the way to reach T5a's ceiling, because scenes after a failed attempt differ from fresh ones. I then stop this line and report to the user. 600 steps is twice the budget of every earlier read, so these numbers do not compare with them.
 
 **Prediction.** RETRY DOES NOT PAY on the group cells, with some gain on the bottle. U600 itself should gain from the extra time.
+
+### 15.1 T5c result: RETRY DOES NOT PAY (2026-11-05; results/flawed/sc_t5c_read.json; rollouts sc_t5c)
+
+| Ur600 − U600 | Ur600 | U600 | difference | CI |
+|---|---|---|---|---|
+| known | .486 | .486 | .000 | [−.053, +.050] |
+| new pairings | .444 | .419 | +.025 | [−.019, +.075] |
+| bowl | .644 | .667 | −.022 | [−.100, +.061] |
+| cheese | .458 | .425 | +.033 | [−.038, +.113] |
+| bottle | .363 | .347 | +.017 | [−.020, +.060] |
+
+| Ur600 by attempts used | share | success |
+|---|---|---|
+| bowl: 1, 2, 3 | .63, .16, .21 | .86, .57, .08 |
+| cheese: 1, 2, 3, 4 | .43, .15, .04, .38 | .91, .44, .00, .00 |
+| bottle: 1, 2, 3 | .38, .25, .35 | .88, .08, .02 |
+
+**Reading, post hoc.**
+- **The budget was not the main limit.** With three or four tries available, retries rescue little, and U600 gets most of the same gain from waiting. Time alone moves U from .433 to .486 on known tasks and from .381 to .419 on new pairings.
+- **T5a's ceiling does not carry over to a sequence.** Fresh-scene repeats reached +.16 to +.26. A sequence reaches about +.02. The likely reason is disturbed scenes, since 42% of U's no-hold bowl failures move something, but this read did not measure scene state after a failed attempt.
+- **Cheese's 38% that use four attempts never succeed.** That share is close to F's scripted-grasp block, so the rule cannot reach those states.
+- **Retry is closed.** No schema-level failure transition enters the architecture on this evidence.
+
+### 15.2 Where the new-layout line stands
+
+Three scene-blind routes tried, none closes the gap: the frame turned offline by clearance (failed), the frame turned by a part (PARTS DO NOT TURN), and retry (DOES NOT PAY). What remains known: F shows bowl and bottle states are physically open at other poses, and a part fitted to one pose cannot reach them. Giving a part those poses needs either new demos showing them, or geometric data that amounts to a grasp-option teacher, which the rules bar in training. That choice belongs to the user.
