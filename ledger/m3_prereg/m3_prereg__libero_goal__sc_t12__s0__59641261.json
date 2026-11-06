@@ -1,0 +1,57 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: T12 (docs/SCAFFOLD_RESULTS.md 25)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4548534",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "59641261fe230cf90867b92e11a4a27fc31926a9",
+  "short": "59641261"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "15995fde27877fa07aecfadfebe59ff3c177fe5466f77173c9bf8ae9bd0e64d2",
+   "experiments/fa1h_roll.py": "3b1f2f43df7014486f02371e14640d16cc7decbb2a18a02b2072700d7dab7c41",
+   "experiments/sc_t12.py": "2fd14e9a6312c83303a07451e710ca91ec31df7448be01f5e460832113dd2dd1",
+   "lifelong_ood/policy/parts_flow.py": "82d8dec1dd315a923aa69736b00328fd1890138478735b159b3940ee21f1c292",
+   "results/flawed/sc_t12_modes.json": "7c70adff0fe4b950123e658f9267084c2ef5c1d99b713548fdba3a3521244650"
+  },
+  "labelled": "development read on N2 main states 4-23, which have shaped earlier work; the rule was designed after reading T11's N8 failure and revised after a smoke; the user asked to keep iterating overnight and has not reviewed this rule",
+  "mapping": "N8 familiar over states: VERB COMPOSES iff mean >= .50 and CI lower >= .25; VERB PARTIAL iff CI lower > .05; else VERB DOES NOT COMPOSE. K8 familiar V - Um: K8 HOLDS iff CI lower >= -.10; else K8 HURT",
+  "prediction": "VERB COMPOSES, N8 near .70 familiar; K8 HOLDS, delta near 0; N8 near .20 on the new layout",
+  "states": "dev only: N2 main states 4-23; smoke states 0-1 read before this row: N8 2/2, K8 2/2 on seed 10",
+  "status": "PRE-REGISTERED T12",
+  "written_before": "any non-smoke T12 rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_t12__s0__59641261",
+ "schema": 1,
+ "script": "experiments/prereg/sc_t12.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-06T08:24:59+00:00",
+ "stream": null,
+ "tag": "sc_t12"
+}

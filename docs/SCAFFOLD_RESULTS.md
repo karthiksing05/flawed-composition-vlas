@@ -987,3 +987,24 @@ Arrival reuses the part's own close command as a signal. It needs no contact lab
 - **Reported with no verdict.** The new layout, how often arrival fires, where the object ends.
 
 **Prediction, after reading smoke.** The smoke read seed 10 on states 0-1: N8 2 of 2, K8 2 of 2. I predict VERB COMPOSES with N8 near .70 familiar, K8 HOLDS with a delta near 0, and N8 near .20 on the new layout, in line with K8's .23 there.
+
+### 25.1 Result: VERB COMPOSES, K8 HOLDS (2026-11-06; results/flawed/sc_t12_read.json; rollouts sc_t12)
+
+Development read, oracle positions, one kitchen, 3 seeds, 20 states per task.
+
+| task | layout | V | Um (T11) | V − Um | arrival fired |
+|---|---|---|---|---|---|
+| N8 bowl push | familiar | .833 [.683, .950] | .033 | +.800 [+.633, +.933] | 1.00 |
+| N8 bowl push | new | .517 [.317, .700] | .067 | +.450 [+.250, +.650] | 1.00 |
+| K8 plate push | familiar | .850 [.750, .933] | .867 | −.017 [−.083, +.050] | 0 |
+| K8 plate push | new | .267 [.133, .433] | .233 | +.033 [−.033, +.100] | .03 |
+
+**VERB COMPOSES** and **K8 HOLDS**, as predicted. My numbers were low: N8 familiar came in above .70, and N8 new far above .20. N8 on the new layout beats K8 there, .517 against .267, which I did not expect and cannot yet explain.
+
+**What this establishes.** A verb demonstrated on the plate alone now drives the bowl, using the bowl's approach, the push's motion and a mode read from the words. No new demo and no retraining enter. It is the first result in this block where a whole new kind of action composes with an existing part.
+
+**What it leaves open.**
+- One task on one object. The bowl's grasp site sits at the rim, which suits a drag, and the bowl's direction to this target may suit it too. The bowl ends about 1.6 cm above its rest height on average, so it may tilt while dragged. T13 tests other objects.
+- "Push", "to" and "front" stay confounded (§25).
+- Success reads the object's final position. The open hand comes from the rule, and I have not watched the episodes.
+- The arrival rule and the word rule came after I read T11's failure, and the user has not reviewed them.
