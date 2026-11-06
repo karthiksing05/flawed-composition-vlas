@@ -460,7 +460,7 @@ The plate passes. The bottle fails on interval width with a positive point estim
 **Limits on what this establishes.**
 - **The control is missing.** V3 compares a created part with a full build. It never measures the same build with the created part switched off. U0 shows that K1, K2 and K3 survive without parts, so a created plate could pass while doing little. Crediting the part needs a k = 0 arm.
 - **K5 is outside the bottle's cells.** The side grasp, the bottle's hardest use, never entered this test.
-- **More demos do not help familiar scenes.** Bottle familiar falls from k = 1 to k = 10 on all four cells, and the same seeds do not rescue it. New-layout K4 and N5 rise to .67, above full U's .47-.50. A bottle part fitted to K4 alone may beat one shared with K5, which agrees with D's bottle split. This is a post-hoc hypothesis from one comparison.
+- **More demos do not help familiar scenes.** Bottle familiar falls from k = 1 to k = 10 on all four cells. New-layout K4 and N5 rise to .67, above full U's .47-.50. A bottle part fitted to K4 alone may beat one shared with K5, which agrees with D's bottle split. This is a post-hoc hypothesis from one comparison.
 
 ### 11.4 Storage (registered, no verdict)
 
@@ -485,3 +485,55 @@ F's upper limit on reachable states is close to 1.00, against .53 here, so rough
 ### 11.6 What T4 decides
 
 Hand-set sizes go. Per-part radii, rank 32 and the carry scale frame go under the registered rule, pending a joint test because each was removed alone. Parts, role-level transport and the grasp message stay. The labels left in the recipe are the entity list, oracle positions, and the features chosen for m and the frames. New layouts stay the largest gap.
+
+## 12. T5a and T4b (protocol fixed 2026-11-05, before any non-smoke rollout of T5a or any build of T4b; m3_prereg sc_t5)
+
+### 12.1 Where new-layout episodes fail, and two checks that shaped T5a
+
+U's failures, 20 states, 3 seeds:
+
+| | success | no hold | hold, then fail | median hold step |
+|---|---|---|---|---|
+| bowl, familiar | .99 | .00 | .01 | 49 |
+| bowl, new | .58 | .14 | .27 | 80 |
+| cheese, familiar | .97 | .00 | .03 | 52 |
+| cheese, new | .37 | .53 | .10 | 77 |
+| bottle, familiar | .75 | .13 | .12 | 48 |
+| bottle, new | .33 | .45 | .22 | 73 |
+
+**A clearance rule fails offline, so I do not register it.** The rule rotated the finger axis to maximise the distance from the fingertips to every other entity's position. Scored against F's recorded yaw options on new-layout states:
+
+| scripted success | fixed pose | rule | random angle | best per state |
+|---|---|---|---|---|
+| bowl | .53 | .63 | .63 | .88 |
+| bottle | .57 | .75 | .70 | .95 |
+| cheese | .40 | .18 | .14 | .40 |
+
+The rule matches or barely beats a random angle and it halves cheese, because rotating the cheese grasp fails in familiar scenes too (90° holds at .00). An entity-distance rule with no footprints does not earn the user's allowance for obstacle terms.
+
+**Demos cannot say which objects tolerate rotation.** The bowl's demos show it: its yaw varies (doubled-angle R .82-.88) while the finger axis stays fixed in the world (.98). Bottle and cheese yaw barely vary in demos (.99), so their demos carry no evidence either way.
+
+**Smoke.** A rotated frame produced no hold in 6 of 6 episodes, including K1 familiar at +90°. Repeating theta = 0 succeeded on both its episodes. My reading: a turned frame places the hand and wrist outside the states the part trained on.
+
+### 12.2 T5a: frames and retries
+
+`experiments/sc_t5.py`. No training. U's checkpoints, K1-K6 and N1-N6, both layouts, dev states 4-23, seeds 10-12.
+
+- **Rotation arms:** the object part's yaw frame offset by +45°, −45° or +90° until the hold.
+- **Repeat arms:** theta = 0 under three fresh noise offsets. Retrying alone also gains by luck, so rotation must beat this.
+
+Union = success in any attempt on that task, seed and state, with U's own episode included. Each attempt runs from a fresh scene, so unions are upper bounds on what a sequential retry could reach. A real retry also has to survive whatever the failed attempt knocked over.
+
+**Verdict, first match.** PARTS DO NOT TURN iff, on both bowl and bottle, the best rotation's familiar hold falls below U's hold by more than .10. ROTATION PAYS iff on bowl or bottle, new layout, union(rotations) − union(repeats) ≥ +.10 with CI lower bound above 0. Otherwise RETRY ONLY. The retry ceiling, union(repeats) − U, is reported per object with no verdict.
+
+### 12.3 T4b: the controls T4 lacked
+
+`experiments/sc_t4b.py`.
+
+- **Z.** Same created checkpoints at k = 1 with the created part's row of emb and B zeroed, on V3's cells. Created − Z, familiar, per atom: CREDITED iff ≥ +.10 with CI lower bound above 0. Otherwise NOT CREDITED.
+- **J.** Uj removes `--psupport` and `--tscale` and uses rank 8, three seeds, all 12 tasks, both layouts. Uj − U, familiar cells: COSTS iff either CI lies wholly below −.10. HOLDS iff both lower bounds are at or above −.10. Otherwise UNRESOLVED.
+- **Jc.** Uj's own reuse builds (`--exclude K4+K5`, `--exclude K1`), k = 1, V3's cells. Created − full Uj, familiar: TRANSFERS iff the lower bound is at or above −.10 on both atoms. Otherwise NOT YET.
+
+**What it decides.** CREDITED lets the reuse claim name the part. HOLDS on J makes Uj the recipe. COSTS or UNRESOLVED keeps U and restores the devices, and I look at task-level costs before removing any again.
+
+**Prediction.** T5a PARTS DO NOT TURN. Z CREDITED on the bottle and NOT CREDITED on the plate. J UNRESOLVED, on Ur8's cheese loss and Unt's N4 loss. Jc NOT YET.
