@@ -107,13 +107,42 @@ def instructions():
     return {t["compound"]: t["language"] for t in n2["tasks"]}
 
 
-def demo_sites(D, held):
+def motion_sites(D, h):
+    """SCAFFOLD_RESULTS 24: for each demo with no hold event, its first HandMoved event over all slots: g = the slot it fires on, r = the slot
+    other than g nearest to g at the event's last row.  -> {(task index, demo): dict(g, r, ...)}."""
+    key = D["task"].astype(np.int64) * 1000 + D["demo"]
+    out = {}
+    for kk in np.unique(key):
+        rr = np.nonzero(key == kk)[0]
+        if h[rr].any():
+            continue
+        best = None
+        for e in range(D["pos"].shape[1]):
+            m = PF.move_rows(key[rr], D["pos"][rr, e], D["prev_grip"][rr])
+            if m.any() and (best is None or int(np.argmax(m)) < best[0]):
+                best = (int(np.argmax(m)), e, m)
+        if best is None:
+            continue
+        a, g, m = best
+        on = np.nonzero(m)[0]
+        b = int(on[np.nonzero(np.diff(on) > 1)[0][0]]) if (np.diff(on) > 1).any() else int(on[-1])
+        dist = np.linalg.norm(D["pos"][rr[b]] - D["pos"][rr[b], g], axis=-1)
+        dist[g] = np.inf
+        near = np.argsort(dist, kind="stable")
+        out[(int(kk // 1000), int(kk % 1000))] = dict(g=FC.ENT[g], r=FC.ENT[int(near[0])], margin_g=0.0, margin_r=float(dist[near[1]] - dist[near[0]]))
+    return out
+
+
+def demo_sites(D, held, motion=False):
     """Ladder L4 (LADDER_RESULTS 5.2, step 1): per demo with an event, from the first onset to the last held row: grasp slot g = the
     slot that moves farthest (3-D); release slot r = the slot other than g nearest to g at the last held row.
+    motion (SCAFFOLD_RESULTS 24): a demo with no hold event takes its first HandMoved event.
     -> {(task index, demo): dict(g, r, margin_g, margin_r)}."""
     key = D["task"].astype(np.int64) * 1000 + D["demo"]
     out = {}
     h = np.asarray(held) > 0.5
+    if motion:
+        out.update(motion_sites(D, h))
     for kk in np.unique(key[h]):
         r = np.nonzero((key == kk) & h)[0]
         a, b = r[0], r[-1]
@@ -134,8 +163,8 @@ def situation(sites, t, k=None):
     return list(max(dict.fromkeys(pairs), key=pairs.count)) if pairs else None
 
 
-def build_situations(tasks, D, held, k=None):
-    names, lang, sites = list(FC.KNOWN), instructions(), demo_sites(D, held)
+def build_situations(tasks, D, held, k=None, motion=False):
+    names, lang, sites = list(FC.KNOWN), instructions(), demo_sites(D, held, motion)
     out = {}
     for c in tasks:
         s = situation(sites, names.index(c), k)
@@ -159,6 +188,8 @@ def rows(dev, tasks=None, k=None, pgate=None, roles=None):
     rl = [FC.ENT[:2] if r is None else r for r in rl]                 # placeholder: these rows are dropped below
     oi = np.array([FC.ENT.index(rl[t][0]) for t in D["task"]])
     ti = np.array([FC.ENT.index(rl[t][1]) for t in D["task"]])
+    if pgate and pgate.get("motion"):                                 # SCAFFOLD_RESULTS 24: held, or the hand moves the parsed object with the command open
+        Db["held"] = np.maximum(Db["held"], PF.move_rows(D["task"].astype(np.int64) * 1000 + D["demo"], D["pos"][np.arange(len(oi)), oi], D["prev_grip"]).astype(np.float32))
     zr, cy = FK.canon_rows(D, Db["held"], oi, ti)
     r0 = rot0_rows(D, Db["held"])
     X = chunks(D, 8)
@@ -447,6 +478,7 @@ def main():
     ap.add_argument("--tnear", action="store_true")                       # PARTS_RESULTS 50: P_rel (release region unstretched)
     ap.add_argument("--pgate", action="store_true")                       # LADDER_RESULTS 1: L1 (proprioceptive held event)
     ap.add_argument("--iroles", action="store_true")                      # LADDER_RESULTS 5: L4 (roles induced from contact events)
+    ap.add_argument("--mgate", action="store_true")                       # SCAFFOLD_RESULTS 24: the event also fires when the hand moves the object with nothing held
     ap.add_argument("--demos", type=int, default=None)                    # SCAFFOLD_RESULTS 8: build on the first N demos per task
     ap.add_argument("--nosize", action="store_true")                      # SCAFFOLD_RESULTS 8: no hand-set sizes (all zero)
     ap.add_argument("--lcomb", action="store_true")                       # SCAFFOLD_RESULTS 16: learned combination (T8a)
@@ -468,6 +500,8 @@ def main():
         pg, pg_agree = None, None
         if a.pgate:                                                        # LADDER_RESULTS 1: the event's threshold, fixed rule
             pg = pgate_fit_tasks(tasks)
+            if a.mgate:
+                pg["motion"] = True
             Dz = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
             keep = np.isin(Dz["task"], [list(FC.KNOWN).index(c) for c in tasks])
             pg_agree = pgate_agreement(Dz, pgate_held(Dz, pg), np.load(os.path.join(FC.DATA, "demos_b.npz"))["held"], keep)
@@ -476,7 +510,7 @@ def main():
         if a.iroles:                                                       # LADDER_RESULTS 5.2: the build's lexicon
             assert pg is not None, "--iroles reads L1's event: it needs --pgate"
             Dz = dict(np.load(os.path.join(FC.DATA, "demos.npz")))
-            lex = PF.role_lexicon(build_situations(tasks, Dz, pgate_held(Dz, pg), a.demos))
+            lex = PF.role_lexicon(build_situations(tasks, Dz, pgate_held(Dz, pg), a.demos, motion=a.mgate), rarest=a.mgate)
             lang = instructions()
             parsed = {c: PF.role_parse(lex, lang[c]) for c in tasks}
             # LADDER_RESULTS 5.3 (corrected): a task trains iff it has a contact event (a situation) and an induced parse
@@ -547,7 +581,7 @@ def main():
         if a.demos is not None or a.nosize:                                # flags off: the meta is unchanged
             smeta.update(demos=a.demos, nosize=a.nosize)
         if pg is not None:                                                 # flag off: the meta is L0's, key for key
-            smeta["pgate"] = dict(tw=pg["tw"], lift=pg["lift"])
+            smeta["pgate"] = dict(tw=pg["tw"], lift=pg["lift"], **({"motion": True} if a.mgate else {}))
         if lex is not None:
             smeta["roles"] = lex
         ema.cpu().save(os.path.join(d, "P.npz"), smeta)

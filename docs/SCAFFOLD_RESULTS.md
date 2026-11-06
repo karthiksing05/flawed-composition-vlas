@@ -888,3 +888,50 @@ The elbow rule reads the arm's joint angle and its own limit, and no scene input
 **Prediction.** UNRESOLVED, with a chain near .70 against a product near .82, since each boundary costs about .05 and a later skill now meets two placed objects.
 
 **Limits.** As in T6b. No demo holds more than one pick and place here, so this read tests length past anything trained, and the objects and targets are all known.
+
+### 23.1 T6c result: UNRESOLVED (predicted) (2026-11-06; results/flawed/sc_t6c_read.json; rollouts sc_t6c)
+
+**Amendment to the read.** The first read crashed on an assert: a long episode ran past the environment's 1000-step horizon, and the next step raised an error. I changed the read to count that one error as a failure with its goals unmeasured, and to report the share. Any other error still stops the read. Three skills at 300 steps plus two boundaries can reach 1310 steps, so this horizon cuts off some long episodes that T6b never reached. It costs .00-.03 of familiar episodes per chain and .08-.28 in the new layout.
+
+**Familiar: chain .817, product .869, −.053 [−.133, +.036].** The label is UNRESOLVED, as predicted, and the chain beats my guess of .70. New layout, no verdict: .028 against .042, −.014 [−.064, +.042]. Both rates are near the floor, since a product of three failing skills is small.
+
+| chain, familiar | chain | product | goals at the end: first, second, third | alone: first, second, third |
+|---|---|---|---|---|
+| L1 bowl, cheese, bottle | .93 | .92 | .98, .98, .97 | 1.00, .98, .93 |
+| L2 bottle, cheese, bowl | .78 | .92 | .88, .88, .93 | .93, .98, 1.00 |
+| L3 bottle, bowl, cheese | .65 | .78 | .70, .93, .90 | .78, .98, .98 |
+| L4 bowl, bottle, cheese | .72 | .77 | 1.00, .72, .97 | 1.00, .78, .98 |
+| L5 cheese, bottle, bowl | .90 | .92 | .95, .93, .95 | .98, .93, .98 |
+| L6 cheese, bowl, bottle | .92 | .92 | .98, .95, .95 | .98, 1.00, .93 |
+
+**Reading, post hoc.** The third skill does not lower the gap: −.053 at three skills against −.061 at two, with intervals that overlap a lot. On this read, length past anything trained costs little beyond the boundaries themselves. The largest losses sit in the chains that start with the bottle and on the bottle's own place (L2, L3). The bottle's skill alone is the weakest of the three, which the product already charges for.
+
+## 24. T11: a push is a carry without a close (protocol fixed 2026-11-06, before any non-smoke build; m3_prereg sc_t11)
+
+**Weakness, measured on the demos, offline.** The drawer's and the push's first phases never fire the hold event, because the gripper stays open. In 42 of 50 K7 demos the only close is the bowl's. Every K8 demo stays open, so K8 has no situation, no parse and no rows. The plan reads this as sequence's weakest evidence (§3.5).
+
+**Scene-motion read of the demos, no labels.** An entity counted as moving if it moved over 5 mm across 5 steps. Motion with the hold off and over 2 cm net:
+
+| tasks | demos with it |
+|---|---|
+| K1, K2, K3, K4 | 0 of 50 each |
+| K5, K6 | 3, 4 of 50, small settling moves |
+| K7 | 50 of 50, drawer, starting near step 35 |
+| K8 | 50 of 50, plate first, starting near step 54 |
+
+**One principle.** A hold is the hand moving an entity. Closing is only one way to do that. So the gate generalizes: held, or the hand moves the parsed object while the command stays open.
+
+**The event.** `HandMoved`. On once the parsed object sits 2 cm from its rest position with the command open. Off once it has moved under 5 mm in 15 steps. The first close command disarms it for the episode. Without that rule it also fired on objects falling after a release (K6 40 of 50 demos, K7 47 of 50). With it the event fires in 0 of 50 demos on K1-K6, 1 of 50 on K7's bowl, and 50 of 50 on K8. Its constants are hand-set, one value everywhere. It reads the object's position, which is oracle like every position here.
+
+**The lexicon.** A demo with no hold takes its situation from the first entity it moves: K8 reads (plate, stove front). That alone broke the lexicon. "stove" sits next to the stove-front target in K8 and the cook region in K2, so its candidate set empties and K2, N2 and N5 lost their parse. The fix is a rule from cross-situational learning: a slot its situation leaves unexplained goes to that situation's rarest contradicted word. "stove" then takes the cook region ahead of "on", "put" and "the". With it all 16 instructions parse correctly on the demos, including N8's target. This rule is new, and I wrote it after seeing this failure. It runs only under this flag.
+
+**Arm Um.** U's recipe plus `--mgate`, seeds 10-12, 30,000 steps. K8 now trains as a task: plate object part, stove-front target part, and no new role. Rollouts on K1-K6, N1-N6, K8, N8, both layouts, dev states 4-23. U's own rollouts serve as the comparator on the first twelve. U scores 0 on K8 and N8.
+
+**Verdicts, familiar.**
+- **Push, K8 over states.** PUSH WORKS iff the mean is at or above .50 and the CI lower bound at or above .25. PUSH PARTIAL iff the lower bound exceeds .05. Otherwise NO PUSH.
+- **Cost, Um − U on known K1-K6 and on new pairings N1-N6.** NO COST iff both lower bounds are at or above −.10. Otherwise COST.
+- **Reported with no verdict.** N8, which pushes the bowl under a part that has only learned to grasp it; the new layout; how often the event fires in rollouts.
+
+**Prediction.** PUSH PARTIAL, with K8 near .35. A part in the plate's frame has to find the contact point from one approach in the demos. NO COST, with the event quiet on grasp tasks. N8 near 0, because a verb-specific approach is missing.
+
+**The drawer stays for later.** K7's two phases need different objects within one task, which this arm does not do. Its first phase still trains under the bowl's part.

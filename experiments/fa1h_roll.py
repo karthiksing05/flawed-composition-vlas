@@ -57,6 +57,7 @@ def episode(model, bddl, state, lang, seed_base):
         from lifelong_ood.policy.parts_flow import ProprioHeld
         det, cnp = ProprioHeld(pg["tw"], pg["lift"]), FK.Canon()
         ptr = dict(on=False, step=None, segs=0, agree=0, n=0, ev_only=0, or_only=0)
+        mv = None                                                           # SCAFFOLD_RESULTS 24: set at the first gate, from the object's position then
     t, calls, done, err, plan = 0, 0, False, None, []
     prev, bound, bound_step, start_pos, t0 = -1.0, None, None, None, time.time()
     held_step, held_ee, onset_c, segs, h_on, off, zr, cy = None, None, None, 0, False, np.zeros(3), 0.0, 0.0
@@ -78,6 +79,12 @@ def episode(model, bddl, state, lang, seed_base):
             return h, z, c
         sc = FC.scene(env, obs, dj)
         hp = det.step(sc["grip"], prev, sc["ee_pos"][2])
+        if pg.get("motion"):                                                # SCAFFOLD_RESULTS 24: held, or the hand moves the object with nothing held
+            nonlocal mv
+            if mv is None:
+                from lifelong_ood.policy.parts_flow import HandMoved
+                mv = HandMoved(sc["pos"][oi])
+            hp = bool(mv.step(sc["pos"][oi], prev)) or hp
         zp, cp = cnp.step(hp, con.pos(oe), tgt)
         ptr["n"] += 1
         ptr["agree"] += int(hp == h)

@@ -33,6 +33,7 @@ TGT_ATOMS = ["plate_1", "flat_stove_1_cook_region", "wooden_cabinet_1_top_side",
 
 
 PG_LIFT = 0.01                                                      # fa1b_common.LIFT, the oracle rule's own constant
+MV_ON, MV_STILL, MV_GAP = 0.02, 0.005, 15                           # SCAFFOLD_RESULTS 24: HandMoved's constants
 
 
 class ProprioHeld:
@@ -58,6 +59,45 @@ class ProprioHeld:
         return self.on
 
 
+class HandMoved:
+    """SCAFFOLD_RESULTS 24: the hand moves an entity with nothing held.  Stepped once per step on the entity's position and the last gripper
+    command (> 0 closes).  With the command open: ON once the entity sits MV_ON from its rest position; OFF once it has moved under MV_STILL over
+    the last MV_GAP steps, and that position becomes its rest.  The first closing command disarms it for the episode: from there ProprioHeld owns
+    the object, and an object falling after a release is no push."""
+
+    def __init__(self, p0):
+        self.rest = np.asarray(p0, np.float64).copy()
+        self.on, self.hist, self.armed = False, [], True
+
+    def step(self, p, cmd):
+        p = np.asarray(p, np.float64)
+        if float(cmd) > 0:
+            self.on, self.armed = False, False
+        if not self.armed:
+            return False
+        if not self.on:
+            if np.linalg.norm(p - self.rest) > MV_ON:
+                self.on, self.hist = True, [p.copy()]
+            return self.on
+        self.hist.append(p.copy())
+        if len(self.hist) > MV_GAP:
+            self.hist.pop(0)
+            if np.linalg.norm(p - self.hist[0]) < MV_STILL:
+                self.on, self.hist, self.rest = False, [], p.copy()
+        return self.on
+
+
+def move_rows(key, pos, cmd):
+    """HandMoved over each episode's rows in order (key = episode id per row; pos = the entity's position per row) -> bool per row."""
+    out = np.zeros(len(key), bool)
+    det = None
+    for i in range(len(key)):
+        if i == 0 or key[i] != key[i - 1]:
+            det = HandMoved(pos[i])
+        out[i] = det.step(pos[i], cmd[i])
+    return out
+
+
 def pgate_fit(grip, cmd):
     """LADDER_RESULTS 1.2's fixed rule on a build's demo rows: tw = (min width + 1st pct of the width on close-commanded rows) / 2."""
     w = np.asarray(grip, np.float64)[:, 0] - np.asarray(grip, np.float64)[:, 1]
@@ -77,9 +117,11 @@ def pgate_rows(key, grip, cmd, z, tw, lift=PG_LIFT):
     return out
 
 
-def role_lexicon(situations):
+def role_lexicon(situations, rarest=False):
     """Ladder L4 (LADDER_RESULTS 5.2, steps 3-4).  situations: {instruction: [grasp slot, release slot]}.  -> dict(situations, ref
-    {token: slot}, pg {token: share of its situations with g = ref}, pr likewise for r).  Reads no given role."""
+    {token: slot}, pg {token: share of its situations with g = ref}, pr likewise for r).  Reads no given role.
+    rarest (SCAFFOLD_RESULTS 24): after the fixpoint, a slot its situation leaves unexplained goes to that situation's rarest contradicted token
+    (no candidate left, so it would read as a function word), repeated to a fixpoint.  "stove" in "the front of the stove" no longer erases "stove"."""
     toks = {s: s.lower().split() for s in situations}
     words = sorted({w for v in toks.values() for w in v})
     has = {w: [s for s in situations if w in toks[s]] for w in words}
@@ -97,6 +139,16 @@ def role_lexicon(situations):
         if not new:
             break
         ref.update(new)
+    while rarest:
+        pick = None
+        for s in sorted(situations):
+            left = set(situations[s]) - {ref[u] for u in toks[s] if u in ref}
+            free = sorted({w for w in toks[s] if w not in ref and not cand[w]}, key=lambda w: (len(has[w]), w))
+            if len(left) == 1 and free and (pick is None or len(has[free[0]]) < len(has[pick[0]])):
+                pick = (free[0], next(iter(left)))
+        if pick is None:
+            break
+        ref[pick[0]] = pick[1]
     pg = {w: sum(situations[s][0] == ref[w] for s in has[w]) / len(has[w]) for w in ref}
     pr = {w: sum(situations[s][1] == ref[w] for s in has[w]) / len(has[w]) for w in ref}
     return dict(situations={s: list(v) for s, v in situations.items()}, ref=ref, pg=pg, pr=pr)
@@ -435,7 +487,7 @@ class PartsFlow(nn.Module):
         m.load_state_dict(sd)
         m.eval()
         if meta.get("pgate"):                                                   # ladder L1: the build's proprioceptive event
-            m.pgate = dict(tw=float(meta["pgate"]["tw"]), lift=float(meta["pgate"]["lift"]))
+            m.pgate = dict(tw=float(meta["pgate"]["tw"]), lift=float(meta["pgate"]["lift"]), **({"motion": True} if meta["pgate"].get("motion") else {}))
         if meta.get("roles"):                                                   # ladder L4: the library's induced lexicon
             m.role_lex = meta["roles"]
         return m, meta

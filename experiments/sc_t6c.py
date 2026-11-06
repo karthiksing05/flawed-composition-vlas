@@ -23,6 +23,7 @@ import sc_t6b as B                                                          # no
 SMOKE = T.SMOKE
 OD = os.path.join(T.OUT, "sc_t6c_smoke" if SMOKE else "sc_t6c")
 BD = os.path.join(T.OUT, "sc_t6c_bddl")
+HORIZON = "ValueError('executing action in terminated episode')"
 CHAINS = dict(L1=("K1", "N2", "K4"), L2=("K4", "N1", "K2"), L3=("N4", "K3", "N2"), L4=("K2", "N4", "N3"), L5=("N1", "N5", "K3"), L6=("N3", "K1", "N5"))
 
 
@@ -80,8 +81,9 @@ def read():
 
     def load(n, s, l):
         E = json.load(open(os.path.join(OD, f"{n}_s{s}_{l}.json"), encoding="utf-8"))["eps"]
-        for e in E:
-            assert e.get("error") is None, (n, e.get("error"))
+        for e in E:                                                         # amended after the first read: an episode past the env's 1000-step horizon raises; a failure, goals unmeasured
+            assert e.get("error") in (None, HORIZON), (n, e.get("error"))
+            assert not (e.get("error") == HORIZON and e["success"]), n
         d = {int(e["trial"]): e for e in E}
         return [d[k] for k in ks]
 
@@ -109,7 +111,7 @@ def read():
         for i, n in enumerate(names):
             E = [e for s in T.SEEDS for e in load(n, s, l)]
             res["per_chain"][f"{n}|{l}"] = dict(
-                chain=float(ch[i].mean()), product=float(pr[i].mean()),
+                chain=float(ch[i].mean()), product=float(pr[i].mean()), past_horizon=float(np.mean([e.get("error") == HORIZON for e in E])),
                 goal_end=[float(np.mean([len(e["goals"]) > j and e["goals"][j] for e in E])) for j in range(3)],
                 alone=[float(np.mean([u(c, s, l).mean() for s in T.SEEDS])) for c in CHAINS[n]],
                 goal_at_transition=[float(np.mean([len(e["clauses"]) > j and bool(e["clauses"][j].get("first_goal_at_transition")) for e in E])) for j in range(2)],
