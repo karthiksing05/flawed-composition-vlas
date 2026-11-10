@@ -1313,3 +1313,38 @@ Overall **REFUTED**: GR00T's pooled arm is REVERSED.
 **What survives.** The failure sits after the grasp in every row (grasped-right .85-1.00 on familiar scenes). V1 and the hand-over still say that the held object's identity is what the place binds to. The ladder tests that directly and does not depend on a count law. Its diagnostic changes: the read is new pairings as a whole, and the cheese-against-bottle split is reported only.
 
 **New layout, with no verdict.** GR00T's gap is −.133 [−.250, −.033] at 5 per query and unclear at 2 and 10; grasps of the right object fall to .20-.60 there for both models.
+
+## 36. Q0: the prototype operator on a policy with pure parts (protocol fixed 2026-11-10, before any search or read; m3_prereg sc_q0)
+
+**Why.** The user wants the lab's prototype-discovery paper used as the composition operator, and expects a hyperparameter search to matter (THEORY_COMPOSITION §4b). Plan v4 ran that operator on VLAs at one setting and it failed. Two causes were possible: the operator, or the VLA's field. U's parts are pure by construction, so running the operator on U separates them. It is also the first search of the operator in action space.
+
+**Task.** One human demonstration of a known task, no instruction. Work out which entity fills the object role and which the target role.
+
+**Operator, as in the paper.** At subsampled rows of the demo, for each candidate assignment and noise level: ascend U's score from several starts, fit a diagonal Gaussian at each mode, and score each candidate by how well its prototypes cover the demo's action chunk per dimension. The object comes from rows before the hold and the target from rows during it; the phase comes from the proprioceptive hold event. `experiments/sc_q0.py`.
+
+**Baselines on the same rows.** The paper's retrieval rule (lowest flow-matching loss); the repo's motion heuristic, which reads recorded positions; chance.
+
+**Split.** Per task K1-K6: demos 0-9 for the search, on the seed-10 checkpoint; demos 25-49 for the read, on all three checkpoints; demos 10-24 unused. U trained on all of these demos, so the read tests the operator on a model that knows the tasks. It says nothing about new pairings.
+
+**Search.** 50 settings fixed in code before any search run: plan v4's setting, the paper's ColorMNIST setting, and 48 draws with seed 0 from a grid over levels, noise range, starts, initialisation, steps, step size, K, temperature, and three fields added after the smoke run below: the scoring rule, the extent estimate and its floor. The setting with the highest joint accuracy on the search split is picked, ties to the cheaper one.
+
+**The three added fields.**
+- **Scoring rule.** `uncapped`: a candidate's score is the per-dimension best over all its prototypes. `capped`: the same over at most K prototypes per candidate. `pooled`: the paper's own operator, greedy selection of K over every candidate's prototypes, then each candidate gets the product-of-experts weight of its selected prototypes.
+- **Extent.** `posterior` is the paper's (the Tweedie Jacobian at the mode). `marginal` is the curvature of the noisy marginal. `deconv`, plan v4's, is that curvature with the noise variance subtracted. For a sharp isolated mode, `posterior` and `deconv` go to zero and `marginal` goes to σ²/α².
+- **Floor** on the variance: 1e-4, 1e-3 or 1e-2.
+
+**What I saw before registering.** A smoke run on two search-split demos (K1 and K5, demo 0), with six decisions per setting.
+- Plan v4's setting got 3 of 6 right. The retrieval rule and the motion heuristic got all of them.
+- The cause, on those demos: 23-31% of the variances sat at the 1e-4 floor, so a human demo's ordinary distance from a sharp mode cost the true part more than a wrong part's scattered modes gained. The true part did have the nearest prototype (rmse .07-.11 against .17-.28).
+- Raising the floor to 1e-3, or the `marginal` extent, or `pooled` scoring, each turned the misses into hits. The paper's setting and two cheap draws with floor 1e-2 got 6 of 6.
+- Plan v4's own read reported "46% of extents sit at the 1e-4 floor" on pi0.5 (FRAMEWORK, history). So part of that failure may have been this setting. Q1 tests it.
+
+**Verdicts, read split, bootstrap over demos (2,000 draws).**
+- OPERATOR PARSES iff the picked setting's pooled joint accuracy (object and target both right, target scored with the inferred object) has its CI lower bound above .80. OPERATOR FAILS iff the upper bound falls below .50. Otherwise PARTIAL.
+- SEARCH MATTERS iff picked minus plan v4's setting has its CI lower bound above +.10. Otherwise SEARCH DOES NOT MATTER.
+
+**Prediction, written before the smoke run.** OPERATOR PARSES, at or above .90. SEARCH DOES NOT MATTER: each pure part's field has one mode toward its own entity, so four starts should find it. The retrieval rule also scores above .90, so on U the operator shows no advantage over flow loss.
+
+**Prediction, revised after the smoke run and before any search.** OPERATOR PARSES at the picked setting, at or above .90. **SEARCH MATTERS**: plan v4's setting lands near .5 on joint accuracy, because of the floor. The picked setting uses floor 1e-3 or 1e-2, or `pooled` scoring. The retrieval rule still matches the picked setting within .05, so the operator's gain on U is over its own old setting and not over flow loss.
+
+**Limits.** Oracle positions. Known tasks only. A pass shows the operator can read parts off a pure policy; it does not show composition of anything new.
