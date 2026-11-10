@@ -1271,3 +1271,21 @@ So "put the cream cheese on the plate" reaches the policy as "object: the cream 
 - A frozen VLM is a different baseline from T8b's full fine-tune. CRAFT reports that lighter fine-tuning composes better than full fine-tuning (46.3% against 8.4% for pi0.5), so R0 here may sit above T8b. Every comparison stays inside this recipe.
 - One seed per rung. States 4-23 have shaped U and the lexicon; neither VLA has trained on them.
 - R2 (role views) needs a re-rendered dataset with entity masks and gets its own protocol.
+
+## 35. E0: do partner counts order new-pairing success? (protocol fixed 2026-11-10, before the read; m3_prereg sc_e0)
+
+**Question.** THEORY_COMPOSITION §2 claims a VLA composes where the training data broke the tie between object and target. In K1-K6 the cream cheese has one target and the wine bottle two. So the bottle pairings (N4-N6) should succeed more often than the cheese pairings (N1-N3).
+
+**What I had seen.** The pattern came from frozen pi0.5's intact arm, per task (RT §3.1). I had seen GR00T's pooled figure on new pairings (.167) and pi0.5's at 2 and 10 actions per query (.450, .458), and none of their per-task values. Those arms carry the test; pi0.5 intact is reported as descriptive.
+
+**Arms, existing tracks, no rollouts.** GR00T frozen at 5, 2 and 10 actions per query; pi0.5 at 2 and 10. Familiar layout, dev states 4-23.
+
+**Estimator.** `gap` = mean success on the bottle pairings minus mean success on the cheese pairings. The CI resamples states jointly across tasks (2,000 draws); tasks stay fixed, because each group has three.
+
+**Verdict.** Per arm: PARTNER ORDER HOLDS iff the CI lower bound exceeds 0; REVERSED iff the upper bound falls below 0; otherwise UNCLEAR. Overall: **SUPPORTED** iff GR00T's three settings averaged HOLD and no arm is REVERSED; **REFUTED** iff GR00T's average is REVERSED; otherwise UNRESOLVED.
+
+**Reported with no verdict.** Per-task success, the rate of grasping the right object, success given that grasp, the new layout, and N3 (cheese on the cabinet, the one target with two holders) against the mean of N1 and N2.
+
+**Prediction.** SUPPORTED, every arm HOLDS. GR00T's gap is smaller than pi0.5's because its level sits near the floor.
+
+**Limits.** Two objects stand for the two partner counts, so the object and its count are confounded: the cheese could be harder to place for reasons of shape. E2, which gives the cheese a second partner, is the test that separates them. Six tasks on one scene.
