@@ -25,7 +25,12 @@ CACHE = "/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints"
 L90C = "/coc/flash10/ksingara3/robot/checkpoints_l90c"          # our checkpoints, assets and converted PyTorch weights
 REPO_ID = "lol/libero_l90c"
 BASE_PARAMS = f"{CACHE}/pi05_base/params"
-NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup")
+NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
+         "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae")
+# SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
+# the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
+AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
+      "pi05_goal8_roles_ae": ("pi05_goal8_roles", "lol/libero_goal8_roles")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
 ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)
@@ -52,6 +57,16 @@ def train_config(name, **over):
                                   data=dataclasses.replace(lib.data, assets=C.AssetsConfig(
                                       assets_dir=f"{CACHE}/pi05_libero/assets", asset_id="physical-intelligence/libero")))
         return dataclasses.replace(cfg, **over)
+    if name in AE:                                              # frozen VLM, trainable action expert; parent's data and norm stats
+        import flax.nnx as nnx
+        from openpi.shared import nnx_utils
+        full, repo = AE[name]
+        base = train_config("pi05_l90c")
+        frozen = nnx.Any(nnx_utils.PathRegex(".*img.*"),
+                         nnx.All(nnx_utils.PathRegex(".*llm.*"), nnx.Not(nnx_utils.PathRegex(".*llm.*_1.*"))))
+        data = dataclasses.replace(base.data, repo_id=repo,
+                                   assets=C.AssetsConfig(assets_dir=os.path.join(L90C, "assets", full), asset_id=repo))
+        return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, **over)
     if name == "pi05_goal8":                                    # pi05_l90c's recipe on the eight known tasks, its own norm stats
         base = train_config("pi05_l90c")
         return dataclasses.replace(base, name=name, data=dataclasses.replace(base.data, repo_id=GOAL8_REPO), **over)

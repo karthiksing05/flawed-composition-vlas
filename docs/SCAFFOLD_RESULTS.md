@@ -1243,3 +1243,31 @@ So "put the cream cheese on the plate" reaches the policy as "object: the cream 
 **Prediction.** STRUCTURE WINS, Ss near .78 on new pairings against the VLA near .45, a little above the unsupervised arm's predicted .75. NO COST, near .90 on known. New layout near .25.
 
 **Stage two, once stage one reads.** The registered arm above, on its own dataset. Their difference is the cost of learning the phrases, which on these instructions is one word.
+
+## 34. The single-GPU ladder: rungs R0 and R1 (protocol fixed 2026-11-10, before any rollout; m3_prereg sc_t34)
+
+**Why.** T8b and T16 need four A40s on one node. Between 2026-11-06 and 2026-11-10 that queue gave T8b 80 training steps: the jobs waited two days, one node handed over occupied GPUs, and the one run that started lost its node after 18 minutes. A read that cannot train cannot test the theory. One A40 schedules within minutes, so the ladder of docs/THEORY_COMPOSITION.md §3 runs under a recipe that fits one. T8b and T16 stay queued as the full fine-tune forms.
+
+**The recipe, shared by every rung.** pi0.5 from `pi05_base`, with SigLIP and the PaliGemma LLM frozen; the action expert and its projections train. Batch 32, 6,000 steps (192k samples, T8b's count), constant 5e-5 after 1,000 warmup steps, no EMA, one seed, read at step 6,000. Configs `pi05_goal8_ae` and `pi05_goal8_rsup_ae` in `lifelong_ood/policy/l90c_config.py`; each uses its parent's dataset and norm stats, so the frames match T8b's and T16's exactly. I chose a frozen VLM over LoRA because openpi's converter to PyTorch does not merge LoRA weights, and the rollout harness serves PyTorch.
+
+**Two queues, one run read.** Each rung is submitted twice with the same config and seed: experiment `main` on overcap and experiment `tl` on tail-lab. The first of the two to save step 6,000 is the run that gets exported and read, and I cancel the other. This is a scheduling device and adds no second seed.
+
+**Rungs.**
+- **R0.** Whole instructions, as T8b.
+- **R1.** T16's supervised stage: given role phrases, switched by `ProprioHeld`, in training and at test.
+
+**Rollouts.** T8b's and T16's harness and seeds, all 16 compounds in both layouts, dev states 4-23. Results in `results/flawed/sc_t34`, named by rung.
+
+**Verdicts, R1 − R0, paired bootstrap over tasks and states (2,000 draws).**
+- **Fit gate.** If R0 scores under .80 on known K1-K6, familiar, the label is UNDERFIT and nothing below is read as a statement about composition.
+- **Composition, new pairings N1-N6, familiar.** STRUCTURE WINS iff the CI lower bound exceeds +.10. STRUCTURE LOSES iff the upper bound falls below −.10. Otherwise NO CLEAR DIFFERENCE.
+- **Cost, known K1-K6, familiar.** NO COST iff the lower bound is at or above −.10. Otherwise COST.
+
+**Reported with no verdict.** Each rung's success on the cheese pairings (N1-N3) and on the bottle pairings (N4-N6); grasp and place rates; the new layout; K7, K8, N7, N8; each rung against frozen `pi05_libero` and, when they exist, against T8b and T16.
+
+**Predictions.** They differ from §33's, and I leave §33's standing. By the theory (THEORY_COMPOSITION §2), role phrases close the language channel and leave the held object in view, and V1's arm S already showed that phrase switching alone does not repair the frozen model. So: **NO CLEAR DIFFERENCE** and NO COST. R0 near .45 on new pairings, with the cheese pairings N1 and N2 at or under .25 and the bottle pairings N4 and N5 above .70. R1 within .10 of R0. Both at or above .90 on known tasks.
+
+**Limits.**
+- A frozen VLM is a different baseline from T8b's full fine-tune. CRAFT reports that lighter fine-tuning composes better than full fine-tuning (46.3% against 8.4% for pi0.5), so R0 here may sit above T8b. Every comparison stays inside this recipe.
+- One seed per rung. States 4-23 have shaped U and the lexicon; neither VLA has trained on them.
+- R2 (role views) needs a re-rendered dataset with entity masks and gets its own protocol.
