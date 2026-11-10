@@ -1289,3 +1289,27 @@ So "put the cream cheese on the plate" reaches the policy as "object: the cream 
 **Prediction.** SUPPORTED, every arm HOLDS. GR00T's gap is smaller than pi0.5's because its level sits near the floor.
 
 **Limits.** Two objects stand for the two partner counts, so the object and its count are confounded: the cheese could be harder to place for reasons of shape. E2, which gives the cheese a second partner, is the test that separates them. Six tasks on one scene.
+
+### 35.1 Result: REFUTED (2026-11-10; results/flawed/sc_e0_read.json; ledger row sc_e0 at c51e5412)
+
+My prediction, SUPPORTED, was wrong. GR00T reverses the order at all three settings.
+
+| arm | N1 | N2 | N3 | N4 | N5 | N6 | cheese | bottle | gap [95% CI] | label |
+|---|---|---|---|---|---|---|---|---|---|---|
+| GR00T, 5 per query | .10 | .20 | .70 | .00 | .00 | .00 | .333 | .000 | −.333 [−.433, −.250] | REVERSED |
+| GR00T, 2 | .20 | .15 | .60 | .00 | .00 | .00 | .317 | .000 | −.317 [−.433, −.217] | REVERSED |
+| GR00T, 10 | .15 | .45 | .85 | .00 | .05 | .00 | .483 | .017 | −.467 [−.567, −.383] | REVERSED |
+| GR00T, pooled | | | | | | | .378 | .006 | −.372 [−.428, −.317] | REVERSED |
+| pi0.5, 2 | .20 | .25 | .65 | .45 | .90 | .25 | .367 | .533 | +.167 [.000, +.333] | UNCLEAR |
+| pi0.5, 10 | .10 | .10 | .70 | .85 | .90 | .10 | .300 | .617 | +.317 [+.167, +.467] | HOLDS |
+| pi0.5, 5 (seen before; descriptive) | .10 | .20 | .60 | .85 | .85 | .40 | .300 | .700 | +.400 [+.233, +.583] | |
+
+Overall **REFUTED**: GR00T's pooled arm is REVERSED.
+
+**What this takes away.** The object's partner count does not order success across models. GR00T grasps the bottle at .95-1.00 and then places it on a new target 1 time in 180. So the sentence in THEORY_COMPOSITION §2 that I proposed to centre the paper on, "a compositional architecture should need one partner where the VLA needs two or more", has no support as a law about objects. I withdraw it there.
+
+**What the same table shows, with no verdict.** N3, cheese on the cabinet, beats the mean of N1 and N2 in all six rows, by +.43 to +.60. The cabinet is the one target that two different objects were carried to in training. I registered this contrast as descriptive, and I had seen pi0.5's value before, so it stands as an observation on five new rows and one old one. It fits the place side of the shortcut account: a place that training showed with two held objects accepts a third. The bottle on the plate and the stove breaks even that reading for pi0.5 (.85-.90 on targets with one holder), so no count rule fits both models.
+
+**What survives.** The failure sits after the grasp in every row (grasped-right .85-1.00 on familiar scenes). V1 and the hand-over still say that the held object's identity is what the place binds to. The ladder tests that directly and does not depend on a count law. Its diagnostic changes: the read is new pairings as a whole, and the cheese-against-bottle split is reported only.
+
+**New layout, with no verdict.** GR00T's gap is −.133 [−.250, −.033] at 5 per query and unclear at 2 and 10; grasps of the right object fall to .20-.60 there for both models.

@@ -49,7 +49,9 @@ So the missing piece is P2 on the visual side, during the carry and the place.
 | N5 bottle → stove | 2 | 1 | .85 |
 | N6 bottle → bowl | 2 | 1 | .40 |
 
-This pattern is post hoc, on six tasks at 20 states each, and N6 does not fit cleanly. It is what P1 predicts: the VLA composes where the data broke the correlation and stores the pair where they did not. **So the VLA's architecture is not wrong everywhere. It composes only what the data decorrelate, and a compositional architecture should need one partner where the VLA needs two or more.** That sentence is the claim I would put at the centre of the paper, and the cheese pairings are its diagnostic cells.
+This pattern is post hoc, on six tasks at 20 states each, and N6 does not fit cleanly. It is what P1 predicts: the VLA composes where the data broke the correlation and stores the pair where they did not.
+
+**Withdrawn 2026-11-10 (E0, SR §35.1: REFUTED).** I wrote here that "a compositional architecture should need one partner where the VLA needs two or more" and proposed it as the paper's central claim. The registered test on GR00T reverses the order: its bottle pairings score .006 against .378 for the cheese. The object's partner count does not order success across models, and the table above is pi0.5's alone. What holds in every arm is narrower and descriptive: N3, the one target that training showed with two held objects, beats N1 and N2 by +.43 to +.60. P1 as a mechanism (a cue that predicts the filler gets used) is still the best account of V1 and the hand-over; P1 as a count law has no support. The ladder's read is new pairings as a whole.
 
 **A dissent from my own registration.** T16 (SR §33) trains role prompts into pi0.5 and I predicted STRUCTURE WINS near .75. T16 closes the language channel only; the held object stays visible, and every "target: the plate" frame shows the bowl in the hand. Under this theory T16 gains little on the cheese pairings. The registered prediction stands in the ledger; the read now tests the theory against it.
 
@@ -72,7 +74,7 @@ Masks come from the simulator in the supervised stage and from the locator's mov
 |---|---|---|---|
 | R0 | nothing: plain retrained VLA (T8b) | none | stays near .10-.20 |
 | R1 | sequencer and role phrases (T16) | P3, P2 for language | small gain |
-| R2 | role views | P2 for vision | rises toward the bottle's .85 |
+| R2 | role views | P2 for vision | rises toward the bottle's .85 (after E0: read on new pairings as a whole) |
 | R3 | parts store: one keyed adapter per (role, atom) on the action expert, selected by the lexicon | P5 | holds R2; a new atom costs one adapter and leaves old tasks exact |
 | R4 | geometry in the active entity's frame | layout | uncertain; U has this and still reads .381 |
 
@@ -84,7 +86,7 @@ Masks come from the simulator in the supervised stage and from the locator's mov
 |---|---|---|---|
 | **E0** | Does partner count order new-pairing success across every arm already run? | Registered read of existing tracks: pi0.5 and GR00T, intact, A, S; grasp and place by pairing | CPU |
 | **E1** | Does the ladder behave as §3 predicts? | R0, R1, R2 under one single-GPU LoRA recipe (`pi05_l90c_lora`'s settings on the eight known tasks), so the queue for four A40s stops blocking. T8b and T16 stay queued as the full fine-tune forms of R0 and R1 | about 1 A40 for 6-8 h per rung |
-| **E2** | Is P1 right about the data? | Give the cheese a second partner in training and nothing else. P1 predicts the plain VLA then composes on the cheese's other targets | one retrain; needs demos of one new task, which the demo rules leave to the user |
+| **E2** | Is P1 right about the data? | Give the cheese a second partner in training and nothing else. P1 predicts the plain VLA then composes on the cheese's other targets. After E0's REFUTED this prediction has lost its support; the version the data still suggest gives a target a second holder | one retrain; needs demos of one new task, which the demo rules leave to the user |
 | **E3** | Do parts make it lifelong? | R3 and T9's stream | later |
 
 **What would refute the theory.** R2 leaves the cheese pairings where R1 left them. Or E2's second partner does not lift the cheese's other targets. Or R0, the plain retrained VLA, already composes on the cheese.

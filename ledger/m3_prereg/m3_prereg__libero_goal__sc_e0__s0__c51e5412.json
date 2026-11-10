@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: E0 partner-count read (docs/THEORY_COMPOSITION.md 2)",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4637419",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "c51e541249caa5c78e39ec2493c1a6aa5583bfdc",
+  "short": "c51e5412"
+ },
+ "keys": {},
+ "metrics": {
+  "also_reported_no_verdict": "per-task success, grasped-right and place-given-grasp per task and arm, both layouts, N3 minus mean(N1,N2) per arm",
+  "files_sha256": {
+   "docs/SCAFFOLD_RESULTS.md": "6ec095765285c477a7ca24bb258a4100fc42c393f6accce261f64b05bb9bb9b2",
+   "docs/THEORY_COMPOSITION.md": "b18ec8f288187edae778efe336bddf6991a0dacfb0dd8489bf44df0ddebe1cb3",
+   "experiments/sc_e0.py": "528461f320a189e4f78fe8d544c8062385c53cbe4a9b10c411d9680a0871df6f",
+   "experiments/sc_t1.py": "b99e7d91064cdf600f12ea473d32a8244aecab8ec430891b5eea2d81c53ccb82"
+  },
+  "labelled": "development read on N2 main states 4-23, existing rollouts, familiar layout; frozen GR00T (n2_roll/groot_main, sc_t1/groot_r2, groot_r10) and pi0.5 at 2 and 10 actions per query (sc_t1/pi05_r2, pi05_r10); one seed per arm",
+  "mapping": "Groups by task object in n2_tasks.json: cream cheese (N1-N3) vs wine bottle (N4-N6). Per arm, gap = mean success(bottle) - mean success(cheese); CI by bootstrap over states (2000 draws, seed 0), states resampled jointly across tasks, tasks fixed. HOLDS iff CI lower > 0; REVERSED iff CI upper < 0; else UNCLEAR. Overall: SUPPORTED iff GR00T's pooled arm (the three GR00T files averaged) HOLDS and no registered arm is REVERSED; REFUTED iff GR00T's pooled arm is REVERSED; else UNRESOLVED",
+  "prediction": "SUPPORTED: every arm HOLDS; GR00T's gap smaller in absolute size than pi0.5's because its level is near the floor",
+  "seen_before_registration": "pi0.5 intact (n2_roll/pi05_main) per-task values were seen before registration (RIVAL_TESTS 3.1) and are descriptive only; GR00T's and the r2/r10 per-task values were not seen",
+  "states": "dev only: N2 main states 4-23",
+  "status": "PRE-REGISTERED E0",
+  "written_before": "any E0 read"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__sc_e0__s0__c51e5412",
+ "schema": 1,
+ "script": "experiments/prereg/sc_e0.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-10T22:36:08+00:00",
+ "stream": null,
+ "tag": "sc_e0"
+}
