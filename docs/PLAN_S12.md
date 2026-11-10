@@ -1,5 +1,7 @@
 # Plan: System 2 builds System 1, tested on composition
 
+**Status, 2026-11-10: set aside by the user.** "I don't want to use the MD file I passed in as the direct experiment; I just want to use it as inspiration." The user works on the System 1 / System 2 abstraction separately. This repo's line is `docs/THEORY_COMPOSITION.md`: a theory of composition and a simple edit to the VLA. Sections 1 and 2 below still summarise the record; sections 3-7 are not a plan for this repo.
+
 Draft for the user's review, 2026-11-10. Nothing here has run. It joins two sources: the user's bet in `SYS1_SYS2.md` (version 5) and this repo's record on how VLAs fail to compose (FLAWED_COMPOSITION, PLAN_SCAFFOLD, SCAFFOLD_RESULTS). Section marks cite those files. Results that `SYS1_SYS2.md` quotes from the literature are that file's citations; I have not re-checked them.
 
 ## 0. What the user set
