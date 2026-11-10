@@ -89,6 +89,42 @@ Masks come from the simulator in the supervised stage and from the locator's mov
 
 **What would refute the theory.** R2 leaves the cheese pairings where R1 left them. Or E2's second partner does not lift the cheese's other targets. Or R0, the plain retrained VLA, already composes on the cheese.
 
+## 4b. The composition operator: prototype discovery (added 2026-11-10)
+
+The user, in their words: "I REALLY want to use this paper", meaning "Test-Time Compositional Generalization in Diffusion Models via Prototype Discovery" (ICLR 2027 submission; `/coc/flash10/ksingara3/_ICLR_2027__Diffusion_Composition_Generalization.pdf`), with the note that "a hyperparameter search can make this super good", and: "We should be able to do this by sparsely learning and composing relevant information ... Structure and composition in an architecture".
+
+**What the paper does.** From one out-of-distribution query it ascends the model's unconditional score at several noise levels to find modes, fits a diagonal Gaussian at each, keeps K by greedy coverage of the query per dimension, multiplies them into a product of experts with per-dimension softmax weights, and guides the sampler with that product's closed-form score. The baseline that retrieves trained class tokens fails, because retrieval can only return trained combinations.
+
+**What this repo already tried, and how it failed.** Plan v4 (docs/history/2026-10-29-vla-operator-binding/FRAMEWORK.md) ran this on frozen pi0.5 and on our own checkpoint at one setting: 6 levels, 4 starts per key, 80 Adam steps, step 0.1, 4 Hutchinson probes. No setting was searched.
+- The ascent from 4 starts collapsed to one point per observation.
+- Part prompts pointed at their object 1.3x chance, and the null prompt did the same: "the scene, not the part, sets the direction".
+- Composing by coverage hurt (150 against 180 zero-shot), and null-field modes covered the named object 0.53 of the time.
+
+**What a search can and cannot fix.** The paper's own settings differ from ours where it matters for coverage: 8 to 128 starts per level against our 4, half of them from random noise, 8 to 15 levels, K = 3, temperature 0.5, and a variance-aware guidance scale. A search over those can raise coverage, which R2a named as the bottleneck (ranking given coverage was 0.93). A search cannot make a prompt move a field that the scene alone determines. That second failure is P1: the paper's ColorMNIST model saw each digit with twelve colour pairs, and LIBERO-Goal's cheese has one partner. The method needs a density whose modes are reusable, and the paper's appendix J says the same: it interpolates inside the support and cannot extrapolate.
+
+**So the two fit together as architecture plus operator.**
+
+| structural part | job | source |
+|---|---|---|
+| Role channel (§3) | makes each (role, filler) a reusable mode of the action density | this doc |
+| Prototype store | keys (condition, noise level), kept as indices; a few per phase | the paper's discovery |
+| Composer | per-dimension product of experts over the chunk's time × DOF dimensions; closed-form score | the paper's eq. 9-16 |
+| Creator | one small part, fitted from the demo, only for dimensions the store fails to cover | this repo's one-demo parts |
+
+The per-dimension weights are the fixed rule of P3 in a more general form. At low temperature they give hard switching, which is the only combination that has worked here (PS §1); across dimensions they let one prototype own translation, another rotation and another the gripper, which is where the bottle's 81° turn lives (P4). Selection by coverage of one demo replaces the hand-written lexicon: the demo says which parts it is made of. Creation fires only where coverage falls short, which is the sparse learning the user asks for.
+
+**Tests.**
+
+| | question | design | cost |
+|---|---|---|---|
+| **Q0** | Does the operator recover the right parts on a policy that already has pure parts? | U's flow fields, oracle state. One demo of each new pairing, no instruction and no lexicon. Discover, select, compose. Compare with U's lexicon route (.894), with replaying the edited demo (the SDEdit analogue), and with retrieval of the nearest trained task (Comp-1 and Comp-3) | CPU to 1 A40 |
+| **Q1** | Does a search make it work on a plain VLA? | The same pipeline on the retrained VLA (T8b), searching starts, initialisation, level grid, K, temperature and guidance scale | 1 A40 per setting batch |
+| **Q2** | Does the role channel make it work? | The same search on the role-phrase VLA (T16) and then the role-view VLA (R2). The theory predicts Q1 stays near zero-shot and Q2 rises | after those train |
+
+**Search discipline.** Settings are searched on known tasks and on states disjoint from every read, with the grid and the selection rule registered first. Each read then runs once at the selected setting on fresh states. Without that split a search over about seven settings on 20 states will find a winner by chance.
+
+**What would refute this.** Q0 fails with pure parts available: then the operator, and not the VLA, is the weak piece. Or Q1 succeeds after the search: then purity was not needed and the earlier failure was a tuning failure.
+
 ## 5. Limits
 
 - Six pairings over three objects and five targets. The partner-count law needs more atoms than this suite has.
