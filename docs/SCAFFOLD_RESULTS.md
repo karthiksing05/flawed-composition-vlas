@@ -1531,7 +1531,7 @@ All 72 files and 1,440 episodes completed with no errors. Preemption requeued tw
 
 **What remains privileged or hand-made.**
 - The depth render.
-- The lexicon that maps an instruction to roles.
+- The lexicon that maps an instruction to roles. It is learned from the demos (§3: words grounded through the hold event; one demo per task suffices; it refuses safely), but its rule was designed on these 16 instructions.
 - The parts' typed state, which is built by hand.
 - The segmenter's training labels, which come from the simulator.
 
