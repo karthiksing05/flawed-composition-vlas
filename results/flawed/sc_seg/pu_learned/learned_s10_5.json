@@ -1,0 +1,2455 @@
+{
+ "arm": "learned",
+ "seed": 10,
+ "compound": "K3",
+ "layout": "new",
+ "tid": 5,
+ "host": "conroy.cc.gatech.edu",
+ "ckpt": "/coc/flash10/ksingara3/robot/data/fa1/ckpt/pp_sc_U_s10/P.npz",
+ "calib": "/coc/flash10/ksingara3/flawed-composition-vlas/results/flawed/sc_pu_calib.json",
+ "seg_ckpt": "/coc/flash10/ksingara3/robot/data/fa1/seg/ckpt/unet_main.npz",
+ "smoke": false,
+ "eps": [
+  {
+   "trial": 4,
+   "success": true,
+   "error": null,
+   "held_step": 40,
+   "held_segments": 2,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 84,
+   "calls": 17,
+   "secs": 3.1,
+   "pgate": {
+    "event_step": 39,
+    "event_segments": 1,
+    "event_end": true,
+    "steps": 86,
+    "agree": 84,
+    "event_only": 2,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 40,
+     "med": 0.16,
+     "p90": 0.398,
+     "max": 0.447
+    },
+    "obj_held_cm": {
+     "n": 46,
+     "med": 0.476,
+     "p90": 0.844,
+     "max": 1.621
+    },
+    "tgt_cm": {
+     "n": 86,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.044204906678234415,
+     "max": 0.3046382631169075
+    },
+    "obj_sources": {
+     "agent": 68,
+     "occl": 18
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.043,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.158,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 86,
+    "ms_per_pred": 6.27,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9467,
+      "cream_cheese_1": 0.9279,
+      "wine_bottle_1": 0.9656,
+      "plate_1": 0.9906
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 86,
+      "cream_cheese_1": 86,
+      "wine_bottle_1": 86,
+      "plate_1": 86
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 5,
+   "success": true,
+   "error": null,
+   "held_step": 36,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 79,
+   "calls": 16,
+   "secs": 3.0,
+   "pgate": {
+    "event_step": 34,
+    "event_segments": 1,
+    "event_end": false,
+    "steps": 81,
+    "agree": 78,
+    "event_only": 2,
+    "oracle_only": 1
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 38,
+     "med": 0.369,
+     "p90": 0.559,
+     "max": 2.721
+    },
+    "obj_held_cm": {
+     "n": 43,
+     "med": 0.391,
+     "p90": 0.861,
+     "max": 1.414
+    },
+    "tgt_cm": {
+     "n": 81,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 0.49312341443948343
+    },
+    "obj_sources": {
+     "agent": 66,
+     "occl": 15
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.043,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.032,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 81,
+    "ms_per_pred": 6.04,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9507,
+      "cream_cheese_1": 0.9845,
+      "wine_bottle_1": 0.963,
+      "plate_1": 0.9887
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 81,
+      "cream_cheese_1": 81,
+      "wine_bottle_1": 81,
+      "plate_1": 81
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 6,
+   "success": false,
+   "error": null,
+   "held_step": 86,
+   "held_segments": 2,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 300,
+   "calls": 60,
+   "secs": 10.2,
+   "pgate": {
+    "event_step": 86,
+    "event_segments": 3,
+    "event_end": false,
+    "steps": 301,
+    "agree": 287,
+    "event_only": 13,
+    "oracle_only": 1
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 252,
+     "med": 0.167,
+     "p90": 6.21,
+     "max": 14.404
+    },
+    "obj_held_cm": {
+     "n": 49,
+     "med": 1.872,
+     "p90": 2.875,
+     "max": 3.058
+    },
+    "tgt_cm": {
+     "n": 301,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 7.502833780276751,
+     "max": 20.994125833204482
+    },
+    "obj_sources": {
+     "agent": 243,
+     "occl": 58
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.043,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.032,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2518807474914442,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 301,
+    "ms_per_pred": 6.31,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9283,
+      "cream_cheese_1": 0.9579,
+      "wine_bottle_1": 0.9605,
+      "plate_1": 0.8847
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 301,
+      "cream_cheese_1": 301,
+      "wine_bottle_1": 292,
+      "plate_1": 252
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 7,
+   "success": true,
+   "error": null,
+   "held_step": 79,
+   "held_segments": 2,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 147,
+   "calls": 30,
+   "secs": 4.9,
+   "pgate": {
+    "event_step": 78,
+    "event_segments": 2,
+    "event_end": false,
+    "steps": 149,
+    "agree": 142,
+    "event_only": 5,
+    "oracle_only": 2
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 105,
+     "med": 0.146,
+     "p90": 1.659,
+     "max": 2.001
+    },
+    "obj_held_cm": {
+     "n": 44,
+     "med": 0.343,
+     "p90": 0.839,
+     "max": 1.126
+    },
+    "tgt_cm": {
+     "n": 149,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 22.194653993052217
+    },
+    "obj_sources": {
+     "agent": 138,
+     "occl": 11
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.36,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.028,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 149,
+    "ms_per_pred": 6.0,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9733,
+      "cream_cheese_1": 0.9259,
+      "wine_bottle_1": 0.9458,
+      "plate_1": 0.9846
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 149,
+      "cream_cheese_1": 66,
+      "wine_bottle_1": 134,
+      "plate_1": 149
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 8,
+   "success": true,
+   "error": null,
+   "held_step": 80,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 113,
+   "calls": 23,
+   "secs": 4.1,
+   "pgate": {
+    "event_step": 77,
+    "event_segments": 1,
+    "event_end": true,
+    "steps": 115,
+    "agree": 112,
+    "event_only": 3,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 78,
+     "med": 0.107,
+     "p90": 0.292,
+     "max": 0.394
+    },
+    "obj_held_cm": {
+     "n": 37,
+     "med": 1.097,
+     "p90": 1.218,
+     "max": 1.549
+    },
+    "tgt_cm": {
+     "n": 115,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 0.12733344172388775
+    },
+    "obj_sources": {
+     "agent": 99,
+     "occl": 16
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.197,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.028,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.25196967331745684,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 115,
+    "ms_per_pred": 6.18,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9709,
+      "cream_cheese_1": 0.9493,
+      "wine_bottle_1": 0.9727,
+      "plate_1": 0.9153
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 115,
+      "cream_cheese_1": 107,
+      "wine_bottle_1": 115,
+      "plate_1": 108
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 9,
+   "success": true,
+   "error": null,
+   "held_step": 76,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 113,
+   "calls": 23,
+   "secs": 4.0,
+   "pgate": {
+    "event_step": 72,
+    "event_segments": 1,
+    "event_end": true,
+    "steps": 115,
+    "agree": 111,
+    "event_only": 4,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 73,
+     "med": 0.147,
+     "p90": 0.287,
+     "max": 2.191
+    },
+    "obj_held_cm": {
+     "n": 42,
+     "med": 0.464,
+     "p90": 0.755,
+     "max": 1.155
+    },
+    "tgt_cm": {
+     "n": 115,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 5.0386030829641735
+    },
+    "obj_sources": {
+     "agent": 92,
+     "occl": 23
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.042,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.032,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 115,
+    "ms_per_pred": 6.21,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9746,
+      "cream_cheese_1": 0.9591,
+      "wine_bottle_1": 0.9745,
+      "plate_1": 0.8595
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 115,
+      "cream_cheese_1": 109,
+      "wine_bottle_1": 69,
+      "plate_1": 107
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 10,
+   "success": true,
+   "error": null,
+   "held_step": 108,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 145,
+   "calls": 30,
+   "secs": 4.9,
+   "pgate": {
+    "event_step": 107,
+    "event_segments": 1,
+    "event_end": true,
+    "steps": 147,
+    "agree": 146,
+    "event_only": 1,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 108,
+     "med": 0.11,
+     "p90": 0.203,
+     "max": 2.353
+    },
+    "obj_held_cm": {
+     "n": 39,
+     "med": 1.321,
+     "p90": 1.644,
+     "max": 1.69
+    },
+    "tgt_cm": {
+     "n": 147,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 30.696530043456928
+    },
+    "obj_sources": {
+     "agent": 117,
+     "occl": 30
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.4,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.028,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 147,
+    "ms_per_pred": 6.21,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9789,
+      "cream_cheese_1": 0.9438,
+      "wine_bottle_1": 0.9633,
+      "plate_1": 0.9218
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 147,
+      "cream_cheese_1": 140,
+      "wine_bottle_1": 106,
+      "plate_1": 142
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 11,
+   "success": true,
+   "error": null,
+   "held_step": 186,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "wine_bottle_1",
+   "steps": 230,
+   "calls": 47,
+   "secs": 8.0,
+   "pgate": {
+    "event_step": 141,
+    "event_segments": 2,
+    "event_end": false,
+    "steps": 232,
+    "agree": 224,
+    "event_only": 7,
+    "oracle_only": 1
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 183,
+     "med": 0.271,
+     "p90": 6.926,
+     "max": 19.858
+    },
+    "obj_held_cm": {
+     "n": 49,
+     "med": 1.019,
+     "p90": 2.014,
+     "max": 3.133
+    },
+    "tgt_cm": {
+     "n": 232,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 19.266905505610918
+    },
+    "obj_sources": {
+     "agent": 192,
+     "occl": 40
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.048,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.028,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 232,
+    "ms_per_pred": 6.46,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9208,
+      "cream_cheese_1": 0.9577,
+      "wine_bottle_1": 0.9587,
+      "plate_1": 0.9
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 226,
+      "cream_cheese_1": 211,
+      "wine_bottle_1": 207,
+      "plate_1": 212
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 12,
+   "success": true,
+   "error": null,
+   "held_step": 49,
+   "held_segments": 2,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 98,
+   "calls": 20,
+   "secs": 3.6,
+   "pgate": {
+    "event_step": 46,
+    "event_segments": 1,
+    "event_end": false,
+    "steps": 100,
+    "agree": 93,
+    "event_only": 5,
+    "oracle_only": 2
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 49,
+     "med": 1.429,
+     "p90": 1.869,
+     "max": 1.989
+    },
+    "obj_held_cm": {
+     "n": 51,
+     "med": 3.125,
+     "p90": 3.479,
+     "max": 26.753
+    },
+    "tgt_cm": {
+     "n": 100,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 1.7310808342414936,
+     "max": 9.233524057576107
+    },
+    "obj_sources": {
+     "agent": 83,
+     "occl": 17
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.624,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.036,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 100,
+    "ms_per_pred": 6.17,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9416,
+      "cream_cheese_1": 0.9389,
+      "wine_bottle_1": 0.9673,
+      "plate_1": 0.9888
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 100,
+      "cream_cheese_1": 100,
+      "wine_bottle_1": 100,
+      "plate_1": 100
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 13,
+   "success": true,
+   "error": null,
+   "held_step": 145,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 182,
+   "calls": 37,
+   "secs": 6.2,
+   "pgate": {
+    "event_step": 81,
+    "event_segments": 2,
+    "event_end": true,
+    "steps": 184,
+    "agree": 174,
+    "event_only": 10,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 136,
+     "med": 0.22,
+     "p90": 7.83,
+     "max": 7.83
+    },
+    "obj_held_cm": {
+     "n": 48,
+     "med": 2.044,
+     "p90": 2.269,
+     "max": 2.407
+    },
+    "tgt_cm": {
+     "n": 184,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 4.579090774342306
+    },
+    "obj_sources": {
+     "agent": 142,
+     "occl": 42
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.178,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.028,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 184,
+    "ms_per_pred": 6.18,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.95,
+      "cream_cheese_1": 0.9335,
+      "wine_bottle_1": 0.955,
+      "plate_1": 0.8304
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 184,
+      "cream_cheese_1": 136,
+      "wine_bottle_1": 175,
+      "plate_1": 146
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 14,
+   "success": true,
+   "error": null,
+   "held_step": 90,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 127,
+   "calls": 26,
+   "secs": 4.4,
+   "pgate": {
+    "event_step": 87,
+    "event_segments": 1,
+    "event_end": true,
+    "steps": 129,
+    "agree": 126,
+    "event_only": 3,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 88,
+     "med": 0.298,
+     "p90": 0.395,
+     "max": 0.434
+    },
+    "obj_held_cm": {
+     "n": 41,
+     "med": 0.446,
+     "p90": 1.06,
+     "max": 1.552
+    },
+    "tgt_cm": {
+     "n": 129,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 1.1597038677956943
+    },
+    "obj_sources": {
+     "agent": 107,
+     "occl": 22
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.048,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.032,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 129,
+    "ms_per_pred": 6.19,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9684,
+      "cream_cheese_1": 0.8992,
+      "wine_bottle_1": 0.9572,
+      "plate_1": 0.9533
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 129,
+      "cream_cheese_1": 123,
+      "wine_bottle_1": 122,
+      "plate_1": 125
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 15,
+   "success": false,
+   "error": null,
+   "held_step": null,
+   "held_segments": 0,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "wine_bottle_1",
+   "steps": 300,
+   "calls": 60,
+   "secs": 10.3,
+   "pgate": {
+    "event_step": 125,
+    "event_segments": 2,
+    "event_end": false,
+    "steps": 301,
+    "agree": 284,
+    "event_only": 17,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 284,
+     "med": 0.402,
+     "p90": 4.891,
+     "max": 19.904
+    },
+    "obj_held_cm": {
+     "n": 17,
+     "med": 4.874,
+     "p90": 9.066,
+     "max": 9.914
+    },
+    "tgt_cm": {
+     "n": 301,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 3.186387874304197,
+     "max": 10.683775950894848
+    },
+    "obj_sources": {
+     "agent": 282,
+     "occl": 15,
+     "rigid": 4
+    },
+    "obj_small_share": 0.016611295681063124,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.043,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.028,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2445097446800011,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 301,
+    "ms_per_pred": 6.48,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9345,
+      "cream_cheese_1": 0.9438,
+      "wine_bottle_1": 0.9707,
+      "plate_1": 0.8869
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 295,
+      "cream_cheese_1": 288,
+      "wine_bottle_1": 291,
+      "plate_1": 301
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 16,
+   "success": true,
+   "error": null,
+   "held_step": 144,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 185,
+   "calls": 38,
+   "secs": 6.3,
+   "pgate": {
+    "event_step": 37,
+    "event_segments": 3,
+    "event_end": true,
+    "steps": 187,
+    "agree": 174,
+    "event_only": 13,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 132,
+     "med": 0.272,
+     "p90": 1.007,
+     "max": 1.738
+    },
+    "obj_held_cm": {
+     "n": 55,
+     "med": 0.574,
+     "p90": 1.434,
+     "max": 1.735
+    },
+    "tgt_cm": {
+     "n": 187,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.19547108152384313,
+     "max": 1.547080872499237
+    },
+    "obj_sources": {
+     "agent": 131,
+     "occl": 56
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.041,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.04,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 187,
+    "ms_per_pred": 6.05,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9429,
+      "cream_cheese_1": 0.9425,
+      "wine_bottle_1": 0.9734,
+      "plate_1": 0.989
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 187,
+      "cream_cheese_1": 187,
+      "wine_bottle_1": 187,
+      "plate_1": 187
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 17,
+   "success": true,
+   "error": null,
+   "held_step": 100,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 136,
+   "calls": 28,
+   "secs": 4.6,
+   "pgate": {
+    "event_step": 97,
+    "event_segments": 1,
+    "event_end": false,
+    "steps": 138,
+    "agree": 134,
+    "event_only": 3,
+    "oracle_only": 1
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 99,
+     "med": 0.141,
+     "p90": 0.36,
+     "max": 1.738
+    },
+    "obj_held_cm": {
+     "n": 39,
+     "med": 0.44,
+     "p90": 0.621,
+     "max": 1.059
+    },
+    "tgt_cm": {
+     "n": 138,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 10.80760246264679
+    },
+    "obj_sources": {
+     "agent": 110,
+     "occl": 28
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.089,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.028,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 138,
+    "ms_per_pred": 5.96,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.975,
+      "cream_cheese_1": 0.9131,
+      "wine_bottle_1": 0.9747,
+      "plate_1": 0.9872
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 138,
+      "cream_cheese_1": 74,
+      "wine_bottle_1": 87,
+      "plate_1": 138
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 18,
+   "success": true,
+   "error": null,
+   "held_step": 111,
+   "held_segments": 2,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 235,
+   "calls": 48,
+   "secs": 8.0,
+   "pgate": {
+    "event_step": 107,
+    "event_segments": 2,
+    "event_end": true,
+    "steps": 237,
+    "agree": 225,
+    "event_only": 12,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 167,
+     "med": 0.105,
+     "p90": 0.615,
+     "max": 3.843
+    },
+    "obj_held_cm": {
+     "n": 70,
+     "med": 0.756,
+     "p90": 1.47,
+     "max": 1.807
+    },
+    "tgt_cm": {
+     "n": 237,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.0762071910461842,
+     "max": 21.912987162116934
+    },
+    "obj_sources": {
+     "agent": 189,
+     "occl": 48
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.043,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.028,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.25014224372966,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 237,
+    "ms_per_pred": 6.1,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9604,
+      "cream_cheese_1": 0.9447,
+      "wine_bottle_1": 0.9766,
+      "plate_1": 0.936
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 237,
+      "cream_cheese_1": 177,
+      "wine_bottle_1": 237,
+      "plate_1": 214
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 19,
+   "success": false,
+   "error": null,
+   "held_step": 299,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 300,
+   "calls": 60,
+   "secs": 10.1,
+   "pgate": {
+    "event_step": 122,
+    "event_segments": 3,
+    "event_end": true,
+    "steps": 301,
+    "agree": 288,
+    "event_only": 13,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 287,
+     "med": 0.333,
+     "p90": 6.692,
+     "max": 17.676
+    },
+    "obj_held_cm": {
+     "n": 14,
+     "med": 3.645,
+     "p90": 12.948,
+     "max": 13.077
+    },
+    "tgt_cm": {
+     "n": 301,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 5.651308019800287,
+     "max": 6.309456331057958
+    },
+    "obj_sources": {
+     "agent": 250,
+     "occl": 51
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.259,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.029,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.25162913036251616,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 301,
+    "ms_per_pred": 6.45,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9358,
+      "cream_cheese_1": 0.9058,
+      "wine_bottle_1": 0.9643,
+      "plate_1": 0.7107
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 298,
+      "cream_cheese_1": 278,
+      "wine_bottle_1": 294,
+      "plate_1": 244
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 20,
+   "success": false,
+   "error": null,
+   "held_step": null,
+   "held_segments": 0,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "wine_bottle_1",
+   "steps": 300,
+   "calls": 60,
+   "secs": 10.1,
+   "pgate": {
+    "event_step": 153,
+    "event_segments": 2,
+    "event_end": false,
+    "steps": 301,
+    "agree": 288,
+    "event_only": 13,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 288,
+     "med": 0.345,
+     "p90": 12.995,
+     "max": 18.128
+    },
+    "obj_held_cm": {
+     "n": 13,
+     "med": 2.57,
+     "p90": 10.667,
+     "max": 11.729
+    },
+    "tgt_cm": {
+     "n": 301,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 3.295292699135493
+    },
+    "obj_sources": {
+     "agent": 284,
+     "occl": 17
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.043,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.032,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2516417205910678,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 301,
+    "ms_per_pred": 6.52,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9335,
+      "cream_cheese_1": 0.9431,
+      "wine_bottle_1": 0.9164,
+      "plate_1": 0.7833
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 301,
+      "cream_cheese_1": 247,
+      "wine_bottle_1": 246,
+      "plate_1": 256
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 21,
+   "success": true,
+   "error": null,
+   "held_step": 95,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 137,
+   "calls": 28,
+   "secs": 4.7,
+   "pgate": {
+    "event_step": 98,
+    "event_segments": 1,
+    "event_end": true,
+    "steps": 139,
+    "agree": 136,
+    "event_only": 0,
+    "oracle_only": 3
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 99,
+     "med": 0.105,
+     "p90": 0.377,
+     "max": 2.001
+    },
+    "obj_held_cm": {
+     "n": 40,
+     "med": 1.957,
+     "p90": 2.038,
+     "max": 2.113
+    },
+    "tgt_cm": {
+     "n": 139,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 23.257351455851257
+    },
+    "obj_sources": {
+     "agent": 124,
+     "occl": 15
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.048,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.032,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 139,
+    "ms_per_pred": 6.12,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9733,
+      "cream_cheese_1": 0.9355,
+      "wine_bottle_1": 0.9759,
+      "plate_1": 0.9048
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 139,
+      "cream_cheese_1": 112,
+      "wine_bottle_1": 118,
+      "plate_1": 130
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 22,
+   "success": true,
+   "error": null,
+   "held_step": 45,
+   "held_segments": 1,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": "akita_black_bowl_1",
+   "steps": 83,
+   "calls": 17,
+   "secs": 3.2,
+   "pgate": {
+    "event_step": 38,
+    "event_segments": 1,
+    "event_end": false,
+    "steps": 85,
+    "agree": 77,
+    "event_only": 7,
+    "oracle_only": 1
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 42,
+     "med": 0.493,
+     "p90": 1.075,
+     "max": 2.87
+    },
+    "obj_held_cm": {
+     "n": 43,
+     "med": 0.728,
+     "p90": 1.677,
+     "max": 1.783
+    },
+    "tgt_cm": {
+     "n": 85,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.0442049067238054,
+     "max": 1.2968558153975593
+    },
+    "obj_sources": {
+     "agent": 68,
+     "occl": 17
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.049,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.032,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 85,
+    "ms_per_pred": 6.18,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9365,
+      "cream_cheese_1": 0.9604,
+      "wine_bottle_1": 0.9535,
+      "plate_1": 0.9904
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 85,
+      "cream_cheese_1": 85,
+      "wine_bottle_1": 85,
+      "plate_1": 85
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  },
+  {
+   "trial": 23,
+   "success": false,
+   "error": null,
+   "held_step": null,
+   "held_segments": 0,
+   "roles": [
+    "akita_black_bowl_1",
+    "wooden_cabinet_1_top_side"
+   ],
+   "bound": null,
+   "steps": 300,
+   "calls": 60,
+   "secs": 10.1,
+   "pgate": {
+    "event_step": 267,
+    "event_segments": 1,
+    "event_end": false,
+    "steps": 301,
+    "agree": 299,
+    "event_only": 2,
+    "oracle_only": 0
+   },
+   "percep": {
+    "obj_pre_cm": {
+     "n": 299,
+     "med": 0.316,
+     "p90": 20.977,
+     "max": 24.242
+    },
+    "obj_held_cm": {
+     "n": 2,
+     "med": 1.858,
+     "p90": 1.859,
+     "max": 1.859
+    },
+    "tgt_cm": {
+     "n": 301,
+     "med": 0.098,
+     "p90": 0.098,
+     "max": 0.098
+    },
+    "yaw_pre_deg": {
+     "med": 0.04420490667820897,
+     "max": 0.044204906769350946
+    },
+    "obj_sources": {
+     "agent": 244,
+     "occl": 57
+    },
+    "obj_small_share": 0.0,
+    "wrist_renders": 0,
+    "sites0_cm": {
+     "flat_stove_1_cook_region": 0.048,
+     "wooden_cabinet_1_top_side": 0.098,
+     "wine_rack_1_top_region": 0.032,
+     "wooden_cabinet_1_top_region": 0.098,
+     "main_table_stove_front_region": 0.0
+    },
+    "sites_mode": "mask",
+    "hold_mode": "mask"
+   },
+   "sites_true": {
+    "flat_stove_1_cook_region": [
+     -0.267336611084815,
+     0.21046825161347532,
+     0.905
+    ],
+    "wooden_cabinet_1_top_side": [
+     0.021066057580419295,
+     -0.2547002016152794,
+     1.12652
+    ],
+    "wine_rack_1_top_region": [
+     -0.25661973518232173,
+     -0.18061494280510043,
+     1.1374499999999999
+    ],
+    "wooden_cabinet_1_top_region": [
+     0.021326057580419295,
+     -0.2503102016152794,
+     1.09063
+    ],
+    "main_table_stove_front_region": [
+     -0.05,
+     0.21,
+     0.895
+    ]
+   },
+   "seg": {
+    "preds": 301,
+    "ms_per_pred": 6.39,
+    "iou": {
+     "agentview": {
+      "akita_black_bowl_1": 0.9053,
+      "cream_cheese_1": 0.9031,
+      "wine_bottle_1": 0.965,
+      "plate_1": 0.9364
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": null,
+      "cream_cheese_1": null,
+      "wine_bottle_1": null,
+      "plate_1": null
+     }
+    },
+    "frames_with_object": {
+     "agentview": {
+      "akita_black_bowl_1": 301,
+      "cream_cheese_1": 278,
+      "wine_bottle_1": 301,
+      "plate_1": 283
+     },
+     "robot0_eye_in_hand": {
+      "akita_black_bowl_1": 0,
+      "cream_cheese_1": 0,
+      "wine_bottle_1": 0,
+      "plate_1": 0
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1514,6 +1514,27 @@ The held-out frames come from smoke states 0-3 with scripted reaches. In the new
 - Depth is still the simulator's rendered depth.
 - U still reads its roles from the instruction through the lexicon.
 
+### 40.1 Result: HOLDS (2026-11-11; results/flawed/sc_seg_pu_read.json; rollouts sc_seg/pu_learned; ledger row sc_seg_pu)
+
+All 72 files and 1,440 episodes completed with no errors. Preemption requeued two jobs after they had written their files; the requeued runs found the files and exited.
+
+| cell | learned | sim masks (percep) | oracle | learned − percep | CI | learned − oracle |
+|---|---|---|---|---|---|---|
+| known, familiar | .853 | .853 | .878 | +.000 | [−.050, +.039] | −.025 |
+| new pairings, familiar | .881 | .883 | .897 | −.003 | [−.042, +.039] | −.017 |
+| known, new layout | .406 | .417 | .408 | −.011 | [−.069, +.033] | −.003 |
+| new pairings, new layout | .375 | .383 | .378 | −.008 | [−.050, +.031] | −.003 |
+
+**My prediction was half right.** HOLDS in the familiar layout came true. I expected a new-layout cost of −.03 to −.08 and gave UNRESOLVED the higher odds; the cost was −.01. The new layout's ceiling is the grasp (BREAK_ATLAS §8), not perception. Per task, the largest drops were K2 new (−.10) and N1 familiar (−.05, a plate target). They sit inside the cell CIs.
+
+**What this establishes.** The parts policy reaches .881 on new pairings in the familiar layout using one camera, a learned segmenter and calibrated depth: no simulator masks and no simulator poses. Frozen pi0.5 scores .50 and frozen GR00T .17 on the same states and seeds.
+
+**What remains privileged or hand-made.**
+- The depth render.
+- The lexicon that maps an instruction to roles.
+- The parts' typed state, which is built by hand.
+- The segmenter's training labels, which come from the simulator.
+
 ## 41. T37w: the whole-wrist-mask control (protocol fixed 2026-11-10, before training starts; m3_prereg sc_t37w)
 
 **Why.** AC-VLA (arXiv 2607.15714) is the closest prior repair. It masks the wrist view's tokens during the place, at training time only, and so hides the held object together with all of the wrist camera's geometry. R2 instead paints entities and keeps geometry. Without this control, a gain for R2 could be AC-VLA's gain.
