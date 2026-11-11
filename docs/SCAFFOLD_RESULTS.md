@@ -1412,3 +1412,25 @@ Picked minus plan v4's setting: **+.562 [+.513, +.611]**. On the search split th
 - A painted held object still shows its outline in R2 and its extent in R2b, and the fingers' opening still differs by object.
 - The paint changes what a frozen vision tower sees; the tower cannot adapt, only the action expert can.
 - One seed per rung, six pairings, one scene, development states.
+
+## 38. PU: the parts policy from perceived poses (protocol fixed 2026-11-10, before any non-smoke rollout; m3_prereg sc_pu)
+
+**Question.** U's new-pairing success (.894 familiar, §11) reads object and site poses from the simulator. Does it keep that success when every movable object's pose comes from the agentview camera instead? This removes the privileged input that separates U from the VLA rungs of §37.
+
+**Arms.** `experiments/sc_pu.py roll`, U's checkpoints `pp_sc_U_s{10,11,12}`, sc_t4's combos (K1-K6, N1-N6, both layouts), N2 main states.
+- **oracle:** simulator poses, through sc_pu's own copy of fa1h_roll's episode. This is the sanity arm.
+- **percep:** movable objects from agentview instance masks plus depth, back-projected with the camera's intrinsics and extrinsics, with per-object offsets fitted on demos 0-24 of K1-K6. The held object comes from its mask (bowl, cheese) or from rigid attachment to the hand (bottle), as calibration chose. Partly hidden objects keep their last visible estimate. Fixture sites come from their masks, because rollout envs jitter fixtures by 1-2 cm. Yaw is the training mean for round objects. Calibration choices are in `results/flawed/sc_pu_calib.json`.
+- The pose errors on demos 25-49 are in `sc_pu_check.json`. Medians are .03-.49 cm. The p90 reaches 2.1 cm during the hold and 6.9 cm for the bottle after release.
+
+**Read.** `experiments/sc_pu_read.py`. Four cells, known / new pairings × familiar / new layout. Each cell gives percep − oracle, bootstrapped over tasks and states (2,000 draws).
+- **Sanity:** oracle must agree with sc_t4's U episodes on at least .90 of episodes, else INVALID.
+- **COSTS** if any cell's upper bound is below −.10. **HOLDS** if every lower bound is at or above −.10. **UNRESOLVED** otherwise.
+
+**Prediction.** HOLDS, with differences of −.03 to −.05 and the largest per-task costs on the bottle tasks (N4, N5). Second most likely is UNRESOLVED, from a bottle cell or the new layout.
+
+**Seen before registration.** Calibration, the check, and 12 smoke episodes. Smoke ran seed 10, states 0-1, K1 and N4 familiar, under ref, oracle and percep; all succeeded, and oracle matched ref step for step. sc_t4's U results were also read.
+
+**Limits.**
+- Simulator masks stand in for a segmenter. The test removes pose privilege, not mask privilege. This is the same privilege R2 has in §37, so the two can be compared.
+- The drawer stays simulator-read; no task here uses it.
+- Calibration uses familiar-layout demos only.
