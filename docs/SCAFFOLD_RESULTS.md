@@ -1434,3 +1434,35 @@ Picked minus plan v4's setting: **+.562 [+.513, +.611]**. On the search split th
 - Simulator masks stand in for a segmenter. The test removes pose privilege, not mask privilege. This is the same privilege R2 has in §37, so the two can be compared.
 - The drawer stays simulator-read; no task here uses it.
 - Calibration uses familiar-layout demos only.
+
+## 39. Q2: the prototype operator on the ladder's VLAs (protocol fixed 2026-11-10, before any search or read; m3_prereg sc_q2)
+
+**Question.** Q0 (§36.1) showed that the paper's operator parses a demo into parts when the policy's parts are pure (U). Q2 asks the same of a VLA. From one rendered demo of a known task and no instruction, does prototype discovery over a §37 rung's action field pick the phrases the demo is made of? For the object role it reads 6 rows before the grasp; for the target role, 6 rows during the hold.
+
+**Rungs and candidates** (`experiments/sc_q2.py`).
+- **r0:** the six K1-K6 instructions as whole prompts, over all 12 rows.
+- **r1, r2, r2b:** 3 object phrases and 5 target phrases. On r2 and r2b each candidate gets its own painted view.
+
+**Search.** Ten settings, run on demos 0-4 of each task: plan v4's, Q0's picked setting 31, and eight one-field variations of it. The pick is the best joint accuracy, with ties going to the lower index.
+
+**Read.** Demos 25-34 of each task, run once, at the picked setting and at setting 0. The baselines are flow-loss ranking (the same noise for every candidate) and chance.
+
+**Verdicts per rung, on joint accuracy.**
+- **Parsing:** PARSES iff the lower bound is at least .50; FAILS iff the upper bound is below .50.
+- **Against retrieval** (picked − flow loss): OPERATOR BEATS RETRIEVAL iff the lower bound exceeds +.10; RETRIEVAL BEATS OPERATOR iff the upper bound is below −.10; otherwise NO CLEAR DIFFERENCE.
+- **Search** (picked − setting 0): SEARCH MATTERS iff the lower bound exceeds +.10.
+- Comparisons across rungs carry no verdict.
+
+**Prediction.**
+- r1, r2 and r2b PARSE, with joint accuracy .60-.85, at a setting whose levels reach σ .5. The smoke showed that role phrases move the field only there.
+- r0 is UNRESOLVED, because the scene sets the mode.
+- NO CLEAR DIFFERENCE against retrieval on every rung.
+- SEARCH MATTERS on the role rungs.
+
+If this holds, the operator is a parser with the same power as retrieval, and the contribution is the role channel that makes parsing possible.
+
+**Seen before registration.** Smoke on the 500-step checkpoint (§ prereg row), and Q0.
+
+**Limits.**
+- Known tasks only. Parsing a recorded demo of a new pairing (`sc_q2.py demo`) waits on initial states that neither trial list uses.
+- One seed per rung.
