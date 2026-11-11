@@ -1435,6 +1435,26 @@ Picked minus plan v4's setting: **+.562 [+.513, +.611]**. On the search split th
 - The drawer stays simulator-read; no task here uses it.
 - Calibration uses familiar-layout demos only.
 
+### 38.1 Result: HOLDS (2026-11-10; results/flawed/sc_pu_read.json; rollouts sc_pu; ledger row sc_pu)
+
+All 144 rollout files completed: 2,880 episodes, no errors. The oracle arm agrees with sc_t4's U episodes on .985 of episodes, so the sanity gate passes.
+
+| cell | percep | oracle | percep − oracle | CI |
+|---|---|---|---|---|
+| known, familiar | .853 | .878 | −.025 | [−.069, +.011] |
+| new pairings, familiar | .883 | .897 | −.014 | [−.061, +.025] |
+| known, new layout | .417 | .408 | +.008 | [−.042, +.058] |
+| new pairings, new layout | .383 | .378 | +.006 | [−.044, +.058] |
+
+**My prediction (HOLDS) held, but its detail was wrong.** The bottle tasks did not carry the cost: N4 moved +.02 and N5 −.02. The largest per-task drops were K5 (−.07, the bottle on the rack, where the check's post-release error was largest) and N6 (−.05).
+
+**What this establishes.** U's new-pairing success no longer depends on simulator poses. On the same N2 main states and seeds, frozen pi0.5 scores .50 and frozen GR00T .17 on the new pairings in the familiar layout (HOLD_GATE §5, intact). The parts policy, reading object poses from one camera, scores .883.
+
+**What it does not establish.**
+- **Masks:** they still come from the simulator, the same privilege R2 has in §37.
+- **Instructions:** U reads its roles from the instruction through a lexicon, while a VLA reads the raw instruction.
+- **The new layout:** it stays near .38-.42 for every system (pi0.5 .30). The atlas places that failure at the grasp, tied to where objects start, and pairing does not explain it.
+
 ## 39. Q2: the prototype operator on the ladder's VLAs (protocol fixed 2026-11-10, before any search or read; m3_prereg sc_q2)
 
 **Question.** Q0 (§36.1) showed that the paper's operator parses a demo into parts when the policy's parts are pure (U). Q2 asks the same of a VLA. From one rendered demo of a known task and no instruction, does prototype discovery over a §37 rung's action field pick the phrases the demo is made of? For the object role it reads 6 rows before the grasp; for the target role, 6 rows during the hold.
