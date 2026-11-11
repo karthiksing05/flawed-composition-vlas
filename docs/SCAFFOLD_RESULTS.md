@@ -1413,6 +1413,42 @@ Picked minus plan v4's setting: **+.562 [+.513, +.611]**. On the search split th
 - The paint changes what a frozen vision tower sees; the tower cannot adapt, only the action expert can.
 - One seed per rung, six pairings, one scene, development states.
 
+### 37.1 Result on R0, R1 and R2: STRUCTURE WINS (2026-11-11; results/flawed/sc_t37_read_r012.json; rollouts sc_t37)
+
+**Order of reads, disclosed.** R2b's training lost three segments to nodes that had no GPU (heistotron, cyborg, major: "No devices were found"), so its export failed. I resumed it from step 2,500 with those nodes excluded. The primary verdict (R2 − R0) does not involve R2b, so I ran the registered estimator on R0-R2 now (`--tag r012`). The four-rung read runs, as registered, when R2b's rollouts exist. Nothing in the mapping changed.
+
+**Fit gate passes.** R0 scores .85 on known K1-K6 familiar, against a threshold of .80.
+
+| N1-N6, familiar | R0 plain | R1 role phrases | R2 role views |
+|---|---|---|---|
+| success | .025 | .225 | **.425** |
+| grasped the right object | .408 | .925 | .975 |
+| placed, given the right grasp | .061 | .243 | .436 |
+| cheese (N1-N3) / bottle (N4-N6) | .05 / .00 | .35 / .10 | .52 / .33 |
+| known K1-K6 | .85 | .758 | .758 |
+
+| verdict | composition, N1-N6 familiar | cost, K1-K6 familiar |
+|---|---|---|
+| **R2 − R0 (primary)** | **+.400 [+.167, +.625]: STRUCTURE WINS** | −.092 [−.308, +.117]: COST |
+| R1 − R0 | +.200 [+.025, +.433]: NO CLEAR DIFFERENCE | −.092 [−.258, +.067]: COST |
+| R2 − R1 | +.200 [−.058, +.458]: NO CLEAR DIFFERENCE | +.000 [−.142, +.158]: COST |
+
+Under the registered rule, COST means the lower bound fell below −.10. Each point estimate is under .10, and the intervals are wide.
+
+**My predictions.**
+- **Primary verdict:** right (STRUCTURE WINS).
+- **Levels:** wrong. I expected R0 near .45 and R2 near .70. R0 nearly never composes (.025), and R2 reaches .425.
+- **R1 − R0:** right (NO CLEAR DIFFERENCE).
+- **Costs:** wrong. I predicted NO COST, and the rule labels all three COST.
+
+**What the ladder shows, rung by rung.**
+- **R0, trained on the eight known tasks alone, fails new pairings at both stages.** It grasps the wrong object on more than half of them, the shortcut taken all the way back to the grasp, and places .06 of what it grasps.
+- **Role phrases (R1) fix the grasp:** .41 → .93.
+- **Role views (R2) double the place given a right grasp:** .24 → .44.
+- Each part removes a different break in the atlas's sense. The theory's split, language purity for the grasp and visual purity for the place, fits these numbers. R2 − R1 alone does not clear the margin.
+
+**Against frozen pi0.5** (reported with no verdict): .50 on new pairings, trained on 40 LIBERO tasks with the full model. R2, trained on 8 tasks with a frozen vision-language model, sits −.075 [−.417, +.258] from it. In the new layout every rung is near 0, against .30 for frozen pi0.5: the eight-task recipe does not cover new placements.
+
 ## 38. PU: the parts policy from perceived poses (protocol fixed 2026-11-10, before any non-smoke rollout; m3_prereg sc_pu)
 
 **Question.** U's new-pairing success (.894 familiar, §11) reads object and site poses from the simulator. Does it keep that success when every movable object's pose comes from the agentview camera instead? This removes the privileged input that separates U from the VLA rungs of §37.
@@ -1486,6 +1522,33 @@ If this holds, the operator is a parser with the same power as retrieval, and th
 **Limits.**
 - Known tasks only. Parsing a recorded demo of a new pairing (`sc_q2.py demo`) waits on initial states that neither trial list uses.
 - One seed per rung.
+
+### 39.1 Result on r0, r1 and r2 (2026-11-11; results/flawed/sc_q2/<rung>/read.json; r2b pending, see 37.1)
+
+Each rung picked setting 3: sc_q0's setting 31 with noise levels .3-.9.
+
+| rung | operator, picked (joint) | flow loss | picked − flow loss | setting 0 | picked − setting 0 |
+|---|---|---|---|---|---|
+| r0 (instructions) | 1.000 | 1.000 | .000 | .800 | +.200 [+.117, +.283] |
+| r1 | .900 [.833, .967] | 1.000 | −.100 [−.167, −.033] | .383 | +.517 [+.400, +.634] |
+| r2 | 1.000 | 1.000 | .000 | .600 | +.400 [+.300, +.500] |
+
+**Verdicts.**
+- **Parsing:** PARSES on all three.
+- **Against retrieval:** NO CLEAR DIFFERENCE on all three. On r1 the operator trails flow loss by .10, and the upper bound (−.033) misses the −.10 bar.
+- **Search:** SEARCH MATTERS on all three.
+
+**My predictions.**
+- PARSES on r1 and r2: right.
+- Tie with retrieval: right.
+- Setting 3 picked: right.
+- r0 UNRESOLVED: wrong. Its whole-instruction candidates parse known demos perfectly.
+- Search NOT SHOWN on r0: wrong.
+
+**Reading.**
+- The search turned the paper's operator from failing (setting 0, plan v4's: .38-.80) into a parser.
+- The levels that matter sit at noise .5 and above, which the smoke had shown.
+- On known tasks it never beats retrieving by flow loss. As on U (§36.1), the operator adds nothing over retrieval when the candidates are given.
 
 ## 40. PU-L: the parts policy from learned masks (protocol fixed 2026-11-10, before any non-smoke rollout; m3_prereg sc_seg_pu)
 
@@ -1582,3 +1645,20 @@ T37's fit gate applies.
 - r0 matches the object on about half.
 
 **Limits.** Six demos, one state each. This is parsing only: no closed-loop composition from the parse.
+
+### 42.1 Result on r0, r1 and r2 (2026-11-11; results/flawed/sc_q2/<rung>/demo_new.json; r2b pending)
+
+| rung | operator, picked: joint J of 6 | flow loss J | verdict | misses |
+|---|---|---|---|---|
+| r0 | 0 (by construction); object 2, target 4 | 0 | (none) | picks K1, K2, K6 or K4 |
+| r1 | **5** | 6 | **PARSES NEW** | N6: target "plate" instead of "bowl" |
+| r2 | **5** | 5 | **PARSES NEW** | N4: target "bowl" instead of "plate" (flow loss makes the same miss) |
+
+At setting 0, r1 gets 4 of 6 and r2 gets 3 of 6.
+
+**Prediction.** MIXED or PARSES NEW, and equal to flow loss within one demo: right. That the cheese demos would parse worse than the bottle demos: wrong. All three cheese demos parse on both rungs, and each miss is a bottle target.
+
+**Reading.**
+- On role-channel VLAs, one demo of a pairing no training task holds is decomposed into its trained parts. Plain r0 cannot express the answer: its nearest trained instruction keeps the object or the target, never both.
+- The operator and retrieval over role phrases do equally well. The parts in the role vocabulary make the new pairing parseable; the operator is one way to read them.
+
