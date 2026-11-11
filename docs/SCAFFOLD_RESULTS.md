@@ -1486,3 +1486,30 @@ If this holds, the operator is a parser with the same power as retrieval, and th
 **Limits.**
 - Known tasks only. Parsing a recorded demo of a new pairing (`sc_q2.py demo`) waits on initial states that neither trial list uses.
 - One seed per rung.
+
+## 40. PU-L: the parts policy from learned masks (protocol fixed 2026-11-10, before any non-smoke rollout; m3_prereg sc_seg_pu)
+
+**Question.** §38 removed pose privilege, and its masks still came from the simulator. Does U keep its success when the masks come from a learned segmenter?
+
+**The segmenter** (`experiments/sc_seg.py`) is a 4.9M-parameter U-Net trained from scratch on the re-rendered K1-K8 demos 0-39, both cameras, with copy-paste and affine augmentation, for 46 min on one A40. Its classes are background, the four movable objects and the three fixtures.
+
+| movable-object IoU | bowl | cheese | bottle | plate | mIoU |
+|---|---|---|---|---|---|
+| validation (demos 40-49) | .991 | .986 | .988 | .994 | .990 |
+| held-out frames, familiar layout | .988 | .981 | .974 | .992 | .984 |
+| held-out frames, new layout | .984 | .954 | **.715** | .942 | .899 |
+
+The held-out frames come from smoke states 0-3 with scripted reaches. In the new layout the bottle fails mostly in the wrist camera (.678), where it is labelled as the cabinet. In agentview, the camera U reads, the bottle scores .972, and the plate's detection rate is .865 when the arm partly hides it.
+
+**Arm.** `sc_seg.py pu` runs sc_pu's percep pipeline unchanged, with `seg_std` replaced in-process by the segmenter's prediction on the RGB render. Depth, calibration and the Estimator stay the same, and so do the combos and states.
+
+**Read.** `experiments/sc_seg_pu_read.py`. The primary comparison, per cell, is learned − percep: the same pipeline with only the mask source changed. COSTS if any cell's upper bound is below −.10; HOLDS if every lower bound is at or above −.10; otherwise UNRESOLVED. learned − oracle is reported with no verdict.
+
+**Prediction.** HOLDS in the familiar layout, at about −.03 or better. In the new layout, a cost of −.03 to −.08 on the plate-target tasks and the bottle tasks. Overall: UNRESOLVED 55%, HOLDS 40%, COSTS 5%.
+
+**Seen before registration.** The IoU tables; one learned-arm smoke (N4 familiar, states 0-1, 2/2 succeeded); learned-mask R2/R2b smokes on a format checkpoint (uninformative); §38.1.
+
+**Limits.**
+- The segmenter is trained with simulator labels on simulator renders, so this is the supervised stage.
+- Depth is still the simulator's rendered depth.
+- U still reads its roles from the instruction through the lexicon.
