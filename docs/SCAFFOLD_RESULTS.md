@@ -1662,3 +1662,46 @@ At setting 0, r1 gets 4 of 6 and r2 gets 3 of 6.
 - On role-channel VLAs, one demo of a pairing no training task holds is decomposed into its trained parts. Plain r0 cannot express the answer: its nearest trained instruction keeps the object or the target, never both.
 - The operator and retrieval over role phrases do equally well. The parts in the role vocabulary make the new pairing parseable; the operator is one way to read them.
 
+## 43. T37-L: R2 with learned masks (protocol fixed 2026-11-11, before any rollout; m3_prereg sc_t37l, commit ad0271da)
+
+**Question.** Does R2's checkpoint keep its gain when the role views are painted from the learned segmenter (§40) instead of the simulator? `sc_seg.py serve`: the simulator maps reach only an IoU log.
+
+**Read.** `sc_t34.py read --dir sc_t37 --rungs r0 r2 r2l --primary r2l:r2 --tag l`, on N1-N6 familiar.
+- MASKS HOLD iff the lower bound of r2l − r2 is at or above −.10.
+- MASKS COST iff the upper bound is below −.10.
+- Otherwise UNRESOLVED.
+- r2l − r0 is reported with sc_t34's labels.
+
+**Prediction.** UNRESOLVED 50%, MASKS HOLD 35%, MASKS COST 15%. Wrist masks of the bottle are weak, and R2 paints both cameras. r2l − r0: STRUCTURE WINS, near +.30.
+
+## 44. HP: the hand-over hybrid without simulator state (protocol fixed 2026-11-11, before any main-state rollout; m3_prereg sc_hp)
+
+**Question.** HAND_OVER §6.1 (H) raised new pairings from .50 to .96 on pi0.5 and from .17 to .93 on GR00T. Its place part read simulator poses, and the hand-over fired on the simulator's contact signal. HP removes both.
+
+**The system** (`experiments/sc_hp.py`).
+1. The frozen VLA acts from the start, with the same seeds, states and prompts as H.
+2. At the first onset of U's proprioceptive hold (ProprioHeld), control passes to U (`pp_sc_U_s10`) for the rest of the episode.
+3. From then on, U reads poses from learned masks plus depth (sc_seg pred, sc_pu Estimator), stepped from step 10 of the episode.
+
+**What still comes from the simulator at test time:**
+- the depth render, drawn with sites hidden;
+- the camera matrices;
+- the entity list and the fixture-to-site map.
+
+At training time, the calibration constants and the segmenter's labels also come from the simulator.
+
+**Read** (`experiments/sc_hp_read.py`; its `--selftest` reproduces §6.1). Per model, N1-N6 familiar:
+- **Primary, HP − intact:** BEATS THE VLA iff the lower bound exceeds +.10.
+- **HP − H:** NO PRIVILEGE COST iff the lower bound is at or above −.10; PRIVILEGE COST iff the upper bound is below −.10; otherwise UNRESOLVED.
+- **Known tasks:** NO KNOWN COST iff the lower bound of HP − intact is at or above −.10.
+
+**Prediction.**
+- **pi0.5:** BEATS THE VLA (about .88 against .50), NO PRIVILEGE COST.
+- **GR00T:** BEATS THE VLA (about .80 against .17). HP − H UNRESOLVED, because the bottle's held-object estimate is off by 3-4 cm in rigid mode.
+
+**Disclosed before registration.** In the smokes, ProprioHeld fired on failed cheese lifts in 3 of 4 cheese episodes. U then made the grasp itself, so on those episodes HP is "VLA approach + U grasp and place". I added no debounce after seeing this. The read reports the share of early hand-overs.
+
+**Limits.**
+- One U seed, one scene, 20 states.
+- The partly privileged inputs listed above.
+
