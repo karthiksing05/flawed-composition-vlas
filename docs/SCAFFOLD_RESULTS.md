@@ -1565,3 +1565,20 @@ T37's fit gate applies.
 - This is a pixel proxy for a token mask.
 - AC-VLA's other parts, LLM decomposition and its phase cut at gripper change, are not reproduced.
 - One seed.
+
+## 42. Q2-N: parsing a demo of a new pairing (protocol fixed 2026-11-11, before any run; m3_prereg sc_q2n)
+
+**Question.** Q2 parses demos of known tasks. The paper's claim is about unseen combinations: from one demo of a pairing no training task holds, does the operator recover its parts?
+
+**Demos.** One per new pairing, N1-N6, familiar layout. U recorded them (oracle, `experiments/sc_pu_record.py`) from extra start state 24 (`experiments/fc_n2_extra.py`: LIBERO's sampler at seed 600000 + k, k = 24-35, after a check that it reproduces stored states 0-1 exactly). All six succeeded on the first attempt. No trial list uses these states.
+
+**Run.** `experiments/sc_q2_demo.py`: sc_q2's `parse_demo`, unchanged, at each rung's picked setting and at setting 0, with the flow-loss baseline on the same rows.
+
+**Verdict per rung,** on the joint count J out of 6 at the picked setting: PARSES NEW iff J ≥ 5; FAILS NEW iff J ≤ 2; otherwise MIXED. Flow loss is reported beside it with no verdict. r0's candidates are trained instructions, so its joint count is 0 by construction; its object and target matches are reported only.
+
+**Prediction.**
+- r1, r2 and r2b are MIXED or PARSE NEW, equal to flow loss within one demo.
+- If a rung stores the pair (P1), the cheese demos parse their target worse than the bottle demos.
+- r0 matches the object on about half.
+
+**Limits.** Six demos, one state each. This is parsing only: no closed-loop composition from the parse.
