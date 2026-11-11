@@ -26,6 +26,14 @@ Status: **E** established here, **P** partial, **O** open. "CoRL" lists independ
 | F6 | **No memory.** Tasks needing state that is no longer visible fail | a Markov policy over a short window | none here | **O** | PI's MEM (CoRL 2026); memory benchmarks |
 | F7 | **Relational and negated language** ("not the bowl", "the left one") is ignored | language read as a bag of cues by the action path | none here; LIBERO-PRO's language perturbations are on disk | **O** | LIBERO-Plus, LangForce |
 
+**Corrected 2026-11-11 by the consolidation (docs/ARCH_FAILURES.md):**
+- **F1 is partial, not established.** Its criterion (3) holds only with privileged inputs: the hand-over reads oracle positions, and R2 reads simulator masks. R2 − R1 does not isolate identity hiding (+.200 [−.058, +.458]). Criterion (2) on more data is untested.
+- **F2 is recipe-rooted as measured.** Frozen pi0.5 and GR00T grasp right at .95-.99.
+- **F3 is a layout failure that fails criterion (1).** GR00T's new-layout success is .08, not .30.
+- **F4's "0/6" is zero by construction.** No frozen VLA was parsed, and the role rungs add vocabulary as well as structure.
+- **F5 rules out large effects only.**
+- **LIBERO-CF supports F2, not F1.** Brittle Grounding's failure sits at the reach.
+
 ## 3. Models
 
 - pi0.5 (openpi, frozen `pi05_libero`) and GR00T N1.x (ar0s), already served.
