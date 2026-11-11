@@ -1513,3 +1513,34 @@ The held-out frames come from smoke states 0-3 with scripted reaches. In the new
 - The segmenter is trained with simulator labels on simulator renders, so this is the supervised stage.
 - Depth is still the simulator's rendered depth.
 - U still reads its roles from the instruction through the lexicon.
+
+## 41. T37w: the whole-wrist-mask control (protocol fixed 2026-11-10, before training starts; m3_prereg sc_t37w)
+
+**Why.** AC-VLA (arXiv 2607.15714) is the closest prior repair. It masks the wrist view's tokens during the place, at training time only, and so hides the held object together with all of the wrist camera's geometry. R2 instead paints entities and keeps geometry. Without this control, a gain for R2 could be AC-VLA's gain.
+
+**Rung R2w** (`experiments/sc_rv_w.py`, arm `rwrist`; config `pi05_g8v_rwrist_ae` inserted at runtime by `experiments/c_train_pi05_w.py`).
+- R1's role phrases. On every held frame of K1-K6, the whole wrist image is replaced by grey 128 (about 0 in openpi's pixel range). Agentview stays unchanged, and K7 and K8 stay whole.
+- The dataset equals rsup's on every other frame: 13,327 of 16,240 held frames are filled. Its norm stats are byte-identical to rsup's.
+- The training recipe is T37's, and the config differs from R1's in name and data only.
+
+**Two test-time arms of one checkpoint.**
+- **r2w:** filled at test, as trained. The fill is gated by the `ProprioHeld` step that switches the prompt.
+- **r2w0:** served unfilled, which is AC-VLA's own rule.
+
+The fill is a pixel proxy for AC-VLA's token mask, not a copy of it; a token-drop version was not built.
+
+**Read.** `sc_t34.py read --dir sc_t37`, T37's estimator and margins, N1-N6 familiar.
+1. **Primary, r2 − r2w:** ENTITY VIEW WINS iff the lower bound exceeds +.10; WHOLE-VIEW MASK WINS iff the upper bound is below −.10; otherwise NO CLEAR DIFFERENCE.
+2. **r2w − r1 and r2w0 − r1:** whether whole-wrist masking adds to role phrases.
+3. **Cost on known tasks,** r2w against r0.
+
+T37's fit gate applies.
+
+**Prediction.**
+- r2w − r1 and r2w0 − r1: NO CLEAR DIFFERENCE. Agentview still shows the held object in every carry frame, so the shortcut stays open.
+- r2 − r2w: ENTITY VIEW WINS exactly when T37's r2 − r0 wins (45%), NO CLEAR DIFFERENCE 50%, WHOLE-VIEW MASK WINS 5%.
+
+**Limits.**
+- This is a pixel proxy for a token mask.
+- AC-VLA's other parts, LLM decomposition and its phase cut at gripper change, are not reproduced.
+- One seed.
