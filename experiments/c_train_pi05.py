@@ -31,7 +31,9 @@ LOG = os.path.join(ROOT, "results", "l90c", "train_log.jsonl")
 
 
 def run_name(a):
-    name = "pi05_goal8_rsup" if a.rsup else "pi05_goal8_roles" if a.roles else "pi05_goal8" if a.goal8 else "pi05_l90c_lora" if a.lora else "pi05_l90c_fac" if a.fac else "pi05_l90c"
+    if getattr(a, "g8v", None):                            # the ladder's re-rendered frames (experiments/sc_rv.py): always the _ae recipe
+        return f"pi05_g8v_{a.g8v}_ae"
+    name ="pi05_goal8_rsup" if a.rsup else "pi05_goal8_roles" if a.roles else "pi05_goal8" if a.goal8 else "pi05_l90c_lora" if a.lora else "pi05_l90c_fac" if a.fac else "pi05_l90c"
     if a.ae:                                               # SCAFFOLD_RESULTS 34: frozen VLM, trainable action expert, one GPU
         assert name.startswith("pi05_goal8"), name
         name += "_ae"
@@ -147,6 +149,9 @@ if __name__ == "__main__":
     ap.add_argument("--roles", action="store_true", help="pi05_goal8_roles: the same frames with per-frame role prompts (docs/SCAFFOLD_RESULTS.md 33)")
     ap.add_argument("--rsup", action="store_true", help="pi05_goal8_rsup: supervised stage, given role phrases (docs/SCAFFOLD_RESULTS.md 33.1)")
     ap.add_argument("--ae", action="store_true", help="with --goal8/--rsup/--roles: the '_ae' config, frozen VLM and trainable action expert (docs/SCAFFOLD_RESULTS.md 34)")
+    ap.add_argument("--g8v", default=None, choices=("plain", "rsup", "rview", "rview2", "rbox"), help="pi05_g8v_<arm>_ae: the ladder's "
+                    "re-rendered K1-K8 frames, R0 plain / R1 role phrases / R2 role views (rview: first rule; rview2, rbox: second rule, "
+                    "masks / boxes) (experiments/sc_rv.py); implies the _ae recipe")
     ap.add_argument("--init", default=None, help="a NEW run starts from this JAX params dir (default: the config's loader)")
     ap.add_argument("--export", action="store_true")
     ap.add_argument("--step", type=int, default=None)

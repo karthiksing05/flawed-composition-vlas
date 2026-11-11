@@ -28,10 +28,13 @@ def read():
     ap.add_argument("what")
     ap.add_argument("--rungs", nargs="+", default=["r0", "r1"])
     ap.add_argument("--tag", default="")
+    ap.add_argument("--dir", default="sc_t34", help="results/flawed/<dir> holds the rollouts; sc_t37 for the matched ladder (SCAFFOLD_RESULTS 37)")
+    ap.add_argument("--primary", default="", help="'ra:rb': the pair whose composition label is the overall label (default: second rung minus first)")
     a = ap.parse_args()
     rungs = a.rungs
     assert len(rungs) >= 2 and len(set(rungs)) == len(rungs), rungs
-    outp = os.path.join(OUT, f"sc_t34_read{('_' + a.tag.lstrip('_')) if a.tag else ''}.json")
+    OD = os.path.join(OUT, a.dir)                                            # noqa: N806  (shadows the module default on purpose)
+    outp = os.path.join(OUT, f"{a.dir}_read{('_' + a.tag.lstrip('_')) if a.tag else ''}.json")
     if os.path.exists(outp):
         raise SystemExit(f"{outp} exists; pass --tag with a new suffix")
 
@@ -121,7 +124,11 @@ def read():
     pairs += [(rungs[i + 1], rungs[i]) for i in range(0, 1) if (rungs[i + 1], rungs[i]) not in pairs]
     for ra, rb in dict.fromkeys(pairs):
         res["verdicts"][f"{ra} minus {rb}"] = verdicts(ra, rb)
-    first = res["verdicts"][f"{rungs[1]} minus {rungs[0]}"]
+    pa, pb = a.primary.split(":") if a.primary else (rungs[1], rungs[0])
+    if f"{pa} minus {pb}" not in res["verdicts"]:
+        res["verdicts"][f"{pa} minus {pb}"] = verdicts(pa, pb)
+    first = res["verdicts"][f"{pa} minus {pb}"]
+    res["primary"] = f"{pa} minus {pb}"
     res["composition"], res["cost"] = first["composition"], first["cost"]
     res["overall"] = "UNDERFIT" if res["fit_gate"]["underfit"] else first["composition"]
     print("[t34]", json.dumps(res), flush=True)

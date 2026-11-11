@@ -1252,6 +1252,8 @@ So "put the cream cheese on the plate" reaches the policy as "object: the cream 
 
 **Two queues, one run read.** Each rung is submitted twice with the same config and seed: experiment `main` on overcap and experiment `tl` on tail-lab. The first of the two to save step 6,000 is the run that gets exported and read, and I cancel the other. This is a scheduling device and adds no second seed.
 
+**Changed 2026-11-10, before any rollout.** The `tl` runs started within a minute and the `main` runs did not, so I cancelled `main` for both rungs. Later the same evening I cancelled R1 here near step 1,900, unread, to free its GPU: §37's ladder has its own R1 on frames matched to R2. R0 here runs on as a check on §37's render pipeline, and this section's R1 − R0 verdict will not be read.
+
 **Rungs.**
 - **R0.** Whole instructions, as T8b.
 - **R1.** T16's supervised stage: given role phrases, switched by `ProprioHeld`, in training and at test.
