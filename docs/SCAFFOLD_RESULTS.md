@@ -1252,7 +1252,7 @@ So "put the cream cheese on the plate" reaches the policy as "object: the cream 
 
 **Two queues, one run read.** Each rung is submitted twice with the same config and seed: experiment `main` on overcap and experiment `tl` on tail-lab. The first of the two to save step 6,000 is the run that gets exported and read, and I cancel the other. This is a scheduling device and adds no second seed.
 
-**Changed 2026-11-10, before any rollout.** The `tl` runs started within a minute and the `main` runs did not, so I cancelled `main` for both rungs. Later the same evening I cancelled R1 here near step 1,900, unread, to free its GPU: §37's ladder has its own R1 on frames matched to R2. R0 here runs on as a check on §37's render pipeline, and this section's R1 − R0 verdict will not be read.
+**Changed 2026-11-10, before any rollout.** The `tl` runs started within a minute and the `main` runs did not, so I cancelled `main` for both rungs. Later the same evening I cancelled R1 here near step 1,900, unread, to free its GPU: §37's ladder has its own R1 on frames matched to R2. R0 here was to run on as a check on §37's render pipeline; I paused it too, near step 1,900, because overcap's estimate for a single A40 was a day and a half and §37's fourth rung needed the lab GPU. Its checkpoints stay, and it resumes if a GPU frees. This section's R1 − R0 verdict will not be read.
 
 **Rungs.**
 - **R0.** Whole instructions, as T8b.
@@ -1350,6 +1350,32 @@ Overall **REFUTED**: GR00T's pooled arm is REVERSED.
 **Prediction, revised after the smoke run and before any search.** OPERATOR PARSES at the picked setting, at or above .90. **SEARCH MATTERS**: plan v4's setting lands near .5 on joint accuracy, because of the floor. The picked setting uses floor 1e-3 or 1e-2, or `pooled` scoring. The retrieval rule still matches the picked setting within .05, so the operator's gain on U is over its own old setting and not over flow loss.
 
 **Limits.** Oracle positions. Known tasks only. A pass shows the operator can read parts off a pure policy; it does not show composition of anything new.
+
+### 36.1 Result: OPERATOR PARSES, SEARCH MATTERS (2026-11-10; results/flawed/sc_q0_read.json; ledger row sc_q0 at 4a1a65c0)
+
+450 demo reads (25 held-out demos × 6 tasks × 3 checkpoints), no instruction.
+
+| | object | target, inferred object | joint [95% CI] |
+|---|---|---|---|
+| plan v4's setting | .900 | .444 | .436 [.387, .484] |
+| picked setting (index 31) | 1.000 | .998 | **.998 [.993, 1.000]** |
+| retrieval rule (flow-matching loss) | 1.000 | 1.000 | 1.000 |
+| motion heuristic (recorded positions) | 1.000 | 1.000 | 1.000 |
+| chance | .25 | .155 | .039 |
+
+Picked minus plan v4's setting: **+.562 [+.513, +.611]**. On the search split the two scored 1.000 and .317.
+
+**The picked setting.** Three noise levels between .05 and .40, four starts (half from noise), 50 steps of size .02, K = 5, temperature .05, `capped` scoring, `marginal` extent, floor 1e-2. It costs under a third of plan v4's setting (600 against 1,920 field evaluations per start). With the same prototypes, `uncapped` scoring gives .998 and the paper's `pooled` scoring .989.
+
+**Against my predictions.** The one written before the smoke run said SEARCH DOES NOT MATTER and was wrong. The revised one held on every count: the picked setting at or above .90, plan v4's near .5, a floor of 1e-2, and the retrieval rule within .05 of the operator.
+
+**Reading.**
+- The user's expectation holds on this policy: the setting decides whether the operator works. Plan v4's extent collapses to the floor at sharp modes, and the operator then misreads the target in more than half of the demos.
+- So plan v4's failure on VLAs had two possible causes, and this removes neither: the setting was bad, and the VLA's field may also be impure. Q1 reruns the operator on a VLA at the picked kind of setting to separate them.
+- On U the operator gains nothing over flow-loss retrieval. Both read the parts off, because U's parts can be addressed one role at a time. The paper's advantage over retrieval rests on retrieval returning whole trained combinations, which is the VLA's situation and not U's.
+- With no verdict: the product-of-experts mean sits closer to the demo's chunk (rmse .04-.05) than U's own sample under the true parts (.16-.24). It conditions on the demo, so this shows the composer reproduces a chunk it was given.
+
+**Limits.** Known tasks, demos U trained on, oracle positions. The search and the read share tasks and differ in demos.
 
 ## 37. The matched ladder on re-rendered frames: R0, R1, R2, R2b (protocol fixed 2026-11-10, before training starts; m3_prereg sc_t37)
 
