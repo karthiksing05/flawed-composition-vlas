@@ -1371,7 +1371,7 @@ Picked minus plan v4's setting: **+.562 [+.513, +.611]**. On the search split th
 
 **Reading.**
 - The user's expectation holds on this policy: the setting decides whether the operator works. Plan v4's extent collapses to the floor at sharp modes, and the operator then misreads the target in more than half of the demos.
-- So plan v4's failure on VLAs had two possible causes, and this removes neither: the setting was bad, and the VLA's field may also be impure. Q1 reruns the operator on a VLA at the picked kind of setting to separate them.
+- So plan v4's offline failure on VLAs had two possible causes, and this removes neither: the setting was bad, and the VLA's field may also be impure. Q2 runs the operator on the ladder's checkpoints at the picked kind of setting to separate them. (The October closed-loop pilot, `q3_pilot`, is a separate case: its variances were clipped at 1e-3 and it failed for a reason its docs put on holding one prototype set over a whole phase. See THEORY_COMPOSITION §4b's correction.)
 - On U the operator gains nothing over flow-loss retrieval. Both read the parts off, because U's parts can be addressed one role at a time. The paper's advantage over retrieval rests on retrieval returning whole trained combinations, which is the VLA's situation and not U's.
 - With no verdict: the product-of-experts mean sits closer to the demo's chunk (rmse .04-.05) than U's own sample under the true parts (.16-.24). It conditions on the demo, so this shows the composer reproduces a chunk it was given.
 
