@@ -1348,3 +1348,39 @@ Overall **REFUTED**: GR00T's pooled arm is REVERSED.
 **Prediction, revised after the smoke run and before any search.** OPERATOR PARSES at the picked setting, at or above .90. **SEARCH MATTERS**: plan v4's setting lands near .5 on joint accuracy, because of the floor. The picked setting uses floor 1e-3 or 1e-2, or `pooled` scoring. The retrieval rule still matches the picked setting within .05, so the operator's gain on U is over its own old setting and not over flow loss.
 
 **Limits.** Oracle positions. Known tasks only. A pass shows the operator can read parts off a pure policy; it does not show composition of anything new.
+
+## 37. The matched ladder on re-rendered frames: R0, R1, R2, R2b (protocol fixed 2026-11-10, before training starts; m3_prereg sc_t37)
+
+**Why a second ladder.** Role views need entity masks, and the published frames have none. `experiments/sc_rv.py` replays all 400 raw demos of K1-K8 state by state and renders RGB and instance masks together: 52,181 frames after the no-op rule, against 41,569 in the published set. Every rung trains on these same frames, so the rungs differ only in the prompt and the paint. §34's R0 on the published frames keeps running as a check on this render pipeline; its R1 is redundant with the R1 here.
+
+**Rungs, all under §34's recipe (frozen VLM, trainable action expert, batch 32, 6,000 steps, one seed).**
+- **R0** `pi05_g8v_plain_ae`: whole instructions, images untouched.
+- **R1** `pi05_g8v_rsup_ae`: given role phrases switched by `ProprioHeld`, images untouched.
+- **R2** `pi05_g8v_rview2_ae`: R1's prompts, and on every routed frame, in both cameras, every movable object except the active role's filler is painted flat magenta by its exact mask. Fixtures are never painted. Before the hold the active filler is the task's object. During it the active filler is the target when the target is movable; when the target is a fixture all four movable objects are painted, the held one included.
+- **R2b** `pi05_g8v_rbox_ae`: R2 with each painted object's mask replaced by its bounding rectangle, so shape reduces to position and extent.
+- K7 and K8 stay whole and unpainted in every rung.
+
+**A rule I built first and dropped before training.** The first role-view dataset (`rview`) painted only the other role's filler: the target before the hold, the held object during it. Looking at its contact sheets I saw two faults in my rule. Painting the target makes the object phase differ by target, although unpainted it looks the same for every target, because each scene shows all the objects. And painting only the held object leaves a tell during the hold: which objects remain on the table. The rule above makes each phase's view independent of the other role's filler, up to the painted shapes. The `rview` dataset stays on disk, untrained.
+
+**At test.** The simulator's instance masks reach the server with each query, and the server paints by the same rule from the parsed roles and the event. This is the supervised stage: masks and entity names are given. The unsupervised stage would take masks from the locator.
+
+**Rollouts.** §34's harness, all 16 compounds in both layouts, dev states 4-23, results in `results/flawed/sc_t37`.
+
+**Verdicts, paired bootstrap over tasks and states (2,000 draws), each on N1-N6 familiar with §34's margins.**
+- **Fit gate.** R0 under .80 on known K1-K6 familiar reads UNDERFIT, and nothing below is read as a statement about composition.
+- **Primary: R2 − R0.** STRUCTURE WINS iff the CI lower bound exceeds +.10. STRUCTURE LOSES iff the upper bound falls below −.10. Otherwise NO CLEAR DIFFERENCE.
+- **Which part carries it: R2 − R1 and R1 − R0**, same labels.
+- **Shape: R2b − R2**, same labels.
+- **Cost, known K1-K6 familiar, each of R1, R2, R2b against R0.** NO COST iff the lower bound is at or above −.10.
+
+**Reported with no verdict.** Grasp and place rates, per-task success, the new layout, K7, K8, N7, N8, and each rung against frozen `pi05_libero`, against §34's R0 and against U (.894 on new pairings, from simulator positions).
+
+**Predictions.** R0 near .45 on new pairings, at or above .90 on known. R1 − R0: NO CLEAR DIFFERENCE (§34's reasoning). **R2 − R0: STRUCTURE WINS**, with R2 near .70, because hiding identity from the place is what the hand-over did; I put this at a little better than even. R2b − R2: NO CLEAR DIFFERENCE, with R2b a few points higher if silhouette shape still gives the held object away. NO COST for R1; R2 and R2b lose under .10 on known tasks.
+
+**What would count against the theory.** R2 and R2b both land within .10 of R0 while R0 passes the fit gate. Then hiding identity in the image does not buy composition in a VLA, and the hand-over's gain came from something else the external part had, such as its entity frame.
+
+**Limits.**
+- Masks are privileged at test time. R2 gets them and R0 does not.
+- A painted held object still shows its outline in R2 and its extent in R2b, and the fingers' opening still differs by object.
+- The paint changes what a frozen vision tower sees; the tower cannot adapt, only the action expert can.
+- One seed per rung, six pairings, one scene, development states.
