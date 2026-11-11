@@ -48,7 +48,7 @@ A class counts as general when it holds on at least three of these.
    Each runs against a reference that succeeds.
 6. **Bonus fixes,** already running: role views (SR §37), the AC-VLA control (§41), the hand-over without simulator state (§44).
 
-## 5. Open questions for the user
+## 5. The user's decisions (2026-11-11)
 
-- Should F6 and F7 be in scope, or should the account stay with binding and composition (F1-F4)?
-- Is GR00T 2 worth waiting for, or should the account go out with the current models?
+- F6 (memory) and F7 (relational and negated language) are in scope.
+- "Let's run with whatever exists right now, and iterate on GR00T 2 when it drops."
