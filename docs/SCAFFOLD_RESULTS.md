@@ -1730,3 +1730,34 @@ At training time, the calibration constants and the segmenter's labels also come
 - One U seed, one scene, 20 states.
 - The partly privileged inputs listed above.
 
+## 45. FX: memory (F6) and relational language (F7) on frozen VLAs (protocol fixed 2026-11-12, before any main-state rollout; m3_prereg fx)
+
+**F7, relational and negated language.** Two identical bowls in the LIBERO-Goal scene, so only the relation picks the referent.
+- **SP family:** "put the left / right bowl on the plate". The two instructions run on one scene with the bowls' poses swapped.
+- **NG family:** "put the bowl that is / is not on the plate on the stove".
+- **Controls:**
+  - unique-name: the other bowl is removed under the table and hidden from render;
+  - ambiguous: "put the bowl on ...", no verdict.
+- **Reference:** a scripted servo and P_min, each given the referent.
+- **Measures:**
+  - U: unique-name success;
+  - R: relational success;
+  - C: the share of relational grasps that took the referent (an instruction-blind policy scores .5).
+- **Verdict per model and family:**
+  - NO POWER iff U < .50 or the reference is below .60;
+  - RELATION IGNORED iff U − R > .10 with lower bound > 0, and C's upper bound < .75;
+  - RELATION USED iff C's lower bound > .75;
+  - otherwise PARTIAL.
+- F7 GENERAL iff RELATION IGNORED holds on at least 3 of the 4 model-family cells.
+- I set the reference floor at .60, down from the draft's .80, after seeing smoke references of .67-1.0.
+
+**F6, memory: descriptive only.** K1 with the plate displaced, then hidden from render after the first query. In the smoke, hiding the plate broke both VLAs even in the familiar layout (0/4), where no memory is needed, so this design confounds memory with an out-of-distribution view. The vis, hid and abs conditions are reported with no verdict. The proper redesign (a physical occluder in every condition) is open.
+
+**F7P.** LIBERO-PRO's one negated task, against its trained instruction, with no verdict: negation is confounded with habit there.
+
+**Prediction.**
+- F7 GENERAL. pi0.5 ignores the relation on both families. GR00T ignores it on SP and reads PARTIAL or NO POWER on NG, because its unique-name control grasps the cheese.
+- C stays near .5, and the relational choice equals the ambiguous condition's choice on at least 80% of states.
+
+**Seen before registration.** Smoke, states 0-3: C = .50 and both-right = .00 for both models and families.
+
