@@ -1449,6 +1449,29 @@ Under the registered rule, COST means the lower bound fell below −.10. Each po
 
 **Against frozen pi0.5** (reported with no verdict): .50 on new pairings, trained on 40 LIBERO tasks with the full model. R2, trained on 8 tasks with a frozen vision-language model, sits −.075 [−.417, +.258] from it. In the new layout every rung is near 0, against .30 for frozen pi0.5: the eight-task recipe does not cover new placements.
 
+### 37.2 Registered four-rung read and the T37w control (2026-11-12; sc_t37_read.json, sc_t37_read_w*.json)
+
+**The four-rung read** gives the same primary verdict as §37.1: STRUCTURE WINS, R2 − R0 = +.400 [+.167, +.625].
+
+**R2b, boxes, against R2, silhouettes:** −.275 [−.458, −.108], STRUCTURE LOSES. R2b scores .150 on new pairings and .683 on known tasks. My prediction (NO CLEAR DIFFERENCE) was wrong. Covering each non-active object's whole extent, which removes its shape along with its identity, costs about two thirds of R2's gain.
+
+**T37w (§41), the AC-VLA-style control.**
+
+| N1-N6 familiar | success | known K1-K6 |
+|---|---|---|
+| R1 | .225 | .758 |
+| R2w, wrist grey on held frames, filled at test | .242 | .617 |
+| R2w0, same checkpoint, unfilled at test | .175 | .308 |
+| R2 | .425 | .758 |
+
+- **Primary, r2 − r2w:** +.183 [−.092, +.475], NO CLEAR DIFFERENCE. I gave ENTITY VIEW WINS 45%, conditional on r2 − r0 winning; it did not happen. On this evidence R2's gain cannot be told apart from a whole-wrist mask.
+- **r2w − r1:** +.017 [−.292, +.283], NO CLEAR DIFFERENCE, as predicted.
+- **r2w0 − r1:** −.050 [−.217, +.100], NO CLEAR DIFFERENCE, as predicted.
+- **The read script printed UNDERFIT** for these two reads because it gates on their first rung (R1, .758). The registration applies T37's gate on R0 (.85, passes), so the composition labels stand.
+- **Serving R2w without the fill it was trained on** drops known tasks to .308, so AC-VLA's train-only rule fails in this pixel form.
+
+**Reading.** Hiding identity in the image helps a VLA on new pairings (R2 − R0). Which form of hiding matters is unresolved at this sample size: silhouettes beat boxes, and silhouettes do not clearly beat a whole-wrist mask.
+
 ## 38. PU: the parts policy from perceived poses (protocol fixed 2026-11-10, before any non-smoke rollout; m3_prereg sc_pu)
 
 **Question.** U's new-pairing success (.894 familiar, §11) reads object and site poses from the simulator. Does it keep that success when every movable object's pose comes from the agentview camera instead? This removes the privileged input that separates U from the VLA rungs of §37.
@@ -1628,6 +1651,8 @@ T37's fit gate applies.
 - This is a pixel proxy for a token mask.
 - AC-VLA's other parts, LLM decomposition and its phase cut at gripper change, are not reproduced.
 - One seed.
+
+### 41.1 Result: see 37.2
 
 ## 42. Q2-N: parsing a demo of a new pairing (protocol fixed 2026-11-11, before any run; m3_prereg sc_q2n)
 

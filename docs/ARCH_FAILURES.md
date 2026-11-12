@@ -4,6 +4,26 @@ This document implements step 1 of `docs/PLAN_ARCH_FAILURES.md`. It restates tha
 
 Section marks: BA = BREAK_ATLAS, HG = HOLD_GATE, HO = HAND_OVER, RT = RIVAL_TESTS, SR = SCAFFOLD_RESULTS, TC = THEORY_COMPOSITION, LR = `reports/CoRL 2026 VLA literature review.md`, PAF = PLAN_ARCH_FAILURES. All files sit in `docs/` except LR. `docs/PAPER_STYLE.md` does not exist, so the prose follows the rules given for this task.
 
+## Update 2026-11-12: the atlas on five VLAs (m3_prereg pp_atlas_more; results/flawed/pp_atlas_more_read.json)
+
+BREAK_ATLAS's registered estimator and mapping, unchanged, were run on three more frozen LIBERO-trained VLAs: pi0 (`pi0_libero`), X-VLA (`xvla-libero`) and SmolVLA (`smolvla_libero`). The read reproduces the registered pi0.5 and GR00T numbers exactly. Familiar layout, N1-N6 against their known partners:
+
+| model | within-chunk E (grasp side) | cross-chunk E (hold and release) | verdict |
+|---|---|---|---|
+| pi0.5 | +.175 [.05, .33] | +.325 [.13, .53] | BOTH |
+| GR00T N1 | +.392 [.15, .66] | +.429 [.19, .67] | BOTH |
+| pi0 | +.708 [.47, .93] | +.254 [.05, .48] | BOTH |
+| X-VLA | +.450 [.13, .81] | +.392 [.06, .73] | BOTH |
+| SmolVLA | +.792 [.63, .93] | +.083 [−.03, .27] | WITHIN-CHUNK |
+
+The new layout reads NEITHER on all five.
+
+**F1, criterion (2): F1 GENERALISES.** Its cross-chunk break clears the bar on pi0 and X-VLA, so on 4 of 5 models. Every registered prediction held.
+
+**F2 changes status.** The grasp-side excess is large on pi0 (GRASP E +.64) and on SmolVLA (+.78): frozen VLAs trained on 40 LIBERO tasks grasp the habitual object on new pairings. F2 now meets criterion (2) on 2 of 5 models. pi0.5 and GR00T show the place-side failure instead. Which failure a VLA shows varies by model; that it fails on new pairings in the familiar layout does not.
+
+**Fixes (SR §37.2).** Role views raise a matched VLA on new pairings, R2 − R0 = +.40 [+.17, +.63]. Silhouettes beat boxes (−.275). They do not clearly beat an AC-VLA-style whole-wrist mask (+.18 [−.09, +.48]).
+
 ## 0. The three criteria
 
 A failure is architecture-rooted when all three hold (PAF §1).
