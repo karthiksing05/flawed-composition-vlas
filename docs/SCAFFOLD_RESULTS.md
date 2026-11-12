@@ -1730,6 +1730,39 @@ At training time, the calibration constants and the segmenter's labels also come
 - One U seed, one scene, 20 states.
 - The partly privileged inputs listed above.
 
+### 43.1 Result: UNRESOLVED (2026-11-12; sc_t37_read_l.json)
+
+| verdict | value | label |
+|---|---|---|
+| r2l − r2 | −.008 [−.133, +.117] | **UNRESOLVED** |
+| r2l − r0 | +.392 [+.117, +.675] | STRUCTURE WINS |
+
+R2 painted from learned masks scores .417 on new pairings, against .425 from simulator masks. The point difference is nil, but the interval is too wide to clear the −.10 bar, so the registered label is UNRESOLVED; I had put that outcome at 50%. The gain over the plain VLA survives the learned masks.
+
+### 44.1 Result (2026-11-12; sc_hp_read.json; ledger row sc_hp)
+
+N1-N6, familiar layout:
+
+| model | intact | H (simulator state) | HP (learned perception) | HP − intact | HP − H | known, HP − intact |
+|---|---|---|---|---|---|---|
+| pi0.5 | .50 | .958 | .850 | +.350 [+.017, +.675] | −.108 [−.250, −.008] | −.010 [−.060, .000] |
+| GR00T | .167 | .925 | .842 | +.675 [+.417, +.917] | −.083 [−.275, +.033] | −.010 [−.080, +.040] |
+
+**Verdicts.**
+- **pi0.5:** NOT SHOWN, since the lower bound (+.017) misses +.10. HP − H is UNRESOLVED. NO KNOWN COST.
+- **GR00T:** **BEATS THE VLA**. HP − H is UNRESOLVED. NO KNOWN COST.
+
+**My predictions.**
+- pi0.5: I predicted BEATS THE VLA and NO PRIVILEGE COST. Both were wrong, the first narrowly.
+- GR00T: BEATS THE VLA and UNRESOLVED, both right.
+- The bottle carried the cost, as predicted: GR00T N4 scored .30 under HP.
+
+**Reported with no verdict.**
+- **New layout:** HP lifts pi0.5 from .30 to .49 [+.04, +.35] and GR00T from .083 to .325 [+.12, +.41].
+- **Hand-over trigger:** it fired in 100% of familiar episodes. Only 35% of pi0.5's and 78% of GR00T's hand-overs coincided with the oracle hold, so U often finished the grasp itself.
+
+**Reading.** A frozen VLA with a hand-over to the parts policy reading learned perception raises new-pairing success on both models, by +.35 and +.68. Simulator state was worth about .08-.11 more, and that gap is not resolved.
+
 ## 45. FX: memory (F6) and relational language (F7) on frozen VLAs (protocol fixed 2026-11-12, before any main-state rollout; m3_prereg fx)
 
 **F7, relational and negated language.** Two identical bowls in the LIBERO-Goal scene, so only the relation picks the referent.

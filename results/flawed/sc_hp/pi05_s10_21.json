@@ -1,0 +1,2254 @@
+{
+ "suite": "n2_goal",
+ "tasks": {
+  "21": {
+   "language": "put the cream cheese on top of the cabinet",
+   "success_rate": 0.55,
+   "episodes": [
+    {
+     "trial": 4,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 32.34425377845764,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k4",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": -1,
+      "trigger_fired": false,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": null,
+      "u_calls": 0,
+      "onsets": [],
+      "at_handover": null,
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 301,
+        "med": 0.523,
+        "p90": 0.523,
+        "max": 0.528
+       },
+       "obj_pre_u": null,
+       "obj_held": null,
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.043,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.158,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 5.524228224721087,
+       "max": 6.152076759825597
+      },
+      "obj_sources": {
+       "agent": 15,
+       "occl": 286
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 301,
+       "ms_per_pred": 7.46,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.8746,
+         "cream_cheese_1": 0.9125,
+         "wine_bottle_1": 0.9699,
+         "plate_1": 0.9918
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 5,
+     "success": true,
+     "steps": 99,
+     "calls": 20,
+     "secs": 7.977663040161133,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k5",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 53,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 53,
+      "oracle_held_at_handover": true,
+      "u_calls": 10,
+      "onsets": [
+       {
+        "row": 53,
+        "by": "vla",
+        "obj_cm": 0.411,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.496,
+        "zrest_err_cm": 0.277,
+        "cyaw_err_deg": 0.249,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 53,
+       "by": "vla",
+       "obj_cm": 0.411,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.496,
+       "zrest_err_cm": 0.277,
+       "cyaw_err_deg": 0.249,
+       "oracle_held": true
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 53,
+        "med": 0.229,
+        "p90": 0.918,
+        "max": 1.272
+       },
+       "obj_pre_u": null,
+       "obj_held": {
+        "n": 48,
+        "med": 0.429,
+        "p90": 0.57,
+        "max": 0.756
+       },
+       "tgt": {
+        "n": 101,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.043,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.032,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.0272282525312369,
+       "max": 0.6048258692096498
+      },
+      "obj_sources": {
+       "agent": 87,
+       "occl": 14
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 101,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 101,
+       "ms_per_pred": 6.83,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9249,
+         "cream_cheese_1": 0.9463,
+         "wine_bottle_1": 0.9628,
+         "plate_1": 0.9887
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 6,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 17.857498168945312,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k6",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 58,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": false,
+      "u_calls": 49,
+      "onsets": [
+       {
+        "row": 58,
+        "by": "vla",
+        "obj_cm": 1.903,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.359,
+        "zrest_err_cm": 0.03,
+        "cyaw_err_deg": 2.412,
+        "oracle_held": false
+       }
+      ],
+      "at_handover": {
+       "row": 58,
+       "by": "vla",
+       "obj_cm": 1.903,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.359,
+       "zrest_err_cm": 0.03,
+       "cyaw_err_deg": 2.412,
+       "oracle_held": false
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 58,
+        "med": 0.141,
+        "p90": 0.141,
+        "max": 0.141
+       },
+       "obj_pre_u": null,
+       "obj_held": {
+        "n": 243,
+        "med": 1.903,
+        "p90": 1.903,
+        "max": 1.903
+       },
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.043,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.032,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 0.027228252531262345
+      },
+      "obj_sources": {
+       "agent": 301
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 301,
+       "ms_per_pred": 7.57,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.83,
+         "cream_cheese_1": 0.9557,
+         "wine_bottle_1": 0.9433,
+         "plate_1": 0.8123
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 7,
+     "success": true,
+     "steps": 92,
+     "calls": 19,
+     "secs": 7.342495918273926,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k7",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 50,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 50,
+      "oracle_held_at_handover": true,
+      "u_calls": 9,
+      "onsets": [
+       {
+        "row": 50,
+        "by": "vla",
+        "obj_cm": 0.53,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.493,
+        "zrest_err_cm": 0.023,
+        "cyaw_err_deg": 0.531,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 50,
+       "by": "vla",
+       "obj_cm": 0.53,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.493,
+       "zrest_err_cm": 0.023,
+       "cyaw_err_deg": 0.531,
+       "oracle_held": true
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 50,
+        "med": 0.034,
+        "p90": 0.601,
+        "max": 0.909
+       },
+       "obj_pre_u": {
+        "n": 6,
+        "med": 1.287,
+        "p90": 1.323,
+        "max": 1.343
+       },
+       "obj_held": {
+        "n": 38,
+        "med": 0.795,
+        "p90": 0.955,
+        "max": 1.027
+       },
+       "tgt": {
+        "n": 94,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.36,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.028,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 4.505777402693813
+      },
+      "obj_sources": {
+       "agent": 79,
+       "occl": 15
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 94,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 94,
+       "ms_per_pred": 6.94,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.989,
+         "cream_cheese_1": 0.9252,
+         "wine_bottle_1": 0.9569,
+         "plate_1": 0.9846
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 8,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 17.58381152153015,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k8",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 58,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": false,
+      "u_calls": 49,
+      "onsets": [
+       {
+        "row": 58,
+        "by": "vla",
+        "obj_cm": 1.619,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.741,
+        "zrest_err_cm": 0.56,
+        "cyaw_err_deg": 1.79,
+        "oracle_held": false
+       }
+      ],
+      "at_handover": {
+       "row": 58,
+       "by": "vla",
+       "obj_cm": 1.619,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.741,
+       "zrest_err_cm": 0.56,
+       "cyaw_err_deg": 1.79,
+       "oracle_held": false
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 58,
+        "med": 0.36,
+        "p90": 0.665,
+        "max": 0.675
+       },
+       "obj_pre_u": {
+        "n": 148,
+        "med": 0.402,
+        "p90": 0.408,
+        "max": 2.264
+       },
+       "obj_held": {
+        "n": 95,
+        "med": 1.609,
+        "p90": 43.943,
+        "max": 44.983
+       },
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.197,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.028,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 0.027228252531262345
+      },
+      "obj_sources": {
+       "agent": 268,
+       "occl": 12,
+       "rigid": 21
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 301,
+       "ms_per_pred": 7.58,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.8965,
+         "cream_cheese_1": 0.9575,
+         "wine_bottle_1": 0.9715,
+         "plate_1": 0.7586
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 9,
+     "success": true,
+     "steps": 294,
+     "calls": 59,
+     "secs": 17.293550491333008,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k9",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 65,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 69,
+      "oracle_held_at_handover": false,
+      "u_calls": 46,
+      "onsets": [
+       {
+        "row": 65,
+        "by": "vla",
+        "obj_cm": 0.497,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.455,
+        "zrest_err_cm": 0.656,
+        "cyaw_err_deg": 1.014,
+        "oracle_held": false
+       },
+       {
+        "row": 115,
+        "by": "u",
+        "obj_cm": 0.818,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.622,
+        "zrest_err_cm": 0.639,
+        "cyaw_err_deg": 0.931,
+        "oracle_held": true
+       },
+       {
+        "row": 164,
+        "by": "u",
+        "obj_cm": 0.26,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.103,
+        "zrest_err_cm": 0.415,
+        "cyaw_err_deg": 0.58,
+        "oracle_held": false
+       },
+       {
+        "row": 249,
+        "by": "u",
+        "obj_cm": 1.013,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.878,
+        "zrest_err_cm": 0.415,
+        "cyaw_err_deg": 0.579,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 65,
+       "by": "vla",
+       "obj_cm": 0.497,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.455,
+       "zrest_err_cm": 0.656,
+       "cyaw_err_deg": 1.014,
+       "oracle_held": false
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 65,
+        "med": 0.198,
+        "p90": 0.708,
+        "max": 0.744
+       },
+       "obj_pre_u": {
+        "n": 175,
+        "med": 0.678,
+        "p90": 1.981,
+        "max": 2.726
+       },
+       "obj_held": {
+        "n": 56,
+        "med": 1.536,
+        "p90": 2.002,
+        "max": 2.173
+       },
+       "tgt": {
+        "n": 296,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.042,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.032,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 13.463317782066936,
+       "max": 17.140800295023837
+      },
+      "obj_sources": {
+       "agent": 187,
+       "occl": 109
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 296,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 296,
+       "ms_per_pred": 7.11,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9903,
+         "cream_cheese_1": 0.9196,
+         "wine_bottle_1": 0.9642,
+         "plate_1": 0.7115
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 10,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 31.834940671920776,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k10",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": -1,
+      "trigger_fired": false,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": null,
+      "u_calls": 0,
+      "onsets": [],
+      "at_handover": null,
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 301,
+        "med": 0.319,
+        "p90": 0.319,
+        "max": 0.319
+       },
+       "obj_pre_u": null,
+       "obj_held": null,
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.4,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.028,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 0.027228252531262345
+      },
+      "obj_sources": {
+       "agent": 301
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 301,
+       "ms_per_pred": 6.87,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9896,
+         "cream_cheese_1": 0.9434,
+         "wine_bottle_1": 0.9729,
+         "plate_1": 0.9635
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 11,
+     "success": true,
+     "steps": 89,
+     "calls": 18,
+     "secs": 7.286404371261597,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k11",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 49,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 49,
+      "oracle_held_at_handover": true,
+      "u_calls": 9,
+      "onsets": [
+       {
+        "row": 49,
+        "by": "vla",
+        "obj_cm": 0.482,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.338,
+        "zrest_err_cm": 0.003,
+        "cyaw_err_deg": 0.928,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 49,
+       "by": "vla",
+       "obj_cm": 0.482,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.338,
+       "zrest_err_cm": 0.003,
+       "cyaw_err_deg": 0.928,
+       "oracle_held": true
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 49,
+        "med": 0.108,
+        "p90": 0.581,
+        "max": 0.945
+       },
+       "obj_pre_u": null,
+       "obj_held": {
+        "n": 42,
+        "med": 0.557,
+        "p90": 0.614,
+        "max": 0.673
+       },
+       "tgt": {
+        "n": 91,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.048,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.028,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.0272282525312369,
+       "max": 1.1133457992005973
+      },
+      "obj_sources": {
+       "agent": 76,
+       "occl": 15
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 91,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 91,
+       "ms_per_pred": 6.98,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9775,
+         "cream_cheese_1": 0.9466,
+         "wine_bottle_1": 0.9723,
+         "plate_1": 0.9338
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 12,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 31.7097589969635,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k12",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": -1,
+      "trigger_fired": false,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": null,
+      "u_calls": 0,
+      "onsets": [],
+      "at_handover": null,
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 301,
+        "med": 0.176,
+        "p90": 0.383,
+        "max": 8.486
+       },
+       "obj_pre_u": null,
+       "obj_held": null,
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.624,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.036,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.026238766140976283,
+       "max": 0.026238766140976283
+      },
+      "obj_sources": {
+       "agent": 261,
+       "occl": 40
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 301,
+       "ms_per_pred": 6.97,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9791,
+         "cream_cheese_1": 0.9251,
+         "wine_bottle_1": 0.9755,
+         "plate_1": 0.9886
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 13,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 25.054975986480713,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k13",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 188,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": false,
+      "u_calls": 23,
+      "onsets": [
+       {
+        "row": 188,
+        "by": "vla",
+        "obj_cm": 0.787,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.795,
+        "zrest_err_cm": 0.013,
+        "cyaw_err_deg": 0.769,
+        "oracle_held": false
+       },
+       {
+        "row": 235,
+        "by": "u",
+        "obj_cm": 0.311,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.227,
+        "zrest_err_cm": 0.013,
+        "cyaw_err_deg": 0.517,
+        "oracle_held": false
+       },
+       {
+        "row": 266,
+        "by": "u",
+        "obj_cm": 0.415,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.008,
+        "zrest_err_cm": 0.069,
+        "cyaw_err_deg": 0.848,
+        "oracle_held": false
+       }
+      ],
+      "at_handover": {
+       "row": 188,
+       "by": "vla",
+       "obj_cm": 0.787,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.795,
+       "zrest_err_cm": 0.013,
+       "cyaw_err_deg": 0.769,
+       "oracle_held": false
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 188,
+        "med": 0.223,
+        "p90": 0.223,
+        "max": 0.536
+       },
+       "obj_pre_u": {
+        "n": 102,
+        "med": 0.286,
+        "p90": 1.79,
+        "max": 1.821
+       },
+       "obj_held": {
+        "n": 11,
+        "med": 0.787,
+        "p90": 1.333,
+        "max": 1.365
+       },
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.178,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.028,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 0.9833087163520475
+      },
+      "obj_sources": {
+       "agent": 263,
+       "occl": 38
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 301,
+       "ms_per_pred": 7.14,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9814,
+         "cream_cheese_1": 0.9291,
+         "wine_bottle_1": 0.9809,
+         "plate_1": 0.6312
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 14,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 32.010310888290405,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k14",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": -1,
+      "trigger_fired": false,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": null,
+      "u_calls": 0,
+      "onsets": [],
+      "at_handover": null,
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 301,
+        "med": 0.288,
+        "p90": 10.917,
+        "max": 11.621
+       },
+       "obj_pre_u": null,
+       "obj_held": null,
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.048,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.032,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 0.027228252531262345
+      },
+      "obj_sources": {
+       "agent": 267,
+       "occl": 34
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 301,
+       "ms_per_pred": 7.08,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.988,
+         "cream_cheese_1": 0.8342,
+         "wine_bottle_1": 0.9705,
+         "plate_1": 0.9706
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 15,
+     "success": true,
+     "steps": 93,
+     "calls": 19,
+     "secs": 7.4095330238342285,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k15",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 49,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 49,
+      "oracle_held_at_handover": true,
+      "u_calls": 9,
+      "onsets": [
+       {
+        "row": 49,
+        "by": "vla",
+        "obj_cm": 0.943,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.606,
+        "zrest_err_cm": 0.01,
+        "cyaw_err_deg": 2.087,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 49,
+       "by": "vla",
+       "obj_cm": 0.943,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.606,
+       "zrest_err_cm": 0.01,
+       "cyaw_err_deg": 2.087,
+       "oracle_held": true
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 49,
+        "med": 0.148,
+        "p90": 0.52,
+        "max": 0.837
+       },
+       "obj_pre_u": null,
+       "obj_held": {
+        "n": 46,
+        "med": 1.198,
+        "p90": 1.586,
+        "max": 1.753
+       },
+       "tgt": {
+        "n": 95,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.043,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.028,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 2.6824820274109653
+      },
+      "obj_sources": {
+       "agent": 88,
+       "occl": 7
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 95,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 95,
+       "ms_per_pred": 6.94,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9842,
+         "cream_cheese_1": 0.9456,
+         "wine_bottle_1": 0.9766,
+         "plate_1": 0.888
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 16,
+     "success": true,
+     "steps": 104,
+     "calls": 21,
+     "secs": 8.485634088516235,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 58,
+     "branch": "k16",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 57,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 57,
+      "oracle_held_at_handover": true,
+      "u_calls": 10,
+      "onsets": [
+       {
+        "row": 57,
+        "by": "vla",
+        "obj_cm": 0.839,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.052,
+        "zrest_err_cm": 0.011,
+        "cyaw_err_deg": 1.85,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 57,
+       "by": "vla",
+       "obj_cm": 0.839,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.052,
+       "zrest_err_cm": 0.011,
+       "cyaw_err_deg": 1.85,
+       "oracle_held": true
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 57,
+        "med": 0.073,
+        "p90": 0.687,
+        "max": 1.444
+       },
+       "obj_pre_u": {
+        "n": 7,
+        "med": 0.359,
+        "p90": 0.454,
+        "max": 0.557
+       },
+       "obj_held": {
+        "n": 42,
+        "med": 1.156,
+        "p90": 1.522,
+        "max": 1.569
+       },
+       "tgt": {
+        "n": 106,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.041,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.04,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 7.858892130009513
+      },
+      "obj_sources": {
+       "agent": 92,
+       "occl": 14
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 106,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 106,
+       "ms_per_pred": 6.93,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9422,
+         "cream_cheese_1": 0.9392,
+         "wine_bottle_1": 0.9302,
+         "plate_1": 0.9893
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 17,
+     "success": true,
+     "steps": 94,
+     "calls": 19,
+     "secs": 7.759784936904907,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 53,
+     "branch": "k17",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 52,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 52,
+      "oracle_held_at_handover": true,
+      "u_calls": 9,
+      "onsets": [
+       {
+        "row": 52,
+        "by": "vla",
+        "obj_cm": 0.38,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.474,
+        "zrest_err_cm": 0.08,
+        "cyaw_err_deg": 0.045,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 52,
+       "by": "vla",
+       "obj_cm": 0.38,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.474,
+       "zrest_err_cm": 0.08,
+       "cyaw_err_deg": 0.045,
+       "oracle_held": true
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 52,
+        "med": 0.124,
+        "p90": 0.846,
+        "max": 1.165
+       },
+       "obj_pre_u": null,
+       "obj_held": {
+        "n": 44,
+        "med": 0.594,
+        "p90": 0.718,
+        "max": 0.761
+       },
+       "tgt": {
+        "n": 96,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.089,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.028,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.0272282525312369,
+       "max": 0.7370178696819574
+      },
+      "obj_sources": {
+       "agent": 80,
+       "occl": 16
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 96,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 96,
+       "ms_per_pred": 6.94,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9846,
+         "cream_cheese_1": 0.9316,
+         "wine_bottle_1": 0.9726,
+         "plate_1": 0.9875
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 18,
+     "success": true,
+     "steps": 291,
+     "calls": 59,
+     "secs": 17.095326900482178,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k18",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 65,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 138,
+      "oracle_held_at_handover": false,
+      "u_calls": 46,
+      "onsets": [
+       {
+        "row": 65,
+        "by": "vla",
+        "obj_cm": 7.252,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 2.799,
+        "zrest_err_cm": 0.022,
+        "cyaw_err_deg": 9.296,
+        "oracle_held": false
+       },
+       {
+        "row": 98,
+        "by": "u",
+        "obj_cm": 0.638,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.155,
+        "zrest_err_cm": 1.117,
+        "cyaw_err_deg": 0.741,
+        "oracle_held": false
+       },
+       {
+        "row": 136,
+        "by": "u",
+        "obj_cm": 1.329,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.777,
+        "zrest_err_cm": 0.627,
+        "cyaw_err_deg": 1.357,
+        "oracle_held": false
+       },
+       {
+        "row": 190,
+        "by": "u",
+        "obj_cm": 2.091,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.314,
+        "zrest_err_cm": 0.627,
+        "cyaw_err_deg": 3.239,
+        "oracle_held": false
+       },
+       {
+        "row": 249,
+        "by": "u",
+        "obj_cm": 0.614,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.338,
+        "zrest_err_cm": 0.627,
+        "cyaw_err_deg": 0.888,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 65,
+       "by": "vla",
+       "obj_cm": 7.252,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 2.799,
+       "zrest_err_cm": 0.022,
+       "cyaw_err_deg": 9.296,
+       "oracle_held": false
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 65,
+        "med": 7.347,
+        "p90": 7.347,
+        "max": 7.347
+       },
+       "obj_pre_u": {
+        "n": 155,
+        "med": 0.983,
+        "p90": 6.097,
+        "max": 28.82
+       },
+       "obj_held": {
+        "n": 73,
+        "med": 0.832,
+        "p90": 1.739,
+        "max": 7.418
+       },
+       "tgt": {
+        "n": 293,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.043,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.028,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 16.376468332555415
+      },
+      "obj_sources": {
+       "agent": 162,
+       "occl": 113,
+       "rigid": 2,
+       "last": 15,
+       "wrist": 1
+      },
+      "wrist_renders": 16,
+      "perceived_steps": 293,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 309,
+       "ms_per_pred": 6.86,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9863,
+         "cream_cheese_1": 0.8826,
+         "wine_bottle_1": 0.9752,
+         "plate_1": 0.9658
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": 0.9325,
+         "cream_cheese_1": 0.0,
+         "wine_bottle_1": 0.0,
+         "plate_1": 0.9957
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 19,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 31.05822515487671,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k19",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 285,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": false,
+      "u_calls": 3,
+      "onsets": [
+       {
+        "row": 285,
+        "by": "vla",
+        "obj_cm": 0.935,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.397,
+        "zrest_err_cm": 0.008,
+        "cyaw_err_deg": 0.365,
+        "oracle_held": false
+       }
+      ],
+      "at_handover": {
+       "row": 285,
+       "by": "vla",
+       "obj_cm": 0.935,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.397,
+       "zrest_err_cm": 0.008,
+       "cyaw_err_deg": 0.365,
+       "oracle_held": false
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 285,
+        "med": 0.213,
+        "p90": 3.284,
+        "max": 3.679
+       },
+       "obj_pre_u": {
+        "n": 14,
+        "med": 3.692,
+        "p90": 18.408,
+        "max": 18.582
+       },
+       "obj_held": {
+        "n": 2,
+        "med": 1.117,
+        "p90": 1.262,
+        "max": 1.298
+       },
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.259,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.029,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 0.027228252531262345
+      },
+      "obj_sources": {
+       "agent": 264,
+       "occl": 31,
+       "rigid": 2,
+       "wrist": 4
+      },
+      "wrist_renders": 4,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 305,
+       "ms_per_pred": 7.44,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9876,
+         "cream_cheese_1": 0.8868,
+         "wine_bottle_1": 0.9741,
+         "plate_1": 0.7655
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": 0.0,
+         "cream_cheese_1": 0.0,
+         "wine_bottle_1": 0.0,
+         "plate_1": 0.0
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 20,
+     "success": true,
+     "steps": 104,
+     "calls": 21,
+     "secs": 8.843233108520508,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 62,
+     "branch": "k20",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 62,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 62,
+      "oracle_held_at_handover": true,
+      "u_calls": 9,
+      "onsets": [
+       {
+        "row": 62,
+        "by": "vla",
+        "obj_cm": 1.197,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.168,
+        "zrest_err_cm": 0.028,
+        "cyaw_err_deg": 2.313,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 62,
+       "by": "vla",
+       "obj_cm": 1.197,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.168,
+       "zrest_err_cm": 0.028,
+       "cyaw_err_deg": 2.313,
+       "oracle_held": true
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 62,
+        "med": 0.164,
+        "p90": 0.607,
+        "max": 0.899
+       },
+       "obj_pre_u": null,
+       "obj_held": {
+        "n": 44,
+        "med": 1.63,
+        "p90": 1.774,
+        "max": 1.826
+       },
+       "tgt": {
+        "n": 106,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.043,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.032,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 1.8692168301598748
+      },
+      "obj_sources": {
+       "agent": 100,
+       "occl": 6
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 106,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 106,
+       "ms_per_pred": 7.01,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9797,
+         "cream_cheese_1": 0.9527,
+         "wine_bottle_1": 0.9441,
+         "plate_1": 0.9023
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 21,
+     "success": true,
+     "steps": 84,
+     "calls": 17,
+     "secs": 6.9459123611450195,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 48,
+     "branch": "k21",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 46,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 47,
+      "oracle_held_at_handover": false,
+      "u_calls": 8,
+      "onsets": [
+       {
+        "row": 46,
+        "by": "vla",
+        "obj_cm": 0.799,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.379,
+        "zrest_err_cm": 0.015,
+        "cyaw_err_deg": 1.522,
+        "oracle_held": false
+       }
+      ],
+      "at_handover": {
+       "row": 46,
+       "by": "vla",
+       "obj_cm": 0.799,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.379,
+       "zrest_err_cm": 0.015,
+       "cyaw_err_deg": 1.522,
+       "oracle_held": false
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 46,
+        "med": 0.219,
+        "p90": 0.566,
+        "max": 0.648
+       },
+       "obj_pre_u": null,
+       "obj_held": {
+        "n": 40,
+        "med": 0.797,
+        "p90": 0.951,
+        "max": 0.97
+       },
+       "tgt": {
+        "n": 86,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.048,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.032,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 2.519374152279044
+      },
+      "obj_sources": {
+       "agent": 74,
+       "occl": 12
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 86,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 86,
+       "ms_per_pred": 6.82,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9868,
+         "cream_cheese_1": 0.9423,
+         "wine_bottle_1": 0.9788,
+         "plate_1": 0.9183
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 22,
+     "success": false,
+     "steps": 300,
+     "calls": 60,
+     "secs": 26.3823721408844,
+     "error": null,
+     "bound": null,
+     "bound_step": null,
+     "branch": "k22",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 209,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": null,
+      "oracle_held_at_handover": false,
+      "u_calls": 19,
+      "onsets": [
+       {
+        "row": 209,
+        "by": "vla",
+        "obj_cm": 1.368,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 1.291,
+        "zrest_err_cm": 0.017,
+        "cyaw_err_deg": 1.314,
+        "oracle_held": false
+       }
+      ],
+      "at_handover": {
+       "row": 209,
+       "by": "vla",
+       "obj_cm": 1.368,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 1.291,
+       "zrest_err_cm": 0.017,
+       "cyaw_err_deg": 1.314,
+       "oracle_held": false
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 209,
+        "med": 0.208,
+        "p90": 0.208,
+        "max": 0.747
+       },
+       "obj_pre_u": {
+        "n": 88,
+        "med": 0.226,
+        "p90": 0.763,
+        "max": 1.682
+       },
+       "obj_held": {
+        "n": 4,
+        "med": 1.78,
+        "p90": 1.918,
+        "max": 1.918
+       },
+       "tgt": {
+        "n": 301,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.049,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.032,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 0.027228252531262345
+      },
+      "obj_sources": {
+       "agent": 285,
+       "occl": 16
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 301,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 301,
+       "ms_per_pred": 7.35,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.8824,
+         "cream_cheese_1": 0.9497,
+         "wine_bottle_1": 0.9543,
+         "plate_1": 0.9914
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    },
+    {
+     "trial": 23,
+     "success": true,
+     "steps": 116,
+     "calls": 24,
+     "secs": 10.004708051681519,
+     "error": null,
+     "bound": "cream_cheese_1",
+     "bound_step": 73,
+     "branch": "k23",
+     "variant": "n2",
+     "at": 0,
+     "hp": {
+      "handed": 71,
+      "trigger_fired": true,
+      "trigger": "ProprioHeld",
+      "place_policy": "U pp_sc_U_s10",
+      "roles_u": [
+       "cream_cheese_1",
+       "wooden_cabinet_1_top_side"
+      ],
+      "oracle_object": "cream_cheese_1",
+      "roles_match": true,
+      "oracle_first_held": 71,
+      "oracle_held_at_handover": true,
+      "u_calls": 10,
+      "onsets": [
+       {
+        "row": 71,
+        "by": "vla",
+        "obj_cm": 0.434,
+        "tgt_cm": 0.098,
+        "d0t_err_cm": 0.009,
+        "zrest_err_cm": 0.031,
+        "cyaw_err_deg": 0.595,
+        "oracle_held": true
+       }
+      ],
+      "at_handover": {
+       "row": 71,
+       "by": "vla",
+       "obj_cm": 0.434,
+       "tgt_cm": 0.098,
+       "d0t_err_cm": 0.009,
+       "zrest_err_cm": 0.031,
+       "cyaw_err_deg": 0.595,
+       "oracle_held": true
+      },
+      "pose_err_cm": {
+       "obj_pre_vla": {
+        "n": 71,
+        "med": 0.532,
+        "p90": 0.532,
+        "max": 1.093
+       },
+       "obj_pre_u": {
+        "n": 8,
+        "med": 2.427,
+        "p90": 2.516,
+        "max": 2.524
+       },
+       "obj_held": {
+        "n": 39,
+        "med": 0.268,
+        "p90": 0.475,
+        "max": 0.787
+       },
+       "tgt": {
+        "n": 118,
+        "med": 0.098,
+        "p90": 0.098,
+        "max": 0.098
+       },
+       "sites0": {
+        "flat_stove_1_cook_region": 0.048,
+        "wooden_cabinet_1_top_side": 0.098,
+        "wine_rack_1_top_region": 0.032,
+        "wooden_cabinet_1_top_region": 0.098,
+        "main_table_stove_front_region": 0.0
+       }
+      },
+      "yaw_pre_deg": {
+       "med": 0.027228252531262345,
+       "max": 4.865414324877438
+      },
+      "obj_sources": {
+       "agent": 74,
+       "occl": 44
+      },
+      "wrist_renders": 0,
+      "perceived_steps": 118,
+      "sites_mode": "mask",
+      "hold_mode": "mask",
+      "seg": {
+       "preds": 118,
+       "ms_per_pred": 6.94,
+       "iou": {
+        "agentview": {
+         "akita_black_bowl_1": 0.9788,
+         "cream_cheese_1": 0.9232,
+         "wine_bottle_1": 0.9604,
+         "plate_1": 0.9748
+        },
+        "robot0_eye_in_hand": {
+         "akita_black_bowl_1": null,
+         "cream_cheese_1": null,
+         "wine_bottle_1": null,
+         "plate_1": null
+        }
+       }
+      }
+     }
+    }
+   ]
+  }
+ },
+ "args": {
+  "host": "127.0.0.1",
+  "port": 9760,
+  "suite": "n2_goal",
+  "tasks": "21",
+  "trials": 1,
+  "state_mod": 0,
+  "first_trial": 0,
+  "seed": 7,
+  "fresh": "/coc/flash10/ksingara3/flawed-composition-vlas/results/flawed/n2_states",
+  "replan": 5,
+  "wait": 10,
+  "resize": 224,
+  "max_steps": 0,
+  "videos": 0,
+  "out": "/coc/flash10/ksingara3/flawed-composition-vlas/results/flawed/sc_hp/pi05_s10_21.json",
+  "no_meta": false,
+  "record": false,
+  "light": false,
+  "all_objects": false,
+  "objects": false,
+  "branches": "/coc/flash10/ksingara3/flawed-composition-vlas/results/flawed/n2_branches_main.json",
+  "seg": false,
+  "swap": "",
+  "swap_mode": "render",
+  "swap_cams": "both",
+  "swap_phase": "all",
+  "bind": "track"
+ },
+ "started": 1794410946.7213094,
+ "success_rate": 0.55,
+ "n_episodes": 20,
+ "secs": 394.2150511741638,
+ "hp_complete": true,
+ "hp_meta": {
+  "u_ckpt": "/coc/flash10/ksingara3/robot/data/fa1/ckpt/pp_sc_U_s10/P.npz",
+  "calib": "/coc/flash10/ksingara3/flawed-composition-vlas/results/flawed/sc_pu_calib.json",
+  "seg_ckpt": "/coc/flash10/ksingara3/robot/data/fa1/seg/ckpt/unet_main.npz",
+  "pgate": {
+   "tw": 0.0025343644694657995,
+   "lift": 0.01
+  },
+  "host": "cyborg.cc.gatech.edu"
+ }
+}

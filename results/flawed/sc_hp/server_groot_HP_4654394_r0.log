@@ -1,0 +1,149 @@
+The Groot policy is a wrapper around Nvidia's GR00T N1.5 model.
+Loading pretrained model from: /coc/flash10/ksingara3/robot/data/hf/home/hub/models--ar0s--groot_libero/snapshots/ca2ab7c0daa2b68e5e2818b4bde3489765df3662
+Detected fine-tuned LeRobot checkpoint, loading with state dict...
+[GROOT] Flash Attention not available: No module named 'flash_attn'
+[GROOT] Will use fallback attention mechanism
+Loading pretrained dual brain from nvidia/GR00T-N1.5-3B
+Tune backbone vision tower: False
+Tune backbone LLM: False
+Tune action head projector: True
+Tune action head DiT: True
+`torch_dtype` is deprecated! Use `dtype` instead!
+[GROOT] Copying vendor Eagle files to cache: /coc/flash10/ksingara3/robot/groot/.venv/lib/python3.11/site-packages/lerobot/policies/groot/eagle2_hg_model -> /coc/flash10/ksingara3/robot/data/hf/home/lerobot/lerobot/eagle2hg-processor-groot-n1p5
+[GROOT] Assets repo: lerobot/eagle2hg-processor-groot-n1p5 
+ Cache dir: /coc/flash10/ksingara3/robot/data/hf/home/lerobot/lerobot/eagle2hg-processor-groot-n1p5
+2026-11-11 10:16:24,778 min_dynamic_tiles: 1
+2026-11-11 10:16:24,778 max_dynamic_tiles: 12
+2026-11-11 10:16:24,779 vision_config is None. Initializing the InternVisionConfig with default values.
+2026-11-11 10:16:24,779 text_config is None. Initializing the LlamaConfig config with default values (`LlamaConfig`).
+2026-11-11 10:16:24,779 min_dynamic_tiles: 1
+2026-11-11 10:16:24,779 max_dynamic_tiles: 6
+2026-11-11 10:16:24,986 num_image_token: 256
+2026-11-11 10:16:24,986 mlp_checkpoint: False
+Tune backbone llm: False
+Tune backbone visual: True
+Total number of DiT parameters:  550386688
+Total number of SelfAttentionTransformer parameters:  201433088
+Tune action head projector: True
+Tune action head diffusion model: True
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  4.68it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00,  1.86it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:02<00:00,  1.01s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:02<00:00,  1.18it/s]
+Tune backbone llm: False
+Tune backbone visual: False
+Warning: No backbone trainable parameters found.
+Tune action head projector: True
+Tune action head diffusion model: True
+Loading weights from local directory
+`use_fast` is set to `True` but the image processor class does not have a fast version.  Falling back to the slow version.
+The tokenizer you are loading from '/coc/flash10/ksingara3/robot/data/hf/home/lerobot/lerobot/eagle2hg-processor-groot-n1p5' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+2026-11-11 10:16:56,090 pp_serve_purify: GrootBackbone(/coc/flash10/ksingara3/robot/data/hf/home/hub/models--ar0s--groot_libero/snapshots/ca2ab7c0daa2b68e5e2818b4bde3489765df3662: H=16, A=32, real=7, dim=112, steps=4, n_params=2,413,522,880, expert=550,386,688, load 32.0s) mode=intact comp=
+The tokenizer you are loading from '/coc/flash10/ksingara3/robot/data/hf/home/lerobot/lerobot/eagle2hg-processor-groot-n1p5' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+2026-11-11 10:16:57,810 [serve] warm-up 2 calls in 1.7s
+2026-11-11 10:16:57,844 Creating server (host: 0.0.0.0, port: 9355)
+2026-11-11 10:16:57,846 server listening on 0.0.0.0:9355
+2026-11-11 10:17:10,259 connection open
+2026-11-11 10:17:10,259 Connection from ('127.0.0.1', 43742) opened
+/coc/flash10/ksingara3/flawed-composition-vlas/lifelong_ood/policy/backbone_groot.py:198: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  img = lambda k: torch.from_numpy(np.ascontiguousarray(o[k])).permute(2, 0, 1)[None].float() / 255.0   # noqa: E731
+2026-11-11 10:17:36,570 [serve] 50 calls, 135 ms each
+2026-11-11 10:18:08,434 [serve] 100 calls, 119 ms each
+2026-11-11 10:18:25,178 [serve] 150 calls, 114 ms each
+2026-11-11 10:18:49,212 [serve] 200 calls, 112 ms each
+2026-11-11 10:19:04,865 [serve] 250 calls, 109 ms each
+2026-11-11 10:19:27,551 [serve] 300 calls, 108 ms each
+2026-11-11 10:19:46,108 [serve] 350 calls, 107 ms each
+2026-11-11 10:20:15,028 [serve] 400 calls, 106 ms each
+2026-11-11 10:20:37,614 [serve] 450 calls, 105 ms each
+2026-11-11 10:21:03,692 [serve] 500 calls, 105 ms each
+2026-11-11 10:21:17,338 [serve] 550 calls, 104 ms each
+2026-11-11 10:21:44,313 [serve] 600 calls, 104 ms each
+2026-11-11 10:21:59,898 [serve] 650 calls, 104 ms each
+2026-11-11 10:22:12,236 connection closed
+2026-11-11 10:22:12,237 Connection from ('127.0.0.1', 43742) closed
+2026-11-11 10:22:20,298 connection open
+2026-11-11 10:22:20,298 Connection from ('127.0.0.1', 56972) opened
+2026-11-11 10:22:46,346 [serve] 700 calls, 104 ms each
+2026-11-11 10:23:04,911 [serve] 750 calls, 103 ms each
+2026-11-11 10:23:21,726 [serve] 800 calls, 103 ms each
+2026-11-11 10:23:50,524 [serve] 850 calls, 103 ms each
+2026-11-11 10:24:08,058 [serve] 900 calls, 103 ms each
+2026-11-11 10:24:23,456 [serve] 950 calls, 103 ms each
+2026-11-11 10:24:40,386 [serve] 1000 calls, 103 ms each
+2026-11-11 10:24:55,932 [serve] 1050 calls, 102 ms each
+2026-11-11 10:25:11,566 [serve] 1100 calls, 102 ms each
+2026-11-11 10:25:30,683 [serve] 1150 calls, 102 ms each
+2026-11-11 10:26:14,170 [serve] 1200 calls, 102 ms each
+2026-11-11 10:26:27,784 [serve] 1250 calls, 102 ms each
+2026-11-11 10:26:57,305 [serve] 1300 calls, 102 ms each
+2026-11-11 10:27:22,588 connection closed
+2026-11-11 10:27:22,588 Connection from ('127.0.0.1', 56972) closed
+2026-11-11 10:27:30,202 connection open
+2026-11-11 10:27:30,203 Connection from ('127.0.0.1', 37788) opened
+2026-11-11 10:27:41,755 [serve] 1350 calls, 102 ms each
+2026-11-11 10:27:57,945 [serve] 1400 calls, 102 ms each
+2026-11-11 10:28:18,255 [serve] 1450 calls, 102 ms each
+2026-11-11 10:28:35,004 [serve] 1500 calls, 102 ms each
+2026-11-11 10:29:11,027 [serve] 1550 calls, 101 ms each
+2026-11-11 10:29:34,443 [serve] 1600 calls, 101 ms each
+2026-11-11 10:29:47,925 [serve] 1650 calls, 101 ms each
+2026-11-11 10:30:03,676 [serve] 1700 calls, 101 ms each
+2026-11-11 10:30:19,556 [serve] 1750 calls, 101 ms each
+2026-11-11 10:30:39,545 [serve] 1800 calls, 101 ms each
+2026-11-11 10:31:24,078 [serve] 1850 calls, 101 ms each
+2026-11-11 10:31:44,334 [serve] 1900 calls, 101 ms each
+2026-11-11 10:32:01,975 [serve] 1950 calls, 101 ms each
+2026-11-11 10:32:23,845 connection closed
+2026-11-11 10:32:23,846 Connection from ('127.0.0.1', 37788) closed
+2026-11-11 10:32:30,985 connection open
+2026-11-11 10:32:30,986 Connection from ('127.0.0.1', 33348) opened
+2026-11-11 10:32:40,008 [serve] 2000 calls, 101 ms each
+2026-11-11 10:33:02,465 [serve] 2050 calls, 101 ms each
+2026-11-11 10:33:21,865 [serve] 2100 calls, 101 ms each
+2026-11-11 10:33:49,459 [serve] 2150 calls, 101 ms each
+2026-11-11 10:34:07,558 [serve] 2200 calls, 101 ms each
+2026-11-11 10:34:23,550 [serve] 2250 calls, 101 ms each
+2026-11-11 10:34:49,680 [serve] 2300 calls, 101 ms each
+2026-11-11 10:35:20,736 [serve] 2350 calls, 101 ms each
+2026-11-11 10:35:45,368 [serve] 2400 calls, 101 ms each
+2026-11-11 10:36:00,866 [serve] 2450 calls, 101 ms each
+2026-11-11 10:36:14,527 [serve] 2500 calls, 101 ms each
+2026-11-11 10:36:43,942 [serve] 2550 calls, 101 ms each
+2026-11-11 10:36:57,807 [serve] 2600 calls, 101 ms each
+2026-11-11 10:37:14,601 connection closed
+2026-11-11 10:37:14,601 Connection from ('127.0.0.1', 33348) closed
+2026-11-11 10:37:21,819 connection open
+2026-11-11 10:37:21,819 Connection from ('127.0.0.1', 48652) opened
+2026-11-11 10:37:37,349 [serve] 2650 calls, 100 ms each
+2026-11-11 10:37:57,513 [serve] 2700 calls, 100 ms each
+2026-11-11 10:38:12,926 [serve] 2750 calls, 100 ms each
+2026-11-11 10:38:28,277 [serve] 2800 calls, 100 ms each
+2026-11-11 10:38:47,133 [serve] 2850 calls, 100 ms each
+2026-11-11 10:39:00,388 [serve] 2900 calls, 100 ms each
+2026-11-11 10:39:15,509 [serve] 2950 calls, 100 ms each
+2026-11-11 10:39:40,281 [serve] 3000 calls, 100 ms each
+2026-11-11 10:39:59,895 [serve] 3050 calls, 100 ms each
+2026-11-11 10:40:23,758 [serve] 3100 calls, 100 ms each
+2026-11-11 10:40:39,916 [serve] 3150 calls, 100 ms each
+2026-11-11 10:40:55,372 [serve] 3200 calls, 100 ms each
+2026-11-11 10:41:11,028 [serve] 3250 calls, 100 ms each
+2026-11-11 10:41:28,164 [serve] 3300 calls, 100 ms each
+2026-11-11 10:41:43,554 [serve] 3350 calls, 100 ms each
+2026-11-11 10:41:58,737 [serve] 3400 calls, 100 ms each
+2026-11-11 10:42:08,211 connection closed
+2026-11-11 10:42:08,211 Connection from ('127.0.0.1', 48652) closed
+2026-11-11 10:42:15,392 connection open
+2026-11-11 10:42:15,392 Connection from ('127.0.0.1', 42196) opened
+2026-11-11 10:42:29,651 [serve] 3450 calls, 100 ms each
+2026-11-11 10:42:55,228 [serve] 3500 calls, 100 ms each
+2026-11-11 10:43:22,136 [serve] 3550 calls, 101 ms each
+2026-11-11 10:43:46,637 [serve] 3600 calls, 100 ms each
+2026-11-11 10:44:02,144 [serve] 3650 calls, 100 ms each
+2026-11-11 10:44:15,700 [serve] 3700 calls, 100 ms each
+2026-11-11 10:44:42,653 [serve] 3750 calls, 101 ms each
+2026-11-11 10:45:11,273 [serve] 3800 calls, 101 ms each
+2026-11-11 10:45:34,947 [serve] 3850 calls, 101 ms each
+2026-11-11 10:45:48,388 [serve] 3900 calls, 101 ms each
+2026-11-11 10:46:03,797 [serve] 3950 calls, 100 ms each
+2026-11-11 10:46:19,223 [serve] 4000 calls, 100 ms each
+2026-11-11 10:46:44,313 [serve] 4050 calls, 100 ms each
+2026-11-11 10:46:56,951 connection closed
+2026-11-11 10:46:56,951 Connection from ('127.0.0.1', 42196) closed
