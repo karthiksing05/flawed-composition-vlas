@@ -1,6 +1,6 @@
 # Novelty check: stage-resolved failure atlas of VLAs on held-out pairings
 
-Date: 2026-11-12. Scope: arXiv from 2026-01, CoRL/ICML/IROS 2026 listings. Method: arXiv abstract pages fetched directly for every paper below; full texts were not read. Statements about what a paper does not do rest on its abstract page and search snippets, so each "no" below is an absence in the abstract, which leaves room for tables in the full text. Read the full text of the three starred papers before submission.
+Date: 2026-11-12. Scope: arXiv from 2026-01, CoRL/ICML/IROS 2026 listings. Method: arXiv abstract pages fetched for every paper below. A second pass (section 3b) read the arXiv HTML full texts of ATOM-Bench, Harness VLA, VLA-Corrector and Failing Forward. LIBERO-Gen has no arXiv listing, so only its ICML poster page was read. Verdicts marked [FT] rest on those full texts; unmarked verdicts rest on abstracts and snippets.
 
 ## 1. Id verification
 
@@ -54,17 +54,34 @@ Already in the earlier review (CRAFT, AC-VLA, ACT-VLA, ReGuide, LIBERO-CF, Britt
 
 | Element | Verdict | Reason |
 |---|---|---|
-| First-broken-stage assignment of every failed episode (grasp, hand-off, transport, release, physics) | PARTLY PRIOR | Stage vocabularies and per-stage shares exist (VLA-Corrector, Failing Forward, SO-101, Brittle Grounding), but none assigns a first-broken stage on held-out pairings across several VLAs, and "hand-off" as a stage has no prior. |
-| Excess failure over known partner tasks, per stage | NOVEL | No paper found measures a pairing's per-stage failure as excess over its partner tasks; CRAFT's share-object class is the nearest and is an outcome, not an excess. |
-| Reference system (scripted servo / oracle parts policy) succeeding on the same states | PARTLY PRIOR | Scripted or analytic components exist (Harness VLA, LiLo-VLA, ReGuide) as fixes; none serves as a same-state existence proof inside a failure atlas. |
-| All five fail new pairings in a familiar scene | PRIOR | CRAFT, ReGuide, Brittle Grounding, LIBERO-Gen, ATOM-Bench report it for pi0.5, pi0, GR00T, SmolVLA; X-VLA adds a model. |
-| pi0 and SmolVLA grasp the habitual object; pi0.5 and GR00T grasp right and fail at hand-off and release | PARTLY PRIOR | Brittle Grounding shows grasp-level binding failure for SmolVLA; CRAFT shows pi0.5 and GR00T grasp the right object and use its trained partner. The model split by stage, and the hand-off and release breakdown, are new. |
+| First-broken-stage assignment of every failed episode (grasp, hand-off, transport, release, physics) | PARTLY PRIOR [FT] | Failing Forward Table S9 already assigns each failed episode its earliest failure event (grasp 63.0%, released too early 3.8%, placement 1.9%) for one model on one task. No full-text paper does it on held-out pairings across several VLAs, and "hand-off" as a stage has no prior. |
+| Excess failure over known partner tasks, per stage | NOVEL [FT] | No paper found measures a pairing's per-stage failure as excess over its partner tasks; CRAFT's share-object class is the nearest and is an outcome, not an excess. |
+| Reference system (scripted servo / oracle parts policy) succeeding on the same states | PARTLY PRIOR [FT] | Harness VLA, LiLo-VLA and ReGuide use analytic components as fixes; VLA-Corrector has a privileged rule verifier as a verifier upper bound. None runs a scripted policy on the same states as an existence proof in a failure atlas. |
+| All five fail new pairings in a familiar scene | PRIOR [FT] | CRAFT, ReGuide, Brittle Grounding, LIBERO-Gen, ATOM-Bench report it for pi0.5, pi0, GR00T, SmolVLA; X-VLA adds a model. |
+| pi0 and SmolVLA grasp the habitual object; pi0.5 and GR00T grasp right and fail at hand-off and release | PARTLY PRIOR | Brittle Grounding shows grasp-level binding failure for SmolVLA; CRAFT shows pi0.5 and GR00T grasp the right object and use its trained partner. ATOM-Bench full text gives no stage split, so the model split by stage and the hand-off and release breakdown stay new. |
 | New layouts fail at the grasp for every system, including an exact-position planner, with no pairing-specific excess | NOVEL | No hit for a planner-with-exact-positions control on layouts; Brittle Grounding's jitter results involve policies only. |
-| Ruled out: action chunk length | NOVEL | No paper tests chunk length against compositional failure. |
-| Ruled out: release timing (forcing the gripper shut) | NOVEL | No hit; gripper events appear only as phase cues in AC-VLA and VP-VLA. |
+| Ruled out: action chunk length | NOVEL [FT] | None of the four full texts ablates chunk length (fixed or config-only); no abstract-level hit elsewhere. |
+| Ruled out: release timing (forcing the gripper shut) | NOVEL [FT] | No gripper-timing test in the four full texts ("released too early" is only a label in Failing Forward); gripper events appear as phase cues in AC-VLA and VP-VLA. |
 | Ruled out: partner-count law across models | NOVEL | Only Wang et al. state the law, on a small custom policy; a refutation across pretrained VLAs has no prior. |
 | Role views (hide non-active object identity) raise a matched VLA .025 to .425 | PARTLY PRIOR | LiLo-VLA masks non-target objects; AC-VLA masks the wrist view (indistinguishable, per your result). The identity-only hiding with a matched-VLA ablation is the new part. |
 | Hand-over to an object-blind place policy: pi0.5 .50 to .96 | PRIOR | ReGuide (39.0 to 94.5, frozen pi0.5), Harness VLA, and LiLo-VLA hand control to non-learned components. The 0.96 number differs; the idea does not. |
+
+
+## 3b. Full-text audit (second pass, 2026-11-12)
+
+Each paper was checked for (i) a per-stage or first-failure table on held-out compositions, (ii) a reference, planner or oracle control on the same states, (iii) a test of chunk length or gripper timing as a cause. Page-length caveats are noted.
+
+| Paper | (i) per-stage / first-failure on held-out compositions | (ii) reference control on same states | (iii) chunking / gripper timing |
+|---|---|---|---|
+| ATOM-Bench 2606.16826 (full HTML) | No. Sec. 4.4 sorts failures into five types (motor, reference, constraint, safety abort, timeout) over all tasks, with only "over 90%" for motor+reference+timeout and no per-category numbers. Partial-progress score PSR (Table 2) is not mapped to grasp/transport/place/release. Models: Pi0.5, LingBot-VLA, GR00T N1.6, SmolVLA, Motus (real robot, 24 held-out compositional tasks). Table 2 composition SR (Franka): Pi0.5 15.8, Motus 10.8, LingBot 3.3, GR00T 3.3, SmolVLA 0.0; Compositional Failure Share 73.7 for Pi0.5. | None | Chunk length not tested (Table 10 lists optimizer settings only) |
+| Harness VLA 2607.08448 (full HTML v3, read in two parts, all 182k characters) | No. Results are aggregate success (Table 3: LIBERO-Pro 82.4 vs 50.0 for pi-RLinf; Table 5 per-task Goal). Fig. 6 attributes the primitive that fires completion, for successes only. | No oracle. Comparisons are against direct frozen-VLA rollouts. | No ablation. Chunk size 50 appears only as a config entry (Table 14). `release` is a primitive with no timing test. |
+| VLA-Corrector 2609.06508 (full HTML) | No. Five stages (approach, align, grasp, move, place) route recovery; no per-stage failure table; no held-out composition split (episodes split 60/20/20 by episode). Only pi0.5 (OpenPI pi05_libero). | Partial. "Rule + Prompt" uses a privileged rule verifier as an upper bound for the verifier, not a scripted policy on the same states. | No. replan_steps fixed at 5 (3 in recovery); no ablation. |
+| Failing Forward 2605.08434 (full HTML; last 18k characters of supplement read separately) | Partly. Table S9 assigns every failed episode its earliest failure event: grasp failed 267 (63.0%), no action 96 (22.6%), wrong-object 22 (5.2%), released too early 16 (3.8%), misaligned reach 12 (2.8%), misaligned placement 8 (1.9%), unstable stack 2 (0.5%), dropped in transport 1 (0.2%); total 424. The setting is a single pick-place/stacking task with pi0.5 + AFIL on ManiSkill; no held-out compositions. The text says 150 failed episodes / 424 segments while the caption says 424 episodes; unreconciled. | No control; motion planner only generates correction data | No chunk-length ablation (horizon 30 fixed); no gripper-timing test ("released too early" is a label only) |
+| LIBERO-Gen (ICML 2026 poster 64080; no arXiv id found) | Not checkable: only the poster abstract is public. It names perceptual instability and action binding collapse, no stage analysis stated. | Unknown | Unknown |
+
+Correction to section 2: item 5 cited Failing Forward's 63.0% / 1.9% figures from a search snippet. The full text confirms them (Table S9, supplement). It is a first-failure table, so the first-broken-stage scheme has a prior (single task, one model, no held-out pairings). The 150/424 failed-episode study that my first search could not place is this paper.
+
+Remaining gaps: LIBERO-Gen full text is unavailable; ATOM-Bench Sec. 4.4 may hold a figure with category shares that the fetch tool summarised as text only.
 
 ## 4. Positioning advice
 
