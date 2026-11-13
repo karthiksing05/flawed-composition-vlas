@@ -90,6 +90,8 @@ F7 is the cleanest architecture-rooted failure in the record: the same frozen VL
   - On NG every model, given the plate bowl alone by name, succeeds on 0 of 20 (pi0 and SmolVLA grasp the cream cheese, as GR00T did). F7R reaches that ceiling (.50) on all three, and the name-only prompt already gets there.
   - pi0 SP is the one cell where the role view helps (F7R − name +.225), PARTIAL only on C's lower bound (.725 against .75).
 - **Reading.** F7R fixes the relation step wherever the policy can act on a named referent. Where it cannot, the remaining failure is the scene habit (F2: the plate bowl's habitual partner, or the cheese, wins), which neither naming nor painting the distractor removes. F7's criterion 3 is MET on 3 of 10 cells and capped by F2 on the rest.
+- **Painting every distractor does not lift the cap (SR §45.4, m3_prereg fx_ra).** f7rA is FIXED on 1 of 7 cells (pi0.5 NG, as before) and lifts the named-referent ceiling on 0 of 7. Painting the cream cheese stops the cheese grasps (pi0 14 → 3, SmolVLA 7 → 0), but the policies then grasp nothing: a bowl resting on the plate is picked up on 0/20 by pi0 and SmolVLA even when it is the only unpainted movable object. On GR00T SP paint-all costs −.175 [−.30, −.05] against F7R.
+- **Reading.** The residual is a motor habit tied to the bowl's resting support: in LIBERO-Goal's training tasks no bowl is ever picked off the plate. It is plausibly a data gap, so it does not meet criterion 2 until a model trained with such demos is tested. Role views and the resolver cannot reach it, because the information already reaches the policy.
 
 ## 2. Ruled-out causes
 
