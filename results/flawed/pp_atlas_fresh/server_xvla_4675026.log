@@ -1,0 +1,237 @@
+Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly defined. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.
+  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes
+  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).
+  - If you are not the owner of the model architecture class, please contact the model code owner to update it.
+2026-11-12 18:32:12,865 Loading weights from local directory
+2026-11-12 18:32:12,865 Loading checkpoint from /coc/flash10/ksingara3/robot/data/hf/home/hub/models--lerobot--xvla-libero/snapshots/12e8783e996944f5c97e490d37d4c145484ed70a/model.safetensors
+2026-11-12 18:32:18,040 Loaded XVLA checkpoint
+2026-11-12 18:32:19,280 XVLABackbone(/coc/flash10/ksingara3/robot/data/hf/home/hub/models--lerobot--xvla-libero/snapshots/12e8783e996944f5c97e490d37d4c145484ed70a: H=30, A=20, real=10, dim=300, steps=10, sampler=native, n_params=879,482,456, expert=308,775,512, load 19.5s)
+2026-11-12 18:32:22,104 [serve] warm-up 2 calls in 2.8s
+2026-11-12 18:32:22,154 Creating server (host: 0.0.0.0, port: 9065)
+2026-11-12 18:32:22,155 server listening on 0.0.0.0:9065
+2026-11-12 18:32:31,368 connection open
+2026-11-12 18:32:31,368 Connection from ('127.0.0.1', 33016) opened
+2026-11-12 18:32:55,714 [serve] 50 calls, 257 ms each
+2026-11-12 18:33:18,618 [serve] 100 calls, 236 ms each
+2026-11-12 18:33:38,978 [serve] 150 calls, 227 ms each
+2026-11-12 18:34:01,364 [serve] 200 calls, 223 ms each
+2026-11-12 18:34:23,649 [serve] 250 calls, 220 ms each
+2026-11-12 18:34:45,956 [serve] 300 calls, 218 ms each
+2026-11-12 18:35:08,177 [serve] 350 calls, 216 ms each
+2026-11-12 18:35:13,927 connection closed
+2026-11-12 18:35:13,928 Connection from ('127.0.0.1', 33016) closed
+2026-11-12 18:35:15,980 connection open
+2026-11-12 18:35:15,981 Connection from ('127.0.0.1', 43346) opened
+2026-11-12 18:35:33,999 [serve] 400 calls, 215 ms each
+2026-11-12 18:35:54,060 [serve] 450 calls, 214 ms each
+2026-11-12 18:36:14,380 [serve] 500 calls, 214 ms each
+2026-11-12 18:36:37,558 [serve] 550 calls, 215 ms each
+2026-11-12 18:36:57,919 [serve] 600 calls, 214 ms each
+2026-11-12 18:37:17,965 [serve] 650 calls, 214 ms each
+2026-11-12 18:37:38,176 [serve] 700 calls, 213 ms each
+2026-11-12 18:37:58,567 [serve] 750 calls, 213 ms each
+2026-11-12 18:38:20,770 [serve] 800 calls, 213 ms each
+2026-11-12 18:38:28,087 connection closed
+2026-11-12 18:38:28,088 Connection from ('127.0.0.1', 43346) closed
+2026-11-12 18:38:30,274 connection open
+2026-11-12 18:38:30,274 Connection from ('127.0.0.1', 60206) opened
+2026-11-12 18:38:46,440 [serve] 850 calls, 213 ms each
+2026-11-12 18:39:07,017 [serve] 900 calls, 212 ms each
+2026-11-12 18:39:25,251 [serve] 950 calls, 212 ms each
+2026-11-12 18:39:43,927 [serve] 1000 calls, 212 ms each
+2026-11-12 18:40:04,221 [serve] 1050 calls, 212 ms each
+2026-11-12 18:40:26,437 [serve] 1100 calls, 212 ms each
+2026-11-12 18:40:46,807 [serve] 1150 calls, 212 ms each
+2026-11-12 18:41:06,932 [serve] 1200 calls, 212 ms each
+2026-11-12 18:41:29,594 [serve] 1250 calls, 211 ms each
+2026-11-12 18:41:50,184 [serve] 1300 calls, 211 ms each
+2026-11-12 18:41:53,430 connection closed
+2026-11-12 18:41:53,431 Connection from ('127.0.0.1', 60206) closed
+2026-11-12 18:41:55,602 connection open
+2026-11-12 18:41:55,603 Connection from ('127.0.0.1', 46946) opened
+2026-11-12 18:42:15,927 [serve] 1350 calls, 211 ms each
+2026-11-12 18:42:36,079 [serve] 1400 calls, 211 ms each
+2026-11-12 18:42:56,253 [serve] 1450 calls, 211 ms each
+2026-11-12 18:43:16,417 [serve] 1500 calls, 211 ms each
+2026-11-12 18:43:39,243 [serve] 1550 calls, 211 ms each
+2026-11-12 18:43:59,482 [serve] 1600 calls, 211 ms each
+2026-11-12 18:44:19,632 [serve] 1650 calls, 211 ms each
+2026-11-12 18:44:39,995 [serve] 1700 calls, 211 ms each
+2026-11-12 18:45:00,064 [serve] 1750 calls, 211 ms each
+2026-11-12 18:45:14,923 connection closed
+2026-11-12 18:45:14,924 Connection from ('127.0.0.1', 46946) closed
+2026-11-12 18:45:16,927 connection open
+2026-11-12 18:45:16,927 Connection from ('127.0.0.1', 41062) opened
+2026-11-12 18:45:25,458 [serve] 1800 calls, 211 ms each
+2026-11-12 18:45:45,680 [serve] 1850 calls, 211 ms each
+2026-11-12 18:46:06,707 [serve] 1900 calls, 211 ms each
+2026-11-12 18:46:26,893 [serve] 1950 calls, 211 ms each
+2026-11-12 18:46:49,138 [serve] 2000 calls, 211 ms each
+2026-11-12 18:47:09,145 [serve] 2050 calls, 211 ms each
+2026-11-12 18:47:29,091 [serve] 2100 calls, 211 ms each
+2026-11-12 18:47:49,055 [serve] 2150 calls, 211 ms each
+2026-11-12 18:48:11,124 [serve] 2200 calls, 211 ms each
+2026-11-12 18:48:25,796 connection closed
+2026-11-12 18:48:25,796 Connection from ('127.0.0.1', 41062) closed
+2026-11-12 18:48:27,992 connection open
+2026-11-12 18:48:27,992 Connection from ('127.0.0.1', 40778) opened
+2026-11-12 18:48:36,525 [serve] 2250 calls, 210 ms each
+2026-11-12 18:48:55,028 [serve] 2300 calls, 210 ms each
+2026-11-12 18:49:10,978 [serve] 2350 calls, 210 ms each
+2026-11-12 18:49:29,461 [serve] 2400 calls, 210 ms each
+2026-11-12 18:49:47,817 [serve] 2450 calls, 210 ms each
+2026-11-12 18:50:06,015 [serve] 2500 calls, 210 ms each
+2026-11-12 18:50:24,602 [serve] 2550 calls, 210 ms each
+2026-11-12 18:50:42,768 [serve] 2600 calls, 210 ms each
+2026-11-12 18:50:58,915 [serve] 2650 calls, 210 ms each
+2026-11-12 18:51:17,382 [serve] 2700 calls, 210 ms each
+2026-11-12 18:51:35,771 [serve] 2750 calls, 210 ms each
+2026-11-12 18:51:53,894 [serve] 2800 calls, 210 ms each
+2026-11-12 18:52:12,307 [serve] 2850 calls, 210 ms each
+2026-11-12 18:52:30,759 [serve] 2900 calls, 210 ms each
+2026-11-12 18:52:46,775 [serve] 2950 calls, 210 ms each
+2026-11-12 18:53:05,167 [serve] 3000 calls, 210 ms each
+2026-11-12 18:53:23,302 [serve] 3050 calls, 210 ms each
+2026-11-12 18:53:41,213 [serve] 3100 calls, 210 ms each
+2026-11-12 18:53:59,655 [serve] 3150 calls, 210 ms each
+2026-11-12 18:54:18,054 [serve] 3200 calls, 210 ms each
+2026-11-12 18:54:34,300 [serve] 3250 calls, 210 ms each
+2026-11-12 18:54:52,545 [serve] 3300 calls, 210 ms each
+2026-11-12 18:55:10,838 [serve] 3350 calls, 210 ms each
+2026-11-12 18:55:29,218 [serve] 3400 calls, 210 ms each
+2026-11-12 18:55:42,391 connection closed
+2026-11-12 18:55:42,392 Connection from ('127.0.0.1', 40778) closed
+2026-11-12 18:55:44,570 connection open
+2026-11-12 18:55:44,570 Connection from ('127.0.0.1', 52554) opened
+2026-11-12 18:55:52,968 [serve] 3450 calls, 210 ms each
+2026-11-12 18:56:11,160 [serve] 3500 calls, 210 ms each
+2026-11-12 18:56:26,928 [serve] 3550 calls, 210 ms each
+2026-11-12 18:56:44,992 [serve] 3600 calls, 210 ms each
+2026-11-12 18:57:03,047 [serve] 3650 calls, 210 ms each
+2026-11-12 18:57:21,060 [serve] 3700 calls, 210 ms each
+2026-11-12 18:57:39,205 [serve] 3750 calls, 210 ms each
+2026-11-12 18:57:57,217 [serve] 3800 calls, 210 ms each
+2026-11-12 18:58:17,563 [serve] 3850 calls, 210 ms each
+2026-11-12 18:58:33,450 [serve] 3900 calls, 210 ms each
+2026-11-12 18:58:53,701 [serve] 3950 calls, 210 ms each
+2026-11-12 18:59:11,893 [serve] 4000 calls, 210 ms each
+2026-11-12 18:59:27,718 [serve] 4050 calls, 210 ms each
+2026-11-12 18:59:47,846 [serve] 4100 calls, 210 ms each
+2026-11-12 19:00:05,951 [serve] 4150 calls, 210 ms each
+2026-11-12 19:00:26,047 [serve] 4200 calls, 210 ms each
+2026-11-12 19:00:42,166 [serve] 4250 calls, 210 ms each
+2026-11-12 19:01:02,261 [serve] 4300 calls, 210 ms each
+2026-11-12 19:01:20,512 [serve] 4350 calls, 210 ms each
+2026-11-12 19:01:32,617 connection closed
+2026-11-12 19:01:32,618 Connection from ('127.0.0.1', 52554) closed
+2026-11-12 19:01:34,751 connection open
+2026-11-12 19:01:34,751 Connection from ('127.0.0.1', 53090) opened
+2026-11-12 19:01:44,505 [serve] 4400 calls, 210 ms each
+2026-11-12 19:02:02,782 [serve] 4450 calls, 210 ms each
+2026-11-12 19:02:19,597 [serve] 4500 calls, 210 ms each
+2026-11-12 19:02:37,795 [serve] 4550 calls, 210 ms each
+2026-11-12 19:02:55,970 [serve] 4600 calls, 210 ms each
+2026-11-12 19:03:14,265 [serve] 4650 calls, 210 ms each
+2026-11-12 19:03:32,481 [serve] 4700 calls, 210 ms each
+2026-11-12 19:03:50,731 [serve] 4750 calls, 210 ms each
+2026-11-12 19:04:09,071 [serve] 4800 calls, 210 ms each
+2026-11-12 19:04:25,064 [serve] 4850 calls, 210 ms each
+2026-11-12 19:04:43,331 [serve] 4900 calls, 210 ms each
+2026-11-12 19:05:01,528 [serve] 4950 calls, 210 ms each
+2026-11-12 19:05:19,741 [serve] 5000 calls, 210 ms each
+2026-11-12 19:05:38,337 [serve] 5050 calls, 210 ms each
+2026-11-12 19:05:56,615 [serve] 5100 calls, 210 ms each
+2026-11-12 19:06:14,624 [serve] 5150 calls, 210 ms each
+2026-11-12 19:06:32,820 [serve] 5200 calls, 210 ms each
+2026-11-12 19:06:51,003 [serve] 5250 calls, 210 ms each
+2026-11-12 19:07:09,246 [serve] 5300 calls, 210 ms each
+2026-11-12 19:07:27,631 [serve] 5350 calls, 210 ms each
+2026-11-12 19:07:45,970 [serve] 5400 calls, 210 ms each
+2026-11-12 19:08:01,926 [serve] 5450 calls, 210 ms each
+2026-11-12 19:08:19,960 [serve] 5500 calls, 210 ms each
+2026-11-12 19:08:26,437 connection closed
+2026-11-12 19:08:26,437 Connection from ('127.0.0.1', 53090) closed
+2026-11-12 19:08:28,606 connection open
+2026-11-12 19:08:28,606 Connection from ('127.0.0.1', 41142) opened
+2026-11-12 19:08:43,406 [serve] 5550 calls, 210 ms each
+2026-11-12 19:09:01,753 [serve] 5600 calls, 210 ms each
+2026-11-12 19:09:20,042 [serve] 5650 calls, 210 ms each
+2026-11-12 19:09:38,299 [serve] 5700 calls, 210 ms each
+2026-11-12 19:09:54,161 [serve] 5750 calls, 210 ms each
+2026-11-12 19:10:12,224 [serve] 5800 calls, 210 ms each
+2026-11-12 19:10:30,456 [serve] 5850 calls, 210 ms each
+2026-11-12 19:10:48,720 [serve] 5900 calls, 210 ms each
+2026-11-12 19:11:07,019 [serve] 5950 calls, 210 ms each
+2026-11-12 19:11:25,250 [serve] 6000 calls, 210 ms each
+2026-11-12 19:11:41,156 [serve] 6050 calls, 210 ms each
+2026-11-12 19:11:59,259 [serve] 6100 calls, 210 ms each
+2026-11-12 19:12:17,366 [serve] 6150 calls, 210 ms each
+2026-11-12 19:12:35,301 [serve] 6200 calls, 210 ms each
+2026-11-12 19:12:53,451 [serve] 6250 calls, 210 ms each
+2026-11-12 19:13:11,309 [serve] 6300 calls, 209 ms each
+2026-11-12 19:13:27,195 [serve] 6350 calls, 209 ms each
+2026-11-12 19:13:45,385 [serve] 6400 calls, 210 ms each
+2026-11-12 19:14:03,922 [serve] 6450 calls, 210 ms each
+2026-11-12 19:14:22,028 [serve] 6500 calls, 210 ms each
+2026-11-12 19:14:40,354 [serve] 6550 calls, 210 ms each
+2026-11-12 19:14:58,969 [serve] 6600 calls, 210 ms each
+2026-11-12 19:15:15,366 [serve] 6650 calls, 210 ms each
+2026-11-12 19:15:33,322 [serve] 6700 calls, 210 ms each
+2026-11-12 19:15:39,836 connection closed
+2026-11-12 19:15:39,836 Connection from ('127.0.0.1', 41142) closed
+2026-11-12 19:15:41,627 connection open
+2026-11-12 19:15:41,627 Connection from ('127.0.0.1', 42032) opened
+2026-11-12 19:15:56,299 [serve] 6750 calls, 210 ms each
+2026-11-12 19:16:14,447 [serve] 6800 calls, 210 ms each
+2026-11-12 19:16:32,604 [serve] 6850 calls, 210 ms each
+2026-11-12 19:16:50,879 [serve] 6900 calls, 210 ms each
+2026-11-12 19:17:06,805 [serve] 6950 calls, 210 ms each
+2026-11-12 19:17:24,805 [serve] 7000 calls, 210 ms each
+2026-11-12 19:17:42,978 [serve] 7050 calls, 210 ms each
+2026-11-12 19:18:01,104 [serve] 7100 calls, 210 ms each
+2026-11-12 19:18:19,274 [serve] 7150 calls, 210 ms each
+2026-11-12 19:18:37,433 [serve] 7200 calls, 210 ms each
+2026-11-12 19:18:53,399 [serve] 7250 calls, 210 ms each
+2026-11-12 19:19:11,466 [serve] 7300 calls, 210 ms each
+2026-11-12 19:19:29,468 [serve] 7350 calls, 210 ms each
+2026-11-12 19:19:47,443 [serve] 7400 calls, 210 ms each
+2026-11-12 19:20:05,648 [serve] 7450 calls, 210 ms each
+2026-11-12 19:20:23,997 [serve] 7500 calls, 209 ms each
+2026-11-12 19:20:39,872 [serve] 7550 calls, 209 ms each
+2026-11-12 19:20:57,955 [serve] 7600 calls, 209 ms each
+2026-11-12 19:21:15,897 [serve] 7650 calls, 209 ms each
+2026-11-12 19:21:34,461 [serve] 7700 calls, 210 ms each
+2026-11-12 19:21:52,744 [serve] 7750 calls, 210 ms each
+2026-11-12 19:22:10,911 [serve] 7800 calls, 210 ms each
+2026-11-12 19:22:26,849 [serve] 7850 calls, 210 ms each
+2026-11-12 19:22:44,881 [serve] 7900 calls, 210 ms each
+2026-11-12 19:22:51,482 connection closed
+2026-11-12 19:22:51,483 Connection from ('127.0.0.1', 42032) closed
+2026-11-12 19:22:53,626 connection open
+2026-11-12 19:22:53,626 Connection from ('127.0.0.1', 40520) opened
+2026-11-12 19:23:08,398 [serve] 7950 calls, 210 ms each
+2026-11-12 19:23:26,451 [serve] 8000 calls, 209 ms each
+2026-11-12 19:23:44,480 [serve] 8050 calls, 209 ms each
+2026-11-12 19:24:02,876 [serve] 8100 calls, 209 ms each
+2026-11-12 19:24:18,963 [serve] 8150 calls, 209 ms each
+2026-11-12 19:24:37,120 [serve] 8200 calls, 209 ms each
+2026-11-12 19:24:55,157 [serve] 8250 calls, 209 ms each
+2026-11-12 19:25:13,184 [serve] 8300 calls, 209 ms each
+2026-11-12 19:25:31,065 [serve] 8350 calls, 209 ms each
+2026-11-12 19:25:48,949 [serve] 8400 calls, 209 ms each
+2026-11-12 19:26:04,715 [serve] 8450 calls, 209 ms each
+2026-11-12 19:26:22,575 [serve] 8500 calls, 209 ms each
+2026-11-12 19:26:40,569 [serve] 8550 calls, 209 ms each
+2026-11-12 19:26:59,092 [serve] 8600 calls, 209 ms each
+2026-11-12 19:27:17,188 [serve] 8650 calls, 209 ms each
+2026-11-12 19:27:35,069 [serve] 8700 calls, 209 ms each
+2026-11-12 19:27:50,783 [serve] 8750 calls, 209 ms each
+2026-11-12 19:28:08,680 [serve] 8800 calls, 209 ms each
+2026-11-12 19:28:26,697 [serve] 8850 calls, 209 ms each
+2026-11-12 19:28:44,811 [serve] 8900 calls, 209 ms each
+2026-11-12 19:29:02,815 [serve] 8950 calls, 209 ms each
+2026-11-12 19:29:20,700 [serve] 9000 calls, 209 ms each
+2026-11-12 19:29:36,364 [serve] 9050 calls, 209 ms each
+2026-11-12 19:29:54,335 [serve] 9100 calls, 209 ms each
+2026-11-12 19:30:00,628 connection closed
+2026-11-12 19:30:00,629 Connection from ('127.0.0.1', 40520) closed

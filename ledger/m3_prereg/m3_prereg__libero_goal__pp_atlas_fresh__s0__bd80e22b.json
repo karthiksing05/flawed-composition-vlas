@@ -1,0 +1,60 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: five-model break atlas, fresh familiar-layout states k = 36-55",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4674839",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "bd80e22b7c3f074e36f5327f555c3004755d3180",
+  "short": "bd80e22b"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "experiments/fc_n2_fresh.py": "a7264296b14b8fa534ab40cfa1cabfd0097e99de8ca9ed31dd92b094451fba41",
+   "experiments/fc_n2_fresh.sh": "24e247d0330cbde947ab46d7b2baf10cbe54ae42351a9457e9514c51ae75a786",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_atlas_client.py": "3b79c59b78f46eb25cf3be131322054f1eae3b35ec45a6c80f71070f3c50bb03",
+   "experiments/pp_atlas_fresh_read.py": "e0edc4da0d224dd3add3f4694f4555175dce1c7e8be0412a1ce334861ea00a0d",
+   "experiments/pp_atlas_fresh_roll.sh": "df4264981f4570be198723098b27aba69e6cb7adee4ea5809f87344fbab84ced",
+   "experiments/pp_atlas_models_read.py": "b65c51695f06f798b9662cb696f6e1de8ae7656fa654b4535cf50053ed0abc8e",
+   "results/flawed/n2_branches_fresh.json": "102dca52933c115934532c76689ee7f947a2d86bb158ad6f0eab7dfd58ce030d",
+   "results/flawed/n2_states_fresh/states.npy": "8ff0f3e56ad254c6e3655acdf96abbaf43eec945b3f12c40cc3f53fdaf0ae882"
+  },
+  "mapping": "BREAK_ATLAS's registered estimator and labels (pp_atlas.py's stage rule, partners, bootstrap B = 2000 rng seed 0; read through experiments/pp_atlas_fresh_read.py, which runs pp_atlas_models_read.py's read_models unchanged except output dir, state list and familiar-only layout loop), per model (pi05, groot, pi0, xvla, smolvla), familiar layout, on the 20 fresh states k = 36-55 (harness trials 24-43, seed_base 13000000 + 1000 k), 11 tasks (K1, K2, K3, K4, K6, N1-N6). Replication verdicts: F1 REPLICATES iff the cross-chunk break (group 'cross' CI lower bound > 0 and E > .10) holds on at least 3 of the 4 models where it held on the development states (pi0.5, GR00T, pi0, X-VLA). F2 REPLICATES iff the within-chunk GRASP excess (stage GRASP, same bar: CI lower bound > 0 and E > .10) holds on both pi0 and SmolVLA.",
+  "prediction": "F1 REPLICATES and F2 REPLICATES; the five familiar-layout verdicts match the development read on at least 4 of 5 models.",
+  "seen": "development-state five-model read (results/flawed/pp_atlas_more_read.json); no fresh state rolled before this row",
+  "status": "PRE-REGISTERED ATLAS-FRESH",
+  "written_before": "any rollout on a fresh state (smoke included) of any model"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pp_atlas_fresh__s0__bd80e22b",
+ "schema": 1,
+ "script": "experiments/prereg/pp_atlas_fresh.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-12T23:00:01+00:00",
+ "stream": null,
+ "tag": "pp_atlas_fresh"
+}

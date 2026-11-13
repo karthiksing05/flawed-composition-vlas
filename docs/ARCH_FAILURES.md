@@ -24,6 +24,26 @@ The new layout reads NEITHER on all five.
 
 **Fixes (SR §37.2).** Role views raise a matched VLA on new pairings, R2 − R0 = +.40 [+.17, +.63]. Silhouettes beat boxes (−.275). They do not clearly beat an AC-VLA-style whole-wrist mask (+.18 [−.09, +.48]).
 
+## Fresh-state replication (2026-11-12)
+
+(m3_prereg pp_atlas_fresh, registered before any fresh rollout; results/flawed/pp_atlas_fresh_read.json)
+
+The five-model atlas was re-run on 20 new familiar-layout start states, k = 36-55, drawn by the same sampler rule. The rule reproduced stored states 0, 1, 23, 24 and 35 exactly. The models, tasks (K1-K4, K6, N1-N6), estimator, partners and labels are unchanged. Familiar layout, fresh states:
+
+| model | within-chunk E | cross-chunk E | GRASP E | verdict | development verdict |
+|---|---|---|---|---|---|
+| pi0.5 | +.075 [.00, .18] | +.450 [.28, .61] | +.000 [.00, .00] | CROSS-CHUNK | BOTH |
+| GR00T N1 | +.308 [.08, .57] | +.500 [.26, .74] | +.017 [.00, .07] | BOTH | BOTH |
+| pi0 | +.733 [.53, .92] | +.225 [.05, .43] | +.650 [.39, .88] | BOTH | BOTH |
+| X-VLA | +.492 [.17, .83] | +.379 [.04, .73] | +.192 [.00, .53] | BOTH | BOTH |
+| SmolVLA | +.862 [.73, .96] | +.054 [−.00, .14] | +.833 [.67, .96] | WITHIN-CHUNK | WITHIN-CHUNK |
+
+**F1 REPLICATES.** The cross-chunk break clears the bar (CI lower bound > 0 and E > .10) on all four models where it held on the development states: pi0.5, GR00T, pi0 and X-VLA. The bar was 3 of 4.
+
+**F2 REPLICATES.** The GRASP excess clears the same bar on both pi0 (+.650) and SmolVLA (+.833).
+
+**Verdicts match on 4 of 5 models.** pi0.5 moves from BOTH to CROSS-CHUNK: its within-chunk E falls from +.175 to +.075, below the .10 bar. The registered prediction (both replicate, at least 4 of 5 verdicts match) held.
+
 ## 0. The three criteria
 
 A failure is architecture-rooted when all three hold (PAF §1).
