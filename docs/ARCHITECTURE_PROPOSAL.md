@@ -38,6 +38,9 @@ The same principles in their strongest form give the **hand-over variant**: the 
 | role vocabulary for parsing | Q2-N (SR §42.1) | role rungs parse 5/6 new-pairing demos; plain cannot | PARSES NEW |
 | hand-over, learned perception | HP − intact (SR §44.1) | GR00T .17 → .84; pi0.5 .50 → .85 [+.017, +.675] | GR00T BEATS THE VLA; pi0.5 NOT SHOWN |
 | parts policy alone, learned masks | PU-L (SR §40.1) | .881 on new pairings | HOLDS against simulator masks |
+| role views at test time on FROZEN VLAs (no training) | TV − I, new pairings (SR §46) | pi0.5 .50 → .725 [−.08, +.53]; GR00T .167 → .40 [+.025, +.47]; cross-chunk excess pi0.5 +.325 → +.054 | GR00T TV WINS; pi0.5 NO CLEAR DIFFERENCE |
+| role views + role phrases on frozen pi0.5 | TV+P − I (SR §46, descriptive, unregistered) | .50 → .925 [+.13, +.72]; trained tasks −.01; cross-chunk break gone | descriptive; confirmatory read on fresh states PENDING. On GR00T the phrases hurt (+.00 new, −.31 trained) |
+| role views vs AC-VLA wrist mask on frozen VLAs | TV − W (SR §46) | pi0.5 +.18 [−.05, +.45]; GR00T +.24 [−.03, +.55] | not separated |
 | referent resolver + role view | F7R − relational (SR §45.2) | pi0.5 SP .40 → 1.00, NG .20 → .775; GR00T SP .30 → .85; GR00T NG capped by its own unique-name control (.50) | FIXED on 3 of 4 cells; resolver 160/160. On pi0, X-VLA, SmolVLA 0 of 6 FIXED, capped by each model's named-referent ceiling (SR §45.3) |
 
 ## 4. What the vetting does not yet support
