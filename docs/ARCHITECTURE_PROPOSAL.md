@@ -45,5 +45,6 @@ The same principles in their strongest form give the **hand-over variant**: the 
 - **R2 does not beat frozen pi0.5** (.425 against .50). It was trained on 8 tasks with a frozen VLM.
 - **R2 is not separated from AC-VLA-style masking.**
 - **The hand-over variant overlaps ReGuide and LiLo-VLA** (reports/novelty_check_failure_atlas.md).
-- **Everything rests on one scene,** with development states and one seed per rung. The fresh-state replication of the failure atlas is PENDING.
+- **Everything rests on one scene,** with one seed per rung. The failure atlas replicates on 20 fresh states (F1 on 4 of 4 models, F2 on 2 of 2; ARCH_FAILURES "Fresh-state replication"); the fix rungs have not been re-run on fresh states.
+- **F7 and F7R cover two frozen VLAs** and two relation families over fixed templates.
 - **New layouts are unsolved by every system.**
