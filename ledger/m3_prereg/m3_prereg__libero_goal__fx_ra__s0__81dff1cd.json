@@ -1,0 +1,65 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: F7R with every distractor painted (docs/SCAFFOLD_RESULTS.md 45.4)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "eva.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4678118",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "81dff1cdbedb9458a17d2aa7b82c64a3f407bc22",
+  "short": "81dff1cd"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "f7rA: F7R (fx_r.Front: parser, learned-segmenter resolver, unique-name prompt, the distractor bowl's tracked mask painted) plus every pixel sc_seg labels cream_cheese_1, wine_bottle_1 or plate_1 painted magenta (sc_rv.paint_many) in both cameras from step WAIT on; the plate is left unpainted only when it is the instruction's target (SP), so on NG every movable object except the referent is painted.  uniA: F7's unique-name controls (other bowl removed and hidden, their own prompt) plus the same object paint.  Models served as in fx (pi05, groot: pp_serve_purify.py intact seed 13) and fx_more (pi0, xvla, smolvla: serve_guided.py --mode ours seed 13); fx_branches_main.json, main states 4-23.  Cells: NG x {pi05, groot, pi0, xvla, smolvla}; SP x {pi0, groot}.",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/fxa_job.sh": "f63fcce3d30cb9c15d701cabacb8b9cb5b481d03cca784b5571fb4f0a646aa98",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/fxa_readjob.sh": "333c21367b1c0ebc3f4bc0709458113b898f4841f608c8ecbc0e4098d1f504a1",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/fxa_roll.sh": "c0725024904cbeb9c7ec50af4b06c18baa941e551f7ea8c34f5f86e21ea1b2f0",
+   "experiments/fx_client.py": "05de318ec5ae7ca305d82ef365776fd95bb535ad0b6df9098bd3318296622cdb",
+   "experiments/fx_r.py": "05fb2ff114a3c9a9dd70d86d1755a77337173539cbe8b27544cd39175271f978",
+   "experiments/fx_ra.py": "61ae13af72588ba309cba9e76f2cffd20efee2b01763b6656b23988855ed4ce6",
+   "experiments/fx_read.py": "aa09aed36c628b332b4c11d0cd775ead45155f4ad5c1048003fae189c398e4f4",
+   "experiments/fx_tasks.py": "434b04c257fc95e06cc343b32fb731cd53b86d22b89ff3e196723328b4b01a91",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "experiments/sc_rv.py": "1d1d6fb977524a7254b42ff889f80d7785c2bfc302c96fca5629c3da0b3be265",
+   "experiments/sc_seg.py": "9b4254a30af2f95fc30d56976ab408256b53415bd096edd8f3115560dc7f0ba4",
+   "experiments/serve_guided.py": "00fb8826f7bb4cf3efc16c32851d7778a19a3ebe079d091120a51dfad3baf52b"
+  },
+  "mapping": "experiments/fx_ra.py read as hashed, per cell, arm f7rA.  delta = R(f7rA) - R(relational, the fx / fx_more frozen rollouts on the same states and seeds), paired over states, fx_read.boot B=2000 seed 0.  First match: NO POWER iff the fx reference < .60 (U is not gated: the ceiling is the measured uniA arm); FIXED iff delta > .10 with CI lower bound > 0 and C(f7rA) CI lower bound > .75; NOT FIXED iff delta CI upper bound < .10; else PARTIAL.  Ceiling: ceil = U(uniA) - U(original unique-name control, fx / fx_more), paired; CEILING LIFTED iff ceil > .10 with CI lower bound > 0; CEILING HOLDS iff ceil CI upper bound < .10; else UNRESOLVED.  f7rA - F7R (paint-all's share), per-task success, grasp counts, resolver accuracy, paint IoU and referent leak: reported with no verdict.",
+  "prediction": "Written before the smoke read was seen.  FIXED on pi0.5 NG and GR00T SP (F7R already FIXED there; paint-all should not hurt); PARTIAL on pi0 SP; GR00T NG PARTIAL; pi0, X-VLA, SmolVLA NG PARTIAL (the plate-bowl failure is a location habit, so painting the cheese moves the grasp off the cheese but not onto the plate bowl; C(f7rA) stays below .75).  Ceiling: UNRESOLVED or HOLDS on every NG cell except GR00T NG (LIFTED, low confidence); HOLDS on the SP cells.  f7rA - F7R within +-.10 everywhere.  Low confidence overall.",
+  "seen": "Smoke on states 0-3, GR00T NG only (job 4677930 on tail-lab, read 4677931; .claude_tmp/pp/fxa_smoke/fxa_read_smoke.json), seen AFTER the prediction above was written: NG NOT FIXED, CEILING HOLDS on n=4 (f7rA = F7R = R = U = uniA = .50; uniP 0/4 under uniA, grasping none 2, cheese 2, against cheese 4/4 unpainted; C(f7rA) .80).  Resolver 8/8.  Object paint IoU .95-.98 except the wrist wine-bottle class under f7rA (IoU .07, recall .99: the segmenter over-labels wine bottle in the wrist view; uniA .93); referent leak <= .009.  No design, gate, mapping or threshold was changed after the smoke.  Before the smoke the overcap smoke job 4677741 was cancelled unrun (queue wait) and resubmitted on tail-lab.",
+  "status": "PRE-REGISTERED FX_RA",
+  "written_before": "any main-state fx_ra rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__fx_ra__s0__81dff1cd",
+ "schema": 1,
+ "script": "experiments/prereg/fx_ra.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-13T03:38:43+00:00",
+ "stream": null,
+ "tag": "fx_ra"
+}
