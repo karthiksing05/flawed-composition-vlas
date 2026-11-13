@@ -1,0 +1,56 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: F6O, F6 memory with a physical occluder (docs/SCAFFOLD_RESULTS.md 45.5)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "smith.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4698479",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "28c8c3093f17926333094ea60bbce91720ed9def",
+  "short": "28c8c309"
+ },
+ "keys": {},
+ "metrics": {
+  "design": "Two identical opaque non-colliding cylinder covers (radius .1135 m, top 8 mm above the plate), in the scene in every condition. a visible: both parked. b occluded-late: cover 0 moves onto the plate at env step WAIT+HIDE_AT (after the first query sees the plate). c never-visible: cover 0 on the plate from step 0. d moved-beside: cover 0 moves at b's step to a spot right beside the plate (ring just outside it, about as far from the bowl as the plate) that leaves plate and bowl visible (render check job 4697889: 0 violations; d keeps >= .99 of a's plate pixels at every query in both cameras and 1.0 of the bowl's). Physics identical across conditions. Reference = fx's frozen-plate servo / P_min (better system, fx tid 0 fam, 2 disp).",
+  "files_sha256": {
+   "experiments/f6o_client.py": "80a6508b374fe8469508e5550314e023eb97cf1fc706ac1014a3d3b9d90b1cbc",
+   "experiments/f6o_read.py": "01824e71815b1ad8a2508a116b4b687040faf7d10bb64b8272ab2de248257032",
+   "experiments/f6o_tasks.py": "6be4a31bef264adf7804a4853cbac5a2411252a86260dc1904cee71b76f8b071"
+  },
+  "headline_layout": "disp. In fam the cover on the plate also hides most of the bowl (bowl agentview px c/a .07-.49), so fam is descriptive only (same mapping, not read as a verdict).",
+  "mapping": "experiments/f6o_read.py as hashed. Per model and layout, first matching row: NO POWER iff s(a) < .50 or reference < .60; MEMORY ABSENT iff s(d) - s(b) > .10 with CI lower bound > 0 and s(b) - s(c) CI upper bound < .10; MEMORY USED iff s(b) - s(c) > .10 with CI lower bound > 0; else PARTIAL. Paired over states, bootstrap B = 2,000, seed 0. s(a) - s(d) reported as the disc-appearance cost, no verdict. F6 HOLDS iff MEMORY ABSENT on disp for both pi0.5 and GR00T.",
+  "prediction": "F6 HOLDS (written before the smoke was read): on disp both VLAs succeed in a and d (pi0.5 near 1.0, GR00T near fx's disp_vis .65), fail in b about as often as in c, and carry the bowl to the plate's training spot in failed b/c episodes; disc cost a - d within .10. fam (descriptive): b and c low as the bowl is hidden too.",
+  "seen": "Smoke on states 0-3 (read job 4698476, .claude_tmp/pp/f6o_read_smoke.json), read after the prediction was written; nothing in the mapping changed after it. disp: pi0.5 a 1.0 b .25 c .25 d 1.0 (MEMORY ABSENT); GR00T a .50 b 0 c 0 d .25 (PARTIAL); reference .75 (P_min). fam: pi0.5 a 1.0 b/c/d .75; GR00T a 1.0 b 0 c 0 d 1.0. Failed b/c bowls end near the true plate, never at the training spot. The client's in-rollout track shows the plate with pixels at 16-55% of later b/c queries (the policy disturbs the plate or the wrist camera reaches the cover; the cover does not follow the plate): a leak toward b, reported, no design change.",
+  "status": "PRE-REGISTERED F6O",
+  "written_before": "any main-state f6o rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__f6o__s0__28c8c309",
+ "schema": 1,
+ "script": "experiments/prereg/f6o.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-13T22:51:02+00:00",
+ "stream": null,
+ "tag": "f6o"
+}
