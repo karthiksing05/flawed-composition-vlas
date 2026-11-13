@@ -1932,3 +1932,51 @@ The F7R front end: a template parser plus the learned segmenter resolves the rel
   - Referent leak is ≤ .023 in every cell.
 - **Prediction:** right on pi0.5 NG, pi0 SP and the PARTIAL NG cells. Wrong on GR00T SP (PARTIAL, not FIXED), GR00T NG (NOT FIXED, not PARTIAL) and GR00T's ceiling (UNRESOLVED, not LIFTED).
 - **Reading.** The named-referent ceiling of 45.2-45.3 is not a distractor-routing failure: removing every competing object's identity from the image does not make pi0, X-VLA, SmolVLA or GR00T pick up a bowl from a plate. It is a scene habit of the policy, which the proposal's role views cannot reach. ARCHITECTURE_PROPOSAL §4's limit therefore stands with the role view in its specified form, and on GR00T SP painting more objects costs success.
+
+### 45.5 F6 with a physical occluder (m3_prereg f6o, commit 6356a4d3; read job 4699400, main states 4-23; results/flawed/f6o_read_main.json)
+
+**Protocol.** 45's F6 removed the plate from render, which broke both VLAs even where no memory is needed. Here an occluder is in the scene in every condition (experiments/f6o_tasks.py, f6o_client.py, f6o_read.py).
+- **Covers:** two identical opaque cylinders, radius .1135 m, top 8 mm above the plate. They do not collide and add no degree of freedom, so physics, the success test and fx's states, seeds and frozen-plate reference are unchanged (render check: max state difference 0.0 across conditions). Cover 1 is a decoy that stays parked in every condition.
+- **Conditions,** with the instruction "put the bowl on the plate":
+  - a, visible: both covers parked.
+  - b, occluded-late: cover 0 moves onto the plate at env step WAIT + HIDE_AT, after the first query has seen the plate.
+  - c, never-visible: cover 0 on the plate from step 0.
+  - d, moved-beside: cover 0 moves at b's step to a spot right beside the plate. The spot sits on a ring 1-4.5 cm outside the plate, about as far from the bowl as the plate is, and leaves the plate and the bowl visible. The coordinator added d after check_disp.png showed that b's move makes a large brown disc appear mid-table, while a's parked covers sit mostly off-screen. d has b's visual event without hiding the plate.
+- **Render check** (build job 4697889, results/flawed/f6o/check_*.png):
+  - 0 violations.
+  - Covered plate: 0 pixels in both cameras at every query.
+  - d keeps ≥ .99 of a's plate pixels at every query in both cameras (fam .994, disp .990) and 1.0 of the bowl's.
+  - In fam the cover on the plate also hides most of the bowl (bowl agentview pixels c/a .07-.49), so **disp is the headline layout** and fam is descriptive only. In disp the bowl is untouched (1.0).
+  - 17 of 24 fam spots and 23 of 24 disp spots met every clearance. The rest waived the fixture, stove-front and box clearances (the render criteria still held).
+  - The first build of d measured candidate spots after `sim.forward()` alone, which the segmentation render did not pick up. Its rollout check caught spots hiding up to 35% of the plate, so spots are now measured after a DUMMY env step.
+  - The parked covers cost the plate 1-3% of its agentview pixels in a, b before the move, and d.
+- **Mapping,** per model and layout, first matching row, paired over states, B = 2,000:
+  - NO POWER iff s(a) < .50 or the reference < .60;
+  - MEMORY ABSENT iff s(d) − s(b) > .10 with lower bound > 0, and the upper bound of s(b) − s(c) < .10;
+  - MEMORY USED iff s(b) − s(c) > .10 with lower bound > 0;
+  - otherwise PARTIAL.
+  - s(a) − s(d) is reported as the disc-appearance cost, with no verdict.
+  - F6 HOLDS iff MEMORY ABSENT on disp for both pi0.5 and GR00T.
+- **Prediction:** F6 HOLDS. a and d succeed, b fails about as often as c, and failed b/c bowls go to the training spot.
+- **Seen before registration:** a smoke on states 0-3 (pi0.5 disp MEMORY ABSENT; GR00T disp PARTIAL, a = .50), read after the prediction was written.
+
+**F6 does not HOLD under the registered mapping: PARTIAL on all four cells. Only the equivalence bound on b − c fails; occluding the plate after one view costs as much as never seeing it.**
+
+| model, layout | a | b | c | d | ref | d − b [CI] | b − c [CI] | a − d, disc cost [CI] | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| pi0.5 disp | .90 | .50 | .55 | 1.00 | .78 | +.50 [+.30, +.75] | −.05 [−.35, +.25] | −.10 [−.25, .00] | PARTIAL |
+| GR00T disp | .80 | .10 | .10 | .70 | .78 | +.60 [+.40, +.80] | .00 [−.20, +.20] | +.10 [−.15, +.40] | PARTIAL |
+| pi0.5 fam (descriptive) | 1.00 | .80 | .85 | .90 | .98 | +.10 [−.10, +.30] | −.05 [−.25, +.15] | +.10 [.00, +.25] | PARTIAL |
+| GR00T fam (descriptive) | .85 | .05 | .10 | .70 | .98 | +.65 [+.40, +.85] | −.05 [−.20, +.10] | +.15 [−.10, +.40] | PARTIAL |
+
+- **On disp, hiding the plate costs both VLAs what the disc does not.** d − b is +.50 and +.60, both with lower bounds ≥ .30. The disc appearing beside the plate costs nothing measurable (a − d −.10 and +.10, with CIs spanning 0).
+- **b equals c to within .05 on both models, so seeing the plate once leaves no measurable trace.** MEMORY ABSENT still fails: with 20 states, the b − c upper bounds are +.25 (pi0.5) and +.20 (GR00T), above the registered .10. The data put no lower bound above 0 on any b − c either (MEMORY USED fails too). A tighter equivalence bound needs more states, not a different design.
+- **Where failed b/c bowls go (disp).**
+  - pi0.5: 9 of 10 (b) and 9 of 9 (c) end within .10 m of the true plate but not on it.
+  - GR00T: 17 of 18 (b) and 14 of 18 (c) end elsewhere.
+  - No disp episode ends at the training spot.
+  - pi0.5 reaches the plate's region even in c, where it never saw the plate. Cover 0 marks the plate's position in b and c (the decoy is elsewhere), so pi0.5 may be going to the disc rather than remembering the plate.
+- **The occluder leaks late in b and c.** The client's in-rollout track shows plate pixels at 36-56% of later b/c queries (agentview 22-33%, wrist 31-45%). The cover stays where it was put, so the plate shows once the policy disturbs it or the wrist camera reaches the cover. The leak helps b and c alike, and it was seen and disclosed at registration. It leaves some view of the plate in b and c late in the episode, so the occluded success rates are upper bounds on success without any late view.
+- **fam (descriptive).** pi0.5 succeeds .80-.90 even with the plate and most of the bowl covered: it acts from the habitual layout. GR00T's fam pattern matches its disp pattern.
+- **Prediction:** wrong on the verdict (PARTIAL, not MEMORY ABSENT, on both). Right that b ≈ c and a ≈ d. Wrong on where failures go: the training spot gets 0 disp failures, not most of them.
+- **Reading.** With the view confound removed (d − b) and the disc's appearance controlled (a − d ≈ 0), both VLAs lose .50-.60 of their success when the plate is occluded after one view. Their success is then the same as when the plate was never seen. That is the memory-absent pattern, but at n = 20 the registered equivalence bound is not met, so F6 is not confirmed as registered. A larger-n rerun of b and c on disp would settle the bound.
