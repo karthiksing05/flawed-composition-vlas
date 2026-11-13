@@ -1,0 +1,63 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: F7 + F7R on pi0, X-VLA, SmolVLA (docs/SCAFFOLD_RESULTS.md 45.3)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "kipp.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4676880",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "83a669b0c31703c983dff4e9a0084f2072f3634f",
+  "short": "83a669b0"
+ },
+ "keys": {},
+ "metrics": {
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/fx_roll_more.sh": "94f554c7bb89d660b9bf2f248ceae760b2a7289c4585a0051ab08118cd0666ca",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/fxm_job.sh": "101e58e960ff9cd5d2e6b06e7b9ba77866f37532dffd9ce1c0336ab59a29e7ab",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/fxm_readjob.sh": "b6f3cc6eca0ce203153444d96d2cdad832d8afa9a00d24cdd8afa9899f176daa",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/fxr_roll_more.sh": "7ef4d2d0b9b066cf74580e970bf34a0b1f5f329b87db93bc408740ee8b4d9676",
+   "experiments/fx_client.py": "05de318ec5ae7ca305d82ef365776fd95bb535ad0b6df9098bd3318296622cdb",
+   "experiments/fx_r.py": "05fb2ff114a3c9a9dd70d86d1755a77337173539cbe8b27544cd39175271f978",
+   "experiments/fx_read.py": "aa09aed36c628b332b4c11d0cd775ead45155f4ad5c1048003fae189c398e4f4",
+   "experiments/fx_tasks.py": "434b04c257fc95e06cc343b32fb731cd53b86d22b89ff3e196723328b4b01a91",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_atlas_more_roll.sh": "2f18c86898c9f4b001db34d606b7b06d581b46cdb9de89b539e219700bda0a43",
+   "experiments/serve_guided.py": "00fb8826f7bb4cf3efc16c32851d7778a19a3ebe079d091120a51dfad3baf52b"
+  },
+  "mapping": "F7, per model and family (SP left/right; NG on/not on the plate): experiments/fx_read.py as hashed (the fx mapping, unchanged): NO POWER iff U < .50 or reference < .60; RELATION IGNORED iff delta = U - R > .10 with CI lower bound > 0 and C's CI upper bound < .75; RELATION USED iff C's lower bound > .75; else PARTIAL.  The reference is fx's own scripted servo / P_min main references (results/flawed/fx/ref; model-independent, not re-run).  F7R, per model and family: experiments/fx_r.py read as hashed (the fx_r mapping, unchanged), arm f7r, delta = R(F7R) - R(relational) paired over states, B = 2000 seed 0: NO POWER iff U < .50 or fx reference < .60; FIXED iff delta > .10 with CI lower bound > 0 and C(F7R) CI lower bound > .75; NOT FIXED iff delta CI upper bound < .10; else PARTIAL.  Aggregates of this extension, over the 6 new model-family cells: F7 EXTENDS iff RELATION IGNORED on >= 4 of 6; F7R EXTENDS iff FIXED on >= 4 of 6.  name and oracle arms, F7R - oracle, F7R - name, resolver accuracy, paint IoU, the ambiguous-choice match: reported with no verdict.  F6 and F7P not run.",
+  "models": "pi0 (BACKBONE_CONFIG=pi0_libero), xvla (lerobot/xvla-libero, absolute eef control), smolvla (lerobot/smolvla_libero); each served by experiments/serve_guided.py --mode ours --seed 13 as in experiments/pp_atlas_more_roll.sh; clients fx_client.py (F7 tasks 5-14) and fx_r.py client (arms f7r, name, oracle on tasks 5, 6, 10, 11), main states 4-23, fx_branches_main.json.",
+  "prediction": "F7 EXTENDS (5 of 6): RELATION IGNORED on pi0 SP, pi0 NG, SmolVLA SP, SmolVLA NG and X-VLA NG; X-VLA SP NO POWER (its unique-name SP controls fail).  C near .5 and the relational choice equal to the ambiguous choice on >= 80% of states on every powered cell.  F7R EXTENDS with exactly 4 of 6: FIXED on pi0 SP, pi0 NG, SmolVLA SP, SmolVLA NG; X-VLA SP NO POWER, X-VLA NG PARTIAL or NOT FIXED (smoke: it takes the table bowl whatever it sees).  Low confidence on the SmolVLA NG cell, so F7R EXTENDS is a coin-flip-level call.  Resolver correct >= 95% of episodes; F7R - oracle within .05 everywhere.",
+  "seen": "Smoke on states 0-3 for X-VLA only (job 4676175; read 4676176, .claude_tmp/pp/fxm_smoke/fx_read_smoke.json and fxr_read_smoke.json): F7 SP NO POWER (uniL .25, uniR 0, U .125; R 0, C .50); F7 NG RELATION IGNORED (uniP 0, uniT 1.0, U .50 exactly at the gate; R 0, C .50, rel = amb 1.0; X-VLA grasps the table bowl in every NG episode).  F7R: SP NO POWER (f7r = name = oracle = .125); NG PARTIAL (f7r = name = oracle = .50, C(F7R) .50).  Resolver 16/16, paint IoU .94-.99.  pi0 and SmolVLA were not smoked.  No gate, mapping or threshold was changed after the smoke.",
+  "status": "PRE-REGISTERED FX_MORE",
+  "written_before": "any main-state fx_more rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__fx_more__s0__83a669b0",
+ "schema": 1,
+ "script": "experiments/prereg/fx_more.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-13T01:32:27+00:00",
+ "stream": null,
+ "tag": "fx_more"
+}

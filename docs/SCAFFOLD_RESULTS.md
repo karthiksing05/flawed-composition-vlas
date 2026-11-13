@@ -1838,3 +1838,52 @@ The F7R front end: a template parser plus the learned segmenter resolves the rel
 - **The role view carries the fix.** Renaming alone gives nothing on SP (pi0.5 +.00, GR00T −.05) and half the gain on pi0.5 NG (.20 → .50). F7R − name is +.60 / +.275 / +.60 on the three FIXED cells.
 - **GR00T NG is capped by GR00T.** F7R raises its referent choice from .49 to .75, yet success stays at .50, equal to its own unique-name control (U = .50: it grasps the cream cheese with the plate bowl alone). No front end can exceed U.
 - F7 therefore meets all three architecture-rooted criteria on 3 of 4 cells: the information is present (U, references), the failure holds on two current VLAs, and a structural change that adds no information (a symbolic resolver over the instruction plus the learned segmenter's masks) removes it.
+
+### 45.3 F7 and F7R on pi0, X-VLA, SmolVLA (m3_prereg fx_more; read job 4676896, main states 4-23; results/flawed/fx_more_read_main.json, fx_more_r_read_main.json)
+
+**Protocol.** F7's relational, unique-name and ambiguous tasks (SP and NG) and F7R's arms f7r, name and oracle ran on three more frozen VLAs: pi0 (openpi pi0_libero, PyTorch), X-VLA (lerobot/xvla-libero) and SmolVLA (lerobot/smolvla_libero).
+- Each model is served as in the break atlas (experiments/pp_atlas_more_roll.sh: serve_guided.py --mode ours, seed 13).
+- The clients, the reads and the per-cell mappings are fx's and fx_r's, unchanged.
+- The scripted references are fx's main references, reused (they do not depend on the model).
+- Aggregate rules for this extension, over its 6 model-family cells:
+  - F7 EXTENDS iff RELATION IGNORED holds on at least 4;
+  - F7R EXTENDS iff FIXED holds on at least 4.
+- **Prediction:** F7 EXTENDS (5 of 6, with X-VLA SP NO POWER) and F7R EXTENDS with exactly 4 (FIXED on pi0 and SmolVLA, both families).
+- **Seen before registration:** the X-VLA smoke on states 0-3. It gave SP NO POWER and NG RELATION IGNORED with U = .50; F7R gave SP NO POWER and NG PARTIAL. pi0 and SmolVLA were not smoked.
+
+**F7: EXTENDS, 4 of 6.** RELATION IGNORED on pi0 SP, pi0 NG, X-VLA NG and SmolVLA NG. X-VLA SP and SmolVLA SP read NO POWER.
+
+| model, family | U (unique name) [CI] | R (relational) [CI] | C (referent share) [CI] | relational choice = ambiguous choice | reference | verdict |
+|---|---|---|---|---|---|---|
+| pi0 SP | .65 [.52, .80] | .225 [.125, .325] | .50 [.50, .50] | 1.00 | .95 | RELATION IGNORED |
+| pi0 NG | .50 [.50, .50] | .20 [.10, .30] | .50 [.44, .56] | 1.00 | .99 | RELATION IGNORED |
+| X-VLA SP | .10 [.025, .20] | .00 | .50 [.50, .50] | 1.00 | .95 | NO POWER |
+| X-VLA NG | .55 [.50, .625] | .00 | .50 [.50, .50] | 1.00 | .99 | RELATION IGNORED |
+| SmolVLA SP | .05 [.00, .125] | .05 [.00, .125] | .42 [.27, .57] | .75 | .95 | NO POWER |
+| SmolVLA NG | .50 [.50, .50] | .025 [.00, .075] | .52 [.45, .59] | 1.00 | .99 | RELATION IGNORED |
+
+- On every powered cell all three models take the same bowl whatever the relation says: C = .50-.52, and the relational choice matches the ambiguous instruction's choice on 100% of states.
+- The unique-name controls show strong side and location habits. Successes on the left / right / on-plate / on-table bowl:
+  - pi0: .90 / .40 / .00 / 1.00;
+  - X-VLA: .20 / .00 / .10 / 1.00;
+  - SmolVLA: .10 / .00 / .00 / 1.00.
+- No model picks up the bowl on the plate when it is the only bowl. pi0 and SmolVLA grasp the cream cheese instead, as GR00T did. So every NG cell has U ≈ .50, and only the table-bowl half of U carries any power.
+
+**F7R: DOES NOT EXTEND, 0 of 6 FIXED** (predicted 4).
+
+| model, family | R relational | R F7R | delta [CI] | C F7R [CI] | R name only | R oracle referent | verdict |
+|---|---|---|---|---|---|---|---|
+| pi0 SP | .225 | .425 | +.20 [+.025, +.375] | .825 [.725, .925] | .20 | .425 | PARTIAL |
+| pi0 NG | .20 | .50 | +.30 [+.20, +.40] | .556 [.513, .625] | .50 | .50 | PARTIAL |
+| X-VLA SP | .00 | .125 | +.125 [+.025, +.225] | .50 [.44, .56] | .025 | .125 | NO POWER |
+| X-VLA NG | .00 | .50 | +.50 [+.50, +.50] | .513 [.50, .54] | .50 | .50 | PARTIAL |
+| SmolVLA SP | .05 | .025 | −.025 [−.10, +.05] | .50 [.50, .50] | .075 | .025 | NO POWER |
+| SmolVLA NG | .025 | .50 | +.475 [+.425, +.50] | .513 [.50, .54] | .40 | .50 | PARTIAL |
+
+- **The resolver is exact again:** 240 of 240 episodes resolved the right bowl, and F7R − oracle = 0 on every cell. Paint IoU is .85-.95 (agentview) and .85-.99 (wrist); referent leak ≤ .005.
+- **pi0 SP is the one cell where the role view does real work.** F7R raises C from .50 to .825 and R from .225 to .425. F7R − name is +.225 [+.05, +.40]. It falls short of FIXED only because C's lower bound (.725) is below .75. Per side:
+  - left bowl: .70 (unique-name .90);
+  - right bowl: .15 (unique-name .40).
+- **The NG gains come from the wording, not from the role view.** All three models succeed on "not on the plate" (the table bowl, 1.0 under f7r) and on no "on the plate" episode (0 of 60). The name-only prompt alone already gives .50 on pi0 and X-VLA and .40 on SmolVLA. C(F7R) stays at .51-.56 because the models never grasp the plate bowl, painted distractor or not. This is GR00T NG's ceiling (45.2): no front end can exceed a unique-name control the policy fails.
+- **X-VLA SP and SmolVLA SP have no power.** These models cannot do the unique-name SP task (U .10 and .05), so the cell does not test F7R.
+- Reading: on all five VLAs the relational word is ignored wherever there is power to see it (F7 on 7 of 8 powered cells, counting 45.1). The structural fix transfers only as far as each policy's unique-name competence reaches. On pi0, X-VLA and SmolVLA that competence is limited to the left bowl and the table bowl, so F7R's registered FIXED (3 of 4 on pi0.5 / GR00T) does not generalise to these three models.
