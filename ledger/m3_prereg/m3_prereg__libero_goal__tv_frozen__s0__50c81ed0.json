@@ -1,0 +1,66 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: TV-F, test-time role views on frozen VLAs (docs/SCAFFOLD_RESULTS.md 46)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "chomps.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4697120",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "50c81ed0b0bdd2887762e9dfd0258d1f8440d6f7",
+  "short": "50c81ed0"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "I = results/flawed/pp_atlas/<model>_<tid> (atlas intact, same states / branches / seeds / server); tv = role views from sc_seg learned masks in both cameras, sc_rv.role_paint rule (object phase: every movable but the object painted; target phase: every movable but the target, held object included), switched by ProprioHeld (sc_rv_lex.json tw/lift) stepped every env step, current state (reverts if the hold ends), prompt unchanged; tvp = tv + R1 role phrases (sc_t16.given); w = whole wrist image grey 128 while ProprioHeld is on, no silhouettes, prompt unchanged.",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/tv_job.sh": "5170e8167f042845b9d96bb6ef8303027a2cef738875c3b1a0b03e4ee584feff",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/tv_read.sh": "36788edbb9ceacee05e51d666df50e15feac633c0306fd8ff020eeb36d8269a4",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/tv_roll.sh": "15020403c59aac1f3f5068f218beed7155c84be2822c313c4945b2a8ef947132",
+   "experiments/fc_n2_client.py": "d75afd3daa81cea161f7712e921e6ac73c37342e3ef59648d8ffa2c3872eb0f9",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "experiments/sc_rv.py": "1d1d6fb977524a7254b42ff889f80d7785c2bfc302c96fca5629c3da0b3be265",
+   "experiments/sc_rv_w.py": "6ebbc93050af55546854998eade1e909b523cb9aec1aa4f5da4d50c854314d21",
+   "experiments/sc_seg.py": "9b4254a30af2f95fc30d56976ab408256b53415bd096edd8f3115560dc7f0ba4",
+   "experiments/sc_t16.py": "212a8f0c5df895aff91b2dc64d214991cf8e03eb2f33d4b97173fcb3365de6d6",
+   "experiments/tv_frozen.py": "7326577e980a26b4bf3c90ca3e2c633b124b8c40f1534a3d10aedf5a10526008",
+   "results/flawed/sc_rv_lex.json": "b7c4b70bfa0ef46e7e0cfd7fd989fc7081bc5cc2e7cd04ff7d93ba3afa440d5e"
+  },
+  "mapping": "experiments/tv_frozen.py read as hashed, per model.  Success matrices [task, state]; paired bootstrap B=2000, numpy default_rng(0), tasks and states drawn jointly; CI 2.5/97.5.  PRIMARY d = tv - I on N1-N6: TV WINS iff d > .10 and CI lo > 0; TV LOSES iff CI hi < -.10; else NO CLEAR DIFFERENCE.  AC-VLA d = tv - w on N1-N6, same rule: SEPARATED FROM AC-VLA iff win; TV LOSES TO W iff hi < -.10; else NO CLEAR DIFFERENCE.  No verdict: tvp - I, tvp - tv, w - I; K-task success per arm and arm - I (cost on trained tasks); the atlas's within/cross-chunk excess (pp_atlas estimator, partners, stage rule unchanged) per arm; stage shares; segmenter IoU, paint IoU, active-object leak; hold onsets vs oracle Held.  I's excess must reproduce pp_atlas_read.json (reported).",
+  "prediction": "pi0.5 (I .50 on N1-N6): NO CLEAR DIFFERENCE 50%, TV WINS 30%, TV LOSES 20%. GR00T (I .167): TV WINS 40%, NO CLEAR DIFFERENCE 45%, TV LOSES 15%. tv - w: NO CLEAR DIFFERENCE on both models (70%). K-task success under tv within .10 of I on pi0.5, a larger drop possible on GR00T. tv lowers the cross-chunk excess against I on both models. Paint IoU >= .90 agentview, segmenter weakest on the bottle in the wrist.",
+  "seen": "Smoke before registration and before the predictions: pi0.5 only, smoke states 0-3 (n2_branches_smoke.json), N1 / N4 / K1 familiar, job 4677916. Successes of 4: tv N1 2, N4 3, K1 4; tvp N1 4, N4 2, K1 4; w N1 4, N4 0, K1 4. ProprioHeld first onset within 0-2 steps of the oracle Held on most episodes; paint IoU .94-.98 agentview, .96-.995 wrist; active leak <= .007. Contact sheets inspected: the rule paints as intended. No gate, threshold, rule or code changed after the smoke. GR00T was not smoked. The intact arm I is not run here; it reuses results/flawed/pp_atlas (seen in earlier registered reads: pi0.5 .50, GR00T .167 on N1-N6).",
+  "status": "PRE-REGISTERED TV-F",
+  "tasks": "familiar n2 tids 16,18,20,22,24,26 (N1-N6) and 0,2,4,6,10 (K1-K4, K6); states 4-23; models pi05, groot (pp_serve_purify --mode intact --seed 13).",
+  "written_before": "any main-state tv_frozen rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__tv_frozen__s0__50c81ed0",
+ "schema": 1,
+ "script": "experiments/prereg/tv_frozen.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-13T21:32:43+00:00",
+ "stream": null,
+ "tag": "tv_frozen"
+}

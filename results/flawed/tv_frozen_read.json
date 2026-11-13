@@ -1,0 +1,1787 @@
+{
+ "phase": "main",
+ "states": [
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23
+ ],
+ "dir": "/coc/flash10/ksingara3/flawed-composition-vlas/results/flawed/tv_frozen",
+ "B": 2000,
+ "eps": 0.1,
+ "mapping": "per model, familiar layout; d = success(tv) - success(I) on N1-N6 paired over (task, state), bootstrap B=2000 rng 0, tasks and states drawn jointly; TV WINS iff d > .10 and CI lo > 0; TV LOSES iff CI hi < -.10; else NO CLEAR DIFFERENCE. d = tv - w on N1-N6, same rule: SEPARATED FROM AC-VLA iff win; TV LOSES TO W iff hi < -.10; else NO CLEAR DIFFERENCE.",
+ "models": {
+  "pi05": {
+   "arms": {
+    "I": {
+     "success_new": [
+      0.5,
+      0.24166666666666667,
+      0.7585416666666654
+     ],
+     "success_known": [
+      1.0,
+      1.0,
+      1.0
+     ],
+     "per_task_success": {
+      "N1": 0.1,
+      "N2": 0.2,
+      "N3": 0.6,
+      "N4": 0.85,
+      "N5": 0.85,
+      "N6": 0.4,
+      "K1": 1.0,
+      "K2": 1.0,
+      "K3": 1.0,
+      "K4": 1.0,
+      "K6": 1.0
+     },
+     "stage_shares_new": {
+      "success": 0.5,
+      "GRASP": 0.016666666666666666,
+      "HANDOFF": 0.3083333333333333,
+      "TRANSPORT": 0.016666666666666666,
+      "RELEASE": 0.15833333333333335,
+      "PHYSICS": 0.0
+     },
+     "grasp_ok_new": 0.9833333333333333,
+     "cross_stage_share_new": 0.325,
+     "per_task_stages": {
+      "N1": {
+       "success": 0.1,
+       "GRASP": 0.0,
+       "HANDOFF": 0.55,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.35,
+       "PHYSICS": 0.0
+      },
+      "N2": {
+       "success": 0.2,
+       "GRASP": 0.0,
+       "HANDOFF": 0.6,
+       "TRANSPORT": 0.05,
+       "RELEASE": 0.15,
+       "PHYSICS": 0.0
+      },
+      "N3": {
+       "success": 0.6,
+       "GRASP": 0.1,
+       "HANDOFF": 0.2,
+       "TRANSPORT": 0.05,
+       "RELEASE": 0.05,
+       "PHYSICS": 0.0
+      },
+      "N4": {
+       "success": 0.85,
+       "GRASP": 0.0,
+       "HANDOFF": 0.15,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N5": {
+       "success": 0.85,
+       "GRASP": 0.0,
+       "HANDOFF": 0.15,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N6": {
+       "success": 0.4,
+       "GRASP": 0.0,
+       "HANDOFF": 0.2,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.4,
+       "PHYSICS": 0.0
+      },
+      "K1": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K2": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K3": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K4": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K6": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      }
+     },
+     "atlas": {
+      "stages": {
+       "GRASP": {
+        "E": 0.016666666666666666,
+        "ci": [
+         0.0,
+         0.075
+        ],
+        "breaks": false
+       },
+       "HANDOFF": {
+        "E": 0.3083333333333333,
+        "ci": [
+         0.125,
+         0.5085416666666656
+        ],
+        "breaks": true
+       },
+       "TRANSPORT": {
+        "E": 0.016666666666666666,
+        "ci": [
+         0.0,
+         0.05833333333333333
+        ],
+        "breaks": false
+       },
+       "RELEASE": {
+        "E": 0.15833333333333335,
+        "ci": [
+         0.025000000000000005,
+         0.3333333333333333
+        ],
+        "breaks": true
+       },
+       "PHYSICS": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "groups": {
+       "within": {
+        "E": 0.17500000000000002,
+        "ci": [
+         0.049999999999999996,
+         0.3335416666666655
+        ],
+        "breaks": true
+       },
+       "cross": {
+        "E": 0.325,
+        "ci": [
+         0.13333333333333333,
+         0.5333333333333333
+        ],
+        "breaks": true
+       }
+      },
+      "verdict": "BOTH"
+     },
+     "side": null
+    },
+    "tv": {
+     "success_new": [
+      0.725,
+      0.5,
+      0.925
+     ],
+     "success_known": [
+      0.96,
+      0.89,
+      1.0
+     ],
+     "per_task_success": {
+      "N1": 0.5,
+      "N2": 1.0,
+      "N3": 1.0,
+      "N4": 0.6,
+      "N5": 0.85,
+      "N6": 0.4,
+      "K1": 1.0,
+      "K2": 0.95,
+      "K3": 0.95,
+      "K4": 0.9,
+      "K6": 1.0
+     },
+     "stage_shares_new": {
+      "success": 0.7250000000000001,
+      "GRASP": 0.0,
+      "HANDOFF": 0.06666666666666667,
+      "TRANSPORT": 0.0,
+      "RELEASE": 0.20833333333333334,
+      "PHYSICS": 0.0
+     },
+     "grasp_ok_new": 1.0,
+     "cross_stage_share_new": 0.06666666666666667,
+     "per_task_stages": {
+      "N1": {
+       "success": 0.5,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.45,
+       "PHYSICS": 0.0
+      },
+      "N2": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N3": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N4": {
+       "success": 0.6,
+       "GRASP": 0.0,
+       "HANDOFF": 0.15,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.25,
+       "PHYSICS": 0.0
+      },
+      "N5": {
+       "success": 0.85,
+       "GRASP": 0.0,
+       "HANDOFF": 0.15,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N6": {
+       "success": 0.4,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.55,
+       "PHYSICS": 0.0
+      },
+      "K1": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K2": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K3": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K4": {
+       "success": 0.9,
+       "GRASP": 0.1,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K6": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      }
+     },
+     "atlas": {
+      "stages": {
+       "GRASP": {
+        "E": -0.025000000000000005,
+        "ci": [
+         -0.08333333333333333,
+         0.0
+        ],
+        "breaks": false
+       },
+       "HANDOFF": {
+        "E": 0.05416666666666667,
+        "ci": [
+         -0.016666666666666666,
+         0.16666666666666663
+        ],
+        "breaks": false
+       },
+       "TRANSPORT": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       },
+       "RELEASE": {
+        "E": 0.20833333333333334,
+        "ci": [
+         0.03333333333333333,
+         0.425
+        ],
+        "breaks": true
+       },
+       "PHYSICS": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "groups": {
+       "within": {
+        "E": 0.18333333333333335,
+        "ci": [
+         0.0,
+         0.3916666666666666
+        ],
+        "breaks": false
+       },
+       "cross": {
+        "E": 0.05416666666666667,
+        "ci": [
+         -0.016666666666666666,
+         0.16666666666666663
+        ],
+        "breaks": false
+       }
+      },
+      "verdict": "NEITHER"
+     },
+     "side": {
+      "episodes": 220,
+      "fired": 1.0,
+      "onset_oracle_held": 0.5863636363636363,
+      "onset_minus_oracle_median": 0.0,
+      "multiple_onsets": 0.07272727272727272,
+      "held_query_share": 0.3673064195896757,
+      "segmenter_iou": {
+       "agentview": {
+        "akita_black_bowl_1": 0.9633890775026274,
+        "cream_cheese_1": 0.9688372633619695,
+        "wine_bottle_1": 0.962525423133535,
+        "plate_1": 0.9888392883149761
+       },
+       "robot0_eye_in_hand": {
+        "akita_black_bowl_1": 0.9677596439699585,
+        "cream_cheese_1": 0.9851397660268504,
+        "wine_bottle_1": 0.987553958509383,
+        "plate_1": 0.9846920424672176
+       }
+      },
+      "paint": {
+       "agentview": {
+        "iou": 0.9787457030836274,
+        "active_leak": 0.0014394691988477602
+       },
+       "robot0_eye_in_hand": {
+        "iou": 0.9801289253705966,
+        "active_leak": 0.000921695456289756
+       }
+      }
+     }
+    },
+    "tvp": {
+     "success_new": [
+      0.925,
+      0.8,
+      1.0
+     ],
+     "success_known": [
+      0.99,
+      0.94,
+      1.0
+     ],
+     "per_task_success": {
+      "N1": 1.0,
+      "N2": 1.0,
+      "N3": 1.0,
+      "N4": 0.8,
+      "N5": 1.0,
+      "N6": 0.75,
+      "K1": 1.0,
+      "K2": 1.0,
+      "K3": 1.0,
+      "K4": 0.95,
+      "K6": 1.0
+     },
+     "stage_shares_new": {
+      "success": 0.9249999999999999,
+      "GRASP": 0.0,
+      "HANDOFF": 0.0,
+      "TRANSPORT": 0.0,
+      "RELEASE": 0.075,
+      "PHYSICS": 0.0
+     },
+     "grasp_ok_new": 1.0,
+     "cross_stage_share_new": 0.0,
+     "per_task_stages": {
+      "N1": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N2": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N3": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N4": {
+       "success": 0.8,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.2,
+       "PHYSICS": 0.0
+      },
+      "N5": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N6": {
+       "success": 0.75,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.25,
+       "PHYSICS": 0.0
+      },
+      "K1": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K2": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K3": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K4": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K6": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      }
+     },
+     "atlas": {
+      "stages": {
+       "GRASP": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       },
+       "HANDOFF": {
+        "E": -0.012500000000000002,
+        "ci": [
+         -0.049999999999999996,
+         0.0
+        ],
+        "breaks": false
+       },
+       "TRANSPORT": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       },
+       "RELEASE": {
+        "E": 0.075,
+        "ci": [
+         0.0,
+         0.19999999999999998
+        ],
+        "breaks": false
+       },
+       "PHYSICS": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "groups": {
+       "within": {
+        "E": 0.075,
+        "ci": [
+         0.0,
+         0.19999999999999998
+        ],
+        "breaks": false
+       },
+       "cross": {
+        "E": -0.012500000000000002,
+        "ci": [
+         -0.049999999999999996,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "verdict": "NEITHER"
+     },
+     "side": {
+      "episodes": 220,
+      "fired": 1.0,
+      "onset_oracle_held": 0.4772727272727273,
+      "onset_minus_oracle_median": -1.0,
+      "multiple_onsets": 0.15,
+      "held_query_share": 0.42971812581668845,
+      "segmenter_iou": {
+       "agentview": {
+        "akita_black_bowl_1": 0.9651372741131116,
+        "cream_cheese_1": 0.9681856998782774,
+        "wine_bottle_1": 0.9651469971511619,
+        "plate_1": 0.9888482305583255
+       },
+       "robot0_eye_in_hand": {
+        "akita_black_bowl_1": 0.9890949409115485,
+        "cream_cheese_1": 0.9861224322911983,
+        "wine_bottle_1": 0.9848930578246159,
+        "plate_1": 0.990947274676719
+       }
+      },
+      "paint": {
+       "agentview": {
+        "iou": 0.9791778661856945,
+        "active_leak": 0.0018663322955610945
+       },
+       "robot0_eye_in_hand": {
+        "iou": 0.9889209415946577,
+        "active_leak": 0.0010052282730398517
+       }
+      }
+     }
+    },
+    "w": {
+     "success_new": [
+      0.5416666666666666,
+      0.21666666666666667,
+      0.85
+     ],
+     "success_known": [
+      0.87,
+      0.61,
+      1.0
+     ],
+     "per_task_success": {
+      "N1": 0.65,
+      "N2": 0.85,
+      "N3": 0.7,
+      "N4": 0.0,
+      "N5": 1.0,
+      "N6": 0.05,
+      "K1": 0.95,
+      "K2": 1.0,
+      "K3": 0.95,
+      "K4": 1.0,
+      "K6": 0.45
+     },
+     "stage_shares_new": {
+      "success": 0.5416666666666666,
+      "GRASP": 0.03333333333333333,
+      "HANDOFF": 0.21666666666666667,
+      "TRANSPORT": 0.016666666666666666,
+      "RELEASE": 0.19166666666666665,
+      "PHYSICS": 0.0
+     },
+     "grasp_ok_new": 0.9666666666666667,
+     "cross_stage_share_new": 0.2333333333333333,
+     "per_task_stages": {
+      "N1": {
+       "success": 0.65,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.35,
+       "PHYSICS": 0.0
+      },
+      "N2": {
+       "success": 0.85,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.15,
+       "PHYSICS": 0.0
+      },
+      "N3": {
+       "success": 0.7,
+       "GRASP": 0.2,
+       "HANDOFF": 0.1,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N4": {
+       "success": 0.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.75,
+       "TRANSPORT": 0.1,
+       "RELEASE": 0.15,
+       "PHYSICS": 0.0
+      },
+      "N5": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N6": {
+       "success": 0.05,
+       "GRASP": 0.0,
+       "HANDOFF": 0.45,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.5,
+       "PHYSICS": 0.0
+      },
+      "K1": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.05,
+       "PHYSICS": 0.0
+      },
+      "K2": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K3": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K4": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K6": {
+       "success": 0.45,
+       "GRASP": 0.0,
+       "HANDOFF": 0.2,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.25,
+       "PHYSICS": 0.1
+      }
+     },
+     "atlas": {
+      "stages": {
+       "GRASP": {
+        "E": 0.03333333333333333,
+        "ci": [
+         0.0,
+         0.125
+        ],
+        "breaks": false
+       },
+       "HANDOFF": {
+        "E": 0.14583333333333334,
+        "ci": [
+         -0.075,
+         0.4416666666666666
+        ],
+        "breaks": false
+       },
+       "TRANSPORT": {
+        "E": 0.016666666666666666,
+        "ci": [
+         0.0,
+         0.075
+        ],
+        "breaks": false
+       },
+       "RELEASE": {
+        "E": 0.09999999999999999,
+        "ci": [
+         -0.05833333333333333,
+         0.2833333333333333
+        ],
+        "breaks": false
+       },
+       "PHYSICS": {
+        "E": -0.03333333333333333,
+        "ci": [
+         -0.09999999999999999,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "groups": {
+       "within": {
+        "E": 0.13333333333333333,
+        "ci": [
+         -0.008333333333333326,
+         0.3084374999999994
+        ],
+        "breaks": false
+       },
+       "cross": {
+        "E": 0.1625,
+        "ci": [
+         -0.075,
+         0.5
+        ],
+        "breaks": false
+       }
+      },
+      "verdict": "NEITHER"
+     },
+     "side": {
+      "episodes": 220,
+      "fired": 1.0,
+      "onset_oracle_held": 0.4954545454545455,
+      "onset_minus_oracle_median": 0.0,
+      "multiple_onsets": 0.37727272727272726,
+      "held_query_share": 0.3763729558213327
+     }
+    }
+   },
+   "deltas": {
+    "tv_minus_I": [
+     0.225,
+     -0.08333333333333333,
+     0.5333333333333333
+    ],
+    "tv_minus_w": [
+     0.18333333333333332,
+     -0.05,
+     0.45
+    ],
+    "tvp_minus_I": [
+     0.425,
+     0.13333333333333333,
+     0.7166666666666667
+    ],
+    "tvp_minus_tv": [
+     0.2,
+     0.05,
+     0.38333333333333336
+    ],
+    "w_minus_I": [
+     0.041666666666666664,
+     -0.43354166666666666,
+     0.4666666666666667
+    ],
+    "known": {
+     "tv_minus_I": [
+      -0.04,
+      -0.11,
+      0.0
+     ],
+     "tvp_minus_I": [
+      -0.01,
+      -0.06,
+      0.0
+     ],
+     "w_minus_I": [
+      -0.13,
+      -0.39,
+      0.0
+     ]
+    }
+   },
+   "verdicts": {
+    "primary": "NO CLEAR DIFFERENCE",
+    "acvla": "NO CLEAR DIFFERENCE"
+   },
+   "I_reproduces_pp_atlas_read": true
+  },
+  "groot": {
+   "arms": {
+    "I": {
+     "success_new": [
+      0.16666666666666666,
+      0.008333333333333333,
+      0.4166666666666667
+     ],
+     "success_known": [
+      0.98,
+      0.92,
+      1.0
+     ],
+     "per_task_success": {
+      "N1": 0.1,
+      "N2": 0.2,
+      "N3": 0.7,
+      "N4": 0.0,
+      "N5": 0.0,
+      "N6": 0.0,
+      "K1": 0.95,
+      "K2": 1.0,
+      "K3": 0.95,
+      "K4": 1.0,
+      "K6": 1.0
+     },
+     "stage_shares_new": {
+      "success": 0.16666666666666666,
+      "GRASP": 0.016666666666666666,
+      "HANDOFF": 0.39166666666666666,
+      "TRANSPORT": 0.041666666666666664,
+      "RELEASE": 0.3833333333333333,
+      "PHYSICS": 0.0
+     },
+     "grasp_ok_new": 0.9833333333333333,
+     "cross_stage_share_new": 0.43333333333333335,
+     "per_task_stages": {
+      "N1": {
+       "success": 0.1,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.9,
+       "PHYSICS": 0.0
+      },
+      "N2": {
+       "success": 0.2,
+       "GRASP": 0.0,
+       "HANDOFF": 0.8,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N3": {
+       "success": 0.7,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.2,
+       "RELEASE": 0.1,
+       "PHYSICS": 0.0
+      },
+      "N4": {
+       "success": 0.0,
+       "GRASP": 0.05,
+       "HANDOFF": 0.45,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.5,
+       "PHYSICS": 0.0
+      },
+      "N5": {
+       "success": 0.0,
+       "GRASP": 0.05,
+       "HANDOFF": 0.6,
+       "TRANSPORT": 0.05,
+       "RELEASE": 0.3,
+       "PHYSICS": 0.0
+      },
+      "N6": {
+       "success": 0.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.5,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.5,
+       "PHYSICS": 0.0
+      },
+      "K1": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.05,
+       "PHYSICS": 0.0
+      },
+      "K2": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K3": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K4": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K6": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      }
+     },
+     "atlas": {
+      "stages": {
+       "GRASP": {
+        "E": 0.016666666666666666,
+        "ci": [
+         0.0,
+         0.06666666666666667
+        ],
+        "breaks": false
+       },
+       "HANDOFF": {
+        "E": 0.3875,
+        "ci": [
+         0.13333333333333333,
+         0.65
+        ],
+        "breaks": true
+       },
+       "TRANSPORT": {
+        "E": 0.041666666666666664,
+        "ci": [
+         0.0,
+         0.13333333333333333
+        ],
+        "breaks": false
+       },
+       "RELEASE": {
+        "E": 0.375,
+        "ci": [
+         0.14166666666666666,
+         0.6416666666666667
+        ],
+        "breaks": true
+       },
+       "PHYSICS": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "groups": {
+       "within": {
+        "E": 0.39166666666666666,
+        "ci": [
+         0.15,
+         0.6626041666666661
+        ],
+        "breaks": true
+       },
+       "cross": {
+        "E": 0.4291666666666667,
+        "ci": [
+         0.1915625,
+         0.6666666666666666
+        ],
+        "breaks": true
+       }
+      },
+      "verdict": "BOTH"
+     },
+     "side": null
+    },
+    "tv": {
+     "success_new": [
+      0.4,
+      0.06666666666666667,
+      0.7333333333333333
+     ],
+     "success_known": [
+      0.95,
+      0.84,
+      1.0
+     ],
+     "per_task_success": {
+      "N1": 0.15,
+      "N2": 0.95,
+      "N3": 1.0,
+      "N4": 0.0,
+      "N5": 0.3,
+      "N6": 0.0,
+      "K1": 0.8,
+      "K2": 1.0,
+      "K3": 0.95,
+      "K4": 1.0,
+      "K6": 1.0
+     },
+     "stage_shares_new": {
+      "success": 0.3999999999999999,
+      "GRASP": 0.05833333333333334,
+      "HANDOFF": 0.26666666666666666,
+      "TRANSPORT": 0.024999999999999998,
+      "RELEASE": 0.25,
+      "PHYSICS": 0.0
+     },
+     "grasp_ok_new": 0.9416666666666667,
+     "cross_stage_share_new": 0.2916666666666667,
+     "per_task_stages": {
+      "N1": {
+       "success": 0.15,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.85,
+       "PHYSICS": 0.0
+      },
+      "N2": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N3": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N4": {
+       "success": 0.0,
+       "GRASP": 0.1,
+       "HANDOFF": 0.45,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.45,
+       "PHYSICS": 0.0
+      },
+      "N5": {
+       "success": 0.3,
+       "GRASP": 0.2,
+       "HANDOFF": 0.2,
+       "TRANSPORT": 0.15,
+       "RELEASE": 0.15,
+       "PHYSICS": 0.0
+      },
+      "N6": {
+       "success": 0.0,
+       "GRASP": 0.05,
+       "HANDOFF": 0.9,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.05,
+       "PHYSICS": 0.0
+      },
+      "K1": {
+       "success": 0.8,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.2,
+       "PHYSICS": 0.0
+      },
+      "K2": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K3": {
+       "success": 0.95,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K4": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K6": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      }
+     },
+     "atlas": {
+      "stages": {
+       "GRASP": {
+        "E": 0.05833333333333334,
+        "ci": [
+         0.0,
+         0.15
+        ],
+        "breaks": false
+       },
+       "HANDOFF": {
+        "E": 0.2625,
+        "ci": [
+         0.024999999999999998,
+         0.5459374999999995
+        ],
+        "breaks": true
+       },
+       "TRANSPORT": {
+        "E": 0.024999999999999998,
+        "ci": [
+         0.0,
+         0.10000000000000002
+        ],
+        "breaks": false
+       },
+       "RELEASE": {
+        "E": 0.21666666666666667,
+        "ci": [
+         0.025000000000000005,
+         0.4667708333333328
+        ],
+        "breaks": true
+       },
+       "PHYSICS": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "groups": {
+       "within": {
+        "E": 0.27499999999999997,
+        "ci": [
+         0.06666666666666667,
+         0.5333333333333333
+        ],
+        "breaks": true
+       },
+       "cross": {
+        "E": 0.28750000000000003,
+        "ci": [
+         0.04583333333333333,
+         0.5833333333333334
+        ],
+        "breaks": true
+       }
+      },
+      "verdict": "BOTH"
+     },
+     "side": {
+      "episodes": 220,
+      "fired": 0.9954545454545455,
+      "onset_oracle_held": 0.547945205479452,
+      "onset_minus_oracle_median": 0.0,
+      "multiple_onsets": 0.1318181818181818,
+      "held_query_share": 0.41019417475728154,
+      "segmenter_iou": {
+       "agentview": {
+        "akita_black_bowl_1": 0.9713944737083882,
+        "cream_cheese_1": 0.9704288791410038,
+        "wine_bottle_1": 0.9424576477969883,
+        "plate_1": 0.9896165546531985
+       },
+       "robot0_eye_in_hand": {
+        "akita_black_bowl_1": 0.9848704627207769,
+        "cream_cheese_1": 0.9489578561635919,
+        "wine_bottle_1": 0.9507522352753762,
+        "plate_1": 0.9721309667591704
+       }
+      },
+      "paint": {
+       "agentview": {
+        "iou": 0.9784244112773378,
+        "active_leak": 0.0007486454705614811
+       },
+       "robot0_eye_in_hand": {
+        "iou": 0.9639064058245973,
+        "active_leak": 0.0014223593304269456
+       }
+      }
+     }
+    },
+    "tvp": {
+     "success_new": [
+      0.16666666666666666,
+      0.016666666666666666,
+      0.35854166666666554
+     ],
+     "success_known": [
+      0.67,
+      0.31,
+      0.96
+     ],
+     "per_task_success": {
+      "N1": 0.1,
+      "N2": 0.1,
+      "N3": 0.55,
+      "N4": 0.0,
+      "N5": 0.25,
+      "N6": 0.0,
+      "K1": 0.8,
+      "K2": 1.0,
+      "K3": 0.55,
+      "K4": 0.0,
+      "K6": 1.0
+     },
+     "stage_shares_new": {
+      "success": 0.16666666666666666,
+      "GRASP": 0.025000000000000005,
+      "HANDOFF": 0.4583333333333333,
+      "TRANSPORT": 0.10833333333333334,
+      "RELEASE": 0.24166666666666667,
+      "PHYSICS": 0.0
+     },
+     "grasp_ok_new": 0.975,
+     "cross_stage_share_new": 0.5666666666666668,
+     "per_task_stages": {
+      "N1": {
+       "success": 0.1,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.9,
+       "PHYSICS": 0.0
+      },
+      "N2": {
+       "success": 0.1,
+       "GRASP": 0.0,
+       "HANDOFF": 0.9,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "N3": {
+       "success": 0.55,
+       "GRASP": 0.0,
+       "HANDOFF": 0.05,
+       "TRANSPORT": 0.35,
+       "RELEASE": 0.05,
+       "PHYSICS": 0.0
+      },
+      "N4": {
+       "success": 0.0,
+       "GRASP": 0.05,
+       "HANDOFF": 0.45,
+       "TRANSPORT": 0.2,
+       "RELEASE": 0.3,
+       "PHYSICS": 0.0
+      },
+      "N5": {
+       "success": 0.25,
+       "GRASP": 0.05,
+       "HANDOFF": 0.4,
+       "TRANSPORT": 0.1,
+       "RELEASE": 0.2,
+       "PHYSICS": 0.0
+      },
+      "N6": {
+       "success": 0.0,
+       "GRASP": 0.05,
+       "HANDOFF": 0.95,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K1": {
+       "success": 0.8,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.2,
+       "PHYSICS": 0.0
+      },
+      "K2": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K3": {
+       "success": 0.55,
+       "GRASP": 0.0,
+       "HANDOFF": 0.45,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K4": {
+       "success": 0.0,
+       "GRASP": 0.05,
+       "HANDOFF": 0.95,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K6": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      }
+     },
+     "atlas": {
+      "stages": {
+       "GRASP": {
+        "E": 0.012500000000000002,
+        "ci": [
+         0.0,
+         0.049999999999999996
+        ],
+        "breaks": false
+       },
+       "HANDOFF": {
+        "E": 0.18333333333333335,
+        "ci": [
+         -0.10416666666666667,
+         0.5166666666666667
+        ],
+        "breaks": false
+       },
+       "TRANSPORT": {
+        "E": 0.10833333333333334,
+        "ci": [
+         0.0,
+         0.25
+        ],
+        "breaks": false
+       },
+       "RELEASE": {
+        "E": 0.20833333333333334,
+        "ci": [
+         0.024999999999999998,
+         0.4666666666666666
+        ],
+        "breaks": true
+       },
+       "PHYSICS": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "groups": {
+       "within": {
+        "E": 0.22083333333333335,
+        "ci": [
+         0.03333333333333333,
+         0.4749999999999999
+        ],
+        "breaks": true
+       },
+       "cross": {
+        "E": 0.2916666666666667,
+        "ci": [
+         0.05833333333333333,
+         0.5708333333333333
+        ],
+        "breaks": true
+       }
+      },
+      "verdict": "BOTH"
+     },
+     "side": {
+      "episodes": 220,
+      "fired": 1.0,
+      "onset_oracle_held": 0.6636363636363637,
+      "onset_minus_oracle_median": 0.0,
+      "multiple_onsets": 0.33181818181818185,
+      "held_query_share": 0.4209070249975299,
+      "segmenter_iou": {
+       "agentview": {
+        "akita_black_bowl_1": 0.9707194999357267,
+        "cream_cheese_1": 0.9680604878616755,
+        "wine_bottle_1": 0.935586408425154,
+        "plate_1": 0.9896139411170117
+       },
+       "robot0_eye_in_hand": {
+        "akita_black_bowl_1": 0.9861017541993542,
+        "cream_cheese_1": 0.9607820238795493,
+        "wine_bottle_1": 0.9623937915194808,
+        "plate_1": 0.9847077902850999
+       }
+      },
+      "paint": {
+       "agentview": {
+        "iou": 0.9782454059654224,
+        "active_leak": 0.0008578762078682835
+       },
+       "robot0_eye_in_hand": {
+        "iou": 0.9724640944844613,
+        "active_leak": 0.0007195728656525577
+       }
+      }
+     }
+    },
+    "w": {
+     "success_new": [
+      0.15833333333333333,
+      0.041666666666666664,
+      0.31666666666666665
+     ],
+     "success_known": [
+      0.72,
+      0.49,
+      0.91
+     ],
+     "per_task_success": {
+      "N1": 0.15,
+      "N2": 0.45,
+      "N3": 0.1,
+      "N4": 0.1,
+      "N5": 0.15,
+      "N6": 0.0,
+      "K1": 0.65,
+      "K2": 0.85,
+      "K3": 1.0,
+      "K4": 0.75,
+      "K6": 0.35
+     },
+     "stage_shares_new": {
+      "success": 0.15833333333333333,
+      "GRASP": 0.016666666666666666,
+      "HANDOFF": 0.13333333333333333,
+      "TRANSPORT": 0.18333333333333335,
+      "RELEASE": 0.5083333333333333,
+      "PHYSICS": 0.0
+     },
+     "grasp_ok_new": 0.9833333333333333,
+     "cross_stage_share_new": 0.31666666666666665,
+     "per_task_stages": {
+      "N1": {
+       "success": 0.15,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.85,
+       "PHYSICS": 0.0
+      },
+      "N2": {
+       "success": 0.45,
+       "GRASP": 0.0,
+       "HANDOFF": 0.35,
+       "TRANSPORT": 0.1,
+       "RELEASE": 0.1,
+       "PHYSICS": 0.0
+      },
+      "N3": {
+       "success": 0.1,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.85,
+       "RELEASE": 0.05,
+       "PHYSICS": 0.0
+      },
+      "N4": {
+       "success": 0.1,
+       "GRASP": 0.05,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.05,
+       "RELEASE": 0.8,
+       "PHYSICS": 0.0
+      },
+      "N5": {
+       "success": 0.15,
+       "GRASP": 0.05,
+       "HANDOFF": 0.2,
+       "TRANSPORT": 0.1,
+       "RELEASE": 0.5,
+       "PHYSICS": 0.0
+      },
+      "N6": {
+       "success": 0.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.25,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.75,
+       "PHYSICS": 0.0
+      },
+      "K1": {
+       "success": 0.65,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.35,
+       "PHYSICS": 0.0
+      },
+      "K2": {
+       "success": 0.85,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.15,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K3": {
+       "success": 1.0,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.0,
+       "PHYSICS": 0.0
+      },
+      "K4": {
+       "success": 0.75,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.2,
+       "RELEASE": 0.05,
+       "PHYSICS": 0.0
+      },
+      "K6": {
+       "success": 0.35,
+       "GRASP": 0.0,
+       "HANDOFF": 0.0,
+       "TRANSPORT": 0.0,
+       "RELEASE": 0.65,
+       "PHYSICS": 0.0
+      }
+     },
+     "atlas": {
+      "stages": {
+       "GRASP": {
+        "E": 0.016666666666666666,
+        "ci": [
+         0.0,
+         0.06666666666666667
+        ],
+        "breaks": false
+       },
+       "HANDOFF": {
+        "E": 0.13333333333333333,
+        "ci": [
+         0.016666666666666666,
+         0.2916666666666667
+        ],
+        "breaks": true
+       },
+       "TRANSPORT": {
+        "E": 0.10833333333333334,
+        "ci": [
+         -0.10416666666666667,
+         0.42500000000000004
+        ],
+        "breaks": false
+       },
+       "RELEASE": {
+        "E": 0.22083333333333333,
+        "ci": [
+         -0.09166666666666667,
+         0.5291666666666667
+        ],
+        "breaks": false
+       },
+       "PHYSICS": {
+        "E": 0.0,
+        "ci": [
+         0.0,
+         0.0
+        ],
+        "breaks": false
+       }
+      },
+      "groups": {
+       "within": {
+        "E": 0.23749999999999996,
+        "ci": [
+         -0.08749999999999998,
+         0.55
+        ],
+        "breaks": false
+       },
+       "cross": {
+        "E": 0.24166666666666667,
+        "ci": [
+         -0.00010416666666666297,
+         0.5291666666666667
+        ],
+        "breaks": false
+       }
+      },
+      "verdict": "NEITHER"
+     },
+     "side": {
+      "episodes": 220,
+      "fired": 1.0,
+      "onset_oracle_held": 0.55,
+      "onset_minus_oracle_median": 0.0,
+      "multiple_onsets": 0.33181818181818185,
+      "held_query_share": 0.3915037893897088
+     }
+    }
+   },
+   "deltas": {
+    "tv_minus_I": [
+     0.23333333333333334,
+     0.025,
+     0.4666666666666667
+    ],
+    "tv_minus_w": [
+     0.24166666666666667,
+     -0.025,
+     0.55
+    ],
+    "tvp_minus_I": [
+     0.0,
+     -0.13333333333333333,
+     0.14166666666666666
+    ],
+    "tvp_minus_tv": [
+     -0.23333333333333334,
+     -0.5083333333333333,
+     0.0
+    ],
+    "w_minus_I": [
+     -0.008333333333333333,
+     -0.2833333333333333,
+     0.20833333333333334
+    ],
+    "known": {
+     "tv_minus_I": [
+      -0.03,
+      -0.14,
+      0.04
+     ],
+     "tvp_minus_I": [
+      -0.31,
+      -0.68,
+      -0.02
+     ],
+     "w_minus_I": [
+      -0.26,
+      -0.5,
+      -0.06
+     ]
+    }
+   },
+   "verdicts": {
+    "primary": "TV WINS",
+    "acvla": "NO CLEAR DIFFERENCE"
+   },
+   "I_reproduces_pp_atlas_read": true
+  }
+ }
+}

@@ -1980,3 +1980,86 @@ The F7R front end: a template parser plus the learned segmenter resolves the rel
 - **fam (descriptive).** pi0.5 succeeds .80-.90 even with the plate and most of the bowl covered: it acts from the habitual layout. GR00T's fam pattern matches its disp pattern.
 - **Prediction:** wrong on the verdict (PARTIAL, not MEMORY ABSENT, on both). Right that b ≈ c and a ≈ d. Wrong on where failures go: the training spot gets 0 disp failures, not most of them.
 - **Reading.** With the view confound removed (d − b) and the disc's appearance controlled (a − d ≈ 0), both VLAs lose .50-.60 of their success when the plate is occluded after one view. Their success is then the same as when the plate was never seen. That is the memory-absent pattern, but at n = 20 the registered equivalence bound is not met, so F6 is not confirmed as registered. A larger-n rerun of b and c on disp would settle the bound.
+
+## 46. Test-time role views on frozen VLAs (m3_prereg tv_frozen, ledger row at 50c81ed0, written before any main rollout; read job 4699065; results/flawed/tv_frozen_read.json, rollouts results/flawed/tv_frozen)
+
+**Question.** ARCHITECTURE_PROPOSAL §4 has two open gaps: R2, retrained on 8 tasks, trails frozen pi0.5 (.425 against .50), and R2 is not separated from an AC-VLA-style whole-wrist mask (§37.2). F7R (§45.2) showed frozen VLAs act on silhouette-painted views. So the role sequencer and the role views go in front of the frozen models themselves, with no retraining.
+
+**System** (`experiments/tv_frozen.py`). It wraps the break atlas's harness unchanged: the same server (`pp_serve_purify --mode intact`, seed 13), client, n2 states, branches and oracle track.
+- **Role sequencer.** ProprioHeld with sc_rv's lex threshold (the detector R1, R2 and R2w use), stepped on every env step from finger width, the last gripper command and hand height. The view follows its current state, as R2's server does: it returns to the object phase if a hold ends.
+- **tv.** R2's rule (`sc_rv.role_paint`) with sc_seg's learned masks in both cameras. Object phase: every movable object except the task's object is a magenta silhouette. Target phase: every movable except the target is painted, the held object included (all four when the target is a fixture). The prompt is unchanged.
+- **tvp.** tv plus R1's role phrases ("object: the cream cheese" / "target: the plate"), switched by the same detector.
+- **w.** AC-VLA-style: the whole wrist image is grey 128 while the detector is on. No silhouettes, prompt unchanged.
+- **I.** The atlas's intact rollouts (results/flawed/pp_atlas), on the same states, branches, seeds and flags. The read's I-arm atlas excess reproduces pp_atlas_read.json exactly on both models.
+
+The simulator is read only for diagnostics, never for the paint, the prompt or the hold.
+
+**Mapping.** Per model, familiar layout, states 4-23. Paired bootstrap over (task, state), B = 2000, tasks and states drawn jointly.
+- **Primary, tv − I on N1-N6:** TV WINS iff d > .10 and the lower bound is > 0; TV LOSES iff the upper bound is < −.10; otherwise NO CLEAR DIFFERENCE.
+- **tv − w:** same rule; a win reads SEPARATED FROM AC-VLA.
+
+**Seen before registration.** A pi0.5 smoke on states 0-3 (N1, N4, K1, all three arms; job 4677916), disclosed in the row. Nothing changed after it.
+
+**Result.**
+
+| N1-N6 familiar | pi0.5 | GR00T |
+|---|---|---|
+| I (intact) | .500 | .167 |
+| tv | .725 | .400 |
+| tvp | **.925** | .167 |
+| w | .542 | .158 |
+| **tv − I (primary)** | +.225 [−.083, +.533]: **NO CLEAR DIFFERENCE** | +.233 [+.025, +.467]: **TV WINS** |
+| **tv − w** | +.183 [−.050, +.450]: **NO CLEAR DIFFERENCE** | +.242 [−.025, +.550]: **NO CLEAR DIFFERENCE** |
+| tvp − I (no verdict) | +.425 [+.133, +.717] | +.000 [−.133, +.142] |
+| tvp − tv (no verdict) | +.200 [+.050, +.383] | −.233 [−.508, .000] |
+| w − I (no verdict) | +.042 [−.434, +.467] | −.008 [−.283, +.208] |
+
+**Known tasks K1-K4, K6 (cost, no verdict).**
+
+| arm | pi0.5 | arm − I | GR00T | arm − I |
+|---|---|---|---|---|
+| I | 1.00 | | .98 | |
+| tv | .96 | −.04 [−.11, .00] | .95 | −.03 [−.14, +.04] |
+| tvp | .99 | −.01 [−.06, .00] | .67 | −.31 [−.68, −.02] |
+| w | .87 | −.13 [−.39, .00] | .72 | −.26 [−.50, −.06] |
+
+**The atlas's excess per arm** (familiar, N1-N6 against their partners; E [CI] and verdict).
+
+| arm | pi0.5 within | pi0.5 cross | verdict | GR00T within | GR00T cross | verdict |
+|---|---|---|---|---|---|---|
+| I | +.175 [.05, .33] | +.325 [.13, .53] | BOTH | +.392 [.15, .66] | +.429 [.19, .67] | BOTH |
+| tv | +.183 [.00, .39] | +.054 [−.02, +.17] | NEITHER | +.275 [.07, .53] | +.288 [.05, .58] | BOTH |
+| tvp | +.075 [.00, .20] | −.013 [−.05, .00] | NEITHER | +.221 [.03, .48] | +.292 [.06, .57] | BOTH |
+| w | +.133 [−.01, .31] | +.163 [−.08, +.50] | NEITHER | +.237 [−.09, .55] | +.242 [.00, .53] | NEITHER |
+
+Share of N1-N6 episodes ending at HANDOFF or TRANSPORT: pi0.5 I .325, tv .067, tvp .000, w .233; GR00T I .433, tv .292, tvp .567, w .317.
+
+**Perception and sequencer (no verdict).**
+- Segmenter IoU against the simulator: .94-.99 per object and camera. The lowest is GR00T's wine bottle, .94 agentview and .95 wrist.
+- Paint IoU .96-.99; the active object's pixels painted ≤ .002.
+- The detector fired in 99.5-100% of episodes, with first onsets at the oracle Held's onset to the median step. It fired more than once in 7-38% of episodes.
+
+**My predictions.**
+- pi0.5 NO CLEAR DIFFERENCE (50%): right. The point gain (+.225) is larger than I expected.
+- GR00T TV WINS (40%): right.
+- tv − w NO CLEAR DIFFERENCE on both: right.
+- Lower cross-chunk excess under tv on both: right on pi0.5 (+.325 → +.054), small on GR00T (+.429 → +.288, still BOTH).
+- K-task cost within .10 under tv: right on both.
+
+**Reading.**
+- **Frozen VLAs.** Painted with learned masks at test time, role views raise new-pairing success on both frozen VLAs. They carry pi0.5 from .50 to .725 and GR00T from .167 to .40. The registered win holds on GR00T only; pi0.5's interval crosses 0.
+- **Role phrases on pi0.5.** Adding R1's phrases brings pi0.5 to .925 with no measurable known-task cost (.99), and its cross-chunk excess falls to zero. So the first gap in ARCHITECTURE_PROPOSAL §4 closes on pi0.5 without training: the frozen model plus the structural front end beats the frozen model alone, +.425 [+.133, +.717]. That arm carries no registered verdict, so it is a descriptive result.
+- **Role phrases on GR00T.** GR00T cannot use the phrases: tvp drops to .167 on new pairings and to .67 on known tasks. The phrase format is out of its prompt distribution, so the role-phrase part does not transfer across models as worded.
+- **AC-VLA control.** The second gap stays open. tv − w is +.18 and +.24 on the two models, and both intervals cross 0, the same pattern as R2 − R2w (§37.2).
+- **The grey wrist mask** buys nothing on new pairings (w − I ≈ 0) and costs known tasks (−.13, −.26). On these two VLAs, hiding the wrist view while holding does not remove F1, and the silhouette view does not clearly beat it.
+
+**Deviations.**
+- pi0.5 tvp and w were preempted on overcap and requeued, and finished tasks were skipped. After all 11 pi0.5 tvp outputs existed, its requeued job (4697127) was cancelled.
+- GR00T tv, tvp and w moved to tail-lab (jobs 4697522, 4697523, 4697595), and the read was re-chained (final 4699065). Their main jobs started after the prereg row was verified, but the afterok link to the prereg job (4697120) was lost for them because slurm no longer held that job.
+- The ledger row carries dirty=true: other agents' files were uncommitted in the tree.
+
+**Limits.**
+- One scene, 20 states, six pairings.
+- The depth-free learned segmenter was trained on K1-K8 renders of this scene.
+- The detector threshold was fitted on demos.
+- Entity names for the class-to-entity map come from the env, as in R2l.
