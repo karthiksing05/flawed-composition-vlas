@@ -1820,3 +1820,21 @@ N1-N6, familiar layout:
 | GR00T | .95 | .00 | .65 | .00 | .00 |
 
 Hiding the plate breaks both VLAs in the familiar layout too, so these numbers cannot separate memory from an out-of-distribution view (as registered). fx_read's own F6 label prints NO POWER; it is not read as a verdict.
+
+### 45.2 F7R read (fxr_read job 4675350, main states 4-23; m3_prereg fx_r; results/flawed/fx_r_read_main.json)
+
+The F7R front end: a template parser plus the learned segmenter resolves the relation to one bowl, the prompt names that bowl alone, and the other bowl is painted as a role-view silhouette in both cameras. The policies stay frozen.
+
+**F7R GENERAL: FIXED on 3 of 4 cells, as predicted.**
+
+| model, family | R relational | R F7R | delta [CI] | C F7R [CI] | R name only | R oracle referent | verdict |
+|---|---|---|---|---|---|---|---|
+| pi0.5 SP | .40 | 1.00 | +.60 [+.525, +.70] | 1.00 [1.00, 1.00] | .40 | 1.00 | FIXED |
+| pi0.5 NG | .20 | .775 | +.575 [+.425, +.70] | .946 [.868, 1.00] | .50 | .775 | FIXED |
+| GR00T SP | .30 | .85 | +.55 [+.40, +.70] | .895 [.795, .974] | .25 | .85 | FIXED |
+| GR00T NG | .475 | .50 | +.025 [.00, +.075] | .75 [.645, .88] | .50 | .50 | NOT FIXED |
+
+- **The resolver is exact:** 160 of 160 episodes resolved the right bowl; F7R − oracle = 0 on every cell; median xy centre error .023 m. Paint IoU .92-.96 (agentview), .95-.97 (wrist); referent leak ≤ .007.
+- **The role view carries the fix.** Renaming alone gives nothing on SP (pi0.5 +.00, GR00T −.05) and half the gain on pi0.5 NG (.20 → .50). F7R − name is +.60 / +.275 / +.60 on the three FIXED cells.
+- **GR00T NG is capped by GR00T.** F7R raises its referent choice from .49 to .75, yet success stays at .50, equal to its own unique-name control (U = .50: it grasps the cream cheese with the plate bowl alone). No front end can exceed U.
+- F7 therefore meets all three architecture-rooted criteria on 3 of 4 cells: the information is present (U, references), the failure holds on two current VLAs, and a structural change that adds no information (a symbolic resolver over the instruction plus the learned segmenter's masks) removes it.

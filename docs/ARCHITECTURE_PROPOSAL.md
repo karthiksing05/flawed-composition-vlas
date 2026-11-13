@@ -22,7 +22,7 @@ A VLA keeps its perception and its motor prior. Four structural parts route info
 1. **Role sequencer.** A proprioceptive hold event splits each task into an object phase and a target phase.
 2. **Role phrases.** The prompt names only the active role.
 3. **Role views.** Every non-active movable object is painted as a silhouette in both cameras, from a learned segmenter. Identity is hidden; shape and geometry stay.
-4. **Referent resolver.** A relation in the instruction is resolved to one entity mask before the policy sees it. PENDING: F7R.
+4. **Referent resolver.** A relation in the instruction is resolved to one entity mask before the policy sees it; the other candidate is painted as a role view. Vetted on 2 relation families (SR §45.2). It covers fixed templates only.
 
 The same principles in their strongest form give the **hand-over variant**: the VLA acts until the hold event, then an object-blind parts policy places, reading learned perception.
 
@@ -38,7 +38,7 @@ The same principles in their strongest form give the **hand-over variant**: the 
 | role vocabulary for parsing | Q2-N (SR §42.1) | role rungs parse 5/6 new-pairing demos; plain cannot | PARSES NEW |
 | hand-over, learned perception | HP − intact (SR §44.1) | GR00T .17 → .84; pi0.5 .50 → .85 [+.017, +.675] | GR00T BEATS THE VLA; pi0.5 NOT SHOWN |
 | parts policy alone, learned masks | PU-L (SR §40.1) | .881 on new pairings | HOLDS against simulator masks |
-| referent resolver | F7R | PENDING | |
+| referent resolver + role view | F7R − relational (SR §45.2) | pi0.5 SP .40 → 1.00, NG .20 → .775; GR00T SP .30 → .85; GR00T NG capped by its own unique-name control (.50) | FIXED on 3 of 4 cells; resolver 160/160 |
 
 ## 4. What the vetting does not yet support
 
