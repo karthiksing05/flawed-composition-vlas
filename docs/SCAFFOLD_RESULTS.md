@@ -1887,3 +1887,48 @@ The F7R front end: a template parser plus the learned segmenter resolves the rel
 - **The NG gains come from the wording, not from the role view.** All three models succeed on "not on the plate" (the table bowl, 1.0 under f7r) and on no "on the plate" episode (0 of 60). The name-only prompt alone already gives .50 on pi0 and X-VLA and .40 on SmolVLA. C(F7R) stays at .51-.56 because the models never grasp the plate bowl, painted distractor or not. This is GR00T NG's ceiling (45.2): no front end can exceed a unique-name control the policy fails.
 - **X-VLA SP and SmolVLA SP have no power.** These models cannot do the unique-name SP task (U .10 and .05), so the cell does not test F7R.
 - Reading: on all five VLAs the relational word is ignored wherever there is power to see it (F7 on 7 of 8 powered cells, counting 45.1). The structural fix transfers only as far as each policy's unique-name competence reaches. On pi0, X-VLA and SmolVLA that competence is limited to the left bowl and the table bowl, so F7R's registered FIXED (3 of 4 on pi0.5 / GR00T) does not generalise to these three models.
+
+### 45.4 F7R with every distractor painted (m3_prereg fx_ra, commit 50c81ed0; read job 4697125, main states 4-23; results/flawed/fx_ra_read_main.json)
+
+**Protocol.** F7R as built (45.2) paints only the other bowl. docs/ARCHITECTURE_PROPOSAL.md specifies a role view that paints every non-active movable object. This test runs that form on the cells where F7R failed (experiments/fx_ra.py).
+- **f7rA:** F7R unchanged (parser, resolver, unique-name prompt, the tracked distractor-bowl paint). In addition, every pixel the learned segmenter labels as cream cheese, wine bottle or plate is painted magenta in both cameras from step WAIT on.
+  - The plate is spared only when it is the instruction's target (SP). On NG, every movable object except the referent is painted.
+- **uniA:** F7's unique-name controls (the other bowl removed) with the same object paint. This measures whether paint-all lifts the named-referent ceiling that capped F7R.
+- **Cells:** NG on all five models; SP on pi0 and GR00T. Each model is served as in fx and fx_more.
+- **Mapping:** delta = R(f7rA) − R(relational), paired over states, B = 2,000.
+  - NO POWER iff the fx reference < .60 (U is not gated);
+  - FIXED iff delta > .10 with lower bound > 0, and C(f7rA)'s lower bound > .75;
+  - NOT FIXED iff delta's upper bound < .10;
+  - otherwise PARTIAL.
+- **Ceiling:** ceil = U(uniA) − U(original unique-name control). CEILING LIFTED iff ceil > .10 with lower bound > 0; CEILING HOLDS iff its upper bound < .10; otherwise UNRESOLVED.
+- **Prediction:** FIXED on pi0.5 NG and GR00T SP; PARTIAL on the other five; ceiling LIFTED on GR00T NG only.
+- **Seen before registration:** a GR00T NG smoke on states 0-3 (NOT FIXED, CEILING HOLDS at n = 4). It was read after the prediction was written; nothing changed after it.
+
+**Paint-all fixes nothing F7R did not already fix. FIXED on 1 of 7 cells (pi0.5 NG); the ceiling is lifted on 0 of 7.**
+
+| model, family | U | uniA | R relational | R F7R | R f7rA | delta [CI] | C(f7rA) [CI] | ceil [CI] | f7rA − F7R [CI] | verdict | ceiling |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| pi0.5 NG | .825 | .925 | .20 | .775 | .725 | +.525 [+.375, +.675] | 1.00 [1.00, 1.00] | +.10 [.00, +.225] | −.05 [−.20, +.125] | FIXED | UNRESOLVED |
+| GR00T NG | .50 | .575 | .475 | .50 | .50 | +.025 [.00, +.075] | .645 [.571, .741] | +.075 [.00, +.15] | .00 [.00, .00] | NOT FIXED | UNRESOLVED |
+| GR00T SP | .825 | .875 | .30 | .85 | .675 | +.375 [+.225, +.50] | .825 [.725, .925] | +.05 [−.15, +.225] | −.175 [−.30, −.05] | PARTIAL | UNRESOLVED |
+| pi0 NG | .50 | .50 | .20 | .50 | .475 | +.275 [+.15, +.375] | .541 [.50, .588] | .00 [.00, .00] | −.025 [−.075, .00] | PARTIAL | HOLDS |
+| pi0 SP | .65 | .675 | .225 | .425 | .50 | +.275 [+.074, +.50] | .75 [.65, .851] | +.025 [−.125, +.175] | +.075 [−.075, +.225] | PARTIAL | UNRESOLVED |
+| X-VLA NG | .55 | .575 | .00 | .50 | .50 | +.50 [+.50, +.50] | .571 [.526, .645] | +.025 [−.05, +.10] | .00 [.00, .00] | PARTIAL | UNRESOLVED |
+| SmolVLA NG | .50 | .50 | .025 | .50 | .50 | +.475 [+.425, +.50] | .50 [.50, .50] | .00 [.00, .00] | .00 [.00, .00] | PARTIAL | HOLDS |
+
+- **Painting the cream cheese removes the cheese grasp but does not redirect the grasp to the plate bowl.** Plate-bowl unique-name success (uniP), and what was grasped over both unique-name tasks, unpainted → uniA:
+  - pi0: .00 → .00; cheese grasps 14 → 3, nothing grasped 6 → 15;
+  - SmolVLA: .00 → .00; cheese 7 → 0, nothing 13 → 20;
+  - GR00T: .00 → .15; cheese 7 → 8;
+  - X-VLA: .10 → .15;
+  - pi0.5: .65 → .90.
+  The cheese was not the only obstacle: with it gone, these policies still do not take a bowl sitting on a plate.
+- **f7rA = F7R to within .05 on every NG cell.** No relational "on the plate" episode succeeded under f7rA on any model except pi0.5 (.50, against .55 under F7R).
+- **Paint-all costs GR00T SP.** It moves the cell from FIXED under F7R (.85) to PARTIAL (.675). f7rA − F7R is −.175 [−.30, −.05]; the relL success drops from 1.00 to .70. On pi0 SP paint-all adds +.075 [−.075, +.225] and leaves C at .75, still at the FIXED bar rather than above it.
+- **Resolver and paint quality.**
+  - The resolver was correct on 280 of 280 episodes.
+  - Agentview IoU for cheese, bottle and plate is .95-.99; the wrist IoU for cheese and plate is .90-.99.
+  - The wrist wine-bottle class over-labels: under f7rA on NG its IoU is .11-.16 for pi0.5, GR00T and pi0 (.61 X-VLA, .87 SmolVLA), with recall ≥ .97. So extra wrist pixels are painted, but nothing true is missed.
+  - Referent leak is ≤ .023 in every cell.
+- **Prediction:** right on pi0.5 NG, pi0 SP and the PARTIAL NG cells. Wrong on GR00T SP (PARTIAL, not FIXED), GR00T NG (NOT FIXED, not PARTIAL) and GR00T's ceiling (UNRESOLVED, not LIFTED).
+- **Reading.** The named-referent ceiling of 45.2-45.3 is not a distractor-routing failure: removing every competing object's identity from the image does not make pi0, X-VLA, SmolVLA or GR00T pick up a bowl from a plate. It is a scene habit of the policy, which the proposal's role views cannot reach. ARCHITECTURE_PROPOSAL §4's limit therefore stands with the role view in its specified form, and on GR00T SP painting more objects costs success.
