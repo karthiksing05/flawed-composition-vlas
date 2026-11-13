@@ -78,7 +78,7 @@ No class meets all three criteria. F1 comes closest.
 |---|---|---|---|---|
 | F1 | MET | MET across models: cross-chunk break on 4 of 5 VLAs, replicated on fresh states (4 of 4); UNTESTED for more data | MET in the familiar layout (R2, HP; SR §37.2, §44.1) | All three met within one scene; data scaling open |
 | F2 | MET | MET on pi0 and SmolVLA (GRASP E +.65 / +.83 fresh), UNMET on pi0.5 and GR00T | MET on our retrain (R1) | Model-dependent: architecture-rooted on two of five VLAs |
-| F6 | UNTESTED: hiding the plate breaks both VLAs with no memory needed (SR §45.1) | — | — | Open; needs a physical-occluder design |
+| F6 | MET on the displaced layout with a physical occluder (SR §45.5): one view of the plate, then a cover; the references reach .78-.98, the matched disc-appears control (d) keeps pi0.5 at 1.00 and GR00T at .70 | Pattern on both pi0.5 and GR00T: hiding the plate after one view costs .50 / .60 (d − b, lower bounds +.30 / +.40), and b equals never-seen c within .05; registered verdict PARTIAL on both, because the b − c equivalence bound (+.25 / +.20) misses .10 at n = 20 | UNTESTED | Memory-absent pattern, not yet at the registered equivalence bound; b and c are upper bounds (the plate leaks back into view on 36-56% of later queries) |
 | F7 | MET: unique-name controls .825-1.00, references .93-1.00 (SR §45.1) | MET on pi0.5 (both families) and GR00T (SP): the relational choice equals the ambiguous choice on 92-100% of states | MET: F7R (symbolic resolver + learned-segmenter role view, no new information) FIXED on 3 of 4 cells, resolver 160/160 (SR §45.2) | All three met on 3 of 4 cells; GR00T NG capped by its own unique-name control |
 | F7P | negation (LIBERO-PRO): trained .95, negated 0/20 on both | — | UNTESTED | Descriptive |
 

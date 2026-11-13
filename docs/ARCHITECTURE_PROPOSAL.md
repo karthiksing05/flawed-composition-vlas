@@ -11,7 +11,7 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
 | F4: a new pairing cannot be written as parts | parse | no role vocabulary: retrieval returns trained wholes |
 | F7: relations are ignored (GENERAL, SR §45.1: 3 of 4 model-family cells; the relational choice equals the ambiguous choice on 92-100% of states) | referent choice | no step that turns a relation into one entity |
 | F3: new layouts fail at the grasp | grasp | reachability as measured: a planner with exact positions fails the same states; not architectural |
-| F6: memory (descriptive, SR §45.1) | | the test as built cannot separate memory from an out-of-distribution view |
+| F6: memory (PARTIAL on both pi0.5 and GR00T, SR §45.5): one view of the plate, then a physical cover, costs .50-.60, and success equals the never-seen control within .05; the equivalence bound misses at n = 20 | transport and release toward a target that is out of view | no state that holds an entity's position once it leaves view; untested fix: a role-view slot keeps the last seen target mask |
 
 **Ruled out as causes:** action chunk length, release timing, and the partner-count law.
 
