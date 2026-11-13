@@ -82,7 +82,14 @@ No class meets all three criteria. F1 comes closest.
 | F7 | MET: unique-name controls .825-1.00, references .93-1.00 (SR §45.1) | MET on pi0.5 (both families) and GR00T (SP): the relational choice equals the ambiguous choice on 92-100% of states | MET: F7R (symbolic resolver + learned-segmenter role view, no new information) FIXED on 3 of 4 cells, resolver 160/160 (SR §45.2) | All three met on 3 of 4 cells; GR00T NG capped by its own unique-name control |
 | F7P | negation (LIBERO-PRO): trained .95, negated 0/20 on both | — | UNTESTED | Descriptive |
 
-F7 is the cleanest architecture-rooted failure in the record: the same frozen VLAs that succeed when the referent is named fail when it is described, and a structural front end that adds no information removes the failure.
+F7 is the cleanest architecture-rooted failure in the record: the same frozen VLAs that succeed when the referent is named fail when it is described, and a structural front end that adds no information removes the failure on pi0.5 and GR00T.
+
+**Extension to pi0, X-VLA, SmolVLA (SR §45.3, m3_prereg fx_more).**
+- **F7 EXTENDS** (RELATION IGNORED on 4 of 6 cells; X-VLA SP and SmolVLA SP are NO POWER, U .10 / .05). The relational choice equals the ambiguous choice on 75-100% of states. F7 now holds on 5 of 5 VLAs on at least one family.
+- **F7R DOES NOT EXTEND** (0 of 6 FIXED). The resolver is exact (240/240), so the limit sits in the policies:
+  - On NG every model, given the plate bowl alone by name, succeeds on 0 of 20 (pi0 and SmolVLA grasp the cream cheese, as GR00T did). F7R reaches that ceiling (.50) on all three, and the name-only prompt already gets there.
+  - pi0 SP is the one cell where the role view helps (F7R − name +.225), PARTIAL only on C's lower bound (.725 against .75).
+- **Reading.** F7R fixes the relation step wherever the policy can act on a named referent. Where it cannot, the remaining failure is the scene habit (F2: the plate bowl's habitual partner, or the cheese, wins), which neither naming nor painting the distractor removes. F7's criterion 3 is MET on 3 of 10 cells and capped by F2 on the rest.
 
 ## 2. Ruled-out causes
 

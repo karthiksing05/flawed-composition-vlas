@@ -38,7 +38,7 @@ The same principles in their strongest form give the **hand-over variant**: the 
 | role vocabulary for parsing | Q2-N (SR §42.1) | role rungs parse 5/6 new-pairing demos; plain cannot | PARSES NEW |
 | hand-over, learned perception | HP − intact (SR §44.1) | GR00T .17 → .84; pi0.5 .50 → .85 [+.017, +.675] | GR00T BEATS THE VLA; pi0.5 NOT SHOWN |
 | parts policy alone, learned masks | PU-L (SR §40.1) | .881 on new pairings | HOLDS against simulator masks |
-| referent resolver + role view | F7R − relational (SR §45.2) | pi0.5 SP .40 → 1.00, NG .20 → .775; GR00T SP .30 → .85; GR00T NG capped by its own unique-name control (.50) | FIXED on 3 of 4 cells; resolver 160/160 |
+| referent resolver + role view | F7R − relational (SR §45.2) | pi0.5 SP .40 → 1.00, NG .20 → .775; GR00T SP .30 → .85; GR00T NG capped by its own unique-name control (.50) | FIXED on 3 of 4 cells; resolver 160/160. On pi0, X-VLA, SmolVLA 0 of 6 FIXED, capped by each model's named-referent ceiling (SR §45.3) |
 
 ## 4. What the vetting does not yet support
 
@@ -46,5 +46,5 @@ The same principles in their strongest form give the **hand-over variant**: the 
 - **R2 is not separated from AC-VLA-style masking.**
 - **The hand-over variant overlaps ReGuide and LiLo-VLA** (reports/novelty_check_failure_atlas.md).
 - **Everything rests on one scene,** with one seed per rung. The failure atlas replicates on 20 fresh states (F1 on 4 of 4 models, F2 on 2 of 2; ARCH_FAILURES "Fresh-state replication"); the fix rungs have not been re-run on fresh states.
-- **F7 and F7R cover two frozen VLAs** and two relation families over fixed templates.
+- **F7R fixes only where the policy can act on a named referent.** On pi0, X-VLA and SmolVLA it is FIXED on 0 of 6 cells (SR §45.3): the resolver is exact (240/240), but the models fail the named plate bowl outright (0/20 each), so the front end reaches each model's own ceiling and stops. Two of the four parts (role views, referent resolver) remove routing failures; neither removes a scene habit the policy holds when the referent is named. The referent resolver covers fixed templates only.
 - **New layouts are unsolved by every system.**
