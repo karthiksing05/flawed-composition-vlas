@@ -9,9 +9,9 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
 | F1: the held object picks the destination (4 of 5 models) | hold and release, after a correct grasp | the place reads the held object's identity, which the task does not need |
 | F2: the habitual object is grasped (pi0, SmolVLA) | grasp | the instruction's object role loses to the scene's habit |
 | F4: a new pairing cannot be written as parts | parse | no role vocabulary: retrieval returns trained wholes |
-| F7: relations are ignored (PENDING, §45) | referent choice | no step that turns a relation into one entity |
+| F7: relations are ignored (GENERAL, SR §45.1: 3 of 4 model-family cells; the relational choice equals the ambiguous choice on 92-100% of states) | referent choice | no step that turns a relation into one entity |
 | F3: new layouts fail at the grasp | grasp | reachability as measured: a planner with exact positions fails the same states; not architectural |
-| F6: memory (descriptive, §45) | | the test as built cannot separate memory from an out-of-distribution view |
+| F6: memory (descriptive, SR §45.1) | | the test as built cannot separate memory from an out-of-distribution view |
 
 **Ruled out as causes:** action chunk length, release timing, and the partner-count law.
 
