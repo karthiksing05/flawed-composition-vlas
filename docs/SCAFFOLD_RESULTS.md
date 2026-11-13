@@ -1794,3 +1794,29 @@ N1-N6, familiar layout:
 
 **Seen before registration.** Smoke, states 0-3: C = .50 and both-right = .00 for both models and families.
 
+
+### 45.1 FX read (fx_read job 4674971, main states 4-23, 20 per cell; results/flawed/fx_read_main.json)
+
+**F7: GENERAL, as predicted.** RELATION IGNORED on 3 of 4 model-family cells; GR00T NG reads PARTIAL.
+
+| model, family | U (unique name) | R (relational) | C (referent share) [CI] | relational choice = ambiguous choice | reference | verdict |
+|---|---|---|---|---|---|---|
+| pi0.5 SP | 1.00 | .40 [.30, .48] | .475 [.425, .50] | .925 | .95 | RELATION IGNORED |
+| pi0.5 NG | .825 | .20 [.10, .30] | .50 [.50, .50] | 1.00 | .99 | RELATION IGNORED |
+| GR00T SP | .825 | .30 [.20, .40] | .50 [.46, .54] | 1.00 | .95 | RELATION IGNORED |
+| GR00T NG | .50 | .475 [.425, .50] | .49 [.46, .50] | 1.00 | .99 | PARTIAL |
+
+- Both VLAs take the same bowl whatever the relation says: on every cell the relational choice matches the ambiguous instruction's choice on 92.5-100% of states, and C sits at .5.
+- The information is present: with the other bowl removed both models succeed (U .825-1.00), and the scripted references given the referent reach .93-1.00.
+- GR00T NG is PARTIAL because its unique-name control on the plate bowl fails (uniP 0/20; it grasps the cream cheese on 7/20), so U = .50 and U − R has no room. This is the cell the prediction flagged.
+
+**F7P (LIBERO-PRO negation, no verdict).** Trained instruction .95 on both models. The negated minimal edit ("not") and the paraphrase both score 0/20 on both; pi0.5 still grasps the trained bowl on 90% of negated episodes, GR00T on 40%.
+
+**F6 (descriptive only).**
+
+| model | fam vis | fam hid | disp vis | disp hid | disp abs |
+|---|---|---|---|---|---|
+| pi0.5 | 1.00 | .00 | 1.00 | .00 | .00 |
+| GR00T | .95 | .00 | .65 | .00 | .00 |
+
+Hiding the plate breaks both VLAs in the familiar layout too, so these numbers cannot separate memory from an out-of-distribution view (as registered). fx_read's own F6 label prints NO POWER; it is not read as a verdict.
