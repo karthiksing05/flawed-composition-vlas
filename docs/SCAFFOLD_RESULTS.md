@@ -3628,3 +3628,115 @@ The planner's misses are again the white mug (K1 and N1 .575 from the centre). U
 - The white-held stratum under C I is small (10 placements).
 - The reference misses C1 on all three manipulations, but pi0.5 C′ tv reaches .775 on N1.
 - GR00T was not run.
+
+## 59. Scene 2: start side or nearer plate? Moved plates on new states (m3_prereg s2_cue3, ledger row at 593e3d40, written before any main rollout; commit 593e3d40; probe job 4712585, scan jobs 4712516 / 4712895 (cancelled) and 4713023, build job 4713145, smoke jobs 4713146-4713147, prereg job 4713642; rollout jobs 4713643-4713650, reference job 4713651, read job 4713652; results/flawed/s2cue3_read.json, rollouts results/flawed/s2cue3_roll)
+
+**Question.** In §57 and §58 the held mug went to the plate on the side it started from whenever position was informative (287 of 287 placements on pi0.5, .993 of 145 on pi0). In the trained layout the start side is also the side of the nearer plate, and no edit to the mugs alone separates the two (§58). This section moves the PLATES so that, for one mug, the nearer plate stands on the other side of the midline, and asks which of the two cues the place follows.
+
+**Feasibility first (no policy anywhere in this step).**
+- The brief's first idea, shifting both plates toward one side, does not fit the scene. The agentview camera stands at (x .607, y 0, z .96) facing the robot (fovy 45°). At the plates' depth it shows a plate only for |y| ≲ .30, and the sampled plates (y ≈ ±.30) are already cut by the image edges. The smallest shift that makes the white mug nearer the right plate (≥ .18 m) puts the far plate at y ≈ −.48: zero pixels in the image, and it fails the settle check on 44 of 44 states. The first scan (job 4712516) showed this on its first candidate, and I cancelled it.
+- A placement map (probe job 4712585: one plate moved over a 5 cm grid, states k 0 and 2) gave the usable region: x ∈ [−.10, .25], |y| ≲ .30, and ≥ ~.12 m centre distance to any mug.
+- **Design (Sm):** both plates move, each to a fixed position on every state. The left plate (plate_1) goes back toward the camera on the left, to (XL, YL). The right plate (plate_2) comes in to just right of the midline, in front of the mugs, at (XR, YR). The mugs stay where they were sampled, so the white mug (left of the midline) is nearer the RIGHT plate. **PSm** applies §57's swap of the two mugs' xy first, so the yellow-and-white mug is the one starting on the left, nearer the right plate (its trained plate).
+- For the left-starting mug, start side says LEFT in both manipulations and nearer plate says RIGHT in both. Identity says left under Sm and right under PSm. So each run separates start side from nearer plate, and the pair of runs separates both from identity.
+- **Pick rule** (registered in the code before the scan; `PICK_RULE`). A candidate is feasible iff, on all 44 states and for both manipulations:
+  - as placed, no plate touches a mug or the other plate;
+  - after the 10 settle steps, xy drift < 1 cm, the plates' z drop is within 1 cm of the unmanipulated drop, tilt < 10°, and no mug is On a plate;
+  - mug–plate centre distance ≥ D0 − 1 cm (D0 = .137 m, the closest approach in the unmanipulated states);
+  - each plate keeps ≥ .60 of its unmanipulated agentview pixels, and the plates keep their sides (y_L < 0 < y_R);
+  - the reference planner succeeds on ≥ .50 of the 16 episodes per plate on states 0-7.
+  The pick is the feasible candidate with the most states where the left mug is nearer the right plate by ≥ 2 cm; ties go to the larger margin.
+- Final scan (job 4713023, 8 candidates). Six were feasible. Three reached SEP 44 of 44. The pick was **plate_1 at (.25, −.24), plate_2 at (.10, .03)**, with margin d_left − d_right .066-.118 m.
+  - On the 40 main states: GEOM_OK 40 of 40 and SEP 40 of 40 for both Sm and PSm. Settle xy drift is 0 and tilt is 0.
+  - Plate pixel share is ≥ .67 of unmanipulated. The left plate is cut by the image's bottom-right corner, about as much as the sampled plates are cut by the side edges.
+  - The workspace midline y = 0 and the image midline split the mugs identically (88 of 88 mug starts).
+- **New states:** 44 drawn with LIBERO's sampler on K1's BDDL, seeds 835000 + k; none equals a §50 state. k 0-3 are smoke, k 4-43 main. Branches use seed_base 27000000 + 1000 k.
+
+**Harness** (`experiments/s2cue3.py`; job scripts `.claude_tmp/pp/s2cue3_*.sh`). Only the initial state changes. Prompts, servers (pi0.5: `pp_serve_purify --model pi05 --mode intact --comp= --seed 13`; pi0: `serve_guided --mode ours --seed 13`, pi0_libero), client (`s2.py client`), launcher (`s2_roll.sh`), client seed 7 and `--bind track` are §58's. Runs: pi0.5 and pi0 × Sm, PSm × I (PRIMARY) and tv (SECONDARY). Each run covers tasks K1, K2, N1, N2 with 40 episodes. Scoring reuses `s2cue2.score`, `cue_preds` and `label_run` unchanged: the same cues, tolerances, bootstrap and inseparability rule as §58. **Head-to-head** (registered): over placements where start side and nearer plate are both defined and disagree, s = the share on the start-side plate. START SIDE ROUTES iff s ≥ .70 and lo > .50; NEARER PLATE ROUTES iff s ≤ .30 and hi < .50; UNTESTABLE below 20 placements. **Per model:** both manipulations NEARER PLATE → NEARER PLATE ROUTES; both START SIDE → START SIDE ROUTES; Sm start side with PSm nearer plate → IDENTITY. The plates keep their order, so the BDDL goal equals success by side. Reference (C1) is `s2.plan_episode`, unchanged.
+
+**Seen before registration** (`experiments/prereg/s2_cue3_seen.txt`).
+- The feasibility work above.
+- The start-render sheet.
+- Smoke on k 0-3 (32 clients, all exit 0). Every placement went to the nearer (right) plate: pi0.5 14 of 14 on Sm I and 14 of 14 on PSm I. pi0 made few placements (5, 1, 1 and 0).
+- Reference smoke: Sm .75, PSm .875 on N1-N2.
+- The predictions (`s2_cue3_pred.txt`) were written before the smoke and the build, while the scans ran.
+
+**Cue shares** (placements; share [CI]; label). PRIMARY runs in bold.
+
+| | **pi0.5 Sm I** | **pi0.5 PSm I** | **pi0 Sm I** | **pi0 PSm I** | pi0.5 Sm tv | pi0.5 PSm tv | pi0 Sm tv | pi0 PSm tv |
+|---|---|---|---|---|---|---|---|---|
+| placements | 116 | 126 | 50 | 10 | 136 | 113 | 1 | 4 |
+| **head-to-head: share on the start-side plate** | **0 of 116 [0, 0] → NEARER PLATE ROUTES** | **0 of 125 [0, 0] → NEARER PLATE ROUTES** | **0 of 50 [0, 0] → NEARER PLATE ROUTES** | 0 of 9 → UNTESTABLE | 0 of 56 → NEARER PLATE ROUTES | 0 of 72 → NEARER PLATE ROUTES | 0 of 1, UNTESTABLE | 0 of 4, UNTESTABLE |
+| nearer plate | 1.00 [1.00, 1.00] ROUTES | 1.00 ROUTES, INSEPARABLE from identity | 1.00 ROUTES | 1.00 (UNTESTABLE) | 1.00 ROUTES | 1.00 ROUTES | — | — |
+| start side (≡ L/R order ≡ depth) | .000 RULED OUT (≡ identity, step) | .008 [0, .025] RULED OUT | .000 RULED OUT | .10 (UNTESTABLE) | .588 UNRESOLVED | .363 UNRESOLVED | — | — |
+| plate object / identity | .000 RULED OUT (≡ start side) | .992 ROUTES (≡ nearer plate) | .000 RULED OUT | .90 (UNTESTABLE) | .588 UNRESOLVED | .637 UNRESOLVED | — | — |
+| step (first carry → L) | .000 RULED OUT | .000 RULED OUT | .000 RULED OUT | .000 | .000 RULED OUT | .000 RULED OUT | — | — |
+| instruction | .619 UNRESOLVED (63) | .541 UNRESOLVED (74) | .500 UNRESOLVED (32) | (7) | .588 UNRESOLVED | .522 UNRESOLVED | — | — |
+| **per model** | **pi0.5 I: NEARER PLATE ROUTES** | | **pi0 I: UNRESOLVED** (PSm untestable) | | pi0.5 tv: NEARER PLATE ROUTES | | pi0 tv: UNRESOLVED | |
+
+Identity is RULED OUT under Sm (0 of 166 placements across pi0.5 and pi0 I), where it equals start side. Under PSm it routes only because it equals the nearer plate there.
+
+**Where the mugs went, and success** (by side, which equals the BDDL goal here; 40 new states per task, so there is no pairing to §50).
+
+| run | first held: left-starting mug | K1 | K2 | N1 | N2 |
+|---|---|---|---|---|---|
+| pi0.5 Sm I | white 1.00 on every task | .000 | .025 | **.975** | .000 |
+| pi0.5 PSm I | yellow-and-white .925-1.00 | .000 | 1.00 | .050 | .000 |
+| pi0 Sm I | white 1.00 | .000 | .000 | .400 | .000 |
+| pi0 PSm I | yellow-and-white .90-.975 | .000 | .050 | .000 | .000 |
+| pi0.5 Sm tv | named mug held (white on K1 / N1, yellow-and-white on K2 / N2) | .000 | 1.00 | **1.00** | .000 |
+| pi0.5 PSm tv | named mug held | .000 | 1.00 | .475 | .000 |
+| pi0 Sm tv | white .925-1.00 | .000 | .000 | .025 | .000 |
+| pi0 PSm tv | mixed | .000 | .050 | .000 | .000 |
+
+- **No placement in any run lands on the left plate: 0 of 556.** Every placement goes to the right plate, which stands in front of the mugs near the midline and is the nearer plate for both mugs. So the tasks that target the right plate succeed when the right mug is held (pi0.5 Sm I N1 .975; Sm tv N1 1.00 and K2 1.00), and K1 and N2 (left plate) are 0 everywhere.
+- pi0.5 I always picks up the left-starting mug first (1.00 under Sm; .925-1.00 under PSm), as in §57.
+
+**C1 (reference planner).**
+- Sm: K1 .725, K2 1.00, N1 .725, N2 1.00; N1-N2 .863, **C1 MET**.
+- PSm: .725 / .975 / .725 / .975; .850, **C1 MET**.
+
+Both plates are reachable from these starts, including the far left plate (K1 .725 from the reference, against 0 of 160 for every VLA run).
+
+**Registered verdicts.**
+- **pi0.5 (PRIMARY, I): NEARER PLATE ROUTES on both manipulations** (head-to-head 0 of 116 and 0 of 125 on the start-side plate), so per model **NEARER PLATE ROUTES**. Start side is RULED OUT on both. Identity is RULED OUT under Sm (0 of 116).
+- **pi0 (PRIMARY, I):** Sm NEARER PLATE ROUTES (0 of 50). PSm UNTESTABLE (10 placements; all 9 disagreeing placements went to the nearer plate). Per model **UNRESOLVED** by the registered rule.
+- **Secondary tv:** pi0.5 NEARER PLATE ROUTES on both (0 of 56, 0 of 72). pi0 UNTESTABLE (1 and 4 placements).
+- **C1: MET** for Sm (.863) and PSm (.850).
+
+**Predictions** (in the row, written before the smoke) against the outcome.
+- Left-starting mug held first ≥ .70 on I (70%): right (pi0.5 .925-1.00, pi0 .90-1.00).
+- Head-to-head testable on pi0.5 Sm I (80%) and PSm I (70%): right. On pi0 Sm I (70%): right. On pi0 PSm I (65%): **wrong** (10 placements).
+- ~.5-.7 of I episodes end in a placement: pi0.5 .73 / .79, a little above; pi0 .31 / .06, far below.
+- pi0.5 Sm I NEARER PLATE ROUTES (40%, tied with START SIDE 40%): right. The same for PSm: right. Per-model NEARER PLATE ROUTES (30%): right. My point guess of a start-side share of ~.5 was wrong: it was 0.
+- pi0's per-model verdict matches pi0.5's (60%): **wrong** in label (UNRESOLVED, because PSm is untestable), though every one of pi0's 59 disagreeing placements went to the nearer plate.
+- tv untestable on at least one tv run (60%): right (both pi0 tv runs). pi0 tv INSTRUCTION ROUTES (60%): **wrong** (untestable, 1 and 4 placements).
+- pi0.5 I N1 ≥ .30 under Sm (40%): right (.975). K1 below 1.00 under Sm (90%): right (0).
+- C1 MET for Sm (40%) and PSm (40%): both MET.
+
+**Checks.**
+- The read found 0 hash mismatches against the row (code, the 12 state arrays, s2cue3_states.json, branches, pick.json and job scripts).
+- All 8 rollout jobs logged the registered server commands (4 pi0.5, 4 pi0). All 32 clients exited 0, and no job restarted.
+- The rollout, reference and read jobs were submitted held and chained afterok on the prereg job. I released them only after sacct showed it COMPLETED and the named row file (`ledger/m3_prereg/m3_prereg__libero_10__s2_cue3__s0__593e3d40.json`) carried tag s2_cue3 and status PRE-REGISTERED S2CUE3. Each job also refuses without the row.
+
+**Reading.**
+- **With the start side and the nearer plate on opposite sides of the midline, pi0.5 carries the held mug to the nearer plate every time.** That is 241 of 241 disagreeing placements on arm I and 128 of 128 on tv, from either mug. The §57 / §58 "start side" routing was the nearer plate in a layout where the two coincide. Image side, mug left/right order and depth order (all ≡ start side here) are RULED OUT with it. Identity is RULED OUT where it sides with start side (Sm), as in §57.
+- **The far plate is never chosen.** 0 of 556 placements land on the left plate, even on K1 and N2, which name it, and even under tv, which paints it as the target. The reference reaches it on .725 of K1 episodes. So in this layout every model treats the near, central plate as the only destination. The data cannot tell "nearer plate" from "the most salient plate" (the left plate is partly cut by the image corner, as the sampled plates are by the side edges), or from "the plate in front of the mugs". All three are proximity-and-visibility cues of the place location, and none is the language or the mug's identity.
+- **Role views help only where the nearer plate is the instructed one.** pi0.5 Sm tv reaches N1 1.00 and K2 1.00, because each named mug is held and carried to the right plate. The left-plate tasks stay at 0.
+- **pi0 mostly fails to place from these layouts** (60 of 320 I episodes). Where it does, the place follows the nearer plate (59 of 59 disagreeing placements). The registered per-model label stays UNRESOLVED.
+
+**Deviations.**
+- **The brief's design (shift both plates toward one side) was infeasible**: the far plate leaves the image and the table. I replaced it with a non-rigid layout (the left plate back, the right plate in), chosen by a rule fixed before the scan. Three scan versions ran before the final one. The first (4712516) used rigid shifts. The second (4712895) used a 3-D settle-drift test that every state fails, even unmanipulated, because the objects drop ~4 cm at the settle. I corrected it to §58's xy rule plus a relative z test and narrowed the grid. The probe (4712585) was cancelled after its first map. All of them were policy-free, and all are kept in `.claude_tmp/pp/`.
+- The picked right plate stands only 3 cm right of the midline (its rim crosses it). The pick rule ranked by margin, not by how far right the plate stands. Candidate 7 (y .06) had SEP 44 of 44 too.
+- PSm (mug swap + the same plates) was added beside Sm, so that identity is separated across runs. tv ran on both models and both manipulations (4 secondary jobs).
+- These are new states, so success has no per-episode pairing to §50.
+- The ledger row carries dirty=true, because other agents' files were uncommitted.
+- Prereg went through q2_cpu.sh with the full exclude list on the sbatch line.
+- The parent session restarted while the smoke jobs ran. The jobs were unaffected, and I resumed from their logs.
+- No python ran and no JSON was opened on the login node. One `ls` of the new results/flawed/s2cue3 directories was attempted there and refused by the permission system before it ran. I viewed the start-render sheet PNG.
+
+**Limits.**
+- One layout, one scene, 40 states per task, one client seed.
+- Start side stays inseparable from mug left/right order and depth order by construction.
+- Nearer plate is confounded with which plate is most visible and central. A layout with the far plate fully in view and off-centre would be needed to separate proximity from salience, and the camera's field of view leaves little room for one.
+- pi0's PSm runs are too sparse to label.
+- GR00T was not run (NOT TESTABLE per §50).
