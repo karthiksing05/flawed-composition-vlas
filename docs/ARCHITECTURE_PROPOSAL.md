@@ -15,6 +15,8 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
 - it has no cost on trained tasks;
 - it is pre-registered as EQUIVALENT to a reimplemented ReGuide (SR §55).
 
+On frozen GR00T the views help (+.204, SR §56), but the held-object box adds nothing and costs .07 on trained tasks. GR00T's high carry is unchanged by the box or a grip-width state swap (UNRESOLVED both), so F1m's cue is model-specific.
+
 *Where the fix runs out.* The views do not carry to a second scene (SR §50). There, only the hand-over to a target-only place removes F1 (SR §54). The contribution is therefore the diagnosis, meaning which cue routes each failure, more than the fix. See docs/NOVELTY.md.
 
 ## 1. What the failures say about the architecture
