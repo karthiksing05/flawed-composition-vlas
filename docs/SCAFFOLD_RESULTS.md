@@ -2708,3 +2708,131 @@ High-carry share on N4 / N6:
 - The probe's start is out of distribution for any VLA (an episode that begins with the object in hand). PLACE PRESENT shows the skill can run. It does not show the model would reach that state by itself.
 - N4's open floor is high (.75), so on N4 the probe mostly tests whether the model releases. N6 separates the models: its floor is .86, and GR00T scores 0.
 - The carry-height cut and the cabinet and rack proximity readings are post hoc and descriptive.
+
+## 52. ReGuide on our states: a reimplementation against the frozen front end (m3_prereg reguide, ledger row at b0117ac4, written before any main rollout; commit 01a0756f; rollout jobs 4706841-4706842 (overcap), 4706883-4706884 (tail-lab), read job 4706885; results/flawed/rg_read.json, rollouts results/flawed/rg)
+
+**Question.** ReGuide (Zhang et al., arXiv 2609.38616) is the closest prior to our frozen front end (docs/NOVELTY.md). It is a training-free wrapper on a frozen pi0.5. It rebinds the instructed object and destination, steers the end effector with object poses and training-demo statistics, and hands control back to the policy. The paper reports pi0.5 39.0 → 94.5 on its LIBERO compositions. NOVELTY.md says "ReGuide has not been run on our states." How does ReGuide do on our new pairings N1-N6 and trained tasks K1-K4, K6, on the fresh states of §47-§48, and how does it compare with TV+P?
+
+**What was implemented** (`experiments/rg.py`; statistics `experiments/rg_stats.py` → results/flawed/rg_stats.json). No code was released, so this is a reimplementation from the paper's text (method, Algorithm 1, App. A.4-A.7, B, C.6, C.7, Table 5). Everything the paper specifies is implemented:
+- **Statistics** from training demos only. Here these are the raw LIBERO-Goal demos of trained tasks K1-K6, 50 each; no N1-N6 demo exists or is read. The quantile levels are Table 5's: grasp offset and entry altitude at Q.5; tolerances, step bounds, dwell and release duration at Q.95; commitment and carry radii at Q.25; the height profile at Q.5 with a Q.05 envelope. κ is the median of realized over commanded motion: ours is (.242, .225), the paper's (.237, .211).
+- **Constants** are A.7's: n = 3, N = 40 (75 after a grasp), ε = 4 mm, two transports per stage, and 10 idle steps.
+- **The predicted endpoint** (Eq. 2) comes from the unexecuted chunk. **Commitment** (Eq. 3) applies to objects, and to destinations through the held object's predicted horizontal position (A.5).
+- **Triggers:**
+  - wrong binding;
+  - posture mismatch before descent;
+  - failure to bind;
+  - wrong destination: commitment to a habitual destination and not to the instructed one, by heading for n = 3 steps or by dwelling at once. It also needs a stable grasp inside the demonstrated width band.
+- **The pre-contact target** (Eq. 4) and the set K_e (Eq. 5) are as written. **Bounded transports** (Eq. 6) act in the policy's own delta-action space.
+- **Hand-back** discards the pending chunk and re-queries the policy.
+- **The carry** lifts first, then follows the height profile, floored by its crest. Hand-back comes one step above release height inside Ω_d. Masked classes (cabinet top, rack) keep the current height, and the policy places.
+- **Dissolution, completion certificates and the release procedure** follow the paper, and Algorithm 1's clamp limits every policy action to the demonstrated envelope.
+
+The full list, including 18 deviations, is in `experiments/prereg/reguide_choices.txt`, hashed in the row. The main ones:
+- **D1 perception:** our segmenter + depth in place of GroundingDINO.
+- **D3 no ResNet retrieval:** every training task shares our one scene, so the habitual set is every LIBERO-Goal goal entity.
+- **D4 geometry:** extents come from the asset meshes, because robosuite's offsets are placeholders for these assets.
+- **D5 demo entry event:** the start of the inside run that holds the grasp.
+- **D6 destination statistics:** pooled per destination class, with heights as the object's bottom.
+- **D11 not implemented:** descent lateral correction and "immediate escort". The paper's targeted control without them loses 9.9 points on its benchmark.
+- **D12 hand-back delay:** the policy is re-queried one step after hand-back.
+- **D16-D18:** destination boxes, the masked-class height, and rgo's co-motion hold rule.
+
+**Arms** (pi0.5 only; same server, `pp_serve_purify --mode intact --comp= --seed 13`; same client seed 7; same `--fresh n2_states_fresh`, `--branches n2_branches_fresh.json` and `--bind track`). The launcher `experiments/rg_roll.sh` is tv_attr_roll.sh with only the client moved, and it refuses to write into results/ without the ledger row.
+- **I** (reused): results/flawed/pp_atlas_fresh.
+- **TV+P** (reused, §47): results/flawed/tv_fresh/pi05_tvp.
+- **RG-oracle (rgo), PRIVILEGED.** Entity poses come from the simulator every step (the paper's App. B interface). The hold state is A.4's effect onset plus co-motion.
+- **RG-perc (rgp).** Poses are registered once, at the first query, from sc_seg's learned U-Net masks plus rendered depth, back-projected with the camera calibration (sc_pu.Estimator, as in PU-L, §40). There is no tracking afterwards (paper C.6). The hold event is ProprioHeld, and the held object follows the hand rigidly. The depth render and calibration are the remaining privilege, as in §40.
+
+**Mapping** (`experiments/rg_read.py`). Paired bootstrap over (task, state) on N1-N6, B = 2000, rng 0, tasks and states drawn jointly.
+- **A, rgp − I:** RG HELPS iff the lower bound is > 0; RG HURTS iff the upper bound is < 0; otherwise NO CLEAR DIFFERENCE.
+- **B, TV+P − rgp:** FRONT END WINS iff the lower bound is > 0; RG WINS iff the upper bound is < 0; otherwise NO CLEAR DIFFERENCE.
+- **Descriptive:** rgo − I, TV+P − rgo, rgo − rgp, trained-task cost per arm, the atlas excess per arm, and ReGuide's own diagnostics.
+
+**Checks (all pass).**
+- Client arguments and per-episode trial, branch, variant and branch step equal I's for rgo, rgp and TV+P on all 11 tasks.
+- I reproduces pp_atlas_fresh_read.json, and TV+P reproduces tv_fresh_read.json (success and cross E).
+- The state files match tv_fresh's row. All 45 hashed files match the reguide row: the reused I and TV+P rollouts and rg_stats.json.
+- No episode errors.
+- Before the main read, a dry run of the read on an empty ReGuide directory (job 4706875, output outside results/) reproduced I and TV+P.
+
+**Seen before registration** (`experiments/prereg/reguide_seen.txt`). The row discloses the §46-§48 numbers and the paper's. The code was new, so three smokes ran on stored smoke states 0-1, with output outside results/. Each one changed the code:
+- **Smoke 1** (job 4705421; N1, N4, K1; 8 of 12) showed the oracle hold rule flickering. That dissolved a correct wrong-destination transport, so rgo's hold rule became co-motion (D18).
+- **Smoke 2** (job 4705943; 14 of 20; the rgp half ran on the edited code) showed that my first destination rule never fired. That rule was "predicted endpoint within the Q.25 carry radius of the destination centre". I re-read A.5 and replaced it with Eq. 3 on destination boxes plus the width band (D16, D14). The cabinet carry also stalled against the cabinet side, which gave D17.
+- **Smoke 3** (job 4706409, tail-lab; all 11 tasks, both arms) succeeded on 21 of 22 per arm. A duplicate overcap submission (4706351) was cancelled before it started.
+- A first stats run used placeholder geometry and was replaced before any rollout.
+
+Nothing changed after smoke 3 started. N4 and N6 are known to resist the front ends (§51), and that section was written by another agent during this work.
+
+**Result.**
+
+| N1-N6 familiar, fresh, pi0.5 | success [CI] |
+|---|---|
+| I (intact) | .450 [.258, .642] |
+| TV+P (role views + phrases, §47) | .817 [.583, 1.00] |
+| RG-oracle (privileged) | .933 [.825, 1.00] |
+| RG-perc | .883 [.733, .992] |
+| **rgp − I (A)** | +.433 [+.208, +.667]: **RG HELPS** |
+| **TV+P − rgp (B)** | −.067 [−.217, +.042]: **NO CLEAR DIFFERENCE** |
+| rgo − I (no verdict) | +.483 [+.250, +.700] |
+| TV+P − rgo (no verdict) | −.117 [−.308, +.017] |
+| rgo − rgp (no verdict) | +.050 [−.033, +.183] |
+
+Per task:
+
+| arm | N1 | N2 | N3 | N4 | N5 | N6 |
+|---|---|---|---|---|---|---|
+| I | .20 | .25 | .60 | .55 | .75 | .35 |
+| TV+P | .95 | 1.00 | 1.00 | .50 | 1.00 | .45 |
+| rgo | 1.00 | 1.00 | 1.00 | .80 | .95 | .85 |
+| rgp | 1.00 | 1.00 | .95 | .75 | .95 | .65 |
+
+**Known tasks K1-K4, K6 (cost, no verdict).**
+
+| arm | success | arm − I |
+|---|---|---|
+| I | .99 | |
+| TV+P | .98 | −.01 [−.08, +.04] |
+| rgo | 1.00 | +.01 [.00, +.06] |
+| rgp | .99 | .00 [−.04, +.05] |
+
+**The atlas excess per arm** (E [CI] and verdict).
+
+| arm | within | cross | verdict | stage shares on N1-N6 |
+|---|---|---|---|---|
+| I | +.075 [.00, .18] | +.450 [.28, .61] | CROSS-CHUNK | HANDOFF .433, RELEASE .092 |
+| TV+P | +.167 [.00, .38] | −.008 [−.05, +.03] | NEITHER | RELEASE .167 |
+| rgo | +.058 [.00, .16] | +.008 [.00, .05] | NEITHER | RELEASE .050, GRASP .008, HANDOFF .008 |
+| rgp | +.108 [.00, .26] | +.004 [.00, .02] | NEITHER | RELEASE .100, GRASP .008, TRANSPORT .008 |
+
+**What ReGuide did (no verdict).**
+- **New pairings.** ReGuide ran at least one transport in 83% (rgo) and 84% (rgp) of N1-N6 episodes. Most were wrong-destination carries: 91 of 120 episodes under rgo, 99 under rgp. The usual end was "one step above release height in Ω_d" (71 rgo, 86 rgp), with the masked cabinet class 20 / 19. The policy then released.
+- **Steering share.** ReGuide steered a mean of 19 (rgo) and 24 (rgp) steps per new-pairing episode. Approach transports were rare: wrong binding 8 / 6, failure to bind 7 / 4, posture 3 / 3.
+- **Known tasks.** Transports fired in 11% (rgo) and 26% (rgp) of episodes. Nearly all were wrong-destination carries on K4 (bottle to cabinet) toward the nearby rack, ending on entry into the cabinet's Ω_d. They cost nothing.
+- **Clamp.** The clamp touched a mean of 1-6 steps per episode.
+- **Perception.** rgp's registration error is a median 0.05-0.10 cm per entity (90th percentile ≤ 0.27 cm). All 880 object registrations (220 episodes × 4 objects) came from the agentview masks. In this scene the learned segmenter plus depth is near-oracle, unlike the paper's GroundingDINO (87.5 vs 94.5). This is why rgp is so close to rgo.
+
+**My predictions** (in the row).
+- rgo .85 (range .75-.95): .933, in range. rgp .82 (range .70-.95): .883, in range.
+- A, RG HELPS (80%): right. B, NO CLEAR DIFFERENCE (75%): right.
+- rgo − rgp within ±.07: right (+.050).
+- Known-task cost between −.06 and 0: right for rgp (.00). rgo is +.01, just outside the stated range on the favourable side.
+- Cross excess near 0: right (+.008, +.004).
+- N4 and N6 at .55-.80 under RG and above TV+P: right on N4 (.80, .75) and rgp N6 (.65). rgo N6 is .85, above the range.
+
+**Reading.**
+- **ReGuide, as reimplemented, fixes F1 on our states.** With perceived poses, frozen pi0.5 goes from .450 to .883 on new pairings (+.433 [+.208, +.667]), at no trained-task cost. The cross-chunk excess falls from +.450 to +.004. That is the same removal TV+P achieves (−.008), by a different route: ReGuide physically carries the held object to the instructed destination in most new-pairing episodes, and the policy only grasps and releases.
+- **TV+P does not beat ReGuide.** TV+P − rgp is −.067 [−.217, +.042], with no clear difference. Against the privileged rgo the point gap is −.117, and its upper bound is +.017. ReGuide is equal or ahead on every pairing.
+- **The difference sits in N4 and N6.** On N1-N3 and N5 both systems are at .95-1.00. On N4 / N6, ReGuide reaches .75-.80 / .65-.85 against TV+P's .50 / .45. This matches §51: the residual there is the held bottle starting K4's high carry, which input edits do not remove. ReGuide removes it by taking the carry away from the policy, the same move as the hand-over arm H (§51 C3: met only by replacing the carry).
+- **What the comparison does and does not mean.** The two systems use different information. ReGuide reads metric object and destination poses (oracle, or depth + calibration, which is privileged in simulation), statistics mined from the 300 trained-task demos, and a scripted controller that moves the arm. TV+P edits only the policy's images and prompt from a learned segmenter and a proprioceptive hold detector, and never moves the arm. On these states the input-only edit is no better than the actuating wrapper, and it is worse on the carry-routing residual. This supports NOVELTY.md's "no priority claim for a frozen-VLA test-time front end", and it removes the caveat that ReGuide was never run on our states.
+
+**Deviations.**
+- **The implementation is a reimplementation** with the 18 deviations in reguide_choices.txt, written before any main rollout. Three of them (D14, D16-D18) came from smoke failures, as disclosed in "seen". The omitted post-hand-back assistance (D11) costs ReGuide 9.9 points in its own paper. If anything, ReGuide is underestimated here.
+- **Perception and privilege.** rgp's perception is ours (D1), and its depth and calibration are privileged in simulation. Its registration error is far smaller than the paper's detector would give, so rgp is close to an oracle arm. The comparison with TV+P is fair on segmentation, since both use sc_seg, but ReGuide alone uses depth.
+- **Partitions and rechaining.** rgo ran on overcap. The rgp jobs ran on tail-lab, moved there before they started because the overcap start estimate was 06:22; the original overcap rgp jobs (4706843-4706844) and the first read job (4706846) were cancelled while pending. Every job was chained afterok on the prereg job (4706840), and I confirmed the ledger row by reading its named file before any rollout ran. The read ran once.
+- **The ledger row carries dirty=true,** because other agents' files were uncommitted in the tree. The ReGuide files were committed right after the row (01a0756f).
+- **The read's verdict rules** follow this task's specification (CI bounds against 0, no d > .10 margin). A margin rule gives the same A verdict, since d = +.433.
+
+**Limits.**
+- One scene, 20 fresh states, six pairings, pi0.5 only. GR00T was not run.
+- ReGuide's habitual-referent retrieval is trivial here, because one scene serves every training task. On the paper's multi-scene benchmark it does real work.
+- The demo statistics and the perception calibration both come from this scene's own trained-task demos, which suits ReGuide.
