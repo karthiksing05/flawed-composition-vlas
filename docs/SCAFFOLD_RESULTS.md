@@ -3149,3 +3149,144 @@ tvp and tvpb have identical per-task K success: K3 .975, K4 .925, the rest 1.00.
 - ReGuide is our reimplementation, with §52's 18 deviations. It omits the post-hand-back escort (D11), which may understate it.
 - tvpb's box arm was chosen on §53's data (fresh k 36-55 and main states). These states are new, but the arm was selected after looking at N4 / N6.
 - The ±.10 equivalence band is a registered convention, not a derived tolerance.
+
+## 56. The refined front end on frozen GR00T, and GR00T's state as an F1m cue (m3_prereg groot_box, ledger row at 97e33649, written before any main rollout; commit 97e33649; states job 4710073, state check 4710083, smoke job 4710084, prereg job 4710311; rollout jobs 4710314-4710328, read job 4710329; results/flawed/groot_box_read.json, rollouts results/flawed/groot_box)
+
+**Question.** On pi0.5, painting the held object as its bounding box in the target phase removes most of K4's high carry on N4 and N6 (§53, §55). pi05_libero reads no state, so §53 could not test proprioception there. GR00T does read state. GR00T also carries high on 96% of its grasped N4 / N6 episodes (§51). Two questions follow. Does the refined front end (role views plus the held-object box) help frozen GR00T? Is the box, or the gripper-finger state, the cue that starts GR00T's carry? No arm uses role phrases, because phrases hurt GR00T (§46).
+
+**State layout, checked first** (`experiments/groot_box.py statecheck`, job 4710083). libero_client sends `observation/state` = eef position (3), axis-angle (3), finger qpos (2). GrootBackbone min-max normalises this 8-D vector. Its state encoder's token is the first token of the DiT's sequence (`kv["sf"]`). The check ran on the served policy (GuidedPolicy with the server's seed rule) with 3 random image draws × 3 bottle prompts. The base state had bottle-held fingers (.008, −.008). Repeats were exact.
+- **GR00T reads the state.** It is not state-invariant. The cheese-finger swap changes only normalised dims 6-7, from (−.57, +.57) to (−.03, −.09).
+- **The swap is small in the actions.** The table gives the median max |Δ action| over the 9 cases.
+
+| change | median max \|Δ action\| |
+|---|---|
+| fingers → cheese hold | .0049 (range .002-.032) |
+| fingers closed | .0039 |
+| eef z + .20 m | .0039 |
+| all-zero state | .0039 |
+| N(0, 1) noise on all 8 dims | .081 |
+| fingers open | .84 |
+| image swap | .026 |
+| prompt swap | .80 |
+
+The cheese swap moves the actions in all 9 cases. In 7 of 9 it sits near bf16 resolution (.0039), about a fifth of an image swap. Opening the fingers moves the actions as much as a prompt swap. So GR00T reads "hand open / hand closed" strongly, and the width of a closed grip only weakly.
+
+**States.** There are 40 new familiar-layout states, k = 156-195 (`experiments/fc_n2_fresh4.py`; harness trials 24-63, k = trial + 132). They come from fc_n2_fresh3.py's sampler rule, unchanged: LIBERO's sampler on the familiar BDDL, seed 600000 + k. Before drawing, the rule reproduced stored states 0, 1, 23, 24, 35, 36, 55, 56, 115, 116 and 155 exactly (max |diff| 0). Every new state differs from every other new state and from all 206 stored familiar states (k 0-155 and PLAN_PARTS's 50). Branch seed_base is 13000000 + 1000 k. No model had run on these states.
+
+**Arms** (GR00T only, all five new on these states). The launcher is `experiments/groot_box_roll.sh`: tvpb_roll.sh with tv_g_roll.sh's GR00T server and venv. Every arm uses the same server (`pp_serve_purify --model groot --mode intact --comp= --seed 13`), client seed 7 and `--bind track`. The task's own instruction is asserted unchanged at every query.
+- **I.** The atlas's intact client (`pp_atlas_client.py`), unchanged.
+- **tv.** Role views (`tv_frozen.py client --arm tv`, §46 / §49), unchanged.
+- **tvb.** tv plus the held object painted as the bounding box of its learned mask in the target phase, with target pixels visible. It runs as `groot_box.py client --arm tvb`, which uses f1m_cue.CueFront with cue sb unchanged: §55's tvpb without the phrases.
+- **tvg.** tv plus a finger swap while the detector is on: the two finger qpos entries (observation/state[6:8]) are replaced by G_GROOT = (.0205, −.0217). That is GR00T's mean finger qpos while it holds the cream cheese on K6, its trained cheese task, measured in the smoke. The detector reads the real qpos.
+- **tvbg.** Both changes (descriptive).
+
+**Mapping** (`experiments/groot_box_read.py`). Paired bootstrap over (task, state), B = 2000, rng 0, tasks and states drawn jointly (tv_frozen.boot2, as §55).
+- **V1, tvb − I on N1-N6:** FRONT END HELPS iff the lower bound is > 0.
+- **V2, tvb − tv on N4 + N6** ([2, 40]): BOX ADDS iff the lower bound is > 0; NOT THIS CUE iff the upper bound is < .10; otherwise UNRESOLVED.
+- **V3, tvg − tv on N4 + N6:** CUE FOUND iff the lower bound is > 0; NOT THIS CUE iff the upper bound is < .10; otherwise UNRESOLVED.
+- **Descriptive:** trained-task cost per arm, the atlas excess, the high-carry share (n46_phase lift while held > .22 m, among grasped episodes) and the other differences.
+
+**Checks (all pass).**
+- Client arguments and per-episode trial, branch, variant and branch step are the same for all four arms as for I, on all 11 tasks.
+- Every episode's trial is a registered one, and no episode errored (55 of 55 clients exited 0).
+- The 13 state and branch files and the 22 code files match the groot_box row. f1m_cue.py matches its f1m_cue row, and tv_frozen.py matches its tvpb_rg row.
+- All 15 rollout jobs logged the same server command, seed 13, with restart 0.
+- tvg and tvbg sent exactly G_GROOT at every held query (6175 and 5927 queries). tvb sent the real qpos.
+
+**Seen before registration** (`experiments/prereg/groot_box_seen.txt`). The row discloses §46-55, the state check above, and a smoke: job 4710084, all five arms on all 11 tasks, stored smoke states 0-1, with output outside results/, followed by a dry read. N1-N6 success was I .25, tv .42, tvb .42, tvg .42 and tvbg .33. N4 and N6 were 0 under every arm with every grasp carried high, and K was 1.00 everywhere. After the smoke I set G_GROOT from the smoke's K6 cheese hold under tvb (.02048, −.02168, n 14). It is within .001 of pi0.5's G_HELD. The smoke also showed that GR00T's own held finger qpos on N4 / N6 is already about (.018, −.020), close to the cheese value. K4's bottle hold is about (.007, −.008). On N4 / N6, therefore, the swap changes each finger by only about .003. This was disclosed in the row. No other code changed after the smoke. The predictions were written before the state check or the smoke returned anything.
+
+**Result.**
+
+| N1-N6 familiar, 40 new states, GR00T | success [CI] |
+|---|---|
+| I (intact) | .179 [.025, .371] |
+| tv (role views) | .379 [.050, .717] |
+| tvb (tv + held-object box) | .383 [.071, .708] |
+| tvg (tv + cheese finger qpos) | .392 [.079, .713] |
+| tvbg (both) | .383 [.062, .708] |
+| **V1, tvb − I** | +.204 [+.029, +.412]: **FRONT END HELPS** |
+| **V2, tvb − tv on N4 + N6** | +.025 [−.025, +.100]: **UNRESOLVED** (the upper bound equals the .10 cut) |
+| **V3, tvg − tv on N4 + N6** | +.025 [−.025, +.100]: **UNRESOLVED** (the same) |
+| tv − I (no verdict) | +.200 [+.013, +.417] |
+| tvg − I (no verdict) | +.212 [+.046, +.412] |
+| tvbg − I (no verdict) | +.204 [+.025, +.417] |
+| tvb − tv on N1-N6 (no verdict) | +.004 [−.042, +.054] |
+| tvg − tv on N1-N6 (no verdict) | +.013 [−.033, +.067] |
+| tvbg − tvb, tvbg − tvg on N4 + N6 (no verdict) | .000 [−.050, +.050] each |
+
+Per task:
+
+| arm | N1 | N2 | N3 | N4 | N5 | N6 |
+|---|---|---|---|---|---|---|
+| I | .05 | .35 | .58 | .03 | .08 | .00 |
+| tv | .13 | .98 | 1.00 | .03 | .15 | .00 |
+| tvb | .15 | .95 | .98 | .08 | .15 | .00 |
+| tvg | .18 | .95 | .98 | .08 | .18 | .00 |
+| tvbg | .10 | .98 | .98 | .08 | .18 | .00 |
+
+**Known tasks K1-K4, K6 (cost, no verdict).**
+
+| arm | success | arm − I | K1 | K2 | K3 | K4 | K6 |
+|---|---|---|---|---|---|---|---|
+| I | .975 | | .95 | 1.00 | .98 | .98 | .98 |
+| tv | .975 | .000 [−.040, +.040] | .93 | 1.00 | .98 | 1.00 | .98 |
+| tvb | .905 | **−.070 [−.150, −.005]** | .93 | .93 | .88 | **.83** | .98 |
+| tvg | .980 | +.005 [−.030, +.040] | .95 | 1.00 | .98 | 1.00 | .98 |
+| tvbg | .885 | **−.090 [−.185, −.005]** | .93 | .90 | .85 | **.78** | .98 |
+
+**High carry** (share of grasped episodes; success after a high carry).
+
+| arm | N4 + N6 | N4 | N6 | N5 | K4 (success after high) |
+|---|---|---|---|---|---|
+| I | 1.00 (80 / 80) | 1.00 | 1.00 | .98 | 1.00 (.98) |
+| tv | .92 (71 / 77) | .87 | .97 | .16 | 1.00 (1.00) |
+| tvb | .82 (63 / 77) | .69 | .95 | .03 | .90 (.92) |
+| tvg | .95 (73 / 77) | .90 | 1.00 | .09 | 1.00 (1.00) |
+| tvbg | .83 (65 / 78) | .72 | .95 | .03 | .93 (.84) |
+
+No arm succeeds on N6 at all. Of the 14 N4 + N6 low carries under tvb, none succeeds. Under tvbg, 1 of 11 N4 low carries succeeds. Every K4 episode whose carry the box lowered failed: 4 under tvb and 3 under tvbg.
+
+**The atlas excess per arm** (E [CI] and verdict).
+
+| arm | within | cross | verdict | HANDOFF + TRANSPORT share |
+|---|---|---|---|---|
+| I | +.342 [.11, .62] | +.454 [.22, .68] | BOTH | .471 |
+| tv | +.321 [.08, .59] | +.277 [.05, .55] | BOTH | .279 |
+| tvb | +.354 [.12, .60] | +.175 [.00, .38] | BOTH | .242 |
+| tvg | +.329 [.10, .58] | +.252 [.04, .50] | BOTH | .254 |
+| tvbg | +.383 [.13, .64] | +.127 [−.02, +.32] | WITHIN-CHUNK | .212 |
+
+**Front end (no verdict).** The detector fired in 98.9% of episodes under every non-I arm, with a median first onset 0 steps from the oracle Held. It fired more than once in 10-11% of tv and tvg episodes and 21-22% of tvb and tvbg episodes. Paint IoU was .96-.98, and the active-object leak was ≤ .003.
+
+**My predictions** (in the row).
+- Point estimates on N1-N6: I .22, in range (.179). tv .40, right (.379). tvb .43, in range but high (.383). tvg .38, right (.392). tvbg .41, close (.383).
+- V1 FRONT END HELPS (80%): right. The point (+.20) was right; the result is +.204.
+- V2 UNRESOLVED (50%): right. The point (+.06) was high; the result is +.025. N4 under tvb was predicted ~.15 and came out .075. N6 ≤ .05 under every arm: right (0).
+- V3 UNRESOLVED (45%): right. The point (+.02) was right; the result is +.025.
+- The finger swap moves GR00T's actions (90%): right. The change is smaller than an image swap's (70%): right.
+- K cost: tv within .05, right. tvb within .05: **wrong** (−.070, K4 .825). tvg costs .03-.15, mostly on K4: **wrong** (+.005; K4 1.00). tvbg like tvg: **wrong**; it is like tvb (−.090).
+- High-carry share: I ~.97 (1.00), tv ~.95 (.92), tvb ~.80 (.82): close. tvg ~.90 (.95), tvbg ~.75 (.83): off by .05-.08. No N6 success after a high carry: right.
+- Cross excess: I BOTH ~+.40, right (+.454). tv and tvb lower but > 0, right (+.277, +.175).
+
+**Reading.**
+- **The front end helps frozen GR00T, and the box adds nothing to it.** tvb beats I by +.204 [+.029, +.412], the third confirmation of the view gain on GR00T (§46 +.233, §49 +.186; here tv − I is +.200). The gain sits in N2 and N3 again (.35 / .58 → .95-1.00). tvb − tv is +.004 on N1-N6, so all of tvb's gain comes from the role views.
+- **On GR00T the held object's outline is not the carry cue it was on pi0.5.** The box lowers GR00T's N4 + N6 high-carry share only from .92 to .82 (pi0.5: .30 → .09, §55). The few low carries do not succeed (0 of 14). N4 rises from .025 to .075, and N6 stays at 0 under every arm. V2 is UNRESOLVED only because the upper bound sits on the cut: +.025 [−.025, +.100], a hundredth short of NOT THIS CUE.
+- **The box costs GR00T on trained tasks, unlike pi0.5.** tvb costs −.070 [−.150, −.005], mostly on K4 (.825), and also on K3 (.875) and K2 (.925). On K4, the box lowered 4 bottle carries, and all 4 failed. GR00T needs the held bottle's shape to run K4's own trained carry. pi0.5 does not (§53, §55: K4 unchanged under the box). So a GR00T front end should keep the held object's outline.
+- **Finger state is not GR00T's carry cue either, as far as this test reaches.** On N4 + N6, tvg − tv is +.025 [−.025, +.100] (UNRESOLVED), and the high-carry share stays at .95. The test is weak on N4 / N6, because GR00T already holds the bottle there with fingers close to the cheese width (swap about .003 per finger). The trained task gives the stronger read. On K4 the swap is large (bottle .007 → cheese .0205 per finger), yet K4 still carries high in 40 of 40 episodes and succeeds 1.00. The state check agrees: a closed-grip width swap moves the actions about a fifth as much as an image swap, while opening the fingers moves them as much as a prompt swap. GR00T reads whether the hand is closed, not which object the grip width implies.
+- **What still starts GR00T's carry.** Neither the outline (box) nor the grip width (finger state) removes it. tv already hides colour and texture. That leaves the held bottle's extent (which the box keeps), the arm's own state (eef height, untested here; it moved actions by .0039 in the state check), the scene, and the instruction's object noun. On pi0.5 the outline accounts for most of the carry. GR00T's carry is overdetermined by inputs this probe did not remove. GR00T's N6 place gap (§51: 0 of 14 even from above the bowl) caps N6 at 0 regardless of the carry.
+
+**Deviations.**
+- 40 states, as the task asked; no power calculation.
+- G_GROOT was set after the smoke from its measurements, as §53 set its constants, and disclosed in the row. The state check ran with the provisional G (pi0.5's G_HELD, within .001 of G_GROOT).
+- tvg's swap is small on N4 / N6, because GR00T's own N4 / N6 grip is already near the cheese width. The smoke showed this before registration, and it is disclosed in the row. The arm ran as the task specified it. The K4 cell is the informative one, and it is descriptive.
+- All jobs ran on overcap. Every rollout was chained afterok on the prereg job (4710311), submitted after I confirmed the row (sacct, plus a grep of the named ledger file). The launcher also refuses to write into results/ without the row.
+- q2_cpu.sh carries a shorter node exclude list. I passed the full GPU exclude list on the sbatch command line, and the job ran on bmo.
+- The read job's "server logs naming the seed" count is 0 of 15, because the GR00T server log does not print the seed. The seed is in the launcher's server line, which is identical across all 15 jobs.
+- The ledger row carries dirty=true, because other agents' files were uncommitted in the tree. My files were committed just before the row (97e33649).
+- One extra waiter (a log-grep loop) was started while another was armed; I stopped it within about two minutes.
+
+**Limits.**
+- One scene, one held object (the bottle), GR00T only, one client seed, 40 states.
+- The state check used random images, so its action scale is not the scale on real frames.
+- tvg replaces only the finger entries. The eef pose and the arm's state are untouched.
+- The high-carry cut (.22 m) is §51's post hoc cut. The carry and K4 breakdowns are descriptive.
