@@ -1981,6 +1981,100 @@ The F7R front end: a template parser plus the learned segmenter resolves the rel
 - **Prediction:** wrong on the verdict (PARTIAL, not MEMORY ABSENT, on both). Right that b ≈ c and a ≈ d. Wrong on where failures go: the training spot gets 0 disp failures, not most of them.
 - **Reading.** With the view confound removed (d − b) and the disc's appearance controlled (a − d ≈ 0), both VLAs lose .50-.60 of their success when the plate is occluded after one view. Their success is then the same as when the plate was never seen. That is the memory-absent pattern, but at n = 20 the registered equivalence bound is not met, so F6 is not confirmed as registered. A larger-n rerun of b and c on disp would settle the bound.
 
+### 45.6 F6: more states and a memory overlay (m3_prereg f6o2, commit c8e4ca3f; read job 4701852, new main states; results/flawed/f6o2_read_main.json)
+
+**Protocol.** Two additions to 45.5 (experiments/f6o2_tasks.py, f6o2_client.py, f6o2_ref.py, f6o2_mcheck.py, f6o2_read.py).
+- **More states.** 124 new displaced-layout states, drawn with fx's F6 rule (familiar seed 810000 + k, plate displacement seed 811000 + k, k = 24-147).
+  - Before drawing anything new, the rule reproduces fx's stored states k = 0-23 exactly (max |diff| 0).
+  - No new state duplicates a stored F6 state. f6o's park, beside and render checks rejected none of the 124.
+  - k = 24-27 are the smoke set; k = 28-147 are the main set (120 states). Branch seeds follow fx's rule (14000000 + 1000 k).
+  - f6o's covers, conditions a, b, c, d, servers and seeds are unchanged.
+  - The reference is fx_ref (frozen-plate servo and P_min) run on the new states.
+- **Arm M, a memory overlay on condition b.** The policy is frozen.
+  - At the first query, the learned segmenter's agentview plate mask is stored, with its RGB sprite and its depth-back-projected 3D centre (fx_r's rule).
+  - From the cover's move on, the remembered plate is painted into both cameras at its remembered position, on top of the cover. The wrist camera gets the agentview sprite reprojected through the plate's plane with the current camera model.
+  - Three kinds of pixel are never painted, so the robot's own hardware and the bowl stay in front of the memory:
+    - pixels whose visible surface lies more than 12 cm above the plane;
+    - the robot's gripper column (within 10 cm in xy of its proprioceptive end-effector position, and higher than 3 cm below it);
+    - pixels the segmenter labels bowl.
+  - The overlay adds no information beyond the robot's own first view.
+- **Mapping,** on the 120 new main states alone, per model:
+  - F6 rows: f6o's, unchanged (NO POWER, MEMORY ABSENT, MEMORY USED, PARTIAL).
+  - Fix rows: MEMORY RESTORED iff M − b > .10 with lower bound > 0, and s(M)'s lower bound ≥ s(b)'s upper bound; otherwise NO VERDICT.
+  - F6 HOLDS iff MEMORY ABSENT on both models; F6 FIX iff MEMORY RESTORED on both.
+  - Pooled with f6o's states 4-23: descriptive only.
+- **Prediction:** F6 does not HOLD (GR00T MEMORY ABSENT, pi0.5 PARTIAL); F6 FIX on both, with pi0.5 M ≈ .9 and GR00T M ≈ .5.
+- **Seen before registration:**
+  - a pi0.5 smoke on the 4 new smoke states: a 1.00, b .50, c .75, d 1.00, M .75, reference 1.00;
+  - the policy-free overlay checks below.
+
+**Overlay checks (policy-free, before any rollout).** The occlusion rule changed twice. Both changes were made after a DUMMY-action check and before any policy ran:
+- **3 cm height gate → 12 cm.** The first build painted nothing. The cover's top sits about 8 cm above the plate plane measured from depth (plane z .910; cover centre z .979), so the gate excluded the cover itself. This is f6o's cover geometry: it hides the plate in every render check but stands well above it.
+- **10 cm sphere around the end effector → the gripper column.** The sphere also erased the cover top under a descending gripper. In a scripted descent the wrist IoU fell from .89 at 15 cm to 0 at 6 cm.
+- **The registered rule (results/flawed/f6o2/mcheck.json; check_M2.png, check_M2_descent.png).** IoU of the painted area against a's true plate pixels at the same robot pose:
+  - agentview: median .987 (min .86) over 124 states;
+  - wrist at the home pose: median .47 (.56 on the 91 states where the plate has ≥ 200 wrist pixels). There the plate is only a sliver at the image edge;
+  - wrist in a scripted descent over the plate: .88-.90 at 25, 15, 10 and 6 cm above the cover.
+- **What the frames look like.**
+  - In agentview, M shows the plate drawn onto the brown cover, with the cover's rim visible around it.
+  - In the wrist view the plate appears on the cover where the real plate would be, at the right size. Its rim is blockier: it is upsampled from about 40 agentview pixels.
+  - The plate is clearly recognisable. It is not a seamless restoration: the cover stays visible around it.
+- **Within the rollouts:** the segmenter found the plate on 120 of 120 first queries (IoU median .987, min .70; centre xy error median 1.7 mm, max 1.0 cm).
+  - Median painted pixels per query: pi0.5 1645 (agentview) and 2110 (wrist); GR00T 1654 and 0. The wrist overlay was painted at 63% of pi0.5's later queries and 42% of GR00T's.
+
+**F6 does not HOLD: PARTIAL on both models, again only on the equivalence bound. F6 FIX holds: MEMORY RESTORED on both.**
+
+| model (new states, n = 120) | a | b | c | d | M | ref | d − b [CI] | b − c [CI] | M − b [CI] | M − d [CI] | F6 | fix |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| pi0.5 | .942 | .583 [.50, .667] | .533 | .967 | .842 [.775, .90] | .839 | +.383 [+.283, +.475] | +.05 [−.05, +.158] | +.258 [+.15, +.35] | −.125 [−.20, −.058] | PARTIAL | MEMORY RESTORED |
+| GR00T | .892 | .142 [.083, .208] | .10 | .742 | .283 [.208, .367] | .839 | +.60 [+.508, +.683] | +.042 [−.033, +.117] | +.142 [+.042, +.242] | −.458 [−.558, −.358] | PARTIAL | MEMORY RESTORED |
+
+| model (pooled, f6o 4-23 + new, n = 140, descriptive) | a | b | c | d | d − b [CI] | b − c [CI] | a − d [CI] |
+|---|---|---|---|---|---|---|---|
+| pi0.5 | .936 | .571 | .536 | .971 | +.40 [+.307, +.486] | +.036 [−.057, +.136] | −.036 [−.086, +.014] |
+| GR00T | .879 | .136 | .10 | .736 | +.60 [+.521, +.679] | +.036 [−.029, +.107] | +.143 [+.064, +.229] |
+
+The reference is P_min, .839 on the new states; the servo scores .294.
+
+- **The memory-absent pattern replicates at 6× the states, but the registered bound still fails.**
+  - d − b is +.38 (pi0.5) and +.60 (GR00T), with lower bounds ≥ .28.
+  - b − c is +.05 and +.04, with CIs spanning 0 on both. Seeing the plate once is worth at most +.16 (pi0.5) and +.12 (GR00T) at the upper bound.
+  - The equivalence bound (< .10) fails by .058 on pi0.5 and by .017 on GR00T. It also fails pooled (+.136, +.107).
+  - The registration's power note had warned that pi0.5 needed b − c ≤ −.01 to pass at n = 120.
+- **The memory slot restores part of the hidden plate's value.**
+  - pi0.5: M .842 against b .583 recovers 67% of d − b. M − d is −.125 [−.20, −.058], so the overlay still falls short of an unhidden plate.
+  - GR00T: M .283 against b .142 recovers 24% of d − b; M − d is −.458.
+  - GR00T's MEMORY RESTORED is on the boundary. s(M)'s lower bound and s(b)'s upper bound are both .208 to three decimals; the rule is ≥, and the read's float comparison passed.
+  - GR00T's weaker gain fits its weaker overlay: the wrist overlay was painted at only 42% of its later queries (median 0 px), against 63% for pi0.5.
+- **The disc costs GR00T now.** On the new states, a − d is +.15 [+.067, +.233] for GR00T: the cover appearing beside the plate costs it success. At n = 20 that CI spanned 0. For pi0.5 a − d is −.025.
+- **Where failed bowls go.**
+  - pi0.5 failures end near the true plate in every condition (b 50/50, c 54/56, M 19/19).
+  - GR00T's b and c failures mostly end elsewhere (b 82/103, c 88/108). Under M a larger share ends near the plate (36/86).
+  - The training spot gets 1 failure per condition at most.
+- **Caveat: the occluder leak (registered, design unchanged).** Plate pixels appear at a share of later queries in either camera:
+
+  | condition | pi0.5 | GR00T |
+  |---|---|---|
+  | b | .34 | .43 |
+  | c | .32 | .44 |
+  | M (true plate pixels, not the paint) | .45 | .49 |
+
+  M's leak is higher because its episodes reach the covered plate more often. Some of M's success may therefore come through the real plate showing late, not through the overlay alone.
+- **Prediction:**
+  - right that F6 does not HOLD, and right on F6 FIX;
+  - wrong on GR00T's F6 row (PARTIAL by .017, not MEMORY ABSENT);
+  - close on pi0.5's M (.84 against ≈ .9); wrong on GR00T's M (.28 against ≈ .5).
+- **Reading.**
+  - Both VLAs lose .38-.60 of their success when the plate is occluded after one view. With 140 states their success then matches never having seen it to within .04. The registered equivalence bound still misses narrowly, so F6 stays unconfirmed under its own criterion.
+  - A structural memory slot that re-renders the robot's own first view (one image patch plus one 3D plane, the policy frozen) restores two-thirds of the loss on pi0.5 and a quarter on GR00T. That passes the registered fix on both.
+  - The fix shows that the information the policies need is in their first view. They do not keep it.
+- **Deviations:**
+  - 124 new states were drawn, not 60: the bound needs about n = 150 for pi0.5.
+  - The two occlusion-rule changes above, both made before any rollout.
+  - The occlusion test uses rendered depth, as fx_r does.
+  - f6o2_tasks.json checks.M holds the superseded sphere rule; the registered rule's check is mcheck.json.
+  - The ledger row records git ef301055, dirty, because the f6o2 files were committed right after the row (c8e4ca3f).
+
 ## 46. Test-time role views on frozen VLAs (m3_prereg tv_frozen, ledger row at 50c81ed0, written before any main rollout; read job 4699065; results/flawed/tv_frozen_read.json, rollouts results/flawed/tv_frozen)
 
 **Question.** ARCHITECTURE_PROPOSAL §4 has two open gaps: R2, retrained on 8 tasks, trails frozen pi0.5 (.425 against .50), and R2 is not separated from an AC-VLA-style whole-wrist mask (§37.2). F7R (§45.2) showed frozen VLAs act on silhouette-painted views. So the role sequencer and the role views go in front of the frozen models themselves, with no retraining.
