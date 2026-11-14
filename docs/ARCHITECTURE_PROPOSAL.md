@@ -26,7 +26,7 @@ The scene-2 evidence (SR §57, m3_prereg s2_cue):
 - The new pairings then succeed (.95-1.00), and the trained halves drop to 0.
 - pi0.5 reads no state, so the cue is in the images.
 
-An input edit can hide a cue the task does not need, such as identity or outline. Position is a different case, because the grasp needs it, so in scene 2 views cannot remove the cue, and only a hand-over (SR §54) does. In this scene each mug's start side is also the side nearer its trained plate, so start position, nearer plate and carry direction are confounded.
+An input edit can hide a cue the task does not need, such as identity or outline. Position is a different case, because the grasp needs it, so in scene 2 views cannot remove the cue, and only a hand-over (SR §54) does. Position routing replicates on pi0 (.993 of 145 placements on the start side, identity RULED OUT), and with both mugs started on the plates' bisector pi0.5 falls back to identity (C .933, C′ .787; depth and first-carry step RULED OUT), so the cue is a ranking, position over identity, not a single cue, though start side and nearer plate stay inseparable (SR §58).
 
 *Where the fix runs out.* The views do not carry to a second scene (SR §50). There, only the hand-over to a target-only place removes F1 (SR §54). The contribution is therefore the diagnosis, meaning which cue routes each failure, more than the fix. See docs/NOVELTY.md.
 

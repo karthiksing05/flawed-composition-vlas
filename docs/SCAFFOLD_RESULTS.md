@@ -3429,3 +3429,202 @@ P's miss is the planner's white-mug weakness from §50 (N1 .333 there, .625 here
 - The visual carrier of the position cue (hand location in the image, the other mug's position, the empty start region) is not isolated.
 - Q does not separate step from position.
 - The reference misses C1 on both manipulations.
+
+## 58. Scene 2: what routes the place when the mugs start on no side, and does position routing hold on pi0? (m3_prereg s2_cue2, ledger row at 9dd17e2c, written before any main rollout; commit 9dd17e2c; smoke job 4711121, rebuild job 4711212, prereg job 4711846; rollout jobs 4711847-4711854, reference job 4711855, read job 4711857; results/flawed/s2cue2_read.json, rollouts results/flawed/s2cue2_roll)
+
+**Question.** In §57, swapping the two mugs' starts sent every held mug to the plate on its start side (287 of 287). In this layout the start side is also the side of the nearer plate and fixes the carry direction. This section asks two things:
+- (1) Which cue routes the place when neither plate is nearer and neither mug stands on a side?
+- (2) Does the position routing hold on a second model (pi0)?
+
+**Harness** (`experiments/s2cue2.py`; job scripts `.claude_tmp/pp/s2cue2_*.sh`). As in §57, only the INITIAL STATE changes. Prompts, servers, client (`s2.py client`), launcher (`s2_roll.sh`), client seed 7, `--bind track`, §50's states k = 4-43 and §57's `branches_40.json` are all unchanged. Every episode pairs with a §50 episode on the same state and branch.
+- **C (central start).** Both the white and the yellow-and-white mug stand on the perpendicular bisector of the two plates' centres, each at its usual depth (x). The white mug takes the smaller x, nearer the robot, as in training. Where the two mugs or the red mug would touch, the build pushes the pair apart along x, and shifts it away from the red mug, in 5 mm steps until nothing touches. It then adds 1 cm of clearance, and +1 cm more per retry until the settled state passes.
+- **C′.** As C with the depth order swapped: the yellow-and-white mug takes the smaller x.
+- **M (mirrored plates).** plate_1 (the BDDL object the instructions call "the left plate") and plate_2 exchange xy. The mugs stay where they were sampled.
+- **P.** §57's swapped starts, reused read-only.
+- **Runs** (tasks K1, K2, N1, N2, 40 states each):
+  - pi0.5: C I (PRIMARY), C tv, C′ I (PRIMARY), C′ tv, M I (PRIMARY);
+  - pi0: P I (PRIMARY), P tv, M I (PRIMARY).
+  - I added the C′ tv and pi0 P tv arms beyond the brief, and declared them in the row. In §57 arm I picked the left-hand mug first, which leaves step inseparable; the tv arms can fill the other stratum.
+  - GR00T was not run (see Deviations).
+- **Reference (C1).** `s2.plan_episode`, unchanged, from C, C′ and M. Under M its target is the plate at the side the instruction names. P's reference is §57's.
+
+**Feasibility (build).**
+- All 64 states pass for every manipulation:
+  - C and C′: settle drift < 1 cm, tilt < 10°, no mug On a plate, no mug-mug contact, equidistance error < 1 cm after settling (< .1 mm as placed), |dx| between the two mugs .111-.140 m, |dy| < .03 m.
+  - M: swap error 0.
+- The first build failed 17 of 64 C / C′ states. The front mug leaned on the red mug or tipped (tilt up to ~85°) within the 10 settle steps, although nothing touched as placed. The clearance retry fixed every one with at most one retry.
+- **M renders pixel-identical to the unmanipulated start** (max |diff| 0, agentview and wrist, k 0-3). The two plates are one object model, so M changes only which BDDL object stands where. It therefore tests the plate OBJECT, which no policy can see, and it does not tell start side from anything else.
+- The agentview camera faces the robot, so the instructions' "left plate" (y < 0) appears on the image's right. In C and C′ the two mugs stand in a column along the camera axis, and the one nearer the camera (larger x) partly hides the other.
+
+**Mapping** (registered in the row). Per episode:
+- The HELD mug is libero_client's `bound` (the first object moved while the gripper is commanded closed), if it is the white or the yellow-and-white mug.
+- A PLACEMENT is an episode where the held mug ends On exactly one plate.
+- Plates are scored by SIDE: L is the plate with y < 0.
+
+Each cue predicts a plate for the held mug:
+- START SIDE: the side of the centre line y = 0 the mug starts on.
+- NEARER PLATE: the plate nearer the mug's start.
+- PLATE OBJECT / IDENTITY: the held mug's trained plate object, wherever it stands.
+- INSTRUCTION: the side the language names, defined only when the named mug is held. §57 counted other-mug placements as not following it.
+- MUG LEFT/RIGHT ORDER: the left mug goes to L.
+- DEPTH ORDER: the mug at the smaller x goes to L, the white mug's trained depth slot.
+- STEP: the first carry goes to L.
+
+Shares are taken over placements where the cue is defined. The CI comes from B = 2000 bootstrap draws of the 40 states, rng 0. Labels:
+- ROUTES iff f ≥ .70 and the lower bound is > .50.
+- RULED OUT iff f ≤ .30 and the upper bound is < .50.
+- Otherwise UNRESOLVED. UNTESTABLE iff fewer than 20 placements define the cue.
+- **A cue is labelled only if it disagrees with every other cue on ≥ 10 placements** (counting each cue defined together with it on ≥ 10). Otherwise it is INSEPARABLE, and cues that route together read "c OR d ROUTES".
+- Success is by side: the named mug ends On the named side's plate. It is paired to §50 on the same states, with the same model and arm (pi0 tv is paired with §50 pi0 I).
+- C1 MET iff the reference reaches ≥ .80 on N1-N2.
+
+**By construction**:
+- Under C and C′, start side, nearer plate and left/right order are NOT DEFINED.
+- Under C, identity and depth always agree.
+- Under P and M, start side, nearer plate, left/right order and depth always agree.
+- **No arm here splits start side from nearer plate.** C removes both together. With "side" measured from the plates' bisector, the two are the same function in any layout.
+
+**Seen before registration** (`experiments/prereg/s2_cue2_seen.txt`; smoke states 0-3, outputs outside results/).
+- The predictions were written BEFORE the smoke and the build.
+- The build failure and the rebuild are described above. States k 0-3 are bit-identical across both builds, so the smoke stands.
+- I viewed the build's contact sheet.
+- Smoke rollouts:
+  - pi0.5 C and C′: 6-9 placements per run. Every C placement (I and tv) and every C′ tv placement went to R.
+  - pi0.5 M I: 16 of 16 placements on the start side.
+  - pi0 P I: 14 of 14 on the start side. pi0 M I: 11 of 11.
+- Reference smoke: N1-N2 .75 on each manipulation.
+
+**Cue shares** (placements; share [CI]; label). PRIMARY runs are in bold.
+
+| cue | **pi0.5 C I** (90) | pi0.5 C tv (79) | **pi0.5 C′ I** (61) | pi0.5 C′ tv (62) | **pi0.5 M I** (156) | **pi0 P I** (145) | pi0 P tv (55) | **pi0 M I** (129) |
+|---|---|---|---|---|---|---|---|---|
+| start side | not defined | not defined | not defined | not defined | 1.00 [1.00, 1.00] ROUTES* | .993 [.978, 1.00] ROUTES* | .364 [.256, .456] UNRESOLVED* | .992 [.975, 1.00] ROUTES* |
+| nearer plate | not defined | not defined | not defined | not defined | = start side* | = start side* | = start side* | = start side* |
+| left/right order | not defined | not defined | not defined | not defined | = start side* | = start side* | = start side* | = start side* |
+| depth order | .933 [.856, .989] ROUTES† | .785 [.718, .853] ROUTES† | **.213 [.106, .323] RULED OUT** | .629 [.528, .750] UNRESOLVED | 1.00 ROUTES* | .993 ROUTES* | .364 UNRESOLVED* | .992 ROUTES* |
+| plate object / identity | .933 [.856, .989] ROUTES† | .785 [.718, .853] ROUTES† | .787 [.677, .894] ROUTES‡ | .371 [.250, .472] UNRESOLVED | **.000 [.000, .000] RULED OUT** | **.007 [.000, .022] RULED OUT** | .636 [.544, .744] UNRESOLVED | **.008 [.000, .025] RULED OUT** |
+| step (first carry → L) | **.067 [.012, .130] RULED OUT** | **.063 [.014, .115] RULED OUT** | .770 [.667, .873] ROUTES‡ | **.113 [.046, .193] RULED OUT** | 1.00 ROUTES* | .993 ROUTES* | .309 [.196, .415] UNRESOLVED* | .992 ROUTES* |
+| instruction | .491 [.420, .564] UNRESOLVED (55) | **.766 [.690, .844] ROUTES** (77) | .382 [.256, .500] UNRESOLVED (34) | **.789 [.703, .891] ROUTES** (57) | .513 UNRESOLVED (78) | .500 UNRESOLVED (72) | **.898 [.809, .978] ROUTES** (49) | .470 UNRESOLVED (66) |
+| **registered routing label** | **IDENTITY OR DEPTH ROUTES** | IDENTITY OR DEPTH ROUTES; INSTRUCTION ROUTES | **IDENTITY OR STEP ROUTES** | INSTRUCTION ROUTES | **START SIDE OR NEARER PLATE OR L/R ORDER OR DEPTH OR STEP ROUTES; PLATE OBJECT RULED OUT** | **same group ROUTES; IDENTITY RULED OUT** | INSTRUCTION ROUTES | **same group ROUTES; PLATE OBJECT RULED OUT** |
+
+\* Start side, nearer plate, left/right order, depth order and step are INSEPARABLE here. Step separates from the others only on white-held placements, and there were 0 under pi0.5 M, pi0 P I and pi0 M, and 3 under pi0 P tv. † Identity and depth are INSEPARABLE under C (by construction). ‡ Identity and step are INSEPARABLE under C′ I (1 yellow-and-white-held placement).
+
+**Where each held mug went** (placements, L / R).
+
+| run | white held | yellow-and-white held | first moved: yellow-and-white / white / none |
+|---|---|---|---|
+| pi0.5 C I | 5 / 5 | 1 / 79 | .78 / .21 / .02 |
+| pi0.5 C tv | 5 / 17 (N1: 1 / 15; K1: 4 / 2) | 0 / 57 | .57 / .43 / .01 |
+| pi0.5 C′ I | 47 / 13 | 0 / 1 | .04 / .96 / 0 |
+| pi0.5 C′ tv | 7 / 39 (N1: 0 / 31; K1: 7 / 3) | 0 / 16 | .26 / .69 / .04 |
+| pi0 P tv (yellow-and-white starts left) | 0 / 3 | 17 / 35 (K2: 0 / 30; N2: 12 / 4) | .76 / .06 / .16 |
+
+**Success by side, paired to §50 on the same states and branches** (state-bootstrap CI).
+
+| run | K1 | K2 | N1 | N2 |
+|---|---|---|---|---|
+| pi0.5 C I (§50 I: 1.00 / 1.00 / 0 / 0) | .025 (−.975) | .600 (−.400 [−.550, −.250]) | .050 (+.050 [.000, +.125]) | .000 (.000) |
+| pi0.5 C tv (§50 tv: .975 / .90 / 0 / 0) | .125 (−.850) | 1.00 (+.100 [+.025, +.200]) | **.375 (+.375 [+.225, +.525])** | .000 |
+| pi0.5 C′ I | .250 (−.750) | .350 (−.650) | .075 (+.075 [.000, +.151]) | .000 |
+| pi0.5 C′ tv | .175 (−.800) | .175 (−.725) | **.775 (+.775 [+.650, +.900])** | .000 |
+| pi0.5 M I | 1.00 (.000) | 1.00 (.000) | .000 | .000 |
+| pi0 P I (§50 pi0 I: .825 / .75 / 0 / 0) | .000 (−.825 [−.925, −.700]) | .000 (−.750 [−.875, −.600]) | **.425 (+.425 [+.275, +.600])** | **.900 (+.900 [+.800, +.975])** |
+| pi0 P tv (vs §50 pi0 I) | .000 (−.825) | .750 (.000 [−.200, +.200]) | .100 (+.100) | .300 (+.300 [+.150, +.450]) |
+| pi0 M I | .775 (−.050 [−.125, .000]) | .725 (−.025) | .000 | .000 |
+
+- Under M, the BDDL's object goal flips: N1 and N2 "succeed" on .95 / 1.00 (pi0.5) and .875 / .80 (pi0), and K1 / K2 on 0.
+- Per episode, M I repeats §50 I exactly on pi0.5 (held mug and destination side agree on 160 of 160 episodes). On pi0 they agree on .90-1.00 per task.
+
+**C1 (reference planner, by side).**
+- C: K1 .575, K2 .95, N1 .575, N2 .95; N1-N2 .763, **C1 UNMET**.
+- C′: .575 / .95 / .575 / .975; .775, **C1 UNMET**.
+- M: .625 / .925 / .275 / .95; .613, **C1 UNMET**.
+
+The planner's misses are again the white mug (K1 and N1 .575 from the centre). Under M they are §50's long-carry N1 weakness, because M is §50 with relabelled plates. pi0.5 itself reaches N1 .775 under C′ tv, so the white-mug placement on the right plate is reachable from the centre.
+
+**Registered verdicts.**
+- **(1) Neither plate nearer, neither side (pi0.5):**
+  - **C I: IDENTITY OR DEPTH ROUTES** (.933 of 90); STEP RULED OUT (.067).
+  - **C′ I: IDENTITY OR STEP ROUTES** (.787 of 61); DEPTH RULED OUT (.213).
+  - Start side, nearer plate and left/right order are not defined in either.
+  - Secondary arms: C tv adds INSTRUCTION ROUTES (.766, alongside IDENTITY OR DEPTH .785). C′ tv reads INSTRUCTION ROUTES (.789), with STEP RULED OUT and identity UNRESOLVED.
+- **(2) Second model (pi0):**
+  - **pi0 P I: START SIDE (≡ nearer plate ≡ left/right order ≡ depth ≡ step) ROUTES** (.993 of 145); **IDENTITY RULED OUT** (.007).
+  - **pi0 M I:** the same group ROUTES (.992 of 129); **PLATE OBJECT RULED OUT** (.008).
+  - Secondary pi0 P tv: INSTRUCTION ROUTES (.898 of 49), with the start-side group UNRESOLVED (.364).
+- **pi0.5 M I:** the start-side group ROUTES (1.00 of 156); PLATE OBJECT RULED OUT (0 of 156).
+- **C1: UNMET** for C (.763), C′ (.775) and M (.613).
+
+**Predictions** (in the row, written before the smoke) against the outcome.
+- **Overall (C / C′):** "with no side cue, the trained first carry dominates; identity alone does not route (65%)" was **wrong**. My 35% alternative happened: identity routes once position is neutral, and step is RULED OUT under C.
+- **C I:**
+  - ≥ 20 placements (85%): right (90).
+  - "White (front) held first ~.65": wrong. The mug nearer the camera, the yellow-and-white, was held first on .78.
+  - "First carry left ~.70": wrong (.067).
+  - IDENTITY = DEPTH UNRESOLVED (55%): wrong; ROUTES, which I gave 30%.
+  - Instruction UNRESOLVED (60%): right.
+  - Success K1 ~.55 / K2 ~.20 / N1 ~.15 / N2 ~.15 against .025 / .60 / .05 / 0.
+- **C tv:** yellow-and-white-held ≥ 10 (70%): right (57). STEP ROUTES (45%): wrong; RULED OUT.
+- **C′ I:**
+  - "Front (yellow-and-white) held first": wrong. The white mug, now nearer the camera, was held on .96.
+  - Depth ~.65 / identity ~.40 was reversed: identity .787, depth .213, RULED OUT.
+  - DEPTH separated from STEP iff ≥ 10 white-held placements (55%): it was (60), and depth is RULED OUT.
+  - N2 ~.25: wrong (0).
+- **C′ tv:** white-held ≥ 10 (75%): right (46). Identity not ROUTES (70%): right (.371).
+- **M:**
+  - Pixel identity (95%): right.
+  - Start-side group ROUTES and plate object RULED OUT (95%, both models 85-95%): right.
+  - pi0.5 agreement with §50 ≥ .90 (80%): right (1.00).
+  - BDDL N1 ~.95: right.
+- **pi0 P I:**
+  - Start side ROUTES (70%): right (.993).
+  - Identity RULED OUT (70%): right.
+  - Inseparable from step (60%): right (0 white-held).
+  - Success N1 ~.55 / N2 ~.70 / K ~.05 against .425 / .90 / 0.
+- **pi0 P tv:** white-held ≥ 10 (65%): wrong (3). Start side ROUTES and separated (55%): wrong. INSTRUCTION ROUTES, which I did not predict.
+- **C1:** C and C′ MET (40% each): wrong. M UNMET (85%): right.
+
+**Checks.**
+- Code, state and input hashes match the row: 0 mismatches over 44 files, including the 12 manipulated state arrays, P's 4 reused arrays, s2cue2_states.json, branches_40.json, s2.py, s2_roll.sh, libero_client.py, serve_guided.py, backbone.py and the job scripts.
+- The 24 §50 files used for pairing are pinned by sha256 and match.
+- All 8 rollout jobs logged the registered server commands (5 pi0.5, 3 pi0). All 32 clients exited 0, and no job restarted.
+- The rollout, reference and read jobs were submitted held and chained afterok on the prereg job, and each refuses without the row. I confirmed the row (sacct, the q2_cpu log, and a grep of `ledger/m3_prereg/m3_prereg__libero_10__s2_cue2__s0__9dd17e2c.json` for its tag and status) before releasing them.
+
+**Reading.**
+- **Position overrides identity when it is informative, and identity takes over when it is not.** When the two starts disagree with identity (§57 P, pi0 P), 0-1 of 432 placements across the two models go to the mug's trained plate. With both mugs on the plates' bisector (C, C′), arm I puts the held mug on its trained plate:
+  - C: the yellow-and-white mug goes right 79 of 80; the white mug splits 5 / 5.
+  - C′: the white mug goes left 47 of 60.
+  - The two depth orders rule out depth (C′ .213) and the first-carry step (C .067).
+  - So identity is a fallback cue, not absent. In §50 and §57, the 0 of 720 and 287 of 287 come from position winning over identity when both are informative.
+- **The yellow-and-white mug always goes right from the centre** (153 of 154 placements over the four C / C′ runs). This holds under tv too, where it is painted in the target phase and the right plate is the painted one on N2. **N2 stays 0 in every run here.**
+- **With identity hidden, the white mug follows the view's unpainted plate**:
+  - N1 under tv puts the white mug on the right plate on 46 of 47 placements: C N1 .375, C′ N1 .775, against 0 in §50 and §54.
+  - On K1 under tv it goes left on 11 of 16.
+  - This is the first time role views produce a new placement in scene 2. They do it only when no start side is available, and only for the white mug.
+- **pi0 replicates position routing on arm I.** Under P, .993 of 145 placements go to the start side, and identity is RULED OUT (.007). N2 rises to .90 and N1 to .425, and K1 and K2 fall to 0. pi0 picks the left-hand mug first on 159 of 160 P I episodes (the other moved no mug), so step cannot be separated, which is §57's pi0.5 I limit.
+- **But pi0 is steerable by the views where pi0.5 was not.**
+  - Under P tv, pi0 carries the yellow-and-white mug from its swapped left start to the unpainted right plate on all 30 K2 placements. K2 returns to .75, and the instruction routes .898.
+  - §57's pi0.5 P tv put 128 of 128 placements on the start side, onto the painted plate.
+  - pi0 reads state and pi0.5 does not (§57 R). Whether that difference, or the backbone, makes pi0 follow the views is not tested here.
+- **M is a null manipulation for any image-only policy, and it behaves as one.** The plate object is RULED OUT on both models (0 of 156 and 1 of 129), and pi0.5 repeats §50 episode for episode.
+- **Start side and nearer plate remain unseparated.** C removes both at once. With the side measured from the plates' bisector they are the same function, so separating them needs moved plates (an asymmetric layout), not moved mugs.
+
+**Deviations.**
+- GR00T was not run, even descriptively. It is NOT TESTABLE per §50, and the brief allowed it only as descriptive.
+- Two secondary arms were added (pi0.5 C′ tv, pi0 P tv), declared in the row.
+- The first build failed 17 of 64 C / C′ states. I added a clearance retry and rebuilt before the row. The first build is kept at `.claude_tmp/pp/s2cue2_build_v1`, and only the failing states changed.
+- The manipulated states were built into results/flawed/s2cue2 before the row, as in §57. They are inputs, hashed in the row.
+- INSTRUCTION is undefined when the non-named mug is held, which differs from §57's convention. This was registered.
+- M's BDDL goal is the plate object, so a spatially instructed placement does not end the episode early. Under M, K1 and K2 episodes ran to the step limit, and their placements are read at the end.
+- I viewed the build sheet PNG (`.claude_tmp/pp/s2cue2_sheet.png`) on the login node.
+- The ledger row carries dirty=true, because other agents' files were uncommitted (serve_guided.py and backbone.py among them; both are hashed).
+- I submitted the prereg through q2_cpu.sh with the full exclude list on the sbatch line.
+- No python ran and no JSON was opened on the login node.
+
+**Limits.**
+- One scene, 40 states per task, one client seed.
+- No arm separates start side from nearer plate or carry direction (see Reading).
+- In C and C′ the two mugs stand in a column along the camera axis, so the one nearer the robot is partly occluded. The camera-near mug is grasped first on .78-.96 under I. That grasp preference is a position effect this probe does not explain.
+- The white-held stratum under C I is small (10 placements).
+- The reference misses C1 on all three manipulations, but pi0.5 C′ tv reaches .775 on N1.
+- GR00T was not run.
