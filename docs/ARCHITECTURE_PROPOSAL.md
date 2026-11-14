@@ -39,13 +39,13 @@ The same principles in their strongest form give the **hand-over variant**: the 
 | hand-over, learned perception | HP − intact (SR §44.1) | GR00T .17 → .84; pi0.5 .50 → .85 [+.017, +.675] | GR00T BEATS THE VLA; pi0.5 NOT SHOWN |
 | parts policy alone, learned masks | PU-L (SR §40.1) | .881 on new pairings | HOLDS against simulator masks |
 | role views at test time on FROZEN VLAs (no training) | TV − I, new pairings (SR §46) | pi0.5 .50 → .725 [−.08, +.53]; GR00T .167 → .40 [+.025, +.47]; cross-chunk excess pi0.5 +.325 → +.054 | GR00T TV WINS; pi0.5 NO CLEAR DIFFERENCE |
-| role views + role phrases on frozen pi0.5 | TV+P − I (SR §46, descriptive, unregistered) | .50 → .925 [+.13, +.72]; trained tasks −.01; cross-chunk break gone | descriptive; confirmatory read on fresh states PENDING. On GR00T the phrases hurt (+.00 new, −.31 trained) |
+| role views + role phrases on frozen pi0.5 | TV+P − I (SR §46, descriptive, unregistered) | .50 → .925 [+.13, +.72]; trained tasks −.01; cross-chunk break gone | **CONFIRMED on 20 fresh states (SR §47, m3_prereg tv_fresh): .450 → .817, +.367 [+.092, +.634]; trained tasks −.010 [−.08, +.04] NO COST; cross-chunk excess +.450 → −.008.** On GR00T the phrases hurt (+.00 new, −.31 trained; not run fresh) |
 | role views vs AC-VLA wrist mask on frozen VLAs | TV − W (SR §46) | pi0.5 +.18 [−.05, +.45]; GR00T +.24 [−.03, +.55] | not separated |
 | referent resolver + role view | F7R − relational (SR §45.2) | pi0.5 SP .40 → 1.00, NG .20 → .775; GR00T SP .30 → .85; GR00T NG capped by its own unique-name control (.50) | FIXED on 3 of 4 cells; resolver 160/160. On pi0, X-VLA, SmolVLA 0 of 6 FIXED, capped by each model's named-referent ceiling (SR §45.3) |
 
 ## 4. What the vetting does not yet support
 
-- **R2 does not beat frozen pi0.5** (.425 against .50). It was trained on 8 tasks with a frozen VLM.
+- **Resolved for pi0.5 by the frozen front end.** The retrained R2 (.425) trails frozen pi0.5 (.50), but the same structure applied at test time to frozen pi0.5 (role sequencer + role views + role phrases, no training) beats intact pi0.5 on new pairings, confirmed on fresh states (+.367, SR §47) at no trained-task cost. On GR00T, role views alone gain +.233 on main states (TV WINS, §46) and +.183 [−.008, +.425] on fresh states (UNRESOLVED); the phrases hurt GR00T. N4 and N6 stay near intact under TV+P.
 - **R2 is not separated from AC-VLA-style masking.**
 - **The hand-over variant overlaps ReGuide and LiLo-VLA** (reports/novelty_check_failure_atlas.md).
 - **Everything rests on one scene,** with one seed per rung. The failure atlas replicates on 20 fresh states (F1 on 4 of 4 models, F2 on 2 of 2; ARCH_FAILURES "Fresh-state replication"); the fix rungs have not been re-run on fresh states.
