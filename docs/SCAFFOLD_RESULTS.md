@@ -2063,3 +2063,92 @@ Share of N1-N6 episodes ending at HANDOFF or TRANSPORT: pi0.5 I .325, tv .067, t
 - The depth-free learned segmenter was trained on K1-K8 renders of this scene.
 - The detector threshold was fitted on demos.
 - Entity names for the class-to-entity map come from the env, as in R2l.
+
+## 47. Confirmatory: test-time role views on fresh states (m3_prereg tv_fresh, ledger row at 8d5be97e, written before any fresh TV rollout; rollout jobs 4699940-4699942, read job 4699943; results/flawed/tv_fresh_read.json, rollouts results/flawed/tv_fresh)
+
+**Question.** In §46, frozen pi0.5 with role views plus R1's role phrases (tvp) reached .925 on new pairings, against .50 intact. That arm had no registered verdict. Does the gain hold on states that no TV arm has seen?
+
+**States.** These are the atlas replication's 20 fresh familiar-layout states, k = 36-55 (harness trials 24-43; ARCH_FAILURES "Fresh-state replication"). The intact arm I reuses that replication's rollouts (results/flawed/pp_atlas_fresh).
+
+**System.** `experiments/tv_frozen.py client` runs unchanged. The launcher `experiments/tv_fresh_roll.sh` is tv_roll.sh with only `--fresh n2_states_fresh` and `--branches n2_branches_fresh.json` moved, plus pp_atlas_fresh_roll.sh's server command (`pp_serve_purify --mode intact --comp= --seed 13`). The read `experiments/tv_fresh.py` imports tv_frozen's estimators and pp_atlas's stage rule. The runs are pi0.5 tvp, pi0.5 tv and GR00T tv, on N1-N6 and K1-K4, K6.
+
+**Mapping.** Paired bootstrap over (task, state), B = 2000, rng 0.
+- **Primary, pi0.5 tvp − I on N1-N6:** CONFIRMED iff d > .10 and the lower bound is > 0; REFUTED iff the upper bound is < .10; otherwise UNRESOLVED.
+- **Guard, pi0.5 tvp − I on K tasks:** NO COST iff the lower bound is > −.10.
+- **Secondary, GR00T tv − I and pi0.5 tv − I on N1-N6:** the primary's rule.
+- **Descriptive:** the atlas excess per arm, and tvp against R2-retrain's main-state .425.
+
+**Harness checks (all pass).**
+- Every arm's client arguments equal I's, apart from out, port and videos.
+- Every episode's trial, branch, variant and branch step equal I's.
+- I's excess reproduces pp_atlas_fresh_read.json exactly on both models.
+- The state and branch files match the hashes in the prereg row.
+- The server logs show the same command, seed 13.
+
+**Seen before registration.** The row discloses the §46 main-state results and the fresh atlas excess table. I had not inspected the fresh I success matrices. There was no smoke, because the code path is unchanged.
+
+**Result.**
+
+| N1-N6 familiar, fresh | pi0.5 | GR00T |
+|---|---|---|
+| I (intact) | .450 | .183 |
+| tv | .700 | .367 |
+| tvp | **.817** | not run |
+| **tvp − I (primary)** | +.367 [+.092, +.634]: **CONFIRMED** | |
+| tv − I (secondary) | +.250 [−.042, +.525]: **UNRESOLVED** | +.183 [−.008, +.425]: **UNRESOLVED** |
+| tvp − tv (no verdict) | +.117 [−.017, +.283] | |
+
+Per task, pi0.5 tvp against I:
+
+| task | N1 | N2 | N3 | N4 | N5 | N6 |
+|---|---|---|---|---|---|---|
+| I | .20 | .25 | .60 | .55 | .75 | .35 |
+| tvp | .95 | 1.00 | 1.00 | .50 | 1.00 | .45 |
+
+**Known tasks K1-K4, K6.**
+
+| arm | pi0.5 | arm − I | GR00T | arm − I |
+|---|---|---|---|---|
+| I | .99 | | .99 | |
+| tv | .98 | −.01 [−.07, +.05] | .99 | .00 [−.05, +.06] |
+| tvp | .98 | −.01 [−.08, +.04]: **NO COST** | | |
+
+**The atlas excess per arm** (E [CI] and verdict).
+
+| arm | pi0.5 within | pi0.5 cross | verdict | GR00T within | GR00T cross | verdict |
+|---|---|---|---|---|---|---|
+| I | +.075 [.00, .18] | +.450 [.28, .61] | CROSS-CHUNK | +.308 [.08, .57] | +.500 [.26, .74] | BOTH |
+| tv | +.154 [.02, .35] | +.125 [.01, .28] | BOTH | +.333 [.08, .63] | +.296 [.06, .58] | BOTH |
+| tvp | +.167 [.00, .38] | −.008 [−.05, +.03] | NEITHER | | | |
+
+Share of N1-N6 episodes ending at HANDOFF or TRANSPORT: pi0.5 I .450, tv .125, tvp .017; GR00T I .500, tv .300.
+
+**Against R2 (descriptive, unpaired).** pi0.5 tvp on fresh states is .817, against R2-retrain's .425 on the main states: +.39 [+.16, +.58]. R2 has never run on fresh states. The interval comes from tvp's own bootstrap shifted by .425.
+
+**Perception and sequencer (no verdict).**
+- Segmenter IoU: .94-.99. The lowest is the wine bottle under GR00T, .94 agentview.
+- Paint IoU: .97-.99. Active-object leak ≤ .002.
+- The detector fired in every episode, with a median first onset of 0 steps from the oracle Held's onset.
+- The oracle Held was already true at the detector's first onset in only 56-60% of episodes. §46 did not report this figure, so I cannot compare it.
+
+**My predictions.**
+- Primary CONFIRMED (65%): right. The point estimate, +.367, is in my +.25 to +.40 range.
+- Guard NO COST (80%): right.
+- GR00T tv UNRESOLVED (50%): right. pi0.5 tv UNRESOLVED (55%): right.
+- tvp cross-chunk excess near 0: right (+.450 → −.008).
+
+**Reading.**
+- **Role views plus phrases on frozen pi0.5 replicate as registered.** On fresh states, the frozen model with the test-time front end goes from .45 to .82, with no measurable cost on known tasks. The cross-chunk break the atlas measures on these states (+.450) falls to zero.
+- **Two pairings resist.** N4 (.50) and N6 (.45) do not improve over I. Both share K4 as a partner (PAIR N4 = K4+K1, N6 = K4+K6), but N5 (K4+K2) reaches 1.00, so K4 alone does not explain them. The remaining failures sit in the within-chunk stages: tvp's within E is +.167, against I's +.075.
+- **Role views alone are no longer separable from I.** tv gains +.25 on pi0.5 and +.18 on GR00T, and both intervals cross 0. §46's GR00T TV WINS (+.233 [+.025, +.467]) does not reach its bar here. The point gain is similar; the lower bound is −.008.
+- **tvp against R2-retrain.** The frozen pi0.5 with the front end beats the retrained R2 by about .39. The comparison spans two state sets, so it is descriptive.
+
+**Deviations.**
+- The rollout jobs ran on tail-lab with afterok on the prereg job (4699925). I checked the ledger row before submitting them.
+- The ledger row carries dirty=true, because other agents' files were uncommitted in the tree.
+- The read job (4699943) was chained afterok on all three rollout jobs and ran once.
+
+**Limits.**
+- One scene, 20 fresh states, six pairings.
+- GR00T tvp was not rerun. §46 showed it fails, and it was not registered here.
+- The segmenter, detector threshold and role phrases are unchanged from §46, so the limits listed there carry over.
