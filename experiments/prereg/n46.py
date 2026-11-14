@@ -41,7 +41,7 @@ SEEN = ("When this was written: SR 46-49 (N4 / N6 per task under every arm), the
         "Code is new, so a smoke ran before this row: job 4705214, pi0.5, arms vla / servo / open, N4 and N6, smoke states 0-3 "
         "(n2_branches_smoke.json), output outside results/ (.claude_tmp/pp/n46_smoke). Smoke outcomes are in the row's 'smoke' field.")
 SMOKE = ("job 4705214 (tail-lab), pi0.5, N4 + N6, smoke states 0-3, output .claude_tmp/pp/n46_smoke: every prefix held the bottle at "
-         "hand-over (16/16), no timeout, prefix 93-291 steps, d_xy .013-.035 m, bottle z .04-.06 m (N4) / .11-.14 m (N6) above the target "
+         "hand-over (24/24 episodes; the 8 prefixes are identical across arms), no timeout, prefix 93-291 steps, d_xy .013-.035 m, bottle z .04-.06 m (N4) / .11-.14 m (N6) above the target "
          "origin; vla N4 4/4, N6 4/4; servo N4 4/4, N6 4/4; open N4 3/4, N6 3/4. Nothing changed after the smoke.")
 Z = dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0)
 print(ledger.record("m3_prereg", bench="libero_goal", tag="n46", seed=0,
