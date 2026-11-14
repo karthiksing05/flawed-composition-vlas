@@ -2246,3 +2246,102 @@ Share of N1-N6 episodes ending at HANDOFF or TRANSPORT: pi0.5 I .450, tv .125, t
 - One scene, 20 fresh states, six pairings.
 - GR00T tvp was not rerun. §46 showed it fails, and it was not registered here.
 - The segmenter, detector threshold and role phrases are unchanged from §46, so the limits listed there carry over.
+
+## 48. Attribution: phrases vs role views vs wrist mask (fresh states) (m3_prereg tv_attr, ledger row at ef301055, written before any main p or wp rollout; rollout jobs 4701330-4701331, read job 4701332; results/flawed/tv_attr_read.json, rollouts results/flawed/tv_attr)
+
+**Question.** §47 confirmed tvp on frozen pi0.5: .817 against intact .450 on fresh states. tvp has two parts, the silhouette role views and R1's role phrases. Which part carries the gain? And do the silhouettes beat an AC-VLA-style wrist mask once both arms get the same prompt? In §46 and §47, w ran without phrases, so that comparison mixed the prompt with the view.
+
+**Arms** (`experiments/tv_attr.py`, pi0.5 only).
+- **p.** R1's phrases only ("object: the cream cheese" / "target: the plate"). The same ProprioHeld detector switches them. Nothing is painted.
+- **wp.** §46's w (the whole wrist image grey 128 while the detector is on, no silhouettes) plus the same phrases.
+- **Reused.** I comes from pp_atlas_fresh, and tv and tvp come from tv_fresh.
+
+The client imports `tv_frozen.Front`: wp is Front's w arm unchanged, and p steps the same detector and passes the images through. The prompt wrapper is tvp's. The launcher `experiments/tv_attr_roll.sh` is tv_fresh_roll.sh with only the client script moved: same server (`pp_serve_purify --mode intact --comp= --seed 13`), same states, branches, client seed and flags.
+
+**Mapping.** Paired bootstrap over (task, state), B = 2000, rng 0, on N1-N6.
+- **Views, tvp − p:** VIEWS ADD iff d > .10 and the lower bound is > 0; VIEWS NOT NEEDED iff the upper bound is < .10; otherwise UNRESOLVED.
+- **Separation, tvp − wp:** SEPARATED iff d > .10 and the lower bound is > 0; W+P EQUIVALENT iff the upper bound is < .10; otherwise UNRESOLVED.
+- **Descriptive:** p − I, wp − I, known-task cost per arm, and the atlas excess per arm.
+
+**Checks (all pass).**
+- Client arguments and per-episode trial, branch, variant and branch step equal I's for all four arms.
+- I's excess reproduces pp_atlas_fresh_read.json.
+- I, tv and tvp reproduce tv_fresh_read.json's success and cross E.
+- The state files match tv_fresh's row, and all 44 reused rollout files match the hashes in tv_attr's row.
+- Both server logs show the same command, seed 13.
+
+**Seen before registration.** The row discloses the §46 and §47 numbers. The code changed, so a smoke ran first: job 4701216, pi0.5, p and wp, N1 only, smoke states 0-1, output outside results/. p and wp each succeeded on 1 of 2. A first smoke attempt (4701214) failed on the launcher's state-directory check, which I fixed before 4701216. Nothing changed after the smoke.
+
+**Result.**
+
+| N1-N6 familiar, fresh, pi0.5 | success [CI] |
+|---|---|
+| I (intact) | .450 [.258, .642] |
+| p (phrases only) | .475 [.225, .733] |
+| wp (wrist grey + phrases) | .375 [.108, .675] |
+| tv (views only) | .700 [.475, .900] |
+| tvp (views + phrases) | .817 [.583, 1.00] |
+| **tvp − p (views)** | +.342 [+.050, +.667]: **VIEWS ADD** |
+| **tvp − wp (separation)** | +.442 [+.208, +.675]: **SEPARATED** |
+| p − I (no verdict) | +.025 [−.150, +.192] |
+| wp − I (no verdict) | −.075 [−.392, +.250] |
+| wp − p (no verdict) | −.100 [−.400, +.233] |
+| p − tv (no verdict) | −.225 [−.567, +.100] |
+| tvp − tv (no verdict, §47) | +.117 [−.017, +.283] |
+
+Per task:
+
+| arm | N1 | N2 | N3 | N4 | N5 | N6 |
+|---|---|---|---|---|---|---|
+| I | .20 | .25 | .60 | .55 | .75 | .35 |
+| p | .30 | .10 | .60 | .55 | 1.00 | .30 |
+| wp | .40 | .60 | .15 | .05 | 1.00 | .05 |
+| tv | .65 | 1.00 | 1.00 | .45 | .70 | .40 |
+| tvp | .95 | 1.00 | 1.00 | .50 | 1.00 | .45 |
+
+**Known tasks K1-K4, K6 (cost, no verdict).**
+
+| arm | success | arm − I |
+|---|---|---|
+| I | .99 | |
+| p | .93 | −.06 [−.24, +.04] |
+| wp | .76 | −.23 [−.41, −.07] |
+| tv | .98 | −.01 [−.07, +.05] |
+| tvp | .98 | −.01 [−.08, +.04] |
+
+p's cost comes from K4 (.65). wp loses on K2 (.70), K4 (.70) and K6 (.50).
+
+**The atlas excess per arm** (E [CI] and verdict).
+
+| arm | within | cross | verdict | HANDOFF + TRANSPORT share |
+|---|---|---|---|---|
+| I | +.075 [.00, .18] | +.450 [.28, .61] | CROSS-CHUNK | .450 |
+| p | +.183 [.01, .41] | +.254 [.01, .56] | BOTH | .342 |
+| wp | +.275 [−.05, .63] | +.042 [−.21, .36] | NEITHER | .217 |
+| tv | +.154 [.02, .35] | +.125 [.01, .28] | BOTH | .125 |
+| tvp | +.167 [.00, .38] | −.008 [−.05, +.03] | NEITHER | .017 |
+
+**Sequencer (no verdict).** The detector fired in every episode of p and wp. It fired more than once in 16% of p episodes and 65% of wp episodes, against 6-11% under tv and tvp. Under wp the grey wrist goes with repeated grasp and release cycles.
+
+**My predictions.**
+- p at .60-.75: wrong. p is .475, no better than I.
+- VIEWS UNRESOLVED (65%): wrong. The views add, +.342.
+- SEPARATED (35%): right, with a lower bound well above 0.
+- wp at or below p, with a known-task cost: right (.375 against .475; −.23 on K tasks).
+- p cross excess between I's and tvp's: right (+.254).
+
+**Reading.**
+- **The silhouettes carry the gain.** Phrases alone leave frozen pi0.5 where it was (.475 against .450). The same phrases on top of the role views reach .817, and the views add +.342 [+.050, +.667]. So the role views are the working part of the front end. The phrases add something only together with them: tv .700 → tvp .817, an interval that crosses 0 (§47).
+- **The views are separated from AC-VLA at a matched prompt.** With the same phrases, the silhouettes beat whole-wrist grey by +.442 [+.208, +.675]. The open gap from §37.2 and §46 (R2 − R2w, tv − w, both crossing 0) closes on frozen pi0.5 once the prompt is held fixed.
+- **The wrist mask does harm here.** wp is below I on new pairings (−.075) and costs .23 on known tasks. It collapses N3, N4 and N6 to .15, .05 and .05 and fires repeated holds. The cross-chunk excess falls (+.042) because these episodes fail before the handoff.
+- **Phrases alone shift the failure only partly.** p cuts the cross-chunk excess from +.450 to +.254 and moves failures into the within-chunk stages (+.183). Only the views bring the cross-chunk excess near 0.
+
+**Deviations.**
+- The rollouts ran on overcap, not tail-lab, because tail-lab was at the per-user cap. Neither job was preempted (restart 0 throughout), and both were chained afterok on the prereg job (4701327). I checked the ledger row before submitting them.
+- The launcher's state check was changed from `states.npy` to the directory before the smoke and the prereg. The main runs use the fresh directory, which has states.npy, so the change does not touch them.
+- The ledger row carries dirty=true, because other agents' files were uncommitted in the tree.
+
+**Limits.**
+- One scene, 20 fresh states, six pairings, pi0.5 only.
+- The wp arm is a proxy for AC-VLA (a whole-wrist grey at test time on a frozen model), not AC-VLA's trained method.
+- The segmenter, detector and phrase limits of §46 carry over.
