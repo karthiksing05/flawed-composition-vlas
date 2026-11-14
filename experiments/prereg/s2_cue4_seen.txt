@@ -1,0 +1,19 @@
+S2CUE4 (SR 60): seen before registration.
+- SR 46-59 in full.
+- Predictions (s2_cue4_pred.txt) written while the policy-free scan ran, before the pick, the build and any smoke.
+- Feasibility scan, job 4715009 (no policy): 44 new states (seed 845000 + k), none equal to an SR 50 or SR 59 state.  Unmanipulated:
+  plate pixels L 686-1301, R 720-1376, centroid distance ~120 px each; SALIENT undefined on 44 of 44 (the trained layout is
+  symmetric).  8 candidates: 6 geometry-feasible (c2, c3 fail: plate placed on a mug on 9 states, clearance on 12); all 6 SEP
+  44 of 44 on Sx and PSx.  Reference on states 0-7 >= .50 per plate on all 6 (PSx left plate .5625-.75).  PICK c7: plate_1
+  (left) at (0.00, -0.28), plate_2 (right) at (0.15, 0.04); nearer-plate margin .119-.186 m; LAYOUT FEASIBLE.  Agentview:
+  left plate 1276 px, centroid 116.1 px from centre; right plate 2574 px (2.02x), 93.1 px from centre (23 px nearer); wrist view
+  at the start: left ~700-778 px, right 4328 px.  SR 59's Sm on the new states: GEOM_OK 44 of 44, start side vs nearer SEP 44 of
+  44, left plate 872 px at 160.5 px from centre, right 2138 px at 74.9 px.
+- Build job 4715362, start-render sheet (.claude_tmp/pp/s2cue4_sheet.png, rows O / Sx / PSx / Sm, k 0-3), viewed.
+- Smoke on k 0-3 (jobs 4715363 pi0.5 + reference, 4715364 pi0, 4715365 GR00T; outputs in .claude_tmp/pp/s2cue4_smoke; every
+  client exited 0; summary and read selftest ran):
+  pi0.5 Sx I: 14 of 15 disagreeing placements on the nearer (left) plate; pi0.5 PSx I: 14 of 16 on the salient (right) plate
+  (= identity there); pi0.5 Sx tv 5 of 9 salient, PSx tv 6 of 8 salient; pi0 Sx I 3 of 8 salient, pi0 PSx I 0 placements;
+  GR00T Sm I: 13 placements, 0 of 13 on the start-side plate; GR00T K1-K2 on O .625 (8 episodes).
+  Reference on k 0-3: N1 .50, N2 1.00 under Sx, PSx and Sm (C1 .75 on 8 episodes each).
+- Nothing in the code, layout, rule or read changed after the smoke.

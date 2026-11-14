@@ -1,0 +1,28 @@
+S2CUE4 predictions (SR 60), written 2026-11-14 while the policy-free scan (job 4715009) ran: before the pick, the build, any smoke and any rollout.
+
+Design / feasibility
+- LAYOUT FEASIBLE by the registered rule (a feasible candidate separates nearer and salient on >= .75 of states for both Sx and PSx): 65%.
+- If feasible, the right (salient) plate shows >= 2x the left plate's agentview pixels on the median state: 70%.
+- SR 59's Sm layout passes GEOM_OK on all 40 new main states: 85%.
+
+Item 1 (pi0.5, pi0; arm I PRIMARY)
+- pi0.5 I holds the left-starting mug first on >= .70 of episodes under both Sx and PSx: 80%.
+- Head-to-head (nearer vs salient) testable (>= 20 disagreeing placements): pi0.5 Sx I 75%, pi0.5 PSx I 70%, pi0 Sx I 50%, pi0 PSx I 35%.
+- pi0.5 Sx I: NEARER PLATE ROUTES 65%, SALIENT PLATE ROUTES 20%, UNRESOLVED / UNTESTABLE 15%.  (On Sx nearer = identity = start side = the trained plate position for the white mug.)
+- pi0.5 PSx I: NEARER PLATE ROUTES 45%, SALIENT PLATE ROUTES 35%, other 20%.
+- pi0.5 per model: NEARER PLATE ROUTES 40%, IDENTITY 25%, SALIENT PLATE ROUTES 15%, MIXED / UNRESOLVED 20%.
+- pi0 per model: UNRESOLVED (a run untestable) 55%; if testable, the same label as pi0.5 60%.
+- At least one placement on the non-salient (left) plate in a pi0.5 I run: 85%.  (SR 59 had 0 of 556 on its far plate.)
+- pi0.5 I success: Sx K1 >= .50 (55%); PSx N2 >= .30 (35%); Sx N1 <= .20 (70%).
+
+Item 2 (GR00T, Sm, arm I)
+- GR00T K1-K2 on the unmanipulated new states >= .70 (TESTABLE by SR 50's floor): 35%.  Point guess ~.55.
+- GR00T Sm head-to-head (start side vs nearer) testable (>= 20 disagreeing placements): 50%.
+- If testable: NEARER PLATE ROUTES 65%, START SIDE ROUTES 15%, UNRESOLVED 20%.
+- GR00T places on the far (left) plate in < 10% of its Sm placements: 70%.
+
+Secondary (pi0.5 tv)
+- pi0.5 tv per model UNRESOLVED or MIXED: 50%; NEARER 30%; SALIENT 20%.
+
+C1 (reference planner, N1-N2 >= .80)
+- Sx MET 55%, PSx MET 55%, Sm MET 65%.
