@@ -3030,3 +3030,122 @@ Per-task X − I, state-only CI:
 - Simulator target position, and simulator masks for tvp.
 - P's constants are fitted on the other mug's demos.
 - The joint bootstrap resamples only 2 tasks.
+
+## 55. Confirmatory head-to-head: the refined front end (tvpb) against ReGuide on 40 new states (m3_prereg tvpb_rg, ledger row at 5a512db4, written before any main rollout; commit 5a512db4; states job 4708382, smoke job 4708394, prereg job 4709258; rollout jobs 4709265-4709274, read job 4709275; results/flawed/tvpb_rg_read.json, rollouts results/flawed/tvpb_rg)
+
+**Question.** §52 found no clear difference between TV+P and ReGuide (RG-perc) on frozen pi0.5. ReGuide was ahead on N4 and N6. §53 then found that painting the held object as its bounding box in the target phase (arm sb) removes most of the high carries on N4 and N6. Is tvpb (tvp plus that box) as good as ReGuide on states that no arm has seen? Does the box gain replicate?
+
+**States.** There are 40 new familiar-layout states, k = 116-155 (`experiments/fc_n2_fresh3.py`; harness trials 24-63, k = trial + 92). They come from fc_n2_fresh2.py's sampler rule, unchanged: LIBERO's sampler on the familiar BDDL, seed 600000 + k. Before drawing, the rule reproduced stored states 0, 1, 23, 24, 35, 36, 55, 56 and 115 exactly (max |diff| 0). Every new state differs from every other new state and from all 166 stored familiar states (k 0-115 and PLAN_PARTS's 50). Branch seed_base is 13000000 + 1000 k. pi0.5 had never run on §49's k 56-115 either, but GR00T had, so I drew a new block instead.
+
+**Arms** (pi0.5 only; all five run new on these states). The launcher is `experiments/tvpb_roll.sh`: rg_roll.sh / tv_g_roll.sh with the client chosen per arm and the states moved. Every arm uses the same server (`pp_serve_purify --model pi05 --mode intact --comp= --seed 13`), client seed 7 and `--bind track`. Each client runs unchanged.
+- **I.** The atlas's intact client (`pp_atlas_client.py`).
+- **tvp.** Role views plus role phrases (`tv_frozen.py client --arm tvp`, §46-47).
+- **tvpb.** tvp with the held object painted as the bounding box of its learned mask in the target phase, with target pixels left visible (`f1m_cue.py client --arm sb`, §53).
+- **rgp.** ReGuide RG-perc (`rg.py client --arm rgp`, §52).
+- **rgo.** ReGuide RG-oracle (`--arm rgo`). It is PRIVILEGED and descriptive only.
+
+ReGuide's files (rg.py, rg_stats.py, sc_pu.py, rg_stats.json, sc_pu_calib.json) match their reguide-row hashes, and f1m_cue.py matches its f1m_cue-row hash. The prereg asserted both, and the read checked them again.
+
+**Mapping** (`experiments/tvpb_read.py`). Paired bootstrap over (task, state), B = 2000, rng 0, with tasks and states drawn jointly (tv_frozen.boot2, as §52).
+- **V1, tvpb − I on N1-N6:** FRONT END HELPS iff the lower bound is > 0.
+- **V2, tvpb − rgp on N1-N6:** FRONT END WINS iff the lower bound is > 0; RG WINS iff the upper bound is < 0; EQUIVALENT iff the whole interval lies within ±.10; otherwise NO CLEAR DIFFERENCE. A win label takes precedence.
+- **V3, tvpb − tvp on N4 + N6** ([2, 40]): BOX ADDS iff the lower bound is > 0. This replicates §53.
+- **Descriptive:** trained-task cost per arm, the atlas excess per arm, all other differences, and the high-carry share.
+
+**Checks (all pass).**
+- Client arguments and per-episode trial, branch, variant and branch step are the same for all four arms as for I, on all 11 tasks (the §48 / §52 identity check).
+- Every episode's trial is a registered one, and no episode errored.
+- The 13 state and branch files and the 21 code files match the tvpb_rg row. The 5 ReGuide files and the 15 shared harness files match the reguide row, and f1m_cue.py matches the f1m_cue row.
+- All 10 rollout jobs logged the same server command, seed 13. None restarted.
+- I has no earlier read on these states, so there is no reproduction check for it.
+
+**Seen before registration** (`experiments/prereg/tvpb_rg_seen.txt`). The row discloses the §46-53 numbers. The launcher and the read were new code, so a smoke ran first: job 4708394, all five arms on all 11 tasks, stored smoke states 0-1, with output outside results/, followed by a dry read. N1-N6 success was I .33, tvp .67, tvpb 1.00, rgp .92 and rgo .92, and every arm reached 1.00 on the K tasks. I wrote the predictions while the smoke was running, before it finished. Nothing changed after the smoke.
+
+**Result.**
+
+| N1-N6 familiar, 40 new states, pi0.5 | success [CI] |
+|---|---|
+| I (intact) | .454 [.242, .654] |
+| tvp (views + phrases) | .838 [.637, .983] |
+| tvpb (tvp + held-object box) | **.938** [.850, .996] |
+| RG-perc | .929 [.854, .988] |
+| RG-oracle (privileged) | .933 [.825, 1.00] |
+| **V1, tvpb − I** | +.483 [+.283, +.688]: **FRONT END HELPS** |
+| **V2, tvpb − rgp** | +.008 [−.083, +.092]: **EQUIVALENT** |
+| **V3, tvpb − tvp on N4 + N6** | +.263 [+.100, +.450]: **BOX ADDS** |
+| tvp − I (no verdict) | +.383 [+.154, +.617] |
+| rgp − I (no verdict) | +.475 [+.254, +.700] |
+| rgo − I (no verdict) | +.479 [+.283, +.696] |
+| tvp − rgp (no verdict; §52's B) | −.092 [−.283, +.050] |
+| tvpb − rgo (no verdict) | +.004 [−.058, +.083] |
+| rgo − rgp (no verdict) | +.004 [−.113, +.096] |
+| tvpb − tvp on N1-N6 (no verdict) | +.100 [.000, +.233] |
+| tvpb − rgp on N4 + N6 (no verdict) | −.050 [−.250, +.150] |
+
+Per task:
+
+| arm | N1 | N2 | N3 | N4 | N5 | N6 |
+|---|---|---|---|---|---|---|
+| I | .13 | .28 | .65 | .65 | .75 | .28 |
+| tvp | .88 | 1.00 | 1.00 | .68 | 1.00 | .48 |
+| tvpb | .95 | 1.00 | 1.00 | .88 | 1.00 | .80 |
+| rgp | .93 | 1.00 | .88 | .83 | 1.00 | .95 |
+| rgo | 1.00 | 1.00 | 1.00 | .88 | 1.00 | .73 |
+
+**Known tasks K1-K4, K6 (cost, no verdict).**
+
+| arm | success | arm − I |
+|---|---|---|
+| I | .990 | |
+| tvp | .980 | −.010 [−.055, +.025] |
+| tvpb | .980 | −.010 [−.055, +.025] |
+| rgp | .995 | +.005 [−.020, +.040] |
+| rgo | .990 | .000 [−.020, +.030] |
+
+tvp and tvpb have identical per-task K success: K3 .975, K4 .925, the rest 1.00. I did not compare them episode by episode.
+
+**The atlas excess per arm** (E [CI] and verdict).
+
+| arm | within | cross | verdict | HANDOFF + TRANSPORT share |
+|---|---|---|---|---|
+| I | +.152 [.04, .28] | +.383 [.23, .55] | BOTH | .383 |
+| tvp | +.150 [.02, .34] | −.008 [−.04, +.03] | WITHIN-CHUNK | .013 |
+| tvpb | +.054 [.00, .14] | −.012 [−.04, +.01] | NEITHER | .008 |
+| rgp | +.050 [.00, .13] | +.019 [.00, .07] | NEITHER | .021 |
+| rgo | +.060 [.00, .17] | −.002 [−.01, .00] | NEITHER | .000 |
+
+**High carry on N4 + N6** (lift while held > .22 m, among grasped episodes): I .48, tvp .30, tvpb .09, rgp .13, rgo .13. No front-end episode succeeds after a high carry: I, tvp and tvpb go 0 of 38, 24 and 7. Under ReGuide, 4 of 10 (rgp) and 3 of 10 (rgo) succeed after one.
+
+**What ReGuide did (no verdict).** ReGuide ran at least one transport in 84% (rgp) and 79% (rgo) of new-pairing episodes, mostly wrong-destination carries (197 and 174 starts). On the known tasks it ran one in 25% and 11% of episodes. rgp's median registration error was .03-.12 cm per entity. The wine bottle's 90th percentile is .74 cm, against ≤ .27 cm in §52.
+
+**Front end (no verdict).** The detector fired in every tvp and tvpb episode, with a median first onset 1 step before the oracle Held. It fired more than once in 10% (tvp) and 7% (tvpb) of episodes. Paint IoU was .98-.99, and the active-object leak was ≤ .002.
+
+**My predictions** (in the row).
+- Point estimates: I .45, right (.454). tvp .80, in range (.838). tvpb .85, in range but low (.938). rgp .87, in range (.929). rgo .92, right (.933).
+- V1 FRONT END HELPS (90%): right. The point (+.40) was low; the result is +.483.
+- V2 NO CLEAR DIFFERENCE (60%), EQUIVALENT (25%): **wrong**. The verdict is EQUIVALENT. The point estimate, +.008, is inside my range of −.10 to +.05.
+- V3 BOX ADDS (60%): right. The point, +.263, is just above my range of +.05 to +.25.
+- N1-N3 and N5 ≥ .90 under every non-I arm: wrong twice (tvp N1 .875, rgp N3 .875).
+- N4 / N6: tvp predicted ~.55 / .50, result .68 / .48. tvpb predicted ~.75 / .70, result .88 / .80. rgp predicted ~.75 / .65, result .83 / .95.
+- K cost within .04 of I for every arm: right.
+- Cross excess: I CROSS-CHUNK or BOTH, right (BOTH, +.383). The other arms within .05 of 0: right.
+- High-carry share: tvp ~.20, wrong (.30). tvpb ~.07, close (.09).
+
+**Reading.**
+- **The refined front end matches ReGuide on states neither has seen.** tvpb reaches .938 against RG-perc's .929. The difference is +.008 [−.083, +.092], inside the registered ±.10 band, so the verdict is EQUIVALENT. Against the privileged RG-oracle the point difference is +.004. Neither system costs anything on trained tasks. On these states, then, an input-only edit of images and prompt does as well as an actuating wrapper that carries the object with metric poses and demo statistics.
+- **The box closes the gap §52 left.** tvp alone again trails ReGuide (−.092 [−.283, +.050], the §52 pattern), and the gap is again on N4 / N6. The box adds +.263 [+.100, +.450] there, replicating §53's +.188 on new states. It cuts the high-carry share from .30 to .09. On N4 + N6, tvpb and rgp are now within −.050 [−.250, +.150] of each other.
+- **The two systems fail in different places.** tvpb is ahead on N3 (1.00 against .88) and N4 (.88 against .83). ReGuide is ahead on N6 (.95 against .80). tvpb's 8 N6 failures split evenly: 4 high carries (all failed) and 4 low carries. rgp carried high in 3 of 39 grasped N6 episodes, and all 3 still succeeded. rgo is lower than rgp on N6 (.73 against .95; 9 high carries). The two ReGuide arms differ in their pose source and hold rule, so ReGuide's N6 result depends on one or both. This read does not separate them.
+- **What EQUIVALENT means here.** It is a bound on N1-N6 in one scene with 40 states: the gap is below .10 either way. The two systems use different information. ReGuide reads metric poses (depth and calibration, which are privileged in simulation) and moves the arm. tvpb edits only what pi0.5 sees and reads, from a learned segmenter and a proprioceptive hold detector. The equivalence supports "a frozen-VLA input edit can match the closest training-free prior". It does not support a priority claim (NOVELTY.md).
+
+**Deviations.**
+- 40 states, as the task asked; no power calculation.
+- All jobs ran on overcap, because tail-lab was at the per-user cap. Every rollout was chained afterok on the prereg job (4709258). I confirmed the row (sacct, plus a cat of the named ledger file) before any rollout started. The launcher also refuses to write into results/ without the row.
+- The read job had no node exclude list (copied from rg_readjob.sh) and ran CPU-only on hal, a node on the GPU exclude list. It used no GPU.
+- The ledger row carries dirty=true, because other agents' files were uncommitted in the tree. My files were committed just before the row (5a512db4).
+- V2's precedence rule (a win label before EQUIVALENT) was written in the row. It did not bind, because the interval contains 0.
+
+**Limits.**
+- One scene, six pairings, pi0.5 only, one client seed.
+- ReGuide is our reimplementation, with §52's 18 deviations. It omits the post-hand-back escort (D11), which may understate it.
+- tvpb's box arm was chosen on §53's data (fresh k 36-55 and main states). These states are new, but the arm was selected after looking at N4 / N6.
+- The ±.10 equivalence band is a registered convention, not a derived tolerance.
