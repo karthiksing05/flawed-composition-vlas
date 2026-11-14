@@ -2,6 +2,21 @@
 
 This document joins the failure account (docs/ARCH_FAILURES.md) to the structural fixes tested so far. Every claim cites a registered read. Sections marked PENDING wait on reads that are queued.
 
+**Summary (2026-11-14).**
+
+*The failures.* Current VLAs fail in four ways that are rooted in the architecture. Each failure here meets criteria C1 and C2: the needed information is in the input, and the failure persists across models.
+- **F1, the held object picks the destination.** It appears on 4 of 5 models and in two scenes. In the second scene it is total: 0 of 720 episodes.
+- **F1m, the held object's outline picks the motor program.**
+- **F7, relational language is ignored.**
+- **F6, a target seen once and then hidden leaves almost no trace.**
+
+*The fix and how it compares.* An input-only front end (role sequencer, role views, a held-object box, role phrases) works on frozen pi0.5:
+- it lifts new pairings from .454 to .938;
+- it has no cost on trained tasks;
+- it is pre-registered as EQUIVALENT to a reimplemented ReGuide (SR §55).
+
+*Where the fix runs out.* The views do not carry to a second scene (SR §50). There, only the hand-over to a target-only place removes F1 (SR §54). The contribution is therefore the diagnosis, meaning which cue routes each failure, more than the fix. See docs/NOVELTY.md.
+
 ## 1. What the failures say about the architecture
 
 | failure | where it breaks | what the architecture lacks |
