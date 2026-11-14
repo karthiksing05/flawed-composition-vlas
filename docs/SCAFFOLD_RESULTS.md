@@ -2447,6 +2447,161 @@ RELEASE is the largest failure stage under every arm: I .33, tv .32, w .49 of N1
 - w is a test-time proxy for AC-VLA, not its trained method.
 - The segmenter and detector limits of §46 carry over.
 
+## 50. A second scene: the F1 atlas and the role-view front end on LIBERO-10's LIVING_ROOM_SCENE5 (m3_prereg scene2, ledger row at 62245ec5, written before any main rollout; commit 2f65f53c; rollout jobs 4704854-4704868, reference jobs 4704869-4704872, read job 4704874; results/flawed/s2_read.json, rollouts results/flawed/s2_roll)
+
+**Question.** Every result in §§32-49 uses one scene, LIBERO-Goal's kitchen. Does F1, the cross-chunk break on new pairings, appear in a second scene the VLAs were trained on? Does the test-time front end (§§46-49) remove it there?
+
+**Scene choice.** The frozen pi0.5, GR00T N1 (`ar0s/groot_libero`) and pi0 checkpoints all train on the same 40 tasks: LIBERO-Spatial, -Object, -Goal and -10. A second scene needs at least two movable objects, each bound to a trained target, and at least two targets.
+- Spatial has one target, the plate. Object has one target, the basket.
+- Eight of the ten LIBERO-10 scenes hold one pick-and-place pairing or one target.
+- LIVING_ROOM_SCENE5 holds a white mug, a yellow-and-white mug, a red mug, a left plate and a right plate. Its one training task is "put the white mug on the left plate and put the yellow and white mug on the right plate".
+
+This is the only qualifying scene. The new pairings re-pair its parts:
+- N1: "put the white mug on the right plate".
+- N2: "put the yellow and white mug on the left plate".
+- K1 and K2: the two trained halves as single-step instructions.
+- KC: the training instruction verbatim. NC: the swapped compound.
+
+The scene has three limits:
+- It has two new pairings, against six in LIBERO-Goal.
+- The known partners K1 and K2 are halves of a trained compound, not trained instructions.
+- The type pairing mug → plate is trained: the white mug also goes onto a single plate in LIBERO-10's scene 6. What is new is which plate.
+
+`s2_tasks.py` checks the novelty claims by rule over the 40 tasks. The red mug never moves in training, so it serves only as a distractor.
+
+**Harness** (`experiments/s2.py`, `s2_tasks.py`, `s2_roll.sh`).
+- **States.** k = 4-63 (60) from LIBERO's sampler, seed 830000 + k. Branch seeds are 23000000 + 1000 k. All six task BDDLs share the states.
+- **Episode length.** Single-step tasks run 400 policy steps, LIBERO's limit for this scene's single-step LIBERO-90 tasks. Compounds run 520.
+- **Client.** `libero_client.py` runs unchanged with the suite registered as in fc_n2_client.
+- **Track.** `Rec2` is pp_atlas.Rec's oracle track with this scene's bodies. It also records every final mug-on-plate predicate.
+- **Servers.** pi0.5 and GR00T run on `pp_serve_purify --mode intact --comp= --seed 13`. pi0 runs on `serve_guided --mode ours --seed 13`. The client seed is 7, with `--bind track`.
+
+**Front end.**
+- tv is tv_frozen.Front, unchanged: the ProprioHeld sequencer with sc_rv_lex's threshold and R2's paint rule. This scene's movables are the three mugs and the two plates.
+- **The learned segmenter does not transfer** (check job 4704506, smoke states 0-3). It has no mug class and one plate class. On agentview the white mug reads as background .77 or bowl .20, the yellow-and-white mug as background .60 or wine bottle .36, and the right plate as background .98.
+- **tv and tvp therefore paint from SIMULATOR masks.** That is privileged input, which §§46-49 did not use.
+- tvp adds the role phrases "object: the white mug" and "target: the right plate".
+- Arms: pi0.5 I, tv and tvp; GR00T I and tv (phrases hurt GR00T, §46); pi0 I only.
+
+**Reference (C1).** A scripted planner reads simulator state: pp_n4d's phases and controller with the servo on. Its keypoints are fitted from the recorded states of the LIBERO-10 compound's 50 raw demos, one close-open cycle per mug; no demo is executed. New pairings use kp_for's relocation rule.
+
+**Mapping** (`s2.MAPPING`, in the row). Paired bootstrap, B = 2000, rng 0, tasks and states drawn jointly. With two new pairings the joint draw resamples two tasks; a state-only bootstrap is reported beside it.
+- **(a) F1 per model:** the atlas estimator with N1 = (K1 object, K2 target) and N2 = (K2 object, K1 target). A group breaks iff E > .10 and the lower bound is > 0.
+  - A model is TESTABLE iff its intact K1-K2 success is ≥ .70.
+  - SCENE-2 F1 over pi0.5 and GR00T: REPLICATES iff the cross-chunk group breaks on both; PARTIAL iff on exactly one testable model; NOT REPLICATED iff on neither.
+  - C1 MET iff the reference's N1-N2 success is ≥ .80.
+- **(b) Front end:**
+  - pi0.5 primary, tvp − I: §47's rule (CONFIRMED / REFUTED / UNRESOLVED).
+  - GR00T primary, tv − I: §49's rule (TV WINS iff the lower bound is > 0).
+  - Guard on K1-K2: NO COST iff the lower bound is > −.10.
+  - FIX REPLICATES iff both primaries win.
+
+**Seen before registration** (all on smoke states 0-3, outputs outside results/; the row lists every job).
+- **VLA smokes** (4704509-4704512). pi0.5 I ran the trained compound for every instruction: N1 0/4, N2 0/4, NC 0/4, and every N episode ended with white-left, yellow-and-white-right. pi0.5 tv and tvp: N 0/8 each. GR00T I: K1 3/4, K2 2/4, N 0/8. GR00T tv: K2 0/4, because it grasps the painted white mug.
+- **Reference changes.** The planner's first version reached only N1 1/4 and N2 1/4. Before the row, and on smoke states only, I changed two things:
+  - the carry phase limit rose from 40 to 120 steps;
+  - the release became object-centred.
+
+  The reference then reached N1 3/4, N2 3/4, K1 4/4 and K2 3/4.
+- Nothing in the VLA client, front end or read changed after the VLA smokes.
+
+**Result: N1-N2 success is 0 for every model and arm (0 of 720 episodes; NC is 0 of 180 too).**
+
+| | pi0.5 | GR00T | pi0 |
+|---|---|---|---|
+| K1 / K2 intact | 1.00 / .983 | .60 / .417 | .867 / .75 |
+| K1-K2 intact [CI] | .992 [.967, 1.00] | .508 [.333, .667] | .808 [.683, .917] |
+| TESTABLE (≥ .70) | yes | **no** | yes |
+| N1-N2 intact | .000 | .000 | .000 |
+| N − K, same states [CI] | −.992 [−1.00, −.967] | −.508 [−.667, −.333] | −.808 [−.917, −.683] |
+| within-chunk E [CI] | −.008 [−.025, .000] | −.025 [−.367, +.342] | −.100 [−.208, +.017] |
+| **cross-chunk E [CI]** | **+1.000 [1.00, 1.00]** | **+.533 [+.167, +.858]** | **+.908 [+.792, 1.00]** |
+| atlas verdict | CROSS-CHUNK | CROSS-CHUNK (not testable) | CROSS-CHUNK |
+| N failures at HANDOFF | 1.00 | .625 (GRASP .375) | .917 |
+| N1: white mug grasped first | 1.00 | .917 | .983 |
+| N1: white mug ends on the left (trained) plate | .967 | .733 | .85 |
+| N2: white mug grasped first (wrong object) | 1.00 | .933 | 1.00 |
+| N2: yellow-and-white mug ends on the right (trained) plate | 1.00 | .183 | .783 |
+| KC (training instruction) [CI] | .967 [.917, 1.00] | .783 [.667, .883] | .80 [.70, .90] |
+| NC (swapped compound) | .000 | .000 | .000 |
+| NC ends in the TRAINED arrangement (white → left / yellow-and-white → right) | .95 / .983 | .917 / .833 | .85 / .917 |
+
+**Registered verdicts.**
+- **SCENE-2 F1: PARTIAL.** The cross-chunk group breaks on pi0.5 (+1.00) and on GR00T (+.533 [+.167, +.858]). The rule counts GR00T as NOT TESTABLE, because its intact success on the trained halves is .508, below the .70 floor. pi0 also breaks (+.908), and its verdict is per-model only.
+- **C1: UNMET.** The reference reaches .65 [.25, 1.00] on N1-N2: N2 .967, N1 .333. On K1 it reaches .65 and on K2 .967. Its white-mug grasp misses on 20 of 60 states (the same states in K1 and N1), and on N1 it drops the mug during the 0.45 m carry on about 20 more.
+- **Front end, pi0.5: tvp − I = .000 [.000, .000], REFUTED.** Secondary tv − I = .000 [.000, .000], REFUTED.
+- **Front end, GR00T: tv − I = .000 [.000, .000], NO CLEAR DIFFERENCE.**
+- **SCENE-2 FIX: NOT REPLICATED.**
+- **Guards: COST on all three arms.** pi0.5 tv − I is −.033 [−.100, .000], with the lower bound exactly at the bar. pi0.5 tvp − I is −.117 [−.300, .000]. GR00T tv − I is −.050 [−.500, +.400]: K1 rises .60 → .917 while K2 falls .417 → .000.
+
+**What the front end changes (descriptive).**
+
+| arm | N1: grasps white mug / ends on left plate | N2: grasps yellow-and-white first / ends on right plate | K2 success |
+|---|---|---|---|
+| pi0.5 I | 1.00 / .967 | .00 / 1.00 | .983 |
+| pi0.5 tv | 1.00 / .933 | .50 / .583 | .933 |
+| pi0.5 tvp | 1.00 / .70 | .533 / .633 | .767 |
+| GR00T I | .917 / .733 | .067 / .183 | .417 |
+| GR00T tv | 1.00 / .000 | .00 / .000 | .000 |
+
+- On pi0.5 the views and phrases move the first grasp to the named mug on about half of N2 episodes. The mug still goes to its trained plate, and the model never places it on the named plate.
+- On GR00T the views stop the habit placement on N1 (.733 → 0), but the mug goes to neither plate.
+- On N2 and K2, GR00T reaches for the magenta-painted white mug on every episode under tv. Painting hides the identity and leaves the shape, and GR00T grasps by position.
+
+**Sequencer (no verdict).**
+- The detector fired in every episode.
+- Its median first onset falls 1-2 steps before the oracle Held. The oracle is already true at onset in only 27-43% of episodes, against 56-60% in §47.
+- It fired more than once in 35-48% of episodes, against 6-11% in LIBERO-Goal (§§47-48).
+- Paint IoU is ≥ .9997 and leak 0, as simulator masks must give.
+
+**Predictions** (in the row) against the outcome.
+- pi0.5 N ~.03, K ~.95, cross breaks: right (.000, .992, +1.00), and CROSS-CHUNK (60%) was right.
+- GR00T TESTABLE (55%): wrong; its K is .508, against the ~.65 I predicted.
+- pi0 cross breaks (75%): right.
+- SCENE-2 F1 PARTIAL (45%): right, but through GR00T's testability floor rather than a missing break.
+- C1 MET (55%): wrong.
+- pi0.5 tvp REFUTED (70%), GR00T NO CLEAR DIFFERENCE (92%) and FIX NOT REPLICATED (85%): right.
+- Guards: wrong for pi0.5. I expected NO COST for tv and tvp, and both read COST. GR00T COST (70%): right.
+- KC ~.95 / ~.7 / ~.8, and NC ~0 with the trained atoms at KC's rate: right.
+
+**Checks.**
+- Every tv and tvp file's client arguments equal I's apart from out, port and videos, and per-episode trial, branch, variant and at equal I's on all four tasks (harness_matches_I true).
+- The branches address k = 4-63 with the seed rule.
+- Every server log shows the registered command: 7 pi0.5, 5 GR00T, 3 pi0.
+- No job restarted.
+- The read refused to run without exactly one scene2 row.
+
+**Reading.**
+- **The held-object habit is stronger in this scene than in LIBERO-Goal.** In LIBERO-Goal, new-pairing success was .17-.50, with an intact cross-chunk excess of +.23 to +.50 (pi0, pi0.5, GR00T). Here all three VLAs score 0 on both new pairings across 360 intact episodes.
+  - On 95-100% of pi0.5's N and NC episodes the scene ends in the trained arrangement.
+  - The failures are cross-chunk: the right mug is grasped (N1) and carried to its trained plate.
+  - In this scene the instruction selects nothing beyond "run the scene's program". The failure ARCH_FAILURES §3 names F1, "the held object picks the destination", here extends to "the scene picks the program".
+  - pi0.5's N2 failures start at the grasp, with the wrong mug first (1.00). The atlas files them as HANDOFF, because the named mug is later carried to its trained plate. So N2 mixes F2 (the scene picks the object) with F1.
+- **C1 holds on N2 only.** The reference places the yellow-and-white mug on the left plate on 58 of 60 states, where every VLA scores 0. The pooled C1 misses because the planner itself fails on the white mug (grasp misses, drops on the long carry). This is a weakness of the reference, and it leaves N1's information criterion unshown.
+- **The front end does not transfer.** In LIBERO-Goal, silhouettes plus phrases took pi0.5 from .45 to .82 (§47). Here they give exactly 0 on both models, cost K-task success, and need privileged masks.
+  - The paint does change behaviour: GR00T stops putting the white mug on the left plate, and pi0.5 grasps the named mug more often.
+  - It does not produce the new placement. When the only visible plate is the right one, pi0.5 still carries the white mug to the painted left plate on 70-93% of episodes.
+  - The views act on the object choice and on what is visible. They do not override a carry program bound to the scene.
+- **What this changes in ARCHITECTURE_PROPOSAL §4.**
+  - F1 now has a second-scene point on pi0.5 and pi0 (and on GR00T outside its testability floor).
+  - The test-time front end remains a one-scene result.
+  - Its §§46-49 gain should not be read as general.
+
+**Deviations.**
+- The reference planner changed twice before the row, after smoke runs on states 0-3 (carry limit; object-centred release). Both changes and their smoke outcomes are in the row's "seen". On the main states it still missed the C1 bar.
+- tv and tvp use simulator masks, not sc_seg. §§46-49 used learned masks, so this front end has more privilege than the one it tests.
+- The first prep job's keypoint step failed (no h5py in the LIBERO venv; the LIBERO-90 single-step raw demos are not on disk). Keypoints come from the LIBERO-10 compound's own raw demos, dumped to npz in the openpi venv. The planner is the only consumer.
+- Overcap requeued the smoke jobs once. No main job restarted.
+- The ledger row carries dirty=true: other agents' uncommitted files were in the tree, among them serve_guided.py (new modes only; mode `ours` unchanged) and backbone.py (l90c configs only).
+- On the login node I ran one empty `python3` heredoc by mistake (no code executed) and used `du` and `git status` on results/flawed/s2 while committing. No JSON was opened on the login node.
+
+**Limits.**
+- One extra scene, two new pairings, 60 states.
+- The two pairings differ only in which plate, so N1-N2 are also spatial-relational in their target (left / right). F1 and F7 cannot be separated here.
+- The known partners are halves of a compound.
+- Simulator masks.
+- The reference fails C1 on N1.
+
 ## 51. Why N4 and N6 resist every front end (phase breakdown of existing rollouts; probe m3_prereg n46, ledger row at 87938c6b, written before any main probe rollout; analysis jobs 4704946, 4705215; probe jobs 4705362-4705363, read job 4705406; results/flawed/n46_phase.json, n46_pg_read.json, rollouts results/flawed/n46_pg)
 
 **Question.** Under every front-end arm (I, p, tv, tvp, w, wp; §46-§49), N4 (bottle → plate) and N6 (bottle → bowl) stay near the intact rate on frozen pi0.5 and near 0 on frozen GR00T. Where do these episodes fail, and is the residual a feasibility limit, a front-end fault, a routing failure or a missing motor skill? The residual is then classified against ARCH_FAILURES §0 (C1 information there, C2 persists, C3 structure removes it).
