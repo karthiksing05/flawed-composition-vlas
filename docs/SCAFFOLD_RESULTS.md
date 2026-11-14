@@ -3290,3 +3290,142 @@ No arm succeeds on N6 at all. Of the 14 N4 + N6 low carries under tvb, none succ
 - The state check used random images, so its action scale is not the scale on real frames.
 - tvg replaces only the finger entries. The eef pose and the arm's state are untouched.
 - The high-carry cut (.22 m) is §51's post hoc cut. The carry and K4 breakdowns are descriptive.
+
+## 57. Scene 2: which input cue routes the place? (m3_prereg s2_cue, ledger row at 5399b1c5, written before any main rollout; commit 5399b1c5; smoke jobs 4710093, 4710094, 4710156, selftest 4710427, prereg job 4710429; rollout jobs 4710430, 4710431, 4710433, 4710434, reference jobs 4710432, 4710435, read job 4710436; results/flawed/s2cue_read.json, rollouts results/flawed/s2cue_roll)
+
+**Question.** In scene 2 (§50) F1 is total: 0 of 720 on N1 (white mug → right plate) and N2 (yellow-and-white mug → left plate), and the swapped two-step task rebuilds the trained arrangement. The identity-hiding role views give exactly 0, although in the target phase they paint every mug, the held one included, and the non-target plate (§54). The two mugs share one shape. So which input still tells pi0.5 where to put the held mug? The candidates are:
+- (p) the held mug's START position. Training always takes the white mug from its region (left of centre, nearer the left plate) to the left plate, and the yellow-and-white mug from its region (right of centre) to the right plate.
+- (q) the step in the trained two-step sequence: the first carry goes left, the second goes right.
+- (r) the arm's own state.
+- (s) the rest of the scene layout.
+
+**Harness** (`experiments/s2cue.py`; job scripts `.claude_tmp/pp/s2cue_*.sh`). Every arm changes only the INITIAL STATE. Prompts, server (`pp_serve_purify --model pi05 --mode intact --comp= --seed 13`), client (`s2.py client`, unchanged), launcher (`s2_roll.sh`, unchanged, with FRESH pointed at the new states), client seed 7, `--bind track` and Rec2's track are §50's.
+- **States.** §50's main states k = 4-43 (the first 40 of 4-63), with §50's branch seeds (`results/flawed/s2cue/branches_40.json`). So every episode pairs with a §50 episode on the same state and branch.
+- **P (swap starts).** The white mug's and the yellow-and-white mug's xy are exchanged. Each keeps its own height and orientation (every mug's yaw range in the BDDL is 0). The white mug then starts in the yellow-and-white mug's region (right of centre), and vice versa. All 64 states pass the build check: the swap is exact, the drift over the 10 settle steps is 0, the tilt is < .01°, and no mug starts on a plate. Tasks K1, K2, N1, N2.
+- **Q (step 1 done).** The white mug starts ON the left plate: it is dropped 1.5 cm above its own height at the plate's centre and settled for 60 steps. All 64 states pass: the white mug is On the left plate only, tilt ~2°, nothing else moved by more than 1 mm. K1 is already satisfied at t = 0, so Q runs K2, N1 and N2.
+- **Front-end arms.** tv (PRIMARY: identity is hidden in the target phase) and I (SECONDARY: identity visible).
+- **pi0.5 only.** GR00T is NOT TESTABLE per §50 (K1-K2 .508 < .70), so I did not run it.
+- **Reference (C1).** `s2.plan_episode`, unchanged, from the same manipulated states.
+
+**(R) Does this checkpoint read its state?** `s2cue.py statecheck` repeats §53's bit-for-bit test on the served `pi05_libero` (pp_f1_mix.Pi05, the object `pp_serve_purify --model pi05` serves). It used this scene's four prompts and three real scene-2 start renders, plus two random image pairs. I swapped seven states: open fingers, fingers closed on a mug, the hand's y mirrored, the hand moved 30 cm to the left, the hand raised 20 cm, N(0, 1) noise on all 8 dims, and all zeros.
+- Every state swap changed the action chunk by exactly 0.0 in all 20 cases.
+- Repeats were exact.
+- On the renders, image swaps moved the actions by .026-.34 and prompt swaps by .008-.042.
+- The config is `pi05=True, discrete_state_input=False`.
+- **Cue (r) is RULED OUT BY CONSTRUCTION.** pi0.5 here sees the arm only in the images.
+
+**Mapping** (registered in the row). Per episode, the HELD mug is the first mug moved (libero_client's `bound`). A PLACEMENT is an episode where the held mug ends On exactly one plate. For the held mug, each cue predicts a plate:
+- INSTRUCTION: the task's target, if the held mug is the named mug.
+- IDENTITY (the trained mapping): white → left, yellow-and-white → right.
+- POSITION: the trained plate of the region the mug STARTED in.
+- STEP: the plate of this carry's place in the two-step program. Under P that is left for either mug.
+
+Under P, position and identity always disagree. Position and step disagree only when the white mug is held, so the white-held placements separate them. f(c) is the share of placements on c's plate, pooled over tasks. Its CI comes from B = 2000 bootstrap draws of the 40 states, rng 0.
+- **Cue labels under P.** ROUTES iff f ≥ .70, the lower bound is > .50, and every stratum (white held, yellow-and-white held) with ≥ 10 placements has f ≥ .50. RULED OUT iff the upper bound is < .50. Otherwise UNRESOLVED. If both position and step route, the label is POSITION OR STEP.
+- **Q label on Q-N2.** PROGRAM CONTINUES iff the yellow-and-white mug ends on the right plate in ≥ .70 of its placements with lower bound > .50. INSTRUCTION ROUTES iff the same holds for the left plate. Under Q, position, identity and step all say "right" for that mug, so Q cannot separate them; only P can.
+- **C1.** The reference's N1-N2 success must be ≥ .80.
+
+**Seen before registration** (`experiments/prereg/s2_cue_seen.txt`; smoke states 0-3, outputs outside results/).
+- The build checks above.
+- The statecheck.
+- Smoke rollouts:
+  - Under P, every placement followed the start position (28 of 28); N1 and N2 went 4/4 on both arms, K1 and K2 0/4.
+  - Under Q, Q-N2 put the yellow-and-white mug on the right plate on 7 of 8.
+- Reference smoke: P N1 4/4, N2 3/4; Q N2 0/4.
+- My predictions were written after the smoke and lean on it.
+- Two smoke jobs crashed before any rollout (a print's parentheses; the MjSim is rebuilt by env.reset in build). I fixed both without changing any logic. A third smoke job's read selftest failed on argparse order in the job line; I reran it as 4710427.
+
+**Result** (40 states per task; success, and the paired difference to §50 on the same states and branches, state-bootstrap CI).
+
+| arm | K1 | K2 | N1 | N2 |
+|---|---|---|---|---|
+| §50 tv (unmanipulated, k 4-43) | .975 | .90 | .000 | .000 |
+| **P tv** | **.000** (−.975 [−1.00, −.925]) | **.000** (−.900 [−.975, −.800]) | **.975** (+.975 [+.925, 1.00]) | **1.00** (+1.00 [1.00, 1.00]) |
+| §50 I (k 4-43) | 1.00 | 1.00 | .000 | .000 |
+| **P I** | **.000** (−1.00) | **.000** (−1.00) | **.950** (+.950 [+.875, 1.00]) | **1.00** (+1.00) |
+| Q tv | — (satisfied at start) | 1.00 (+.100 [+.025, +.200]) | .000 | .000 |
+| Q I | — | 1.00 (.000) | .000 | .000 |
+
+**Cue shares under P** (placements, share [CI], verdict; strata: white held / yellow-and-white held).
+
+| cue | P tv (PRIMARY), 128 placements | P I (SECONDARY), 159 placements |
+|---|---|---|
+| **position** | **1.00 [1.00, 1.00] ROUTES** (1.00 of 53 / 1.00 of 75) | **1.00 [1.00, 1.00]** ROUTES (1.00 of 8 / 1.00 of 151) |
+| identity (trained mapping) | .000 [.000, .000] **RULED OUT** | .000 [.000, .000] **RULED OUT** |
+| step (first carry → left) | .586 [.559, .613] UNRESOLVED (.000 of 53 / 1.00 of 75) | .950 [.905, .987] ROUTES (.000 of 8 / 1.00 of 151) |
+| instruction | .617 [.579, .661] UNRESOLVED | .289 [.263, .321] RULED OUT |
+| **registered label** | **POSITION ROUTES** | **POSITION OR STEP** (white-held placements 8 < 10) |
+
+- **Every one of the 287 placements under P went to the plate on the side the held mug started from.** None went to the mug's trained (identity) plate, under either arm.
+- On P tv, the white mug was held first on all 40 K1 and all 40 N1 episodes, because tv's object phase paints the other mug. All 53 of its placements went right, against step's "left" and identity's "left". This separates position from step.
+- On P I, pi0.5 picks up the left-hand mug first: the yellow-and-white mug on .925 of K1, 1.00 of K2, .85 of N1 and 1.00 of N2. So only 8 placements carry the white mug. All 8 go right, but the registered rule needs 10, and the label is POSITION OR STEP.
+- The grasp follows position too. Under P I, the mug standing where the white mug usually stands is grasped first on 151 of 160 episodes, whatever its identity. In §50 I, the white mug was grasped first on 100% of N2, and that too was position.
+- Under P the trained program runs on the swapped mugs. pi0.5 I puts the left-hand mug on the left plate and the right-hand mug on the right plate: on K1, the white mug ends on the right plate on .925 and the yellow-and-white mug on the left on .925. So N1 and N2 succeed (.95, 1.00) and K1 and K2 fail (0, 0). On K1, K2 and N1, the white mug ends on the right plate on .925-.975. On N2 the episode ends at success after the first carry, so the white mug never moves.
+- On P tv K1, the white mug goes from the right side to the painted right plate on 14 of 40 and to no plate on 26. On K2, the yellow-and-white mug goes to the painted left plate on 35 of 40. The non-target plate is magenta in the target phase, and the mug still goes there.
+
+**Q (step 1 done).**
+
+| | Q-N2: yellow-and-white on right / left [CI] (placements) | verdict | Q-N1 | Q-K2 |
+|---|---|---|---|---|
+| Q tv | 1.00 / .000 [1.00, 1.00] (30; 10 on no plate) | **PROGRAM CONTINUES** | yellow-and-white moved first .975, to the right plate 31 of 40, white never moved; success 0 | 1.00 |
+| Q I | 1.00 / .000 [1.00, 1.00] (40) | **PROGRAM CONTINUES** | yellow-and-white moved first 1.00 and put right 40 of 40; success 0 | 1.00 |
+
+With the trained first step already done, pi0.5 runs the second step on every episode, whatever the instruction. On Q-N1 it never touches the named white mug. Under tv on Q-N1, the white mug sits unpainted on the left plate in the object phase, the yellow-and-white mug is painted, and the policy still picks up the painted mug. Under Q, identity, position and step all say "right" for the yellow-and-white mug, so Q shows the program continues from the trained mid-state. It does not tell which cue carries it.
+
+**C1 (reference planner).**
+- P: K1 .575, K2 .725, N1 .625, N2 .925; N1-N2 .775, **C1 UNMET** (bar .80).
+- Q: K2 .95, N1 .325, N2 .45; N1-N2 .388, **C1 UNMET**.
+
+P's miss is the planner's white-mug weakness from §50 (N1 .333 there, .625 here). The instructed placements are reachable from swapped starts on most states. pi0.5 itself reaches .95-1.00 on N1-N2 under P, so the information criterion is shown by the VLA itself for P. Under Q the planner puts the second mug on the occupied left plate on .45 of states. So Q-N2's instructed outcome is physically reachable about half the time, and pi0.5 never does it: 0 of 70 yellow-and-white placements land on the left (80 episodes).
+
+**Registered verdicts.**
+- **(p) start position: POSITION ROUTES** on the primary arm (tv: 1.00 [1.00, 1.00] of 128 placements, both strata 1.00, with 53 white-held placements against step). On the secondary arm (I), the label is POSITION OR STEP: position 1.00, but only 8 white-held placements.
+- **Identity (trained mapping): RULED OUT on both arms** (0 of 287).
+- **(q) step: not the router.** Under P tv, step is UNRESOLVED (.586), and it is contradicted on all 53 white-held placements. Under Q, PROGRAM CONTINUES on both arms (Q-N2 1.00 right), which shows the step-2 program runs from the mid-state but cannot separate step from position.
+- **(r) state: RULED OUT BY CONSTRUCTION** (statecheck exact zeros).
+- **(s) layout:** no separate arm. P moves the mugs and keeps everything else, and the place follows the mugs' start sides.
+- **C1:** UNMET for P (.775) and Q (.388) on the reference. The VLA itself reaches the instructed N placements under P.
+
+**Predictions** (in the row) against the outcome.
+- R ruled out (99%): right.
+- P tv POSITION ROUTES (80%): right. The share was 1.00, against ~.95. White-held placements ≥ 10 (80%): right (53). Identity RULED OUT (85%): right. Step not ROUTES (95%): right; RULED OUT (40%) did not happen (UNRESOLVED .586). Instruction UNRESOLVED (80%): right. Success: N1 .975 / N2 1.00 / K1 .00 / K2 .00 against ~.85 / .90 / .05 / .10.
+- P I: POSITION ROUTES (65%) was **wrong**; the label is POSITION OR STEP (my 25%), with 8 white-held placements. Identity RULED OUT: right. Success N1 .95 / N2 1.00 / K 0 / 0 against ~.80 / .90 / .10 / .05.
+- Paired to §50, ~+.85 on N and ~−.90 on K: right in sign, larger in size (+.95 to +1.00, −.90 to −1.00).
+- Q-N2 PROGRAM CONTINUES on I (90%) and tv (80%): right. The tv share was 1.00 against ~.80, but 10 of 40 tv episodes ended on no plate. Q-N1 ~0 and Q-K2 ~.95: right.
+- C1: P MET (60%) was **wrong** (.775). Q UNMET (90%): right, but N2 was .45 against my ~0.
+
+**Checks.**
+- Code and input hashes match the row: 0 mismatches, covering the 8 manipulated state files, branches_40.json, s2.py, s2_roll.sh, libero_client.py, the job scripts and the rest.
+- The 16 §50 rollout files used for the paired comparison are pinned by sha256 in the row.
+- All four rollout jobs logged the registered server command. All 14 clients exited 0, and no job restarted.
+- The read refused to run without exactly one s2_cue row.
+- The four rollout jobs and both reference jobs were chained afterok on the prereg job, and each refuses without the row. I confirmed the row (sacct, plus a grep of the named ledger file) before any of them started.
+
+**Reading.**
+- **In scene 2 the held mug's start side picks the plate, not its identity and not the instruction.** Swap the two mugs and pi0.5 carries each to the plate on the side it started from, in 287 of 287 placements across both arms. It does this with identity visible (I) or hidden (tv), and against step on all 53 white-held placements under tv. N1 and N2 then succeed (.95-1.00) and the trained halves fail (0). The 0 of 720 in §50 is a position map: the instruction "white mug → right plate" cannot move a white mug that starts on the left side.
+- **So the role views cannot fix F1 here, and that follows from the cue.** tv paints identity, but the cue is where the mug came from. That is visible in the target phase as the hand's location (pi0.5 reads no state, so it must see this in the images) and as where the other mug still stands. Painting the mugs leaves both visible.
+- **The grasp follows position too.** Under P I the left-hand mug is picked first on 151 of 160 episodes, whatever its identity. §50's "pi0.5 grasps the white mug first on 100% of N2" was a position effect, not a colour preference. On Q-N1, pi0.5 ignores the named, unpainted white mug and picks up the painted yellow-and-white mug.
+- **The two-step program continues from its mid-state.** With the white mug pre-placed (Q), the remaining mug goes right on 70 of 70 placements, whatever the instruction.
+- **For ARCH_FAILURES:**
+  - Scene 2's F1 is "the start position picks the destination". That generalises "the held object picks the destination", where object identity and start position were confounded in every scene so far.
+  - It also explains why the hand-over (§54), which cuts the place out of the VLA, is the only fix that reached the new placements.
+  - In LIBERO-Goal (§§46-49) the views worked. Whether they worked because identity was the cue there, or because positions vary more there, is open.
+
+**Deviations.**
+- Q ran K2, N1, N2 only: K1 is satisfied in Q's start state. This was registered.
+- 40 of §50's 60 main states.
+- GR00T was not run (not testable).
+- Under Q the instructed N2 placement shares a plate with the white mug. The reference shows it is reachable on .45 of states.
+- The "seen" text quotes statecheck ranges from the first three render lines (image .29-.34, prompt .02-.04). Over all render cases the ranges are image .026-.34 and prompt .008-.042. Every state swap is still exactly 0.
+- The read's descriptive inseparability labels have a text bug where cues never disagree. It prints, for example, "IDENTITY OR STEP (… 101 < 10)" on Q, and "POSITION OR STEP" on §50's unmanipulated rollouts. The label tests only whether both cues route, and prints the stratum count regardless. This affects only descriptive lines, not the registered P or Q-N2 verdicts. Under P tv the two cues are separated (53 white-held placements). Under P I the label is correct (8 < 10).
+- Two smoke jobs crashed before rollout and were fixed (see "seen").
+- I submitted the prereg through q2_cpu.sh with an sbatch-line exclude list, because the script's own list lacks five nodes.
+- The ledger row carries dirty=true, because other agents' files were uncommitted in the tree.
+- No python ran on the login node. No JSON was opened there. Only job logs were read.
+
+**Limits.**
+- One scene, pi0.5 only, 40 states per task, one client seed.
+- Start position here is also "the nearer plate" and "the carry direction". The layout ties each start region to one plate, so this probe cannot tell start position from proximity to the plate.
+- The visual carrier of the position cue (hand location in the image, the other mug's position, the empty start region) is not isolated.
+- Q does not separate step from position.
+- The reference misses C1 on both manipulations.
