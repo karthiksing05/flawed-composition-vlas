@@ -17,6 +17,17 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
 
 On frozen GR00T the views help (+.204, SR §56), but the held-object box adds nothing and costs .07 on trained tasks. GR00T's high carry is unchanged by the box or a grip-width state swap (UNRESOLVED both), so F1m's cue is model-specific.
 
+**The common mechanism (SR §50-§57).** The place is routed by whichever visual cue covaried with the destination in training, and the instruction does not select it. The cue differs by setting:
+- in scene 1 on pi0.5, the held object's identity (F1) or its outline (F1m);
+- in scene 2, the held mug's start position.
+
+The scene-2 evidence (SR §57, m3_prereg s2_cue):
+- When the two mugs' starting positions are swapped, pi0.5 places every carried mug on the plate on its starting side: 287 of 287, 0 on its trained plate.
+- The new pairings then succeed (.95-1.00), and the trained halves drop to 0.
+- pi0.5 reads no state, so the cue is in the images.
+
+An input edit can hide a cue the task does not need, such as identity or outline. Position is a different case, because the grasp needs it, so in scene 2 views cannot remove the cue, and only a hand-over (SR §54) does. In this scene each mug's start side is also the side nearer its trained plate, so start position, nearer plate and carry direction are confounded.
+
 *Where the fix runs out.* The views do not carry to a second scene (SR §50). There, only the hand-over to a target-only place removes F1 (SR §54). The contribution is therefore the diagnosis, meaning which cue routes each failure, more than the fix. See docs/NOVELTY.md.
 
 ## 1. What the failures say about the architecture
