@@ -52,7 +52,7 @@ Ranked from most to least novel. "Nearest prior" is the closest published result
 ## 3. Claims to drop or soften
 
 - **Drop "the hand-over variant is new".** ReGuide, Harness VLA and LiLo-VLA hand control between a VLA and a non-learned component. Say it reproduces that idea with learned perception.
-- **Drop any priority claim for a frozen-VLA test-time front end.** ReGuide is the training-free baseline and reaches 94.5 on its benchmark. Our .817 is on 20 fresh states in one scene. Do not compare numbers across benchmarks; state that ReGuide has not been run on our states.
+- **Drop any priority claim for a frozen-VLA test-time front end.** ReGuide is the training-free baseline and reaches 94.5 on its benchmark. Our .817 is on 20 fresh states in one scene. On our own states (SR §52) a reimplemented ReGuide reaches .883 (perception) and .933 (oracle) against our .817, NO CLEAR DIFFERENCE, ahead on N4/N6 because it takes the carry from the policy.
 - **Soften "silhouettes beat AC-VLA".** Say "silhouettes beat a whole-wrist grey proxy at a matched prompt on frozen pi0.5". AC-VLA is a training framework; W is not its method; the retrained comparison and the GR00T comparison are not separated; one abstract-versus-Sec. 3.3 inconsistency (closed-gripper vs place) in AC-VLA is unresolved.
 - **Soften "first stage-level atlas".** Failing Forward Table S9 labels each failed episode by its first failure. Claim the excess over known partners, the multi-model held-out-pairing setting and the "hand-off" stage.
 - **Soften "memory-absent".** Write "covering the plate after one view costs .38 and .60; success within .05 of the never-seen control, but equivalence is not shown (PARTIAL)".
