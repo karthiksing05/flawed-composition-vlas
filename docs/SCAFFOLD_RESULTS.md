@@ -2907,3 +2907,126 @@ Per task:
 - The box arms paint over everything inside the box except the target, including parts of the fingers and the scene.
 - The high-carry cut (.22 m) is §51's post hoc cut.
 - The phase breakdown is descriptive.
+
+## 54. Scene 2: does any structural change that adds no task information fix F1? (m3_prereg scene2_fix, ledger row at 872f1ffa, written before any main rollout; commit 872f1ffa; smoke jobs 4707564-4707565, selftest 4707665, prereg job 4707773; rollout jobs 4707796-4707801, read job 4707802; results/flawed/s2fix_read.json, rollouts results/flawed/s2fix_roll)
+
+**Question.** In scene 2 (§50) every VLA scores 0 of 720 on N1 (white mug → right plate) and N2 (yellow-and-white mug → left plate), and the role views give exactly 0. Does any structural change that adds no task information remove F1 there? The answer decides which part of ARCHITECTURE_PROPOSAL §2 generalises beyond LIBERO-Goal.
+
+**Harness.** §50's tasks (K1, K2, N1, N2), main states k = 4-63, branches, servers and client flags, unchanged (`experiments/s2fix.py`, `s2fix_roll.sh`; s2.py and tv_frozen.py are imported, not edited). I, tv and tvp are §50's rollouts, reused. The ledger row pins all 40 of those files by sha256, and the read refused to run on any mismatch (there were none). The read also re-hashed every file in the scene2 row and the scene2_fix row: no mismatches.
+
+**Arm (a): what tv paints in scene 2** (`s2fix.py paintcheck`, smoke states 0-1, every task, both cameras).
+- The scene has no fixtures. Both plates are objects, so the role rule treats them as movables.
+- **Object phase:** every movable except the named mug is painted: the other two mugs and both plates.
+- **Target phase:** every movable except the target plate is painted: all three mugs, the held one included, and **the non-target plate, every pixel of it in both cameras**. The target plate is never painted.
+- So tv already is the proposed tvx: the wrong plate is a magenta silhouette whenever the hold detector is on. Arm (a) is §50's tv and tvp, and no new rollout was needed.
+
+**Arm (b): the hand-over.** The frozen VLA acts until the role sequencer fires (ProprioHeld at the tv threshold, stepped on finger width, the executed gripper command and hand height; it reads no object). Then P, an object-blind place policy, acts. P reads only the hand's pose and the **target plate's simulator position** (privileged label). Its constants are the target plate's own fitted keypoints: carry height and the hand-to-plate release offset from the trained half that ends on that plate. P never reads the held mug's identity or pose.
+- P's phases: lift, carry above the plate, descend, open, retreat. Controller fa1g_plan.ctrl, as in §50's reference.
+- If the detector is off at the end of the lift, or for 3 steps during the carry, P hands control back to the VLA, and a later onset hands over again.
+- **htvp (PRIMARY, pi0.5):** tvp until the hand-over. I chose this before any read because pi0.5 I grasps the wrong mug first on 100% of N2 (§50).
+- **hI (SECONDARY):** pi0.5 I until the hand-over. **GR00T hI (SECONDARY)**: GR00T is NOT TESTABLE per §50, K1-K2 .508.
+- This is the proposal's hand-over variant. It overlaps ReGuide, LiLo-VLA and Harness VLA (docs/NOVELTY.md rows 1, 2, 6 and claim 9), and it is not a new method.
+
+**Arm (c) was not run.** The target-only phrase "target: the right plate" is already tvp's target-phase phrase. Phrases without views remain untested in this scene.
+
+**Mapping** (in the row). Paired bootstrap B = 2000, rng 0, joint (tasks and states drawn together) and state-only. For each arm X on N1+N2, with d = X − I and the joint CI:
+- FIXED iff lo > 0 and X ≥ .50;
+- NOT FIXED iff hi < .10;
+- otherwise PARTIAL.
+
+Per task, the same rule applies with the state-only CI. Trained-half guard on K1+K2: NO COST iff the joint lower bound is > −.10. With two tasks, the joint lower bound for the pooled pair equals the weaker task, so pooled FIXED needs both tasks above 0. I noted this in "seen" after the selftest and left the rule unchanged.
+
+**Seen before registration** (smoke states 0-3, outputs outside results/).
+- The paintcheck above.
+- pi0.5 htvp scored 16/16 (K1, K2, N1 and N2 each 4/4).
+- pi0.5 hI scored K1 4/4, K2 1/4, N1 3/4 and N2 0/4. It grasps the white mug first on every K2 and N2 episode.
+- GR00T hI scored K1 3/4, K2 0/4, N1 4/4 and N2 0/4.
+- The read selftest ran clean.
+- Nothing in s2fix.py or the read changed after the smokes.
+
+**Result** (60 states per task).
+
+| arm | N1 | N2 | N1+N2, X − I [joint CI] (state-only CI) | K1 / K2 | K1+K2, X − I [joint CI] (state-only CI) |
+|---|---|---|---|---|---|
+| pi0.5 I (§50) | .000 | .000 | — | 1.00 / .983 | — |
+| pi0.5 tv = tvx (§50, reused) | .000 | .000 | .000 [.000, .000] | .983 / .933 | −.033 [−.100, .000] |
+| pi0.5 tvp (§50, reused) | .000 | .000 | .000 [.000, .000] | .983 / .767 | −.117 [−.300, .000] |
+| **pi0.5 htvp (PRIMARY)** | **.450** | **.450** | **+.450 [+.333, +.567]** (+.358, +.550) | 1.00 / .550 | −.217 [−.517, .000] (−.283, −.150) |
+| pi0.5 hI | .550 | .000 | +.275 [.000, +.633] (+.217, +.333) | 1.00 / .000 | −.492 [−1.00, .000] (−.500, −.475) |
+| GR00T I (§50) | .000 | .000 | — | .600 / .417 | — |
+| GR00T tv = tvx (§50, reused) | .000 | .000 | .000 [.000, .000] | .917 / .000 | −.050 [−.500, +.400] |
+| GR00T hI | .467 | .000 | +.233 [.000, +.534] (+.175, +.292) | .617 / .017 | −.192 [−.483, +.083] (−.267, −.117) |
+
+Per-task X − I, state-only CI:
+- **pi0.5 htvp:** N1 +.450 [+.317, +.567], N2 +.450 [+.333, +.583].
+- **pi0.5 hI:** N1 +.550 [+.433, +.667], N2 .000.
+- **GR00T hI:** N1 +.467 [+.350, +.583], N2 .000.
+
+**Registered verdicts.**
+- **Arm (a), tv = tvx:** NOT FIXED on pi0.5 (tv and tvp) and on GR00T, pooled and on both tasks. Guards: COST.
+- **pi0.5 htvp (PRIMARY): PARTIAL.** The lower bound is well above 0, but X = .45 misses the .50 bar. N1 PARTIAL, N2 PARTIAL. Guard: COST.
+- **pi0.5 hI: PARTIAL.** N1 is FIXED (.55, lower bound +.433). N2 is NOT FIXED. Guard: COST, since K2 goes from .983 to .000.
+- **GR00T hI (not testable): PARTIAL.** N1 is PARTIAL (.467), N2 is NOT FIXED. Guard: COST.
+
+**What changed and what did not** (descriptive).
+
+| arm | N1: named mug moved first / ends on its trained plate | N2: named mug moved first / ends on its trained plate / success when the named mug was moved | cross-chunk E [CI] |
+|---|---|---|---|
+| pi0.5 I | 1.00 / .967 | .000 / 1.00 / — | +1.00 [1.00, 1.00] |
+| pi0.5 tvp | 1.00 / .700 | .533 / .633 / .000 | +.983 [.950, 1.00] |
+| pi0.5 htvp | 1.00 / **.000** | .533 / **.000** / **.844** | +.008 [.000, +.033] |
+| pi0.5 hI | 1.00 / .000 | .000 / .000 / — | +.017 [.000, +.067] |
+| GR00T I | .917 / .733 | .000 / .183 / — | +.533 [+.167, +.858] |
+| GR00T hI | .900 / .000 | .000 / .000 / — | −.033 [−.117, +.075] |
+
+- **The hand-over removes F1 completely.** No hand-over episode ends with the named mug on its trained plate, against .70-1.00 under I and tvp. The cross-chunk excess falls from +1.00 to +.008 on pi0.5 and from +.53 to −.03 on GR00T. Once the carry and release no longer pass through the VLA, the held mug no longer picks the plate.
+- **What is left is not F1.**
+  - **F2 on N2.** The named mug is moved first on .533 of N2 under tvp's object phase and on 0 under I, on both models. N2 success under htvp is the product: .533 × .844 = .45.
+  - **P's own place on N1.** The named mug is held on every N1 episode, yet only .45-.55 succeed. Under htvp, 34 of the 60 N1 episodes ran P through its retreat, and under hI 24 did. An episode ends at success, so nearly all of these are failures after a completed release. The median final mug-to-plate distance over all N1 episodes is .03 m. The mug lands near the plate but is not On it. This reading comes from phase counts, not a per-failure audit. This is the long (~.45 m) carry and the object-blind release offset. It is the same weakness that held §50's reference planner to .333 on N1.
+  - **The release offset is a property of the plate and was fitted on the other mug.** On N1 the white mug goes to the right plate with an offset fitted on yellow-and-white-mug demos. I did not test an object-centred release, because it would read the held object's pose.
+- **The trained-half cost is structural, not noise.** On K2, pi0.5 under I grasps the white mug first on every episode and still succeeds, because it runs the trained two-step program. The hand-over cuts that program at the first hold, so the white mug goes to the right plate: K2 drops .983 → .000 under hI, and to .55 under htvp, where the named mug is moved first on .533. GR00T hI shows the same pattern (K2 .017). In this scene a hand-over at the first hold is only as good as the first grasp.
+- **Sequencer.** The hand-over fired on every episode. pi0.5 aborted rarely (≤ 8% of episodes). GR00T aborted on 47-55% because of failed grasps. My detector agreed with tv's detector on every step of every htvp episode.
+
+**Predictions** (in the row) against the outcome.
+- Arm (a) NOT FIXED (99%): right.
+- **pi0.5 htvp:**
+  - N1 ~.90: wrong (.45).
+  - N2 ~.50: close (.45).
+  - Pooled FIXED (75%): wrong; it reads PARTIAL.
+  - N1 FIXED (90%): wrong (PARTIAL).
+  - N2 PARTIAL (48%): right.
+  - Guard COST (70%): right; point −.217 against ~−.17.
+- **pi0.5 hI:**
+  - Pooled PARTIAL (80%): right.
+  - N1 FIXED (90%): right, but at .55 against ~.85.
+  - N2 NOT FIXED (95%): right.
+  - Guard COST (95%): right; K2 .000 against ~.15.
+- **GR00T hI:**
+  - Pooled PARTIAL (75%): right.
+  - N1 FIXED (85%): wrong (.467).
+  - N2 NOT FIXED: right.
+  - Guard COST: right.
+- The smoke's 16/16 for htvp did not carry over. I over-trusted P on N1 from 4 easy states.
+
+**Reading.**
+- **What generalises:** the role sequencer plus a target-only place, i.e. a structural cut between the grasp and the place. It adds no task information beyond the target role that the instruction already names. It turns 0 into .45 on both new pairings, and it removes F1 on both models. Hiding identity (tv = tvx, with the wrong plate silhouetted) does not. When the place stays inside the VLA, it is driven by the trained arrangement, not by what the views hide.
+- **What does not generalise:** the role views as an F1 fix. They act on the first grasp only (N2 named mug first .533 under tvp).
+- **The remaining gap is not architectural F1.**
+  - P's object-blind release on a long carry is a controller limit (N1). Our reference planner shows it too.
+  - F2 on N2 needs a referent step that this scene's views only half-provide.
+  - The verdict is PARTIAL, not FIXED, because of these two, not because F1 survives.
+- **For ARCHITECTURE_PROPOSAL §4:** in scene 2 only the hand-over variant reaches the new placement. That variant has prior art (ReGuide, LiLo-VLA, Harness VLA). It is privileged here (simulator target position), and it costs trained-half success wherever the VLA's trained program starts with the other object.
+
+**Deviations.**
+- I ran two secondary arms beyond the one hand-over arm in the brief: pi0.5 hI, and GR00T hI ("only if cheap": 2 × ~37 min on one GPU). Both were declared in the row before any main rollout.
+- Arm (c) was not run (see above).
+- P reads the target plate's simulator position. §44's HP used learned perception. That is not possible here, because the segmenter does not transfer (§50).
+- The ledger row carries dirty=true, because other agents' files were uncommitted in the tree.
+- On the login node I listed .claude_tmp/pp/s2_smoke (smoke outputs, not results) to build the read selftest, and viewed the paint sheet PNG. No JSON was opened on the login node, and no python was run there.
+- Every main job was chained afterok on the prereg job. The row was confirmed (sacct plus a grep of the named ledger file) before the rollouts started. No job restarted.
+
+**Limits.**
+- One scene, two new pairings, 60 states per task, one controller seed.
+- Simulator target position, and simulator masks for tvp.
+- P's constants are fitted on the other mug's demos.
+- The joint bootstrap resamples only 2 tasks.
