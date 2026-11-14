@@ -1,0 +1,80 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: N46-PG, place phase alone on frozen pi0.5 / GR00T (bottle pre-grasped, held 6 cm above the release point over the target), with scripted servo / open references (docs/SCAFFOLD_RESULTS.md 51)",
+ "config": {
+  "hz": 0.06,
+  "max_steps": 450,
+  "prefix_cap": 300,
+  "reach_timeout": 120
+ },
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4705333",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "87938c6b7a21ece0edd49f15c935959bd83b20cb",
+  "short": "87938c6b"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "experiments/n46_pg.py client. Prefix: the v2 servo's waypoints (pp_n4d.plan_episode servo=True), kp = pp_l1_floor.kp_for(task), rng default_rng(seed_base + 10), reach timeouts 120 (Read G's), phases 0-4 then down to release point + 0.06 m, gripper closed; hand-over at err < .008 or 120 steps (cap 300 prefix steps). vla = frozen model (pp_serve_purify --model M --mode intact --comp= --seed 13) from its next query, task instruction unchanged, server not queried during the prefix; servo = lower to the release point, open 12 steps, up 0.10 m; open = open where it is 12 steps, up 0.10 m. Launcher experiments/n46_pg_roll.sh; client seed 7; --bind track; --max-steps 450.",
+  "code_sha256": {
+   "experiments/fa1g_plan.py": "bc6d30bb4c1da0f3e66495b8a228246ecd15f4fa3c5224e1b06b9e0f5dd600a6",
+   "experiments/fc_n2_client.py": "d75afd3daa81cea161f7712e921e6ac73c37342e3ef59648d8ffa2c3872eb0f9",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/n46_lift.py": "065b6ffb18c65f3e1945c256a5aee26d59df146deea4c23837c9aa28446c6028",
+   "experiments/n46_pg.py": "64bd5f49925a1fb59e28b81b3ca38a3f3161d3b1365feaa89d816a0e9582feca",
+   "experiments/n46_pg_roll.sh": "48ef3ad3b7fe5b1dda6cff193c5b749f72a3e5076b3e7d780045db64d7553e98",
+   "experiments/n46_phase.py": "44d12cc7227a87e97ea1fd810d67cf146c4f16210317b67c1c7bdfab993870ab",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_l1_floor.py": "d9464685b2b098bbc73ab6eae1cb64f98c70c17fe53e5637d2e58e615162ce1e",
+   "experiments/pp_n4d.py": "cde3340289af3441d27b4178cc3b5610bfe56dd626519aa0b6bb111be10a7c2c",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "n46_pg_job.sh": "93fe7326a7e90b4178e25aea70957908e9158a33993ef1875deac6d17392d52a"
+  },
+  "files_sha256": {
+   "results/flawed/a1g_keypoints.json": "eb26d789f50ac4cf1346ed1d7da3ae3343b0f6866f54c4006493c7f2deb7891e",
+   "results/flawed/n2_branches_main.json": "764e9e0473120f744c65893707612d2c01d5ba7dc3a52a4ecb20aa9d5f2ceb5f",
+   "results/flawed/n2_states/n2_goal_22.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_24.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_states/n2_goal_26.npy": "5e29d2a96015ad24a8843d966c40026fc81df3d548bfcc4a152e96efcf5e3a51",
+   "results/flawed/n2_tasks.json": "8f7cd36af15424334081bb45c1649bb34adf849081320187ee24c10f0b194bd4",
+   "results/flawed/n46_phase.json": "de81998eea6392a877007e2290206f577869c0183a6f86a51e3cfc6525b5449f"
+  },
+  "interpretation": "PLACE PRESENT on a model: its place skill for the bottle on a low movable target exists, so its N4 / N6 residual sits upstream, in which carry program the held bottle selects (routing; with P_min / H as the feasibility reference, an architecture-rooted candidate). PLACE ABSENT: the model cannot put the bottle down on the plate / in the bowl even from 6 cm above, a motor gap no LIBERO-Goal demo covers (data gap as measured). Servo and open give the feasible ceiling and the release-only floor from the same states.",
+  "mapping": "experiments/n46_pg.py read as hashed. Per model, arm vla, pooled N4 + N6; unit = episode held (oracle) at the hand-over and not successful before it; placement success; cluster bootstrap over states, B = 2000, numpy default_rng(0), CI 2.5/97.5. PLACE PRESENT iff CI lo >= .40; PLACE ABSENT iff CI hi < .30; else MIXED. Descriptive: per task N4 / N6 / N5 for vla / servo / open; held share (LOW POWER if < .60 on N4 or N6); post-hand-over stage; lift after hand-over; final tilt and nearest entity; vla - open and vla - servo on shared held cells.",
+  "prediction": "(after the smoke, which showed pi0.5 vla 8/8, servo 8/8, open 6/8 on states 0-3) pi0.5 PLACE PRESENT 80% (MIXED 15%, ABSENT 5%), point ~.85. GR00T: PLACE PRESENT 35%, MIXED 35%, ABSENT 30%, point ~.45; its failures re-lift (lift after hand-over > .10 m) or never let go. servo >= .80 on N4 and N6; open ~.6-.8 on both (the smoke's floor: release alone nearly suffices from 6 cm, so vla - open is the closer read of any skill beyond releasing). N5 control: pi0.5 >= .7. Held at hand-over >= .80 per task.",
+  "seen": "When this was written: SR 46-49 (N4 / N6 per task under every arm), the descriptive phase breakdown of all existing N4 / N6 rollouts (experiments/n46_phase.py, job 4704946, results/flawed/n46_phase.json) and the carry-height split (experiments/n46_lift.py, job 4705215): N4 / N6 failures are post-grasp on pi0.5 and GR00T; pooled over all sets and arms, pi0.5 N4+N6 grasped episodes with a high carry (lift > .22 m, K4's cabinet carry) succeed .04 (n 139) and low carries .66 (n 221); GR00T carries high in 556 of 582 (success .01); the servo carries high and still places (N4 1.00, N6 .77 of grasped); P_min .80 / .80; HAND_OVER 6.1's H (VLA grasp, P_min after) .80-1.00. The front end works on N4 / N6 (detector fires ~1.00, median onset 0 from oracle, paint IoU ~.98). Code is new, so a smoke ran before this row: job 4705214, pi0.5, arms vla / servo / open, N4 and N6, smoke states 0-3 (n2_branches_smoke.json), output outside results/ (.claude_tmp/pp/n46_smoke). Smoke outcomes are in the row's 'smoke' field.",
+  "smoke": "job 4705214 (tail-lab), pi0.5, N4 + N6, smoke states 0-3, output .claude_tmp/pp/n46_smoke: every prefix held the bottle at hand-over (24/24 episodes; the 8 prefixes are identical across arms), no timeout, prefix 93-291 steps, d_xy .013-.035 m, bottle z .04-.06 m (N4) / .11-.14 m (N6) above the target origin; vla N4 4/4, N6 4/4; servo N4 4/4, N6 4/4; open N4 3/4, N6 3/4. Nothing changed after the smoke.",
+  "status": "PRE-REGISTERED N46-PG",
+  "tasks": "familiar n2 tids 22 (N4 bottle -> plate), 26 (N6 bottle -> bowl), 24 (N5 bottle -> stove, control); main states 4-23 with n2_branches_main.json (all at = 0, asserted); vla on pi05 and groot; servo and open run once (pi05 job, scripted, model-independent)."
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__n46__s0__87938c6b",
+ "schema": 1,
+ "script": "experiments/prereg/n46.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-14T05:58:30+00:00",
+ "stream": null,
+ "tag": "n46"
+}
