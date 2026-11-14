@@ -11,18 +11,19 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
 | F4: a new pairing cannot be written as parts | parse | no role vocabulary: retrieval returns trained wholes |
 | F7: relations are ignored (GENERAL, SR §45.1: 3 of 4 model-family cells; the relational choice equals the ambiguous choice on 92-100% of states) | referent choice | no step that turns a relation into one entity |
 | F3: new layouts fail at the grasp | grasp | reachability as measured: a planner with exact positions fails the same states; not architectural |
-| F6: memory (PARTIAL on both pi0.5 and GR00T, SR §45.5): one view of the plate, then a physical cover, costs .50-.60, and success equals the never-seen control within .05; the equivalence bound misses at n = 20 | transport and release toward a target that is out of view | no state that holds an entity's position once it leaves view; untested fix: a role-view slot keeps the last seen target mask |
+| F6: memory (PARTIAL on both pi0.5 and GR00T, SR §45.5-45.6, 140 states pooled): one view of the plate, then a physical cover, costs .38 (pi0.5) and .60 (GR00T), and success stays within .05 of the never-seen control; the equivalence bound misses .10 by .058 / .017 | transport and release toward a target that is out of view | no state that holds an entity's position once it leaves view; a memory slot that repaints the last seen target restores it (part 5) |
 
 **Ruled out as causes:** action chunk length, release timing, and the partner-count law.
 
 ## 2. The proposal
 
-A VLA keeps its perception and its motor prior. Four structural parts route information between them, and none of them adds information.
+A VLA keeps its perception and its motor prior. Five structural parts route information between them, and none of them adds information.
 
 1. **Role sequencer.** A proprioceptive hold event splits each task into an object phase and a target phase.
 2. **Role phrases.** The prompt names only the active role.
 3. **Role views.** Every non-active movable object is painted as a silhouette in both cameras, from a learned segmenter. Identity is hidden; shape and geometry stay.
 4. **Referent resolver.** A relation in the instruction is resolved to one entity mask before the policy sees it; the other candidate is painted as a role view. Vetted on 2 relation families (SR §45.2). It covers fixed templates only.
+5. **Entity memory slot.** The segmenter's mask of the target and its depth-projected position are kept from the last frame where the target was seen. While it is hidden, the slot repaints it into both cameras at its remembered position, with occlusion by the gripper. Vetted on one occluder task (SR §45.6).
 
 The same principles in their strongest form give the **hand-over variant**: the VLA acts until the hold event, then an object-blind parts policy places, reading learned perception.
 
@@ -42,6 +43,7 @@ The same principles in their strongest form give the **hand-over variant**: the 
 | role views + role phrases on frozen pi0.5 | TV+P − I (SR §46, descriptive, unregistered) | .50 → .925 [+.13, +.72]; trained tasks −.01; cross-chunk break gone | **CONFIRMED on 20 fresh states (SR §47, m3_prereg tv_fresh): .450 → .817, +.367 [+.092, +.634]; trained tasks −.010 [−.08, +.04] NO COST; cross-chunk excess +.450 → −.008.** On GR00T the phrases hurt (+.00 new, −.31 trained; not run fresh) |
 | role views vs AC-VLA wrist mask on frozen VLAs | TV − W (SR §46) | pi0.5 +.18 [−.05, +.45]; GR00T +.24 [−.03, +.55] | not separated |
 | referent resolver + role view | F7R − relational (SR §45.2) | pi0.5 SP .40 → 1.00, NG .20 → .775; GR00T SP .30 → .85; GR00T NG capped by its own unique-name control (.50) | FIXED on 3 of 4 cells; resolver 160/160. On pi0, X-VLA, SmolVLA 0 of 6 FIXED, capped by each model's named-referent ceiling (SR §45.3) |
+| entity memory slot on frozen VLAs | M − b, plate seen once then covered, 120 new states (SR §45.6, m3_prereg f6o2) | pi0.5 .58 → .84, +.26 [+.15, +.35]; GR00T .14 → .28, +.14 [+.04, +.24]; recovers 67% / 24% of the cost of covering; overlay IoU median .987 | MEMORY RESTORED on both (GR00T at the boundary: M's lower bound equals b's upper bound, .208) |
 
 ## 4. What the vetting does not yet support
 
@@ -50,4 +52,5 @@ The same principles in their strongest form give the **hand-over variant**: the 
 - **The hand-over variant overlaps ReGuide and LiLo-VLA** (reports/novelty_check_failure_atlas.md).
 - **Everything rests on one scene,** with one seed per rung. The failure atlas replicates on 20 fresh states (F1 on 4 of 4 models, F2 on 2 of 2; ARCH_FAILURES "Fresh-state replication"); the fix rungs have not been re-run on fresh states.
 - **F7R fixes only where the policy can act on a named referent.** On pi0, X-VLA and SmolVLA it is FIXED on 0 of 6 cells (SR §45.3): the resolver is exact (240/240), but the models fail the named plate bowl outright (0/20 each), so the front end reaches each model's own ceiling and stops. Two of the four parts (role views, referent resolver) remove routing failures; neither removes a scene habit the policy holds when the referent is named. Painting every distractor, the proposal's own role-view rule, does not lift that ceiling either (0 of 7 cells; SR §45.4): the policies stop grasping the cheese and grasp nothing instead. The referent resolver covers fixed templates only.
+- **The memory slot is vetted on one task and is partial on GR00T.** M still trails the never-covered control d (pi0.5 −.125, GR00T −.46). The plate leaks back into view more often under M (45-49% of later queries) than under b (34-43%), so late views may carry part of the gain. The occluder rule changed twice after policy-free checks, before any rollout.
 - **New layouts are unsolved by every system.**
