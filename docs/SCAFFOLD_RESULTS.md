@@ -2836,3 +2836,74 @@ Per task:
 - One scene, 20 fresh states, six pairings, pi0.5 only. GR00T was not run.
 - ReGuide's habitual-referent retrieval is trivial here, because one scene serves every training task. On the paper's multi-scene benchmark it does real work.
 - The demo statistics and the perception calibration both come from this scene's own trained-task demos, which suits ReGuide.
+
+## 53. Which cue starts K4's carry? Shape and proprioception under tvp on frozen pi0.5 (m3_prereg f1m_cue, ledger row at bf049b5a, written before any main rollout; smoke job 4706934; prereg job 4707354; rollout jobs 4707358-4707362, read job 4707363, descriptive job 4708360; results/flawed/f1m_cue_read.json, rollouts results/flawed/f1m_cue)
+
+**Question.** §51 showed that on N4 (bottle → plate) and N6 (bottle → bowl), pi0.5 fails after a high carry (K4's cabinet carry) and places the bottle 26 of 26 times when the carry is taken away. tvp already paints the held bottle as a flat magenta silhouette in the target phase. So what input still tells pi0.5 to start K4's carry? Each arm below removes one candidate cue on top of tvp and adds no information.
+
+**First, the state layout.** libero_client sends pi0.5 `observation/state` = eef position (3), axis-angle (3), finger qpos (2). The served checkpoint is openpi's `pi05_libero`, which is `Pi0Config(pi05=True, discrete_state_input=False)`. The state is not put into the prompt tokens, and with pi05 the action expert gets no state token (`pi0_pytorch.embed_suffix`). The output transform does not use the state either (`extra_delta_transform=False`). A smoke check on the served policy (`f1m_cue.py statecheck`; GuidedPolicy, the server's seed rule) confirmed this. Over 3 image draws × 3 prompts, five state swaps changed the action chunk by exactly 0.0: cheese-like or open fingers, eef z + .20 m, N(0, 1) noise on all 8 dims, and all zeros. Image swaps moved the actions by .008-.10 and prompt swaps by .17-2.0. **Frozen pi0.5 does not read proprioception.** The gripper arm (g) and its combinations (sg, h) are therefore no-ops by construction. g was rolled out anyway, on N4 and N6, as an empirical check. sg and h were not rolled out.
+
+**Arms** (`experiments/f1m_cue.py`, launcher `f1m_cue_roll.sh`). Each arm is tvp with one target-phase change, using the same detector, segmenter, phrases, server (`pp_serve_purify --mode intact --seed 13`), client seed and branches.
+- **sb (shape → box).** The held object is painted as the bounding box of its learned mask, not its silhouette. The target's pixels stay visible. This removes the outline and keeps the extent.
+- **sf (shape and size → fixed box).** A fixed box (agentview 56 × 28 px, wrist 160 × 80 px) is centred on that bounding box and unioned with it. The size is the largest bottle or cheese box seen in the smoke, so both objects get the same painted region unless the box is exceeded.
+- **g (gripper proprioception).** While the detector is on, the two finger qpos entries are replaced by K6's cheese-held mean (.0198, −.0223). The bottle is held at about (.008, −.008).
+- **tvp (base).** Reused from tv_fresh (fresh trials 24-43) and tv_frozen (main states 4-23). All 42 files match their prereg hashes.
+
+**Mapping.** The primary cells are N4 and N6 on the fresh and main states pooled, a [2, 40] matrix. For each arm, d = arm − tvp, paired; tv_frozen.boot2, B = 2000, rng 0. CUE FOUND iff the CI lower bound is > 0; NOT THIS CUE iff the upper bound is < .10; otherwise UNRESOLVED. Everything else is descriptive: high-carry share (n46_phase's lift while held > .22 m, among grasped episodes), known-task cost, and N1-N3, N5.
+
+**Checks.** The client arguments and per-episode trial, branch, variant and branch step match tvp's in every cell (14 for sb, 14 for sf, 4 for g). No job was preempted. The detector fired in every episode.
+
+**Seen before registration.** The row discloses §46-§51 and the smoke (job 4706934, states 0-1, output outside results/). In the smoke, N4 went sb 2/2, sf 2/2 and g 0/2, and K4 and K6 went 2/2 under every arm. After the smoke I set the two constants (BOX_FIXED and G_HELD) from its box sizes and qpos. No other code changed. The statecheck ran with the provisional G_HELD (.02, −.02); every state swap gave 0.0, so this does not matter.
+
+**Result.**
+
+| N4 + N6, fresh + main (80 cells) | success [CI] | arm − tvp [CI] | verdict | high-carry share (fresh / main) |
+|---|---|---|---|---|
+| tvp (base) | .625 [.475, .775] | | | .225 (.40 / .05) |
+| sb (box) | **.812** [.700, .925] | **+.188 [+.075, +.325]** | **CUE FOUND** | .062 (.10 / .025) |
+| sf (fixed box) | .550 [.150, .950] | −.075 [−.475, +.325] | UNRESOLVED | .075 (.15 / .00) |
+| g (cheese finger qpos) | .637 [.500, .775] | +.013 [.000, +.050] | NOT THIS CUE | .225 (.40 / .05) |
+| sg, h | not run: state is not an input | = sf / sb, = tvp by construction | | |
+
+| per task | fresh N4 | fresh N6 | main N4 | main N6 |
+|---|---|---|---|---|
+| tvp | .50 | .45 | .80 | .75 |
+| sb | .75 | .70 | .90 | .90 |
+| sf | .80 | **.20** | .95 | **.25** |
+| g | .50 | .45 | .85 | .75 |
+
+- **Per set, sb − tvp:** fresh +.250 [+.050, +.450]; main +.125 [.000, +.250].
+- **Carry and outcome.** No arm succeeds after a high carry (0 of 18, 5, 6 and 18). After a low carry, success is tvp .81, sb .87, sf .60 and g .82.
+- **g against tvp.** 77 of 80 episodes have identical object trajectories, and 79 of 80 have the same outcome. One main N4 episode flipped to success. This is harness nondeterminism, since the model's inputs are identical.
+- **Known tasks and the other pairings (cost).** K1-K4, K6 on fresh states: tvp .98, sb .98 (+.000), sf .98 (+.000 [−.05, +.05]). K4 on both sets: sb +.000, sf +.025. K4 still carries high in 39 of 40 episodes under every arm and succeeds .95-.97. N1-N3, N5: .988 under tvp, sb and sf.
+- **Where the box arms fail** (job 4708360, descriptive). Under tvp, 13 of 16 N6 failures are high carries ending near the drawer or rack. Under sb, N6 has 8 failures, 2 of them high. Under sf, N6 has 31 failures, only 4 of them high: the bottle is carried low and released at the stove in 23 of 31. The stove is N5's and K2's target. So sf removes the high carry as sb does, but on N6 it routes the bottle to the wrong low target.
+- **sf leakage.** In .23 (agentview) and .24 (wrist) of held queries the bounding box exceeds the fixed box, so extent still leaks on about a quarter of queries. The 160 × 80 wrist box also covers part of the fingers and the scene around the held object.
+
+**My predictions** (in the row).
+- g NOT THIS CUE (90%): right. g was episode-identical to tvp in 77 of 80, against my 85% for full identity, so it was close.
+- sb: CUE FOUND 15%, UNRESOLVED 50%, NOT THIS CUE 35%, point ~+.05. **Wrong.** CUE FOUND, at +.188.
+- sf: UNRESOLVED 50%: right on the label, wrong in kind. I expected a small gain, and N6 collapsed instead.
+- High-carry share changes by less than .10: wrong for sb (−.163) and sf (−.150). Right for g (0).
+- K4 ≥ .90 under the box arms, cost within .05, and N1-N3, N5 unchanged: right.
+- My guess that the real cue sits in the object phase: not supported for the outline. Hiding the held bottle's outline in the target phase alone removes most high carries.
+
+**Reading.**
+- **The held object's outline selects the carry.** With the bottle painted as a box instead of a bottle-shaped silhouette, pi0.5 carries it high in .06 of N4 / N6 episodes instead of .23, and succeeds .81 instead of .63 (+.19 [+.08, +.33], CUE FOUND). The silhouette hides colour and texture but keeps the shape, and the shape alone is enough for pi0.5 to start K4's bottle program. Identity-hiding views therefore have to hide shape in the target phase too.
+- **This does not contradict R2b, but the two results must be read together.** R2b (§37: retrained, every non-active object boxed in both phases) lost to silhouettes by −.275 [−.458, −.108], with known tasks at .683. Here the box is applied at test time, on the frozen model, to the held object only, in the target phase only. It costs nothing on known tasks: K4 still carries high and succeeds, because its target phrase and scene still select the cabinet program. The two findings fit one rule: show shape where the policy must act on the object (the object phase and the grasp), and hide it where the object should not choose the program (the target phase). The sample here is one scene and one object, so this rule is a hypothesis.
+- **Hiding size as well is not better as measured.** sf removes the high carry as sb does (.075), but on N6 it sends the bottle low to the stove (23 of 31 failures). The large fixed box also covers the fingers and nearby scene, and it changes what the target phase looks like more than sb does. This probe cannot tell whether extent is a second cue or the box itself causes the stove routing. sf is UNRESOLVED; sb's verdict does not depend on it.
+- **Proprioception is not the locus on pi0.5.** The `pi05_libero` checkpoint takes no state input, so no front end, visual or proprioceptive, can find the cue in the state vector, and swapping the held finger qpos changes nothing (g, NOT THIS CUE, and the statecheck's exact zeros). The architecture-rooted reading I proposed for g ("the state token conditions the action expert") does not apply to this model. The only proprioceptive signal pi0.5 gets is visual: the arm pose and finger opening in the images. sb leaves both visible and still removes most high carries. GR00T does consume state, and this question is untested there.
+- **Status of F1m.** The cue is visual and removable at test time by a structural edit that adds no information (C3 met on pi0.5 for the carry selection: high-carry share .23 → .06, N4 + N6 .63 → .81). The residual under sb is .19 of N4 / N6. It is mostly low carries that release away from the target or never let go, and part of it is the K4-to-stove routing that sf exposes.
+
+**Deviations.**
+- sg and h were not rolled out. The statecheck showed before registration that pi0.5 does not read the state, and the row registers them as equal to sf / sb and tvp by construction.
+- g ran only on N4 and N6 (80 episodes), as registered, not on the K tasks.
+- The two constants were set after the smoke from its measurements, as disclosed in the row. The statecheck used the provisional G_HELD.
+- The descriptive phase breakdown (job 4708360, `.claude_tmp/pp/f1m_phase.sh`) was added after the read and has no prediction.
+- All jobs ran on overcap. The rollouts were chained afterok on the prereg job (4707354), and I checked the ledger row (sacct and cat) before submitting them. The launcher also refuses to write into results/ without the row. No job was preempted.
+- The ledger row carries dirty=true, because other agents' files were uncommitted in the tree.
+
+**Limits.**
+- One scene, one held object (the bottle), pi0.5 only, 40 states per task.
+- The box arms paint over everything inside the box except the target, including parts of the fingers and the scene.
+- The high-carry cut (.22 m) is §51's post hoc cut.
+- The phase breakdown is descriptive.
