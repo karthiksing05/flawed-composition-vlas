@@ -1,0 +1,35 @@
+S2FIX2 predictions (SR 62), written 2026-11-14 BEFORE any smoke rollout of H / G, before the step-1 diag log was read, and before
+the new states were built.  Basis: SR 54's read log (s2fix_read_4707802.out: pi0.5 htvp K2 success given the named mug moved first
+1.00, named first .533; hI K2 named first .000, success .000; hI / htvp K1 1.00) and SR 50 / 57 / 61.
+
+Step 1 (diagnosis, descriptive).  Cause = the hand-over fires at the first hold of ANY mug; in K2 the VLA's trained two-step program
+grasps the white mug first (position, SR 57), and P carries it to the instructed (right) plate.  Predicted in the diag: under hI and
+htvp, on K2 episodes where the white mug is moved first, the white mug ends On the right plate on >= .80 of them and success is 0;
+where the named mug is moved first, success >= .95.  Scripted-place failures on K tasks: <= .05.  Hold timing: median first onset
+within 3 steps of the oracle Held on K1.  P(cause = wrong mug at the first hold) 90%.
+
+Layout O (PRIMARY), 60 new states per task:
+  I   K1 ~1.00  K2 ~.97  N1 .00  N2 .00
+  H0  K1 ~1.00  K2 ~.02  N1 ~.50 N2 ~.00   (SR 54's hI reproduced)
+  H   K1 ~1.00  K2 ~.93  N1 ~.50 N2 ~.10   (N2: the white mug is already on the left plate when the named mug is held)
+  G   K1 ~1.00  K2 ~.96  N1 ~.50 N2 ~.10
+  G - I on N1+N2: ~+.30, lower CI > 0 (90%).
+  G - I on K1+K2: ~-.01, NON-INFERIOR at -.05 (80%).
+  PRIMARY LABEL: FIX WORKS 72%, PARTIAL 26%, FAILS 2%.
+  G - H on K1+K2: ~+.02, NO CLEAR DIFFERENCE (80%); ROUTER KEEPS MORE 15%.
+  H - H0 on K1+K2: ~+.45, CAUSE FIXED (95%).
+  SR 54's rule on G: PARTIAL (N1+N2 below .50) 80%.
+  Gate on O: G hands over on <= .05 of K episodes and on >= .90 of N1 episodes; held-mug identification at the first event equals
+  'bound' on >= .95 of episodes.
+  Router agreement on arm I (O): >= .95 of placements on the predicted plate (85%); in O the salient plate is undefined on most states,
+  so the prediction is nearer = trained (identity and nearness agree), a weak check of SR 61.
+
+Layout PD2 (SECONDARY):
+  I   K1 ~.03  K2 ~.00  N1 ~.15  N2 ~1.00  (SR 61's PD2)
+  H   K1 ~.05  K2 ~.75  N1 ~.30  N2 ~.80
+  G   K1 ~.05  K2 ~.75  N1 ~.30  N2 ~.98   (router agrees on N2: the VLA keeps control)
+  G - I all tasks HELPS (75%); G - H all tasks ~+.05, NO CLEAR DIFFERENCE (60%); G - H on N2 positive.
+  Router agreement on arm I (PD2) >= .90 (80%).
+
+C1 (reference planner): O N1-N2 ~.70, C1 UNMET (55%) (SR 50: .65); PD2 ~.82, MET (55%).
+Scene 1 (optional item 4): not planned; the router's cues are defined for two plates, and LIBERO-Goal's targets include fixtures.

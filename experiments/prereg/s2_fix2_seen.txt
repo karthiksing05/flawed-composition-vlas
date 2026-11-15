@@ -1,0 +1,16 @@
+S2FIX2: seen before registration (all outside the main states k = 4-63; no main rollout or reference run exists).
+- Step-1 diag (job 4720867, results/flawed/s2fix2_diag.json; SR 54's existing outputs only, descriptive): hI K2: the white mug moved
+  first on 60 of 60, ended On the instructed right plate on 39, success 0.  htvp K2: named mug first 32 (success 32), white mug first
+  28 (success 1; the white mug On the right plate on 13).  P carried the named mug on K1 120 of 120 and K2 32 of 32 to success.  First
+  detector onset minus oracle Held: median 0 steps (K1), -1 (htvp K2 named-first).  N2 under hI: white first 60 of 60, P put it on the
+  instructed left plate (60), and then held, so the named mug never moved.  The predictions file was written before this log was read.
+- States / build (job 4720868): 64 new states (seeds 890000 + k), none equal to an SR 50-61 state.  O main: salient undefined on 60 of
+  60, white mug starts left on 60 of 60, router predicts white -> plate_1 and yellow-and-white -> plate_2 on 60 of 60 (nearer = trained).
+  PD2 main: GEOM_OK 60 of 60, salient = left 60 of 60, yellow-and-white starts left on 60 of 60; router predicts plate_1 for both mugs
+  on 60 of 60 (yellow-and-white: trained odd 60; white: nearer odd 41, nearer undefined 19).
+- Smoke (job 4720979, tail-lab; states k 0-3, outputs .claude_tmp/pp/s2fix2_smoke; an overcap copy, 4720970, was cancelled while
+  pending).  O: I K1 4/4 K2 4/4 N1 0/4 N2 0/4; H0 4/0/2/0; H 4/4/2/2; G 4/4/2/2.  Every first gate event named the mug equal to
+  'bound' (hand-to-held-mug xy .028-.055 m, the nearest other mug >= .12 m at the first event).  G on O handed over on no K episode and on every N1 episode.  PD2: I
+  0/0/0/3; H 1/2/2/3; G 0/2/2/3 (G kept the VLA on all 4 N2 episodes).  Router agreement on arm I: O 16 of 16, PD2 13 of 13 placements.
+  Reference: O N1-N2 .875, PD2 .875.  Summary and read selftest ran clean (exit 0).
+- Nothing in s2fix2.py, s2fix2_roll.sh or the job scripts changed after the smoke.
