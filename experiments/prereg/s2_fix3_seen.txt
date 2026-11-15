@@ -1,0 +1,24 @@
+S2FIX3 seen before this row (all on DEVELOPMENT states or smoke states k 0-3; no main state k 4-63 has been run by any policy).
+
+1. Prep job 4722619: 64 new states (seeds 920000 + k; none equal to an SR 50-62 state); step-0 N1-release diagnosis on SR 62's
+   existing outputs (results/flawed/s2fix3_diag.json): arm H N1 36 successes / 24 failures (19 after a completed release, 6 with a
+   P abort, 3 tipped); P's carry never hit its limit; the named mug's offset from the plate centre when P opened is .034 m in
+   successes and .037 m in failures (K1 .015, K2 .009); the reference planner's relocation rule would move the failures' median to
+   .034 m.  No clear cause -> the optional release arm (H+) is not run.  Perception check 1 (pcheck, development states = SR 62's
+   k 0-63): OWLv2 loads offline; plates localised 2.3 cm raw; the BDDL's left plate has the smaller world y on 64 of 64 (SIDE_RULE
+   world_y_min); mug identity 90 of 192 under greedy assignment (white and yellow-and-white swapped).  Dump job 4722661 showed the
+   swap is in OWLv2's labels, not the geometry.
+2. pcheck2 (job 4725596, development states): six phrasings x two assignments; the original phrasing with permutation assignment
+   gets 192 of 192 mugs at the start and 64 of 64 scripted holds; mug CAL by nearest pairing [-.0336, .0017, -.0783].  Chosen.
+3. Predictions (s2_fix3_pred.txt) written here, before any smoke.
+4. Smoke 1 (jobs 4725643-4725646, smoke states k 0-3, outputs in .claude_tmp/pp/s2fix3_smoke): pi0.5 I 4/4/0/0 (K1/K2/N1/N2),
+   H 4/4/1/1, Hp 2/2/1/0 with every gate decision equal to the oracle's (identity 24 of 24 onsets) but registration xy errors
+   1.4-3.3 cm and P releases off the plate on K1 / K2; pi0 I 3/4/0/0, H 4/4/3/0; GR00T I 2/2/0/0, H 3/2/1/0; reference 3/3/1/4.
+   Selftest of the read ran clean.
+5. CHANGE AFTER SMOKE 1 (perception only, chosen on development states): pcheck3 (jobs 4725881, 4725886) compared plate
+   localisations; the plates are cut by the image's side borders, so the visible-extent centre is biased; edge_radius (the inner
+   edge of the plate's low points plus a fitted radius .0554 m) gives split-half xy .40-.45 cm median (max .72) against 2.2-2.4 cm
+   for smoke 1's inner_median.  PLATE_LOC = edge_radius, CAL plate [.0072, 0, -.0063].
+6. Smoke 2 (jobs 4725901-4725902, Hp only, k 0-3, outputs in .claude_tmp/pp/s2fix3_smoke2): Hp 4/4/1/1, equal to H's smoke
+   successes; registration xy errors .27-.61 cm; every gate decision equal to the oracle's.
+Nothing else changed after smoke 1.  The predictions were not revised after either smoke.

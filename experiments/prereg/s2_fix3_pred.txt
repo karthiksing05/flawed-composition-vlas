@@ -1,0 +1,25 @@
+S2FIX3 predictions (SR 63), written 2026-11-15 after the prep jobs (states, step-0 diagnosis, perception checks on DEVELOPMENT
+states) and BEFORE any smoke or policy run on the new states.
+
+pi0.5 (60 new states, layout O):
+- I: K1 ~1.00, K2 ~.98, N1 0, N2 0 (SR 50-62).
+- H (SR 62's arm): N1 ~.60, N2 ~.28, N1+N2 ~.44; K1+K2 ~.99.  H label FIX WORKS (85%).
+- Hp: perception on the main states: target plate registration xy error median ~2.5 cm, side correct >= .97; mug identity at
+  registration >= .97; onset held-mug agreement with the simulator rule ~.90 (VLA grasps occlude more than the scripted lift on
+  development states, 64 of 64 there); gate decision agreement ~.92.
+- Hp: N1 ~.50, N2 ~.22, N1+N2 ~.36; K1+K2 ~.96 (a misnamed hold of the white mug on K2 hands it to P).
+- PRIMARY Hp label: FIX WORKS 60%, PARTIAL 35% (most likely through K non-inferiority NOT SHOWN), FAILS 5%.
+- Hp - H, all four tasks: ~-.05; PERCEPTION COSTS 45%, NO CLEAR DIFFERENCE 55%.  On N1+N2 ~-.08; on K1+K2 ~-.03.
+- SR 54's .50 bar: PARTIAL for H and Hp (85%).
+
+pi0 (60 new states):
+- I: K1+K2 ~.80 -> TESTABLE (70%); N1+N2 0.
+- H: N1 ~.45, N2 ~.10; K1+K2 ~.78 (the VLA keeps every other-mug hold).  H label FIX WORKS 60%, PARTIAL 35%.
+
+GR00T (60 new states):
+- I: K1+K2 ~.50 -> NOT TESTABLE under SR 50's .70 floor (80%); N1+N2 ~0.
+- H: N1 ~.40 (SR 54's hI .467), N2 ~.05; K1+K2 ~.50.  Rule outcome (descriptive) FIX WORKS 50%, PARTIAL 45%.
+
+H+ (optional N1 release arm): NOT RUN (step-0 diagnosis not clear; see the row).
+
+C1 (reference planner on the new states): N1 ~.55, N2 ~.97, N1-N2 ~.76 -> C1 UNMET (60%).
