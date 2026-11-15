@@ -3907,3 +3907,129 @@ The plates stand at fixed positions and no mug occludes them, so their pixel cou
 - The two-of-three description is post hoc.
 - pi0's PSx runs are too sparse to label.
 - GR00T is below its testability floor.
+
+## 61. Scene 2: a confirmatory test of the majority rule on new states and new layouts (m3_prereg s2_cue5, ledger row at ea531b7a, written before any main rollout; commit ea531b7a; scan job 4717635, build job 4718078, smoke job 4718112, prereg job 4718819; rollout jobs 4718820, 4718822, 4718824, 4718826, 4718828, 4718830, reference jobs 4718821, 4718823, 4718825, 4718827, 4718829, 4718831, read job 4718832; results/flawed/s2cue5_read.json, rollouts results/flawed/s2cue5_roll)
+
+**Question.** With two plates, three binary cues say where frozen pi0.5 places the held mug: the NEARER plate, the SALIENT plate (pixel area and centrality in the agentview start render), and the mug's TRAINED plate. §60's post-hoc reading was a MAJORITY RULE: the placement goes to the plate backed by two of the three. Each odd-one-out configuration had been seen once, on one layout each: nearer odd on PSx, salient odd on Sx, trained odd on Sm. This section registers the rule and tests it on new states and new plate layouts, on frozen pi0.5, arm I only.
+
+**Registered test** (`s2cue5.MAPPING`, in the row before any main rollout).
+- A placement is **2-vs-1** when the held mug's three cues are all defined and not all equal. Its configuration is named by the odd cue, and its majority plate is the side the other two back. The cues are §60's, unchanged: nearer plate is `s2cue2.cue_preds`' nearer_plate, salient plate is `s2cue4.salient_of`, and trained plate is plate_object.
+- **Primary statistic:** the share of 2-vs-1 placements on the majority plate, per configuration and pooled. The CI is a paired bootstrap: counts are summed per state over runs and tasks, and every configuration and the pool use the same B = 2000 resamples of the 40 main states (`s2cue.boot_share`, default_rng(0)).
+- **Testability:** a configuration needs ≥ 20 2-vs-1 placements.
+- **Labels:** MAJORITY CONFIRMED iff the pooled lower CI is ≥ .80 AND every configuration is testable with a point estimate ≥ .70. REFUTED iff any testable configuration's upper CI is < .50. Otherwise PARTIAL.
+- **Sources:** each configuration is counted over the PRIMARY runs on NEW layouts designed for it. A configuration with no feasible new layout would fall back to the replication runs, labelled REPLICATION-ONLY; none needed to. The same rule applied to the replication runs alone is reported as REPLICATION (secondary).
+
+**Design (feasibility first; no policy in this step).** pi0.5 holds the left-starting mug first (§57-§60), so every layout family is designed around that mug. The plates fix nearer and salient. Which mug starts left fixes trained: the white mug when unswapped, the yellow-and-white mug under P* (§57's swap).
+- **A**: left plate at the side (nearer), right plate in front (salient). This is Sx's family at new positions. A2 (white) is salient odd; PA2 (yellow-and-white) is nearer odd.
+- **B**: left plate in front (salient), right plate near the left mug (nearer). B2 would be nearer odd and PB2 salient odd.
+- **C**: right plate nearer and salient, left plate far forward-left. This is Sm's family; C2 would be trained odd.
+- **D**: left plate in front near the midline (nearer and salient), right plate at the right side. This is Sx mirrored; PD2 (yellow-and-white) is trained odd.
+- Every candidate keeps each plate ≥ 5 cm from that plate's position in Sx and in Sm (asserted in code).
+- **Pick rule** (`PICK_RULE`, fixed before the scan): GEOM_OK as §59, unchanged, on all 44 states for each manipulation of the family. The reference must reach ≥ .50 per plate on states 0-7. The score is the share of states with the designed configuration (min over the family's manipulations). The pick has the highest score; ties go to the larger nearer-plate margin. A family is NEW-LAYOUT FEASIBLE iff its pick scores ≥ .75.
+- **New states:** 44 drawn with LIBERO's sampler, seeds 875000 + k. None equals a §50, §59 or §60 state. Branches use seed_base 33000000 + 1000 k; k 0-3 are smoke and k 4-43 main. On these states D0 = .1456 m.
+
+**Scan** (job 4717635, 26 candidates + replications).
+- **A: NEW-LAYOUT FEASIBLE.** The pick is A5: plate_1 at (−.05, −.32), plate_2 at (.15, .10).
+  - The other candidates failed. Four failed clearance on 9-17 states. Two (right plate at (.05, .06)) were placed on or against the mugs on 21-26 states. Three left salience undefined, because the centroid margin was < 10 px.
+- **B: INFEASIBLE.** Every candidate fails GEOM_OK on 44 of 44 states for both B2 and PB2. A right plate near the left-starting mug lands on or against the right-starting mug: placed 33-44, clearance 21-38. Salience is also undefined on 40-44 states, because the front plate is larger but not more central.
+- **C: INFEASIBLE.** GEOM_OK holds on at most 4 of 44 states (clearance 27-36). C0 had trained odd on 44 of 44 but failed clearance on 36.
+- **D: NEW-LAYOUT FEASIBLE.** All six candidates pass. The pick is D5: plate_1 at (.10, −.10), plate_2 at (−.05, .31).
+- So every configuration has a new layout. PA2 covers nearer odd, A2 salient odd and PD2 trained odd. The replications Sx, PSx and Sm run on the new states.
+
+**Salience, measured from renders before any policy run** (40 main states; the plates stand at fixed positions, so their counts are the same on every state).
+
+| layout | role | plates (L; R) | left plate px / centre dist | right plate px / centre dist | salient | nearer (left-starting mug) | left-starting mug | config (main) | GEOM_OK |
+|---|---|---|---|---|---|---|---|---|---|
+| O | — | sampled | 671-1315 / 113-126 | 694-1343 / 112-126 | undefined 40/40 | L 40/40 | white | — | — |
+| **A2** | PRIMARY | (−.05, −.32); (.15, .10) | 861 / 117.0 | 2583 / 102.8 | **R** (3.0×, 14.2 px) | **L** (margin .128-.222 m) | white | salient odd 40/40 | 40 |
+| **PA2** | PRIMARY | same | 861 / 117.0 | 2583 / 102.8 | **R** | **L** | yellow-and-white | nearer odd 40/40 | 40 |
+| **PD2** | PRIMARY | (.10, −.10); (−.05, .31) | 2123 / 86.1 | 992 / 115.3 | **L** (2.14×, 29.2 px) | **L** (.219-.285 m) | yellow-and-white | trained odd 40/40 | 40 |
+| Sx | REPLICATION | (0, −.28); (.15, .04) | 1276 / 116.1 | 2574 / 93.1 | R | L (.112-.185) | white | salient odd 40/40 | 40 |
+| PSx | REPLICATION | same | 1276 / 116.1 | 2574 / 93.1 | R | L | yellow-and-white | nearer odd 40/40 | 40 |
+| Sm | REPLICATION | (.25, −.24); (.10, .03) | 872 / 160.5 | 2138 / 74.9 | R | R (.070-.117) | white | trained odd 40/40 | 39 |
+
+The wrist view at the start shows 0 px of the left plate and 4349 px of the right plate on A2 / PA2, and 4168 px left and 108 px right on PD2.
+
+**Seen before registration** (`experiments/prereg/s2_cue5_seen.txt`).
+- The scan, the build and the start-render sheet.
+- Smoke on k 0-3 (job 4718112, pi0.5 I on all six manipulations; all 24 clients exited 0). 2-vs-1 placements on the majority plate: A2 11 of 14, PA2 8 of 12, PD2 16 of 16, Sx 15 of 15, PSx 14 of 15, Sm 12 of 12.
+- Reference smoke: N1-N2 .875 to 1.00.
+- The predictions (`s2_cue5_pred.txt`) were written before the scan's results, the pick, the build and any smoke.
+
+**Result: the share of 2-vs-1 placements on the majority plate** (pi0.5 I; 40 new states × 4 tasks per run; paired bootstrap 95% CI; n = 2-vs-1 placements).
+
+| configuration | PRIMARY (new layout) | REPLICATION (§59-§60 layout, new states) | all runs (descriptive) |
+|---|---|---|---|
+| nearer odd (salient = trained ≠ nearer) | **.752 [.660, .843]**, 106 of 141 (PA2) | .931 [.864, .980], 135 of 145 (PSx) | .843 [.774, .906], 286 |
+| salient odd (nearer = trained ≠ salient) | **.974 [.947, .994]**, 147 of 151 (A2) | .981 [.956, 1.00], 156 of 159 (Sx) | .977 [.955, .994], 310 |
+| trained odd (nearer = salient ≠ trained) | **1.00 [1.00, 1.00]**, 153 of 153 (PD2) | 1.00 [1.00, 1.00], 123 of 123 (Sm 118 + PSx 5) | 1.00, 281 |
+| **pooled** | **.912 [.883, .942]**, 406 of 445 | .970 [.946, .988], 414 of 427 | .941 [.918, .962], 877 |
+| **label** | **MAJORITY CONFIRMED** | MAJORITY CONFIRMED (REPLICATION) | MAJORITY CONFIRMED |
+
+Every configuration is testable (141-153 placements). Every 2-vs-1 configuration found in a run was its designed one, except 5 trained-odd placements each in PA2 and PSx. Those came from the white mug, held on .05-.10 of K1 / N1 episodes. They count under trained odd in their own source only, so the 5 from PA2 do not enter the PRIMARY trained-odd cell, and the 5 from PSx enter the REPLICATION one. No placement had an undefined configuration.
+
+**Per run** (placements; first held; held mug's destination L / R / none pooled over tasks; success by side per task).
+
+| run | placements | first held | held mug → L / R / none | K1 | K2 | N1 | N2 | H2H NS (§60's rule): share on the salient plate |
+|---|---|---|---|---|---|---|---|---|
+| **A2** | 151 | white 1.00 | white 147 / 4 / 9 | .875 | 1.00 | .025 | .000 | .026 → NEARER PLATE ROUTES |
+| **PA2** | 146 | y-w .90-1.00 | y-w 35 / 106 / 13 | .000 | .550 | .300 | .050 | .752 [.660, .843] → SALIENT PLATE ROUTES |
+| **PD2** | 153 | y-w .925-1.00 | y-w 153 / 0 / 4 | .025 | .000 | .175 | **1.00** | (not defined) |
+| Sx | 159 | white 1.00 | white 156 / 3 / 1 | .950 | 1.00 | .025 | .000 | .019 → NEARER PLATE ROUTES |
+| PSx | 150 | y-w .925-1.00 | y-w 10 / 135 / 9 | .000 | .850 | .100 | .050 | .931 → SALIENT PLATE ROUTES |
+| Sm | 118 | white 1.00 | white 0 / 118 / 42 | .000 | .050 | .950 | .000 | (not defined) |
+
+- **PD2 is the clearest new case.** In a layout §59-§60 never used, the yellow-and-white mug goes to the left plate in front of it on 153 of 153 placements, away from its trained right plate. So N2, a new pairing scored 0 of 180 in §50, reaches **1.00**, and K2 (its trained task) falls to 0. Identity is RULED OUT here (0 of 153).
+- **PA2 is the weakest cell.** The yellow-and-white mug goes to the large right plate (its trained plate) on 106 of 141 placements and to the small nearer left plate on 35. By task: K1 33 / 2 (R / L), N2 35 / 2, but K2 22 / 16 and N1 16 / 15. So the majority holds on K1 and N2 but is near chance on K2 and N1. The instruction split (descriptive) is non-monotone: with the instruction naming the majority plate (K2), .579 of 38 go there; naming the other plate (N2), .946 of 37.
+- Across all PRIMARY 2-vs-1 placements with the named mug held, the share on the majority plate is .836 of 116 when the instruction agrees with the majority and .974 of 115 when it disagrees. The instruction does not pull the place toward the named plate; on arm I it is UNRESOLVED in every run (.338-.603).
+- The replications reproduce §59-§60 on new states. Sx goes 156 of 159 to the small nearer plate (§60: 158 of 158). PSx goes .931 to the large far plate (§60: .859). Sm goes 118 of 118 to the near central plate (§59: 116 of 116 on its disagreeing placements).
+
+**C1 (reference planner, N1-N2 ≥ .80; descriptive, as in §59-§60).**
+- PA2 .838 MET, PD2 .825 MET, PSx .825 MET.
+- A2 .725 **UNMET** (N1 .600), Sx .788 **UNMET** (N1 .600), Sm .775 **UNMET** (N1 .575).
+- The planner's misses are mostly the white mug onto the right plate (N1) and onto the left plate (K1 .650-.675). In §60, Sx was .963 and Sm .950 on other states. Every plate is reachable on ≥ .525 of the planner's episodes in every layout (min: PA2 K1 .525).
+
+**Registered verdict.** **MAJORITY CONFIRMED** (PRIMARY): pooled .912, lower CI .883 ≥ .80, and every configuration testable with a point estimate ≥ .70 (nearer odd .752, salient odd .974, trained odd 1.00). The replication-only test gives the same label (pooled .970 [.946, .988]).
+
+**Predictions** (in the row, written before the scan's results and the smoke) against the outcome.
+- Family A feasible (70%): right. B infeasible (80%): right. C feasible (50%): it was infeasible. D feasible (70%): right. A new layout for every configuration (55%): right.
+- Replications GEOM_OK on all 40 main states (85%): **wrong**. Sm failed clearance on one state (39 of 40). It was kept and is labelled.
+- Left-starting mug held first ≥ .70 in every run (80%): right (.90-1.00).
+- Every configuration testable (70-75%): right.
+- Majority ≥ .70: salient odd (80%) right, .974. Trained odd (75%) right, 1.00. Nearer odd (55%) right, but only just (.752).
+- Pooled point estimate ≥ .85 (55%): right (.912).
+- Label: my top call was PARTIAL (45%), with CONFIRMED at 40%. The outcome was CONFIRMED, so the top call was **wrong**.
+- PD2 to the left plate ≥ .70 (65%): right (1.00).
+- Replications: Sx ≥ .90 (85%) right (.981). Sm ≥ .90 (85%) right (1.00). PSx ≥ .70 (70%) right (.931).
+- Instruction split < .15 (60%): right when pooled (.836 vs .974, a .138 gap). In the nearer-odd cell it is .37 (.579 vs .946).
+- C1 MET on every built manipulation (50%): **wrong** (A2, Sx and Sm UNMET). PD2 MET (60%): right.
+
+**Checks.**
+- The read found 0 hash mismatches against the row: code, the 28 state arrays, the states json, branches, pick.json, predictions, seen and the job scripts.
+- All 6 rollout jobs logged the registered server command (`pp_serve_purify.py --model pi05 --mode intact --comp= --seed 13`). All 24 clients exited 0, and no job restarted. All 6 reference jobs exited 0.
+- The rollout, reference and read jobs were submitted held and chained afterok on the prereg job. q2_cpu.sh always reports COMPLETED, so I checked the row before releasing them. Release came only after the named row file (`ledger/m3_prereg/m3_prereg__libero_10__s2_cue5__s0__ea531b7a.json`) showed tag s2_cue5 and status PRE-REGISTERED S2CUE5. Each job also refuses to run without the row.
+- The read's log carries the full summary with no traceback.
+
+**Reading.**
+- **The majority rule holds on new states and new layouts.** Where two of {nearer, salient, trained} agree against the third, pi0.5 places on their plate on .912 of 445 new-layout placements, and on 1.00 when nearness and salience both oppose the trained plate. In the mirrored layout PD2 this turns a 0-success new pairing (N2) into 1.00 and the trained task (K2) into 0.
+- **The rule is strong when the trained plate is outvoted, and weaker when the nearer plate is.** Trained odd: 276 of 276 across PD2 and the replications. Salient odd: .97-.98. Nearer odd: .75 on the new layout, against .93 on PSx. The new layout's salience margin is smaller (14 px against 23 px), so the weaker cell could reflect a weaker salience cue. Nearer and salient are binary here, so the data do not say how the vote weighs cue strength.
+- **The language selects nothing on arm I.** The instruction is UNRESOLVED in every run, and the 2-vs-1 majority share does not rise when the instruction names the majority plate.
+- What remains of scene 2's F1 is a layout-and-identity vote. The VLA routes the place by where the plates and the mug are and which plate the mug was trained with, and the language does not enter.
+
+**Deviations.**
+- Families B and C were infeasible: B fails GEOM_OK on 44 of 44 states and C on ≥ 40. The numbers are above. Each configuration still has one new layout, but family A's is Sx's arrangement moved 6 cm per plate. PD2 is the only qualitatively new arrangement.
+- The Sm replication passes GEOM_OK on 39 of 40 main states (one clearance miss of 1.6 mm). It was kept, as registered (replications are built regardless).
+- C1 is UNMET on A2, Sx and Sm on these states. As in §59-§60, C1 is a reported check, not a gate on the label.
+- The client seed (7) and server seed (13) are §57-§60's; only the state and branch seeds are new.
+- I submitted the build twice. The first job (4718078) wrote everything, but its log reached me late over NFS. The second (4718085) refused because the states file existed.
+- The smoke-only `summary` mode crashed on a log file named `ref_*.log` in the smoke directory. The registered read does not use that mode, and I did not change the code after the smoke.
+- `s2cue4._scan_layout` is reused, so the scan's per-layout lines carry the prefix "[s2cue4 scan]".
+- The ledger row carries dirty=true, because other agents' files were uncommitted.
+- The parent session restarted while the rollouts ran. The jobs were unaffected, and I resumed from their logs.
+- No python ran and no JSON was opened on the login node. All numbers come from SLURM logs.
+
+**Limits.**
+- One scene, one model, arm I, 40 states per task, one client seed.
+- The cues are binary by design, so cue strength is not varied.
+- Each configuration has one new layout, and two of the three come from one plate arrangement (A5).
+- The nearer-odd cell sits close to the .70 bar (.752), and its per-task shares on K2 and N1 are near chance.
