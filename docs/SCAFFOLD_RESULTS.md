@@ -4193,3 +4193,148 @@ Per task, G − I: N1 +.600 [+.483, +.717]; N2 +.283 [+.183, +.400]; K1 and K2 .
 - On O the router reduces to identity, so the primary test does not exercise the majority rule.
 - PD2's second-carry failure shows that the rule's scope is the first carry.
 - N1 rests on P's release, and C1 is unmet on O's N1.
+
+## 63. Scene 2: the named-mug hand-over without simulator state, and on pi0 and GR00T (m3_prereg s2_fix3, ledger row m3_prereg__libero_10__s2_fix3__s0__637eee41.json, written before any main rollout; code commit 321656c6; prep job 4722619, dump job 4722661, perception jobs 4725596, 4725881, 4725886, smoke jobs 4725643-4725646 and 4725901-4725902, prereg job 4725991; rollout jobs 4725992-4725999, 4726002-4726005, 4728239-4728240 (reruns of 4726000-4726001), reference job 4726006, read job 4728241; results/flawed/s2fix3_diag.json, s2fix3_pcheck*.json, s2fix3_read.json, rollouts results/flawed/s2fix3_roll)
+
+**Question.** §62's hand-over (arm H: the VLA acts until a hold of the NAMED mug, then SR 54's object-blind place P) took N1+N2 from 0 to .442 on frozen pi0.5 at no trained-task cost. Three gaps remained. (a) H reads simulator state: the held mug's identity and the target plate's position. (b) It was tested on pi0.5 only. (c) It sat below §54's .50 bar, with N1 limited by P's release. Does H survive perception in place of the simulator, and does it carry to pi0 and GR00T?
+
+**Arms** (`experiments/s2fix3.py`, `s2fix3_det.py`, `s2fix3_roll.sh`; layout O only; client seed 7, `--bind track`).
+- **I:** intact (`s2.py client`, unchanged).
+- **H:** §62's arm, run through §62's client unchanged (`s2fix2.py client --arm H --layout O`). Its side file's `route` field is §62's router table; H never reads it, and the read ignores it.
+- **Hp (pi0.5, PRIMARY):** H with every simulator read replaced.
+  - Holds: ProprioHeld on finger qpos, executed gripper command and hand height (unchanged; proprioception only).
+  - Detector: OWLv2 (`google/owlv2-base-patch16-ensemble`, the checkpoint of `where.OwlDetector` that role_hooks / serve_guided already use). It runs as a sidecar in the openpi venv, because the LIBERO client's transformers 4.21 has no OWLv2. It sees only the policy's 256-px agentview RGB image. The queries are "a white mug", "a yellow and white mug", "a red mug" and "a plate".
+  - Mug identity: the three best mug boxes, then the query-to-box permutation that maximises the summed relative scores.
+  - 3-D: rgp's remaining privilege, unchanged in kind (§52): the rendered agentview depth and the camera calibration back-project the boxes. Mugs use the median of the box's inner half plus a constant. Plates use the inner edge of the plate's low points plus a fitted radius. The plates sit at the image's side borders, so their outer edge is cut off.
+  - The target plate is registered once, at the first gated step (rgp's rule, no tracking). "left" picks the detected plate with the smaller world y.
+  - At each detector onset OWLv2 runs again. The held mug is the detected (or last-seen) mug nearest the proprioceptive hand position within .08 m. The gate rule is H's.
+  - The simulator oracle (H's rule on the same step, positions) is logged, never fed.
+- **Servers:** SR 50's. pi0.5 and GR00T use `pp_serve_purify --mode intact --comp= --seed 13`. pi0 uses `serve_guided --mode ours --seed 13` with `BACKBONE_CONFIG=pi0_libero`.
+- **H+ (optional N1 release arm): not run** (step 0 below).
+
+**Design.**
+- **New states:** 64 from LIBERO's sampler on K1's BDDL, seeds 920000 + k, none equal to an SR 50-62 state (checked against s2, s2cue3/4/5, s2fix2 O and PD2). k 0-3 are smoke, k 4-63 main (60). Branches use seed_base 38000000 + 1000 k.
+- **Development states** (perception constants only): §62's states k 0-63, never this probe's.
+
+**Step 0: why does P miss on N1?** (`s2fix3.py diag`; descriptive; it reads §62's existing H and G outputs only.)
+- **Counts.** H's N1 had 36 successes and 24 failures. Of the failures, 19 came after a completed release, 6 had a P abort and 3 tipped.
+- **The carry limit is not the cause.** P's carry never hit its step limit.
+- **The release offset does not separate success from failure.** When P opened, the named mug sat .034 m from the plate centre in successes and .037 m in failures. On K1 and K2 it sat .015 and .009 m.
+- **The relocation rule would barely help.** The reference planner's rule (s2.kp_for: the named mug's demonstrated grasp offset) would move the failures' median to .034 m.
+- So N1 releases are off-centre in both outcomes, and no single cause stands out. Under the brief's condition (a clear diagnosis and a principled change), I did not run H+.
+
+**Registered labels** (`s2fix3.MAPPING`). Paired bootstrap over the 60 states, tasks fixed (`s2.boot2_states`, B = 2000, default_rng(0)).
+- **Rule (§62):** for arm X against I, FIX WORKS iff X − I on N1+N2 has lower CI > 0 AND X − I on K1+K2 has lower CI > −.05; PARTIAL iff exactly one of the two holds; FAILS iff neither holds.
+- **PRIMARY:** the label of Hp on pi0.5.
+- **Cost of perception:** Hp − H, pooled over the four tasks and on N1+N2 and K1+K2 (PERCEPTION COSTS iff hi < 0).
+- **Cross-model:** the label of H per model. SR 50's floor makes a model TESTABLE iff its I K1+K2 ≥ .70 on these states. A model below the floor is registered NOT TESTABLE, and its rule outcome is descriptive.
+- **Also registered:** perception accuracy against the logged oracle, §54's .50 rule, and C1 (the reference planner's N1-N2 ≥ .80).
+
+**Seen before registration** (`experiments/prereg/s2_fix3_seen.txt`).
+- **Prep (job 4722619).** The prep job built the states and ran step 0 and perception check 1. In that check, plates were localised to 2.3 cm. The BDDL's left plate had the smaller world y on 64 of 64 development states. Greedy assignment swapped the white and yellow-and-white mugs (90 of 192 right); job 4722661 showed the swap is in OWLv2's labels, not the geometry.
+- **Assignment choice (job 4725596).** I compared six phrasings × two assignments. The original phrasing with permutation assignment scored 192 of 192 at the start and 64 of 64 on scripted holds, so I chose it.
+- **Predictions.** I wrote the predictions next, before any smoke.
+- **Smoke 1 (k 0-3).**
+  - pi0.5: I 4/4/0/0 (K1/K2/N1/N2), H 4/4/1/1, Hp 2/2/1/0. Every Hp gate decision equalled the oracle's, but the target errors were 1.4-3.3 cm and P released off the plate.
+  - pi0: I 3/4/0/0, H 4/4/3/0. GR00T: I 2/2/0/0, H 3/2/1/0.
+- **One change after smoke 1, plate localisation only.** I chose the new rule on development states (jobs 4725881 and 4725886). The edge-plus-radius rule has a split-half error of .40-.45 cm, against 2.2-2.4 cm for smoke 1's rule.
+- **Smoke 2 (Hp only).** Hp scored 4/4/1/1, the same as H, with errors of .27-.61 cm.
+- I did not revise the predictions after either smoke.
+
+**Result** (60 new states per task).
+
+| model | arm | K1 | K2 | N1 | N2 | N1+N2 | K1+K2 |
+|---|---|---|---|---|---|---|---|
+| pi0.5 | I | .983 | 1.00 | .000 | .000 | .000 | .992 |
+| pi0.5 | H | .983 | 1.00 | .617 | .367 | .492 | .992 |
+| pi0.5 | **Hp (perception)** | **.983** | **1.00** | **.600** | **.300** | **.450** | **.992** |
+| pi0 | I | .900 | .683 | .000 | .000 | .000 | .792 |
+| pi0 | H | .983 | .717 | .500 | .033 | .267 | .850 |
+| GR00T | I | .533 | .433 | .000 | .000 | .000 | .483 |
+| GR00T | H | .633 | .517 | .467 | .017 | .242 | .575 |
+
+| contrast | value [95% CI] | label |
+|---|---|---|
+| **pi0.5 Hp − I, N1+N2** | **+.450 [+.375, +.533]** | lower CI > 0 |
+| **pi0.5 Hp − I, K1+K2** | **.000 [−.025, +.025]** | **NON-INFERIOR** (margin −.05) |
+| **PRIMARY, pi0.5 Hp** | | **FIX WORKS** |
+| pi0.5 Hp − H, four tasks (cost of perception) | −.021 [−.067, +.025] | NO CLEAR DIFFERENCE |
+| pi0.5 Hp − H, N1+N2 / K1+K2 | −.042 [−.133, +.050] / .000 [.000, .000] | NO CLEAR DIFFERENCE (both) |
+| pi0.5 H − I, N1+N2 / K1+K2 | +.492 [+.408, +.583] / .000 [−.025, +.025] | **FIX WORKS** (replicates §62 on new states) |
+| pi0 H − I, N1+N2 / K1+K2 | +.267 [+.200, +.333] / +.058 [+.025, +.100] | **FIX WORKS** (TESTABLE, I K .792) |
+| GR00T H − I, N1+N2 / K1+K2 | +.242 [+.175, +.308] / +.092 [+.017, +.175] | **NOT TESTABLE** (I K .483 < .70; the rule reads FIX WORKS) |
+| §54's rule (N1+N2 ≥ .50) | pi0.5 H .492, Hp .450; pi0 .267; GR00T .242 | PARTIAL on all four |
+
+Per task, Hp − I: N1 +.600 [+.467, +.717]; N2 +.300 [+.183, +.417]; K1 .000 [−.050, +.050]; K2 .000. Hp − H: N1 −.017 [−.133, +.100]; N2 −.067 [−.200, +.050].
+
+**Perception accuracy** (Hp, pi0.5, 240 main episodes, against the logged simulator oracle).
+- **Target plate registration.** The xy error has median .43 cm, p90 .68 cm and max .79 cm. The z error has median |.03| cm. The side was right on 240 of 240.
+- **Mug identity at registration:** 720 of 720.
+- **Held mug at detector onsets.**
+  - The perceived held mug equals the simulator rule's on .992 [.981, 1.00] of 371 onsets. The gate decision equals the oracle's on .995 [.987, 1.00].
+  - The first onset of every episode agrees (240 of 240).
+  - The disagreements are 3 of 371 onsets: none → white once, white → none once and white → porcelain once.
+  - Hp never handed over at a hold the oracle would have refused (wrong place 0). It missed 2 hand-overs on N2.
+
+**Cross-model** (descriptive).
+- **pi0** has the same two-step program as pi0.5: its N1 success comes from P's place (.50), and N2 stays near 0 (.033). H also lifts K1 (+.083), because P places the named mug where pi0's own place sometimes fails.
+- **GR00T** shows the same pattern (N1 .467, N2 .017, K up .092). Its trained halves are below the floor on these states as in §50 (.483 against .508 there), so its label is NOT TESTABLE.
+
+**C1 (reference planner)** on the new states: K1 .817, K2 1.00, N1 .617, N2 .983. N1-N2 is .800, so **C1 MET**, exactly at the bar. The planner's N1 weakness holds (.617), as in §50 and §62.
+
+**Predictions** (in the row) against the outcome.
+- **pi0.5 I:** right.
+- **pi0.5 H:**
+  - FIX WORKS (85%): right.
+  - N1 ~.60: right (.617).
+  - N2 ~.28: .367.
+- **Hp perception:**
+  - Target xy ~2.5 cm: wrong. It is .43 cm, after the post-smoke change; I wrote the prediction under smoke 1's rule.
+  - Side ≥ .97 and identity ≥ .97: right.
+  - Onset agreement ~.90: low (.992).
+- **Hp outcome:**
+  - N1+N2 ~.36: .450. K ~.96: .992.
+  - PRIMARY FIX WORKS (60%): right.
+  - Hp − H NO CLEAR DIFFERENCE (55%): right.
+  - §54 PARTIAL (85%): right.
+- **pi0:**
+  - TESTABLE (70%): right (.792).
+  - H N1 ~.45 / N2 ~.10: .50 / .033.
+  - FIX WORKS (60%): right.
+- **GR00T:**
+  - NOT TESTABLE (80%): right.
+  - N1 ~.40: .467.
+  - Rule outcome FIX WORKS (50%): right.
+- **C1 UNMET (60%):** wrong. It reads MET at exactly .800.
+
+**Checks.**
+- The read found 0 hash mismatches against the row's files_sha256. Those hashes cover the code, the state and branch files, the perception constants' JSONs, the job scripts, the predictions and the seen file.
+- **Ledger row name and code commit.** The row file is named for 637eee41, the repo's HEAD when the row was written. The ledger names rows by HEAD and marks them dirty=true when the tree is uncommitted. My s2fix3 files were uncommitted then, as were other agents' files. I committed them afterwards as 321656c6, with no edits after the row. The row ties itself to the code through the sha256 of every file, not through the commit, and the read re-hashed every file on the main run: no mismatch.
+- **Jobs.**
+  - Every rollout log shows the registered server command, and every client exited 0.
+  - The two Hp jobs logged the OWLv2 sidecar.
+  - The rollout and reference jobs were submitted held and chained afterok on the prereg job. I released them only after the row file showed tag s2_fix3 and status PRE-REGISTERED S2FIX3.
+
+**Reading.**
+- **The named-mug hand-over does not need the simulator.** An off-the-shelf detector, plus the depth and calibration that rgp already used, names the held mug on 99% of onsets and finds the target plate to under 1 cm. With those inputs Hp matches H: FIX WORKS, new pairings 0 → .450, trained tasks unchanged, and the cost of perception is not distinguishable from 0 (−.021 [−.067, +.025]).
+- **One remaining privilege:** the rendered depth and the camera model.
+- **The plate localisation needed care.** The first rule (2-3 cm error) lost half the trained-task places in the smoke. P's place tolerates about 1 cm, the same tolerance step 0 found on N1.
+- **The fix carries across models.** On pi0 (testable) it reads FIX WORKS. On GR00T it reads FIX WORKS by the rule, but GR00T is below the floor. On every model the gain is concentrated on N1. N2 stays low (pi0.5 .30-.37, pi0 .033, GR00T .017), because the VLA's trained first step fills the target plate with the white mug before the named mug is held (§62).
+- **The .50 bar is still unmet everywhere.** pi0.5 H comes closest at .492. N2 is the limit on all three models, and N1 is limited by P's off-centre release, for which step 0 found no single cause.
+
+**Deviations.**
+- **H+ was not run** (step 0 inconclusive).
+- **Perception changed after smoke 1**, on the plate localisation only. I chose the new rule on development states, disclosed it in "seen" and re-smoked Hp before the row. The predictions were written before smoke 1 and left unchanged.
+- **Perception constants** (mug and plate offsets, plate radius, side rule, assignment method) were fitted on §62's states, not on this probe's.
+- **Detector placement.** OWLv2 runs in a sidecar process in another venv, because the client's transformers is too old.
+- **H runs §62's client unchanged.** Its `route` side field is irrelevant to H.
+- **Infrastructure rerun.** The pi0 H jobs 4726000 and 4726001 failed on node baymax before any client ran: the server died with "No CUDA GPUs are available", and no output was written. I resubmitted them with the same script and registered arguments as 4728239 and 4728240, with baymax excluded. I cancelled the first read (4726011, DependencyNeverSatisfied) and resubmitted it as 4728241. Nothing had been read, so the row stands.
+- **Ledger and commits.** The row carries dirty=true, because other agents' files were uncommitted. Commits are local, on main, as for §50-§62.
+- **Login node.** No JSON was opened there, and no python was run there. Two waiters briefly overlapped once during the perception checks; I stopped the extra one.
+
+**Limits.**
+- One scene, layout O only, 60 states per task, one client seed.
+- Depth and camera calibration are still simulator renders.
+- The perception constants are fitted to this scene's camera and plates. The plate rule assumes plates cut by the side borders.
+- The onset identity was checked against the simulator rule, not against contact.
+- C1 is met only at the bar.

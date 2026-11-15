@@ -1,0 +1,285 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_10",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: S2FIX3, scene 2 (LIVING_ROOM_SCENE5) on NEW states, layout O: SR 62's named-mug hand-over de-privileged (Hp, frozen pi0.5: OWLv2 + depth + calibration for the held mug's identity and the target plate; ProprioHeld for holds) and across models (H and I on frozen pi0 and GR00T, SR 50's floor) (docs/SCAFFOLD_RESULTS.md 63)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "neo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4725991",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "637eee412a7d415a01db950500dc5fbedc0de532",
+  "short": "637eee41"
+ },
+ "keys": {},
+ "metrics": {
+  "design": {
+   "assign": "perm",
+   "base": 920000,
+   "br_base": 38000000,
+   "cal": {
+    "mug": [
+     -0.0336,
+     0.0017,
+     -0.0783
+    ],
+    "plate": [
+     0.0072,
+     0.0,
+     -0.0063
+    ]
+   },
+   "floor": 0.7,
+   "held_r": 0.08,
+   "iou_max": 0.3,
+   "main": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+   ],
+   "min_score": 0.05,
+   "ni_margin": -0.05,
+   "plate_loc": "edge_radius",
+   "plate_r": 0.0554,
+   "queries": [
+    "a white mug",
+    "a yellow and white mug",
+    "a red mug",
+    "a plate"
+   ],
+   "side_rule": "world_y_min",
+   "smoke": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "topk": 60
+  },
+  "deviations_planned": "Layout O only.  Client seed 7 and server seed 13 kept from SR 50-62 (state and branch seeds are new).  H runs SR 62's client unchanged (its side file's `route` field is SR 62's router table and is ignored).  Depth and camera calibration stay privileged in Hp (as rgp).  Ledger tree dirty (other agents' files).",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix3_job.sh": "e606f923b6d9a0d7cac8747a6eb1348292fb6a33904a131cca3d65eaa95e81af",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix3_pcheck2.sh": "1f94b7e9f1556d1fa97968bae2b2622334a5bbaba3caf6fb99b72a4a6cee9a1f",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix3_prep.sh": "bf458cec2372d292e456a3293784209469c7e97f53c258e40a5dde253eee26e8",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix3_read.sh": "7818083ddfa341a6fad552260cd5e51af4d5bcf907377c598be9a32d304c73ba",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix3_ref.sh": "19fea8f7e30a037a54befa81e359c0f25e71f0c74ff660afa21d1689436839e9",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix3_smoke.sh": "83ecf087c5c5c9f11bfe86787ca9f42c21659962f250d1a3399d349c8cc47905",
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fa1b_common.py": "ddf11055f9a15658b771a2922d6b9003d18a4600256262d9306252c4cb749758",
+   "experiments/fa1g_plan.py": "bc6d30bb4c1da0f3e66495b8a228246ecd15f4fa3c5224e1b06b9e0f5dd600a6",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "experiments/prereg/s2_fix3_pred.txt": "aec8b419ac3d8fd10cdfcf806519f40ad19d36a8005273a9c9be13a735d36565",
+   "experiments/prereg/s2_fix3_seen.txt": "49fc8ecc6ffe04252b059c8b4f8975dd314163eb2f15fd4e7c3bd899e60188f4",
+   "experiments/s2.py": "100936370710f40bb6583140a8be06d0f43ffd9398f44a432cc773438b56828b",
+   "experiments/s2_tasks.py": "04b33cc98b3a45ceca175c9fd3d4ad0307efa5a4cbe78db222b5c8d32b224860",
+   "experiments/s2cue.py": "21cd27ba9d24d276db1d8fcfae413c595dd5a6c5db85f41da8931aa1e7b23582",
+   "experiments/s2cue3.py": "97231fc2679d6060a9155ff8dab45620cc8612ebf103403a7826e53477d96dcf",
+   "experiments/s2fix.py": "a80db43d06cf3c7962015d0fd5f3dc6c715d63f19785f9cc8092f31b90b3740f",
+   "experiments/s2fix2.py": "c9ff37c216f0031a63fd36d9a8c72389f9fedfd0b181d0e83867d357a4e2577f",
+   "experiments/s2fix3.py": "245f909fe6dc2e5e307cd232fbdbb6be5ebd7fac2dba96fb05ceee4940e6a521",
+   "experiments/s2fix3_det.py": "ef9318a9761382139c83780ea10f53c556a7454517496a12630f00b19898827c",
+   "experiments/s2fix3_roll.sh": "ff2bf1905d9a097a3d2132859f9faeb19f65748159536b75c080b91101bda642",
+   "experiments/sc_pu.py": "0a78fd36d68817ee324f9120e69cc281a7ca11961e3c2a3fa5a75a7192c00964",
+   "experiments/sc_rv.py": "1d1d6fb977524a7254b42ff889f80d7785c2bfc302c96fca5629c3da0b3be265",
+   "experiments/serve_guided.py": "00fb8826f7bb4cf3efc16c32851d7778a19a3ebe079d091120a51dfad3baf52b",
+   "lifelong_ood/policy/backbone.py": "1ed870a73c886eb3207b338353846cc2500538ccc0c8be71b53ac12546253173",
+   "lifelong_ood/policy/parts_flow.py": "a8fda7014a9a9b7072bf3c24432e7579005c0bd8339319d213f9f3bef81db626",
+   "lifelong_ood/policy/serve.py": "0ee7059a283444a08082b81d74d9af4fff8e3cb5854b00c67bef2898b9e90c58",
+   "lifelong_ood/policy/where.py": "5af0ddd390f6e833358af466b2862ce3cf56d24688c1e80e0ba1ca3d4005dd90",
+   "results/flawed/s2/keypoints.json": "71ee68ad75e1956b30de9bc3a8b7277f615865186e072dec99de6e64c6575a51",
+   "results/flawed/s2/s2_tasks.json": "7a9d0b7dd49ee3278baad73fec2bd4e571ae584b66d7b43c7da2b4276dee9df7",
+   "results/flawed/s2fix2/s2fix2_states.json": "e252636cd55860a75409fb3114c88caaff17cab65a41a18e576680850ee287f7",
+   "results/flawed/s2fix3/O/s2_living_0.npy": "a81d0a07ec860210c8590fff421e5c92800937cb5c629ea6af123b75cb9fe130",
+   "results/flawed/s2fix3/O/s2_living_1.npy": "a81d0a07ec860210c8590fff421e5c92800937cb5c629ea6af123b75cb9fe130",
+   "results/flawed/s2fix3/O/s2_living_2.npy": "a81d0a07ec860210c8590fff421e5c92800937cb5c629ea6af123b75cb9fe130",
+   "results/flawed/s2fix3/O/s2_living_3.npy": "a81d0a07ec860210c8590fff421e5c92800937cb5c629ea6af123b75cb9fe130",
+   "results/flawed/s2fix3/branches_main.json": "2567ad476d7b6499b46387de4bcc612f6a77d25bf01ed03c8a5e8428969d886b",
+   "results/flawed/s2fix3/branches_smoke.json": "fade75f45335239c755438d0c7d6bb3ab9dcee02d6a814deb0d8e0fa5051b166",
+   "results/flawed/s2fix3_diag.json": "9c6ed0a08551426c93132d878a854fa823acbdd3c4ee8249832de5ad84fd7f8f",
+   "results/flawed/s2fix3_pcheck.json": "709b42d3ac3eb27d638d28455a7f1ce6926ade8183eaf736d87d182e6014d777",
+   "results/flawed/s2fix3_pcheck2.json": "bbd19c68cf1599f715c1a1b50bc1ef049269f452887477ff7f8b96f82b474123",
+   "results/flawed/s2fix3_pcheck3.json": "2e32ba416a041d345d42698783493cd5a60bbf6db9ef5bd2f2e5b498a67ce619",
+   "results/flawed/s2fix3_pcheck3b.json": "654b46d063178c087fe7392e7be84793b8525fee83d7593ad7cce6d3fdaeed62"
+  },
+  "information": "Hp reads from the simulator only the agentview depth render and the camera model (rg.py rgp's remaining privilege, SR 52); every position comes from OWLv2 boxes on the policy's RGB image; holds from proprioception.  CAL and SIDE_RULE were fixed on development states (SR 62's k 0-63).  The simulator oracle is logged, never fed.",
+  "labels": "NEW states (LIBERO sampler on K1's BDDL, seeds 920000 + k, none equal to an SR 50-62 state), main k = 4-63 (60), branches seed_base 38000000 + 1000 k; layout O; tasks K1, K2, N1, N2; client seed 7, --bind track.  Models and arms: frozen pi0.5 (pp_serve_purify --model pi05 --mode intact --comp= --seed 13): I, H (SR 62's arm, s2fix2.py client --arm H unchanged), Hp (H with perception: OWLv2 boxes + rendered depth + camera calibration for the held mug's identity and the target plate's position; ProprioHeld for the hold); frozen pi0 (serve_guided --mode ours --seed 13, BACKBONE_CONFIG=pi0_libero) and frozen GR00T (pp_serve_purify --model groot --mode intact --comp= --seed 13): I and H.  Success = the BDDL goal.  Matrices [task, state].  Paired bootstrap over states, tasks fixed (s2.boot2_states, B = 2000, numpy default_rng(0); CI = 2.5 / 97.5).  Label rule (SR 62): for arm X against I, dN = X - I on N1+N2, dK = X - I on K1+K2; FIX WORKS iff dN lo > 0 AND dK lo > -.05 (NON-INFERIOR at margin -.05); PARTIAL iff exactly one holds; FAILS iff neither.  PRIMARY (pi0.5): the label of Hp.  PERCEPTION COST (pi0.5): Hp - H pooled over the four tasks, and on N1+N2 and K1+K2: PERCEPTION COSTS iff hi < 0; PERCEPTION GAINS iff lo > 0; else NO CLEAR DIFFERENCE.  CROSS-MODEL: per model (pi0.5, pi0, GR00T) the label of H; SR 50's floor: a model is TESTABLE iff its intact (I) K1+K2 success >= .70 on these states; a NOT TESTABLE model's label is reported as NOT TESTABLE with the rule's outcome descriptive.  SECONDARY: SR 54's rule for every hand-over arm (FIXED iff X - I on N1+N2 lo > 0 and X >= .50; NOT FIXED iff hi < .10; else PARTIAL).  PERCEPTION ACCURACY (Hp, against the simulator oracle, logged only): target plate registration error (xy, z; cm) and side correct (the registered point nearer the instructed plate than the other plate); mug identity at registration; at every detector onset, perceived held mug = the simulator rule's held mug (share, s2cue.boot_share over states) and gate decision = the decision H's rule makes on the same step; first-onset agreement per task.  C1: the reference planner (s2.plan_episode, unchanged) on the main states; MET iff its N1-N2 success >= .80.  Descriptive: gate decisions, P phases and aborts, final plate of each mug.",
+  "perception": "(this file, `client --arm Hp`): H with every simulator read replaced.\n  - Hold events: ProprioHeld, unchanged (proprioception only).\n  - Detector: OWLv2 (where.OwlDetector's checkpoint google/owlv2-base-patch16-ensemble, the repo's off-the-shelf open-vocabulary\n    detector), run in a sidecar (s2fix3_det.py, openpi venv) on the agentview RGB image the policy receives (256 px, before the\n    224 resize), queries \"a white mug\", \"a yellow and white mug\", \"a red mug\", \"a plate\".  Mug boxes (ASSIGN = perm): the three best\n    boxes by max mug-query score (>= MIN_SCORE, IoU < .3), then the query-to-box permutation maximising the sum of each query's\n    score relative to its best of the three.  (pcheck's greedy assignment swapped the white and yellow-and-white mug; pcheck2\n    chose perm on development states.)  Plates: the two best \"a plate\" boxes (IoU < .3).\n  - 3-D: rg.py rgp's remaining privilege, unchanged in kind: the rendered agentview depth (sc_pu.depth_std) back-projected through the\n    camera calibration (sc_pu.cam_model) -> the median world point of each box's inner half -> + a per-type constant (CAL, fitted by\n    mode `pcheck` on DEVELOPMENT states only: SR 62's states k 0-63, never this probe's states).\n  - Target plate: registered ONCE at the first gated step (n = WAIT), as rgp (paper C.6), no tracking afterwards.  \"left\" / \"right\"\n    from the instruction picks the detected plate on that side by SIDE_RULE (fixed by `pcheck` on development states).\n  - Held mug at an onset: OWLv2 re-run on that step's image; mug positions = this detection, falling back per mug to its last\n    detected position (registration at n = WAIT, then every onset); the held mug = the nearest within HELD_R of the proprioceptive\n    hand position.  Same gate rule as H.  P = SR 54's P with the registered target position in place of the simulator's.\n  - The simulator oracle (positions, H's held-mug rule and decision on the same step) is LOGGED in the side file, never fed.",
+  "prediction": "S2FIX3 predictions (SR 63), written 2026-11-15 after the prep jobs (states, step-0 diagnosis, perception checks on DEVELOPMENT\nstates) and BEFORE any smoke or policy run on the new states.\n\npi0.5 (60 new states, layout O):\n- I: K1 ~1.00, K2 ~.98, N1 0, N2 0 (SR 50-62).\n- H (SR 62's arm): N1 ~.60, N2 ~.28, N1+N2 ~.44; K1+K2 ~.99.  H label FIX WORKS (85%).\n- Hp: perception on the main states: target plate registration xy error median ~2.5 cm, side correct >= .97; mug identity at\n  registration >= .97; onset held-mug agreement with the simulator rule ~.90 (VLA grasps occlude more than the scripted lift on\n  development states, 64 of 64 there); gate decision agreement ~.92.\n- Hp: N1 ~.50, N2 ~.22, N1+N2 ~.36; K1+K2 ~.96 (a misnamed hold of the white mug on K2 hands it to P).\n- PRIMARY Hp label: FIX WORKS 60%, PARTIAL 35% (most likely through K non-inferiority NOT SHOWN), FAILS 5%.\n- Hp - H, all four tasks: ~-.05; PERCEPTION COSTS 45%, NO CLEAR DIFFERENCE 55%.  On N1+N2 ~-.08; on K1+K2 ~-.03.\n- SR 54's .50 bar: PARTIAL for H and Hp (85%).\n\npi0 (60 new states):\n- I: K1+K2 ~.80 -> TESTABLE (70%); N1+N2 0.\n- H: N1 ~.45, N2 ~.10; K1+K2 ~.78 (the VLA keeps every other-mug hold).  H label FIX WORKS 60%, PARTIAL 35%.\n\nGR00T (60 new states):\n- I: K1+K2 ~.50 -> NOT TESTABLE under SR 50's .70 floor (80%); N1+N2 ~0.\n- H: N1 ~.40 (SR 54's hI .467), N2 ~.05; K1+K2 ~.50.  Rule outcome (descriptive) FIX WORKS 50%, PARTIAL 45%.\n\nH+ (optional N1 release arm): NOT RUN (step-0 diagnosis not clear; see the row).\n\nC1 (reference planner on the new states): N1 ~.55, N2 ~.97, N1-N2 ~.76 -> C1 UNMET (60%).",
+  "runs": [
+   [
+    "pi05",
+    "O",
+    "I",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi05",
+    "O",
+    "H",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi05",
+    "O",
+    "Hp",
+    "PRIMARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi0",
+    "O",
+    "I",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi0",
+    "O",
+    "H",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "groot",
+    "O",
+    "I",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "groot",
+    "O",
+    "H",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ]
+  ],
+  "seen": "S2FIX3 seen before this row (all on DEVELOPMENT states or smoke states k 0-3; no main state k 4-63 has been run by any policy).\n\n1. Prep job 4722619: 64 new states (seeds 920000 + k; none equal to an SR 50-62 state); step-0 N1-release diagnosis on SR 62's\n   existing outputs (results/flawed/s2fix3_diag.json): arm H N1 36 successes / 24 failures (19 after a completed release, 6 with a\n   P abort, 3 tipped); P's carry never hit its limit; the named mug's offset from the plate centre when P opened is .034 m in\n   successes and .037 m in failures (K1 .015, K2 .009); the reference planner's relocation rule would move the failures' median to\n   .034 m.  No clear cause -> the optional release arm (H+) is not run.  Perception check 1 (pcheck, development states = SR 62's\n   k 0-63): OWLv2 loads offline; plates localised 2.3 cm raw; the BDDL's left plate has the smaller world y on 64 of 64 (SIDE_RULE\n   world_y_min); mug identity 90 of 192 under greedy assignment (white and yellow-and-white swapped).  Dump job 4722661 showed the\n   swap is in OWLv2's labels, not the geometry.\n2. pcheck2 (job 4725596, development states): six phrasings x two assignments; the original phrasing with permutation assignment\n   gets 192 of 192 mugs at the start and 64 of 64 scripted holds; mug CAL by nearest pairing [-.0336, .0017, -.0783].  Chosen.\n3. Predictions (s2_fix3_pred.txt) written here, before any smoke.\n4. Smoke 1 (jobs 4725643-4725646, smoke states k 0-3, outputs in .claude_tmp/pp/s2fix3_smoke): pi0.5 I 4/4/0/0 (K1/K2/N1/N2),\n   H 4/4/1/1, Hp 2/2/1/0 with every gate decision equal to the oracle's (identity 24 of 24 onsets) but registration xy errors\n   1.4-3.3 cm and P releases off the plate on K1 / K2; pi0 I 3/4/0/0, H 4/4/3/0; GR00T I 2/2/0/0, H 3/2/1/0; reference 3/3/1/4.\n   Selftest of the read ran clean.\n5. CHANGE AFTER SMOKE 1 (perception only, chosen on development states): pcheck3 (jobs 4725881, 4725886) compared plate\n   localisations; the plates are cut by the image's side borders, so the visible-extent centre is biased; edge_radius (the inner\n   edge of the plate's low points plus a fitted radius .0554 m) gives split-half xy .40-.45 cm median (max .72) against 2.2-2.4 cm\n   for smoke 1's inner_median.  PLATE_LOC = edge_radius, CAL plate [.0072, 0, -.0063].\n6. Smoke 2 (jobs 4725901-4725902, Hp only, k 0-3, outputs in .claude_tmp/pp/s2fix3_smoke2): Hp 4/4/1/1, equal to H's smoke\n   successes; registration xy errors .27-.61 cm; every gate decision equal to the oracle's.\nNothing else changed after smoke 1.  The predictions were not revised after either smoke.",
+  "status": "PRE-REGISTERED S2FIX3",
+  "step0_n1_release": "DESCRIPTIVE, SR 62's outputs only (results/flawed/s2fix3_diag.json): arm H N1, 36 successes, 24 failures (19 after a completed release, 6 with a P abort, 3 tipped); P's carry never hit its step limit; the named mug's offset from the plate centre when P opened was .034 m (successes) and .037 m (failures), against .015 / .009 m on K1 / K2; the reference planner's relocation rule would move the failures' median to .034 m.  No clear cause -> the optional release arm is not run.",
+  "written_before": "any main (k = 4-63) rollout or reference run of this probe"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_10__s2_fix3__s0__637eee41",
+ "schema": 1,
+ "script": "experiments/prereg/s2_fix3.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-15T17:05:29+00:00",
+ "stream": null,
+ "tag": "s2_fix3"
+}
