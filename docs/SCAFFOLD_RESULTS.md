@@ -3740,3 +3740,170 @@ Both plates are reachable from these starts, including the far left plate (K1 .7
 - Nearer plate is confounded with which plate is most visible and central. A layout with the far plate fully in view and off-centre would be needed to separate proximity from salience, and the camera's field of view leaves little room for one.
 - pi0's PSm runs are too sparse to label.
 - GR00T was not run (NOT TESTABLE per §50).
+
+## 60. Scene 2: nearer plate or salient plate? And GR00T on §59's layout (m3_prereg s2_cue4, ledger row at 84b0f4a7, written before any main rollout; commit 84b0f4a7; scan job 4715009, build job 4715362, smoke jobs 4715363-4715365, prereg job 4715794; rollout jobs 4715795-4715802, reference job 4715803, read job 4715804; results/flawed/s2cue4_read.json, rollouts results/flawed/s2cue4_roll)
+
+**Question.** In §59 pi0.5 carried the held mug to the nearer plate, and no run ever placed on the far plate (0 of 556). In that layout the nearer plate was also the salient one: it stood in front of the mugs near the image centre, with 2.45× the far plate's agentview pixels (measured below on this section's states). This section asks two things:
+1. With the nearer plate made the LESS salient one, does the place follow nearness or salience?
+2. Does §59's nearer-plate routing hold on a third model, frozen GR00T?
+
+**Salience, measured from renders before any policy run.** For each settled start state I segment the agentview render (simulator segmentation, 256 × 256, flipped like the policy's images). For each plate I record its visible pixel count and the distance of its pixel centroid from the image centre. SALIENT PLATE is the plate with ≥ 1.5× the other plate's pixels AND a centroid ≥ 10 px nearer the centre; otherwise it is undefined. The wrist view at the start is recorded as description only.
+
+| layout (40 main states) | left plate px / centre dist | right plate px / centre dist | salient | nearer plate (left-starting mug) |
+|---|---|---|---|---|
+| O, unmanipulated | 686-1301 / 114-126 | 780-1376 / 114-125 | undefined on 40 of 40 (symmetric) | left, 40 of 40 |
+| **Sx / PSx** (picked) | **1276 / 116.1** | **2574 / 93.1** | **right, 40 of 40** | **left, 40 of 40** (margin .119-.186 m) |
+| Sm (§59's layout) | 872 / 160.5 | 2138 / 74.9 | right, 40 of 40 | right, 40 of 40 |
+
+The plates stand at fixed positions and no mug occludes them, so their pixel counts are the same on every state. In the wrist view at the start the right plate shows 4328 px and the left 672-778 (Sx / PSx), against 4212 and 407 under Sm.
+
+**Design (feasibility first; no policy in this step).**
+- **Sx.** The right plate (plate_2) stands in front of the mugs just right of the midline. That makes it large and central (salient), and far from the left-starting mug. The left plate (plate_1) stands at the left side, level with the mugs. That makes it small, near the image edge, and nearer the left-starting mug. The mugs stay where they were sampled, so the white mug starts left.
+- **PSx** applies §57's swap of the two mugs' xy first, so the yellow-and-white mug starts left.
+- For the left-starting (disagreeing) mug, nearer plate says LEFT in both manipulations and salient plate says RIGHT in both. Identity says left under Sx and right under PSx. Start side says left in both, so here it stays tied to the nearer plate by construction (§59 separated those two).
+- **Pick rule** (`s2cue4.PICK_RULE`, fixed before the scan):
+  - GEOM_OK is §59's `geom_ok`, unchanged.
+  - SEP(k) holds iff nearer plate and salient plate are both defined on state k and differ.
+  - A candidate is FEASIBLE iff it is GEOM_OK on all 44 states for both manipulations and the reference reaches ≥ .50 per plate on states 0-7.
+  - The score is min over Sx, PSx of the SEP share.
+  - LAYOUT FEASIBLE iff the best pick scores ≥ .75. Otherwise a feasibility-only verdict would have been registered and nothing rolled out.
+- **Scan** (job 4715009, 8 candidates, left plate x ∈ {−.05, 0}, y ∈ {−.31, −.28}; right plate x ∈ {.10, .15}, y .04).
+  - Six candidates were feasible. Two failed GEOM_OK, with a plate placed on a mug on 9 states and clearance failing on 12.
+  - All six feasible candidates had SEP on 44 of 44 states for both manipulations.
+  - **Pick c7: plate_1 at (0.00, −0.28), plate_2 at (0.15, 0.04)**, margin .156, **LAYOUT FEASIBLE**.
+  - The salience gap is real but bounded by the camera. The right plate has 2.02× the pixels and sits 23 px nearer the centre. The left plate stays fully in view, at 1.2× the trained left plate's median pixels.
+- **§59's Sm on the new states:** GEOM_OK 40 of 40; start side vs nearer plate SEP 40 of 40.
+- **New states:** 44 drawn with LIBERO's sampler on K1's BDDL, seeds 845000 + k, none equal to a §50 or §59 state. k 0-3 are smoke and k 4-43 main. Branches use seed_base 28000000 + 1000 k.
+
+**Harness** (`experiments/s2cue4.py`; job scripts `.claude_tmp/pp/s2cue4_*.sh`).
+- Prompts, servers, client (`s2.py client`), launcher (`s2_roll.sh`), client seed 7 and `--bind track` are §59's.
+  - pi0.5 and GR00T run on `pp_serve_purify --mode intact --comp= --seed 13`.
+  - pi0 runs on `serve_guided --mode ours --seed 13`.
+- **Runs:**
+  - pi0.5 and pi0 × Sx, PSx × arm I (PRIMARY, item 1);
+  - GR00T Sm I (PRIMARY, item 2);
+  - GR00T on the unmanipulated new states O, K1 and K2 (the testability floor);
+  - pi0.5 Sx tv and PSx tv (SECONDARY; cheap).
+- Scoring reuses `s2cue2.score` and `s2cue2.label_run` unchanged, with SALIENT added as one more cue.
+- **Head-to-head NS** (registered, item 1): over placements where nearer plate and salient plate are both defined and disagree, s = the share on the salient plate.
+  - SALIENT PLATE ROUTES iff s ≥ .70 and lo > .50.
+  - NEARER PLATE ROUTES iff s ≤ .30 and hi < .50.
+  - UNTESTABLE below 20 placements.
+- **Per model:**
+  - both manipulations NEARER → NEARER PLATE ROUTES;
+  - both SALIENT → SALIENT PLATE ROUTES;
+  - Sx NEARER with PSx SALIENT → IDENTITY;
+  - Sx SALIENT with PSx NEARER → MIXED.
+- **Item 2:** GR00T Sm uses §59's start-side vs nearer-plate head-to-head (`s2cue3.h2h`, unchanged). GR00T's floor follows §50: TESTABLE iff its K1-K2 success on O is ≥ .70. Otherwise its verdict is reported as NOT TESTABLE and does not count as a third-model point.
+- C1 is the reference planner (`s2.plan_episode`, unchanged) on Sx, PSx and Sm: MET iff its N1-N2 success is ≥ .80.
+
+**Seen before registration** (`experiments/prereg/s2_cue4_seen.txt`).
+- The scan above, the build and the start-render sheet.
+- Smoke on k 0-3, every client exit 0:
+  - pi0.5 Sx I: 14 of 15 disagreeing placements on the nearer plate.
+  - pi0.5 PSx I: 14 of 16 on the salient plate.
+  - pi0 PSx I: 0 placements.
+  - GR00T Sm: 0 of 13 on the start-side plate.
+  - GR00T floor smoke: .625 (8 episodes).
+  - Reference smoke: N1-N2 .75.
+- The predictions (`s2_cue4_pred.txt`) were written while the scan ran, before the pick, the build and any smoke.
+
+**Cue shares** (placements; share [CI]; label). PRIMARY runs in bold.
+
+| | **pi0.5 Sx I** | **pi0.5 PSx I** | **pi0 Sx I** | **pi0 PSx I** | **GR00T Sm I** | pi0.5 Sx tv | pi0.5 PSx tv |
+|---|---|---|---|---|---|---|---|
+| placements | 158 | 150 | 106 | 1 | 116 | 129 | 125 |
+| **head-to-head NS: share on the salient plate** | **0 of 158 [0, 0] → NEARER PLATE ROUTES** | **128 of 149, .859 [.770, .942] → SALIENT PLATE ROUTES** | **28 of 106, .264 [.162, .382] → NEARER PLATE ROUTES** | 1 of 1 → UNTESTABLE | (not defined: nearer ≡ salient) | 20 of 61, .328 [.255, .394] UNRESOLVED | 41 of 69, .594 [.508, .681] UNRESOLVED |
+| **head-to-head SN (§59): share on the start-side plate** | (not defined) | (not defined) | (not defined) | (not defined) | **8 of 116, .069 [.018, .138] → NEARER PLATE ROUTES** | (not defined) | (not defined) |
+| nearer plate (≡ start side, L/R and depth order) | 1.00 ROUTES, INSEPARABLE from identity | .147 [.063, .235] RULED OUT | .736 [.618, .838] ROUTES, INSEPARABLE from identity | (1) | .931 [.862, .982] ROUTES, INSEPARABLE from salient | .845 ROUTES | .672 UNRESOLVED |
+| salient plate | .000 RULED OUT | .860 [.771, .944] ROUTES, INSEPARABLE from identity | .264 RULED OUT | (1) | .931 ROUTES (≡ nearer) | .682 UNRESOLVED | .776 ROUTES |
+| plate object / identity | 1.00 ROUTES (≡ nearer) | .853 ROUTES (≡ salient) | .736 ROUTES (≡ nearer) | (1) | .069 RULED OUT (≡ start side) | .845 ROUTES | .328 UNRESOLVED |
+| instruction | .494 UNRESOLVED (79) | .449 UNRESOLVED (78) | .577 UNRESOLVED (52) | (1) | .534 UNRESOLVED (58) | .773 ROUTES | .720 ROUTES |
+| **per model** | **pi0.5 I: IDENTITY** | | **pi0 I: UNRESOLVED** (PSx untestable) | | **GR00T I: NEARER PLATE ROUTES, NOT TESTABLE** (floor .412) | pi0.5 tv: UNRESOLVED | |
+
+**GR00T's testability floor (§50's rule).** On the unmanipulated new states GR00T's K1-K2 success is **.412 [.300, .525]** (80 episodes), below .70: **NOT TESTABLE**, as in §50 (.508).
+
+**Where the mugs went, and success** (by side, which equals the BDDL goal here; 40 new states per task).
+
+| run | first held | K1 | K2 | N1 | N2 | held mug's plate (L / R / none, pooled) |
+|---|---|---|---|---|---|---|
+| pi0.5 Sx I* | white 1.00 on every task | **.975** | .975 | .000 | .000 | white 158 / 0 / 2 |
+| pi0.5 PSx I | yellow-and-white .975-1.00 | .000 | .800 | .075 | .075 | y-w 21 / 128 / 9 |
+| pi0 Sx I | white 1.00 | .475 | .000 | .275 | .000 | white 78 / 28 / 54 |
+| pi0 PSx I | yellow-and-white .975-1.00 | .000 | .000 | .000 | .000 | y-w 0 / 1 / 158 |
+| GR00T Sm I | white 1.00 | .075 | .025 | **.700** | .000 | white 8 / 108 / 44 |
+| pi0.5 Sx tv | named mug .975-1.00 | 1.00 | .975 | .500 | .000 | white 40 L / 20 R; y-w 0 L / 68 R |
+| pi0.5 PSx tv | named mug 1.00 | .000 | .825 | .725 | **.700** | white 0 L / 56 R; y-w 28 L / 41 R |
+
+\* On pi0.5 Sx I every task runs the trained compound. The white mug goes to the left plate (.975-1.00), and then the yellow-and-white mug goes to the right plate (.95-1.00 of episodes). So K2 succeeds on the second carry, and N1 and N2 end in the trained arrangement. Under PSx I the second carry rarely happens: the white mug ends on no plate on .925-1.00 of episodes. The last column counts only the first-held mug.
+
+- **The far plate is reachable by the VLAs once it is the nearer plate.** pi0.5 Sx I places on the small side plate 158 times, against 0 of 556 in §59. So §59's "never the far plate" was not a ban on one plate position.
+- pi0.5 PSx tv reaches N2 .700 and N1 .725. That is the highest new-pairing success in scene 2. In PSx the named mug's instructed plate is the nearer plate on N2, and the salient one on N1.
+
+**C1 (reference planner).**
+- Sx: K1 .95, K2 1.00, N1 .925, N2 1.00; N1-N2 .963, **C1 MET**.
+- PSx: .85 / .90 / .95 / .90; .925, **C1 MET**.
+- Sm: .95 / 1.00 / .90 / 1.00; .950, **C1 MET**.
+
+**Registered verdicts.**
+- **pi0.5 (PRIMARY, I): Sx NEARER PLATE ROUTES (0 of 158 on the salient plate), PSx SALIENT PLATE ROUTES (.859, 128 of 149). Per model, by the registered rule: IDENTITY.** The held mug went to its own trained plate in both. Neither nearness nor salience routes alone, and each loses wherever it opposes identity.
+- **pi0 (PRIMARY, I):** Sx NEARER PLATE ROUTES (.264 [.162, .382]). PSx UNTESTABLE (1 placement). Per model **UNRESOLVED**.
+- **GR00T (PRIMARY, item 2): NEARER PLATE ROUTES on Sm** (.069 [.018, .138] on the start-side plate, 116 placements), but **NOT TESTABLE** by §50's floor (K1-K2 .412). It does not count as a third-model point.
+- **Secondary tv (pi0.5):** UNRESOLVED on both; instruction ROUTES on both (.773, .720).
+- **C1: MET** on Sx (.963), PSx (.925) and Sm (.950).
+
+**Predictions** (in the row, written before the smoke) against the outcome.
+- LAYOUT FEASIBLE (65%): right. Right plate ≥ 2× the left's pixels (70%): right, at 2.02×. Sm GEOM_OK on all 40 (85%): right.
+- pi0.5 holds the left-starting mug first ≥ .70 (80%): right (.975-1.00).
+- Head-to-head testable on pi0.5 Sx I (75%), pi0.5 PSx I (70%) and pi0 Sx I (50%): right. pi0 PSx I testable (35%): not testable, so my lean was right.
+- pi0.5 Sx I NEARER PLATE ROUTES (65%): right.
+- pi0.5 PSx I: **wrong**. My top call was NEARER (45%); the outcome was SALIENT (35%).
+- pi0.5 per model: **wrong**. My top call was NEARER (40%); the outcome was IDENTITY (25%).
+- pi0 per model UNRESOLVED (55%): right.
+- ≥ 1 placement on the non-salient plate in a pi0.5 I run (85%): right (158).
+- pi0.5 I success: Sx K1 ≥ .50 (55%) right (.975); PSx N2 ≥ .30 (35%) did not happen (.075); Sx N1 ≤ .20 (70%) right (0).
+- GR00T TESTABLE (35%): it was not, so right. The point guess of ~.55 missed (.412).
+- GR00T head-to-head testable (50%): yes. NEARER PLATE ROUTES given testable (65%): right.
+- GR00T far plate < 10% of placements (70%): right (.069).
+- pi0.5 tv UNRESOLVED or MIXED (50%): right.
+- C1 MET on Sx (55%), PSx (55%) and Sm (65%): all MET.
+
+**Checks.**
+- The read found 0 hash mismatches against the row: code, the 16 state arrays, s2cue4_states.json, branches, pick.json and the job scripts.
+- All 8 rollout jobs logged the registered server commands (4 pi0.5, 2 GR00T, 2 pi0). All 30 clients exited 0, and no job restarted.
+- The reference wrote 40 episodes for each of the 12 (manipulation, task) cells.
+- The rollout, reference and read jobs were submitted held and chained afterok on the prereg job. q2_cpu.sh always reports COMPLETED, so I checked the row before releasing them. Release came only after the named row file (`ledger/m3_prereg/m3_prereg__libero_10__s2_cue4__s0__84b0f4a7.json`) showed tag s2_cue4 and status PRE-REGISTERED S2CUE4. Each job also refuses to run without the row.
+
+**Reading.**
+- **Salience does not route the place on pi0.5, and neither does nearness alone.** With the small side plate nearer, the white mug went to it every time (158 of 158), against the large central plate. With the yellow-and-white mug in the same spot and the same plates, it went to the large central plate (.859), away from the nearer one. What stayed constant was the mug's own trained plate. The registered label is IDENTITY.
+- **Across §59 and §60, no single cue explains pi0.5; the vote of the three does.** For the disagreeing mug the outcome always sides with two of {nearer, salient, identity} against the third:
+
+| layout | nearer | salient | identity | outcome |
+|---|---|---|---|---|
+| Sm | R | R | L | R |
+| PSm | R | R | R | R |
+| Sx | L | R | L | L |
+| PSx | L | R | R | R (.86) |
+
+  This is a post-hoc description of four layouts, not a registered test. Identity, the cue §57 and §59 ruled out, is ruled out only when nearness and salience both oppose it. Read this way, §58 ("position over identity, a ranking") was a two-against-one case too.
+- **The language still selects nothing on arm I.** Instruction is UNRESOLVED (.45-.58) in every I run. Under tv it ROUTES (.72-.77) and reaches N2 .700 in PSx, where the named plate is the nearer one.
+- **GR00T places like pi0.5 did in §59.** It goes to the nearer, salient plate (108 of 116) and almost never to the far plate (8 of 116), so N1 .700 and K1 .075. Its trained-half success on these states is .412, so by §50's floor this is not a third-model point.
+- **pi0** follows the nearer plate where it places on Sx (.736, ≡ identity). Under PSx it almost never places (1 of 160).
+
+**Deviations.**
+- pi0 tv was not run (planned; §59's pi0 tv made 1 and 4 placements).
+- GR00T ran Sm only (no PSm), so its label is per run.
+- Start side stays tied to the nearer plate on the disagreeing mug by construction.
+- Salience is measured on the agentview start render only. The wrist view and later frames are descriptive or unmeasured. The centrality gap is 23 px of a 256-px image.
+- The registered SALIENT cue is a fixed per-layout property: the plates have constant pixel counts across states, so salience does not vary within a run.
+- The ledger row carries dirty=true, because other agents' files were uncommitted.
+- The parent session restarted while the rollouts ran. The jobs were unaffected, and I resumed from their logs.
+- My first waiter on the prereg job printed "no such file" for the q2_cpu log, because it read before the log was flushed. A direct check then showed the row and the log.
+- No python ran and no JSON was opened on the login node. All numbers come from SLURM logs.
+
+**Limits.**
+- Two plate layouts here and two in §59, one scene, 40 states per task, one client seed.
+- The salience gap is bounded by the camera: 2.02× the pixels and 23 px more central. A larger gap would need a plate outside the reachable or visible region.
+- The two-of-three description is post hoc.
+- pi0's PSx runs are too sparse to label.
+- GR00T is below its testability floor.
