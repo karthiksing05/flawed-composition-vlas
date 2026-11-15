@@ -1,0 +1,22 @@
+S2CUE5 predictions (SR 61), written 2026-11-14 before the policy-free scan's results (submitted with this file), the pick, the build, any smoke and any rollout.
+
+Design / feasibility (registered pick rule per family; NEW-LAYOUT FEASIBLE iff the pick has the designed configuration on >= .75 of the 44 states)
+- Family A (left plate at the side = nearer, right plate in front = salient; A2 salient odd, PA2 nearer odd) NEW-LAYOUT FEASIBLE: 70%.
+- Family B (left plate in front = salient, right plate nearer the left mug; B2 nearer odd, PB2 salient odd) INFEASIBLE: 80%.  Expected failure: the right plate collides with or crowds the right-starting mug, and a front plate near the midline is not both larger AND more central than a plate behind it.
+- Family C (Sm's family, new positions; C2 trained odd) NEW-LAYOUT FEASIBLE: 50%.
+- Family D (mirror of Sx; PD2 trained odd) NEW-LAYOUT FEASIBLE: 70%.
+- At least one NEW layout for every configuration (nearer odd, salient odd, trained odd): 55%.
+- The replication layouts (Sx, PSx, Sm) pass GEOM_OK on all 40 new main states: 85%.
+
+pi0.5 arm I
+- pi0.5 holds the left-starting mug first on >= .70 of episodes in every run: 80%.
+- Each configuration TESTABLE (>= 20 2-vs-1 placements) on its PRIMARY source: nearer odd 70%, salient odd 75%, trained odd 70%.
+- Majority share >= .70 on the PRIMARY source: salient odd 80% (SR 60 Sx: 158 of 158), trained odd 75% (SR 59 Sm: 116 of 116), nearer odd 55% (SR 60 PSx: .859, the weakest case).
+- Pooled majority share point estimate >= .85: 55%.
+- LABEL: MAJORITY CONFIRMED 40%, PARTIAL 45%, REFUTED 15%.
+- If PD2 is built: its placements go to the left (majority) plate >= .70: 65%.  (An alternative account, "the plate in front of the mugs near the midline wins", predicts the same there; "the trained plate wins whenever nearness and salience are weak" predicts the opposite.)
+- Replications on the new states: Sx salient-odd majority share >= .90 (85%); Sm trained-odd >= .90 (85%); PSx nearer-odd >= .70 (70%).
+- The instruction does not move the majority share: within 2-vs-1 placements with the named mug held, the share on the majority plate differs by < .15 between instruction-agrees and instruction-disagrees: 60%.
+
+C1 (reference planner, N1-N2 >= .80)
+- MET on every built manipulation: 50%.  MET on PD2 if built: 60%.

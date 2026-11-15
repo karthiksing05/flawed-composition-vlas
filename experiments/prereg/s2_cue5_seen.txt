@@ -1,0 +1,27 @@
+S2CUE5 (SR 61): seen before registration.
+- SR 46-60 in full.
+- Predictions (s2_cue5_pred.txt) written before the scan's results, the pick, the build and any smoke.
+- Feasibility scan, job 4717635 (no policy): 44 new states (seed 875000 + k), none equal to an SR 50, 59 or 60 state.  D0 .1456 m.
+  Unmanipulated: plate pixels L 671-1315, R 694-1343, centroid ~120 px each; SALIENT undefined on 44 of 44.
+  Family A (8 candidates): A0, A1, A2, A4 fail clearance on 9-17 states, A3 / A7 (right plate at (.05, .06)) collide with the mugs on
+  21-26 states; A1, A2, A6 (right plate at (.15, .10) or (.20, .02) with the left at (-.10, -.30) / (-.05, -.32)) leave SALIENT
+  undefined (centroid margin < 10 px).  PICK A5: plate_1 (-.05, -.32), plate_2 (.15, .10); A2 salient odd and PA2 nearer odd on 44
+  of 44; left plate 861 px at 117.0 px from centre, right 2583 px (3.0x) at 102.8 px (14.2 px nearer); nearer margin .128-.222 m
+  on main states; reference (states 0-7) A2 L .8125 R .875, PA2 L .75 R .8125.  NEW-LAYOUT FEASIBLE.
+  Family B (6): INFEASIBLE.  Every candidate fails GEOM_OK on 44 of 44 states for B2 and PB2 (a right plate near the left mug is
+  placed on or against the right-starting mug: placed 33-44 states, clearance 21-38), and SALIENT is undefined on 40-44 states.
+  Family C (6): INFEASIBLE.  GEOM_OK on at most 4 of 44 states (clearance 27-36, placed 8-43); C0 has trained odd on 44 of 44 but
+  fails clearance on 36.
+  Family D (6): all six GEOM_OK on 44 of 44 and trained odd on 44 of 44.  PICK D5: plate_1 (.10, -.10), plate_2 (-.05, .31); left
+  plate 2123 px at 86.1 px, right 992 px at 115.3 px (2.14x, 29 px nearer); nearer margin .219-.285 m; reference L .875 R .6875.
+  NEW-LAYOUT FEASIBLE.
+  Replications on the new states: Sx and PSx GEOM_OK 44 of 44; Sm 43 of 44 (39 of 40 main: one state fails clearance, dmin .134
+  < D0 - .01 = .1356); designed configuration on 44 of 44 for all three.
+- Build job 4718078 (a duplicate submission, 4718085, refused because the states file existed), start-render sheet
+  (.claude_tmp/pp/s2cue5_sheet.png, rows O / A2 / PA2 / PD2 / Sx / PSx / Sm, k 0-3), viewed.
+- Smoke on k 0-3 (job 4718112, pi0.5 I on all six manipulations + reference; outputs in .claude_tmp/pp/s2cue5_smoke; all 24
+  clients exited 0; read selftest ran; the smoke-only `summary` mode crashed on a log file named ref_*.log, not fixed):
+  2-vs-1 placements on the majority plate: A2 (salient odd) 11 of 14, PA2 (nearer odd) 8 of 12 (+ 2 of 2 trained odd),
+  PD2 (trained odd) 16 of 16, Sx 15 of 15, PSx 14 of 15, Sm 12 of 12.  Reference on k 0-3: N1-N2 .875 (A2, PA2), 1.00 (PD2, Sx,
+  PSx, Sm).
+- Nothing in the code, layouts, rule or read changed after the smoke.
