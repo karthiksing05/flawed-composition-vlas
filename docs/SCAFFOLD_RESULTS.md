@@ -4033,3 +4033,163 @@ Every configuration is testable (141-153 placements). Every 2-vs-1 configuration
 - The cues are binary by design, so cue strength is not varied.
 - Each configuration has one new layout, and two of the three come from one plate arrangement (A5).
 - The nearer-odd cell sits close to the .70 bar (.752), and its per-task shares on K2 and N1 are near chance.
+
+## 62. Scene 2: a gated hand-over that keeps the trained tasks (m3_prereg s2_fix2, ledger row at 42b2441f, written before any main rollout; commit 42b2441f; diag job 4720867, states job 4720868, smoke job 4720979, prereg job 4721625; rollout jobs 4721626-4721628, 4721634-4721637, reference jobs 4721629, 4721631, read job 4721642; results/flawed/s2fix2_diag.json, s2fix2_read.json, rollouts results/flawed/s2fix2_roll)
+
+**Question.** In §54 the hand-over to an object-blind place removed F1 in scene 2, but it cost the trained halves (K2 .983 → .55 under htvp, → 0 under hI). Why did it cost K2? Can a hand-over that fires only when the VLA would place wrongly fix the new pairings and keep the trained tasks, on frozen pi0.5?
+
+**Step 1: why the hand-over cost K2** (`s2fix2.py diag`; descriptive; it reads §54's existing outputs only and ran before the row).
+
+| arm, task | mug moved first | n | success | where that mug ended |
+|---|---|---|---|---|
+| hI K2 | white (other) | 60 | 0 | on the instructed right plate 39, on no plate 21 |
+| htvp K2 | yellow-and-white (named) | 32 | 32 | right plate 32 |
+| htvp K2 | white (other) | 28 | 1 | right plate 13, no plate 15 |
+| hI / htvp K1 | white (named) | 120 | 120 | left plate 120 |
+| hI N2 | white (other) | 60 | 0 | on the instructed left plate 60; P then holds, so the named mug never moves |
+
+- **The cause is a hold of the wrong mug.** In K2 the VLA's trained two-step program grasps the white mug first (a position effect, §57). The hand-over fires at that first hold, and P carries the white mug to the instructed plate.
+- **The other candidate causes are ruled out descriptively.** P never failed a K task when it held the named mug (152 of 152). The first detector onset falls at the oracle Held (median 0 steps on K1, −1 on htvp K2). P always went to the instructed plate.
+- **The principled fix** is to hand over only at a hold of the NAMED mug. At a hold of any other mug, the VLA keeps control, because the instruction says nothing about where that mug goes. This fix needs to know which mug is held.
+
+**Arms** (`experiments/s2fix2.py`, `s2fix2_roll.sh`; frozen pi0.5, `pp_serve_purify --model pi05 --mode intact --comp= --seed 13`, client seed 7, `--bind track`).
+- **I:** intact (`s2.py client`, unchanged).
+- **H0:** §54's hI, unchanged (`s2fix.py client --arm hI`). It hands over at the first hold of any mug.
+- **H:** §54's hand-over with the step-1 fix. The held mug is the mug nearest the hand in xy at the detector onset, within .08 m. P takes over only if that mug is the named one.
+- **G (main arm):** H plus a router. At a hold of the named mug, the router predicts the VLA's place plate with §61's majority rule: the plate backed by at least 2 defined cues of the held mug. The cues are NEARER (from the settled start positions, .02 m tolerance), SALIENT (§60's rule on the simulator segmentation of the agentview start render) and TRAINED (from the training-task index: white → left, yellow-and-white → right). If the prediction equals the instructed plate, the VLA keeps control. Otherwise, or when the prediction is undefined, P takes over. P, its constants and its abort / hand-back rule are §54's, unchanged.
+- All hand-over arms run on I's front end (no views). §54's primary htvp needed simulator masks, and tvp alone already cost K2 (.767, §50).
+
+**What the router uses, stated plainly.** Beyond §54 it adds one thing, the training-task index (which plate each mug was trained to), which the VLA's training data defines. Everything else is simulator state of the kind §54 already read: the start positions of the mugs and plates, the start render's segmentation (§54's htvp painted from simulator masks of every mug and plate), and the mugs' positions at the onset (§54's P read the target plate's simulator position). It adds no task information. The router and the named-mug check are structural, and neither reads the VLA's actions. Both are privileged in the same way §54 was, because the learned segmenter does not transfer to this scene (§50).
+
+**Design.**
+- **New states:** 64 drawn with LIBERO's sampler on K1's BDDL, seeds 890000 + k, none equal to a §50-§61 state. k 0-3 are smoke and k 4-63 main (60). Branches use seed_base 36000000 + 1000 k.
+- **Layout O (PRIMARY):** unmanipulated, arms I, H0, H and G.
+- **Layout PD2 (SECONDARY):** §61's PD2 (mugs swapped, plate_1 at (.10, −.10), plate_2 at (−.05, .31)) on the new states, arms I, H and G. Here nearness and salience outvote the trained plate, so the router's prediction differs from an identity-only gate.
+- **Router inputs (build, before any policy run).** On O, salience is undefined on 60 of 60 states, and the router predicts each mug's trained plate on 60 of 60 (nearer = trained). On PD2, GEOM_OK holds on 60 of 60, the left plate is salient on 60 of 60, and the router predicts the left plate for both mugs on 60 of 60.
+
+**Registered labels** (`s2fix2.MAPPING`). Paired bootstrap over the 60 states, tasks fixed (`s2.boot2_states`, B = 2000, default_rng(0)).
+- **PRIMARY (O):** FIX WORKS iff G − I on N1+N2 has lower CI > 0 AND G − I on K1+K2 has lower CI > −.05 (non-inferiority at margin −.05). PARTIAL iff exactly one of the two holds. FAILS iff neither holds.
+- **G − H on K1+K2:** ROUTER KEEPS MORE iff lower CI > 0; ROUTER COSTS iff upper CI < 0; otherwise NO CLEAR DIFFERENCE.
+- **Secondary:** H − H0 on K1+K2 (CAUSE FIXED iff lower CI > 0); H under G's rule; §54's rule (FIXED iff lower CI > 0 and success ≥ .50).
+- **PD2:** G − I, H − I and G − H pooled over the four tasks (HELPS iff lower CI > 0, HURTS iff upper CI < 0).
+- **Router agreement on arm I:** over placements of the first mug moved, the share on the predicted plate (`s2cue.boot_share`).
+- **C1:** the reference planner's N1-N2 success ≥ .80.
+
+**Seen before registration** (`experiments/prereg/s2_fix2_seen.txt`).
+- The diag (above) and the build.
+- Smoke on k 0-3 (job 4720979). On O: I 4/4/0/0 (K1/K2/N1/N2), H0 4/0/2/0, H 4/4/2/2, G 4/4/2/2. On PD2: I 0/0/0/3, H 1/2/2/3, G 0/2/2/3. Every first gate event named the mug equal to `bound`. The read selftest ran clean.
+- The predictions (`s2_fix2_pred.txt`) were written before the smoke, before the diag log was read and before the states were built. Nothing changed after the smoke.
+
+**Result, layout O** (60 new states per task).
+
+| arm | K1 | K2 | N1 | N2 | N1+N2 | K1+K2 |
+|---|---|---|---|---|---|---|
+| I | 1.00 | 1.00 | .000 | .000 | .000 | 1.00 |
+| H0 (§54 hI) | 1.00 | .017 | .600 | .000 | .300 | .508 |
+| H (step-1 fix) | 1.00 | .983 | .600 | .283 | .442 | .992 |
+| **G (gated)** | **1.00** | **1.00** | **.600** | **.283** | **.442** | **1.00** |
+
+| contrast | value [95% CI] | label |
+|---|---|---|
+| **G − I, N1+N2** | **+.442 [+.367, +.517]** | lower CI > 0 |
+| **G − I, K1+K2** | **.000 [.000, .000]** | **NON-INFERIOR** (margin −.05) |
+| **PRIMARY** | | **FIX WORKS** |
+| G − H, K1+K2 | +.008 [.000, +.025] | NO CLEAR DIFFERENCE |
+| G − H, N1+N2 | .000 [.000, .000] | (descriptive) |
+| H − H0, K1+K2 | +.483 [+.458, +.500] | CAUSE FIXED |
+| H − I, N1+N2 / K1+K2 | +.442 [+.367, +.517] / −.008 [−.025, .000] | H also reads FIX WORKS |
+| §54's rule (N1+N2 ≥ .50) | G .442, H .442, H0 .300 | PARTIAL on all three |
+
+Per task, G − I: N1 +.600 [+.483, +.717]; N2 +.283 [+.183, +.400]; K1 and K2 .000.
+
+**What the gate did** (descriptive).
+- **G never handed over on a trained task** (0 of 120 episodes). On K1 the router agreed at the white mug's hold (60 of 60). On K2 the VLA kept the white mug ("other mug", 60) and then the yellow-and-white mug (router agrees, 64 events).
+- **G handed over on every N1 and N2 episode.**
+- **The held-mug identification equalled `bound` on every first event**, in every run (480 of 480 G / H episodes on O).
+- **H and G differ only where the router agrees.** There, H's P carries the named mug and G leaves it to the VLA. On O that happens on K1 and on K2's second carry, where both P (.983-1.00) and the VLA (1.00) succeed. In this layout the router therefore adds nothing measurable over the named-mug check: identity and nearness agree, and the rule reduces to the trained plate.
+- **N1 .60 is P's own place.** It is the same as H0, because the white mug is the named mug and is held first. 24 of 60 episodes end on no plate after a completed release, the long-carry weakness of §54 and §50.
+- **N2 .283 is limited by the scene program.** The VLA first puts the white mug on the left plate (the instructed plate), then the yellow-and-white mug is held and P carries it to the occupied plate. The yellow-and-white mug ends on the left plate on 17 of 60 episodes, and the white mug stays there on 15. Under H0, N2 is 0: P carries the white mug to the left plate and then holds.
+
+**Router agreement on arm I (held-out check of §61).**
+- O: 238 of 238 placements land on the predicted plate (1.00 [1.00, 1.00]). Salience is undefined there, so this checks the nearer = trained case only.
+- PD2: 228 of 228 (1.00), 224 of them in the trained-odd configuration. This replicates §61's trained-odd cell (153 of 153) on new states.
+- Both counts score the FIRST mug moved.
+
+**Result, layout PD2 (SECONDARY).**
+
+| arm | K1 | K2 | N1 | N2 | all four |
+|---|---|---|---|---|---|
+| I | .033 | .000 | .200 | 1.00 | .308 |
+| H | .200 | .383 | .450 | .767 | .450 |
+| G | .033 | .383 | .450 | 1.00 | .467 |
+
+- G − I is +.158 [+.112, +.200], HELPS. H − I is +.142 [+.083, +.200], HELPS. G − H is +.017 [−.021, +.054], NO CLEAR DIFFERENCE.
+- **Per task, the router does what it is built for on N2.** G − H is +.233 [+.133, +.333]: the router predicts the left plate and keeps the VLA, which succeeds 60 of 60, while P reaches .767.
+- **The router fails on K1.** There G − H is −.167 [−.267, −.083]. The VLA first puts the yellow-and-white mug on the left plate. When it then holds the white mug, the router predicts the left plate (salient and trained against nearer), but the VLA puts the white mug on the left plate only 2 times, on the right 21 times and on neither 37 times. The majority rule was confirmed on the FIRST carry (§61), and this second carry goes to an already occupied plate.
+- On K2, G = H = .383: P carries the named mug, which the VLA holds first, to the right plate.
+
+**C1 (reference planner).**
+- O: N1 .55, N2 1.00, N1-N2 .775, **C1 UNMET**. K1 is .867 and K2 .983. The planner's white-mug weakness holds on N1, as in §50.
+- PD2: N1-N2 .883, **C1 MET**.
+
+**Predictions** (in the row) against the outcome.
+- **Step 1:**
+  - Cause = wrong mug at the first hold (90%): right.
+  - Named-first success ≥ .95: right (32 of 32).
+  - P's K failures ≤ .05: right (0).
+  - Onset timing: right.
+  - "The white mug ends on the right plate on ≥ .80 of wrong-first K2 episodes": wrong (hI 39 of 60, .65; the rest on no plate).
+- **O:**
+  - FIX WORKS (72%): right.
+  - G − I on N ~+.30 with lower CI > 0: right, larger (+.442).
+  - Non-inferior (80%): right (.000).
+  - N1 ~.50: .60. N2 ~.10: .283.
+  - G − H NO CLEAR DIFFERENCE (80%): right.
+  - CAUSE FIXED (95%): right.
+  - §54's rule PARTIAL (80%): right.
+  - Gate behaviour and held-mug identification: right.
+  - Agreement ≥ .95: right (1.00).
+- **PD2:**
+  - I matches §61: right.
+  - G N2 ~.98: right (1.00).
+  - G − I HELPS (75%): right.
+  - G − H NO CLEAR DIFFERENCE (60%): right.
+  - H and G K2 ~.75: wrong (.383).
+  - G − H on N2 positive: right.
+  - I did not predict the K1 loss under G.
+- **C1:** O UNMET (55%): right. PD2 MET (55%): right.
+
+**Checks.**
+- The read found 0 hash mismatches against the row.
+- All 7 rollout jobs logged the registered server command. All 28 clients exited 0, and no job restarted.
+- Both reference jobs exited 0.
+- The rollout, reference and read jobs were submitted held and chained afterok on the prereg job. I released them only after the named row file (`ledger/m3_prereg/m3_prereg__libero_10__s2_fix2__s0__42b2441f.json`) showed tag s2_fix2 and status PRE-REGISTERED S2FIX2.
+
+**Reading.**
+- **The K2 cost of §54 was a trigger fault, not a cost of the hand-over itself.** The hand-over fired at the first hold, and in scene 2 the first hold is often of the other mug. Handing over only at a hold of the named mug (H) restores the trained tasks: K1+K2 .992, against .508 under H0 on the same states. The new-pairing gain is unchanged (+.442).
+- **The gated hand-over (G) is the registered fix, and it WORKS on layout O.** The new pairings rise from 0 to .442, and the trained tasks lose nothing (1.00, exactly I's episodes). On O the router never hands over on a trained task. It also adds nothing measurable over H, because there the majority rule reduces to the trained plate.
+- **The router's own value shows only where layout outvotes training (PD2), and it is mixed there.** It keeps the VLA on N2 (+.233 over H), and it misroutes the second carry on K1 (−.167). Pooled, G − H is NO CLEAR DIFFERENCE. The majority rule predicts first carries (466 of 466 here), not carries onto an occupied plate.
+- **What still limits the new pairings is not F1:**
+  - P's object-blind release on the long N1 carry (C1 is unmet on N1 for the planner too);
+  - on N2, the VLA's trained first step, which fills the target plate before the named mug is held.
+- **Prior art and privilege are unchanged from §54.** The hand-over variant overlaps ReGuide, LiLo-VLA and Harness VLA. The gate adds a routing rule from our own diagnosis (§61), not a new mechanism, and it reads simulator state of the same kind §54 read.
+
+**Deviations.**
+- **Arms.**
+  - The hand-over arms run on I's front end, not §54's tvp. H0 is §54's secondary hI, chosen to match G's front end.
+  - The brief's H is "the §54 hand-over, possibly with the cause fixed". I ran both: H (fixed) and H0 (unchanged).
+- **Added information.** The router and the named-mug check read the mugs' simulator positions, which §54's P did not read (§54's htvp painted their simulator masks). This is disclosed in the row.
+- **Extra layout.** PD2 was added as a registered SECONDARY layout. It is §61's layout, re-used on new states.
+- **Scene 1 (optional item 4) was not run.** The router's cues are defined for two plates, and LIBERO-Goal's targets include fixtures. Defining them there is a new design, not a cheap re-run.
+- **Jobs.**
+  - The smoke was first submitted to overcap (4720970). I cancelled it while it was still pending and resubmitted it to tail-lab (4720979).
+  - Four O-layout rollout jobs failed to submit on tail-lab's 4 h time limit. I resubmitted them with `-t 04:00:00` (two on tail-lab, two on overcap) before the prereg job ran.
+- **Ledger and commits.** The ledger row carries dirty=true, because other agents' files were uncommitted. Commits are local, on main, as for §50-§61.
+- **Login node.** No JSON was opened there; all numbers come from SLURM logs. One login-node shell command included a stray `python3 -c "print(1)"`. The permission system blocked it, and nothing ran.
+
+**Limits.**
+- One scene, one model, 60 states per task, one client seed.
+- Simulator state is used for the held-mug identity and the router's cues.
+- On O the router reduces to identity, so the primary test does not exercise the majority rule.
+- PD2's second-carry failure shows that the rule's scope is the first carry.
+- N1 rests on P's release, and C1 is unmet on O's N1.
