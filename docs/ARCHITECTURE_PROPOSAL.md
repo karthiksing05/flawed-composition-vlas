@@ -15,7 +15,7 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
 - it has no cost on trained tasks;
 - it is pre-registered as EQUIVALENT to a reimplemented ReGuide (SR §55).
 
-On frozen GR00T the views help (+.204, SR §56), but the held-object box adds nothing and costs .07 on trained tasks. In scene 2, a hand-over gated on the held mug and on SR §61's majority rule fixes part of the new pairings at no cost to the trained tasks on frozen pi0.5 (.000 → .442, trained 1.00, FIX WORKS, SR §62); the inputs are privileged, and on the default layout the rule reduces to the trained plate. GR00T's high carry is unchanged by the box or a grip-width state swap (UNRESOLVED both), so F1m's cue is model-specific.
+On frozen GR00T the views help (+.204, SR §56), but the held-object box adds nothing and costs .07 on trained tasks. In scene 2, on frozen pi0.5, handing over only at a hold of the named mug fixes part of the new pairings at no cost to the trained tasks (.000 → .442, trained 1.00, FIX WORKS by the registered rule, SR §62). That gain comes from the named-mug trigger. SR §61's majority-rule router adds nothing over it on the default layout (G − H +.008). The result is still below §54's .50 bar, and the inputs are privileged. GR00T's high carry is unchanged by the box or a grip-width state swap (UNRESOLVED both), so F1m's cue is model-specific.
 
 **The common mechanism (SR §50-§57).** The place is routed by whichever visual cue covaried with the destination in training, and the instruction does not select it. The cue differs by setting:
 - in scene 1 on pi0.5, the held object's identity (F1) or its outline (F1m);
