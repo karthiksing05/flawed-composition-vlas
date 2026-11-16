@@ -1,6 +1,38 @@
-# A role-addressed structure for VLAs: proposal and vetting record (draft, 2026-11-12)
+# A role-addressed structure for VLAs: proposal and vetting record (2026-11-15)
 
-This document joins the failure account (docs/ARCH_FAILURES.md) to the structural fixes tested so far. Every claim cites a registered read. Sections marked PENDING wait on reads that are queued.
+This document joins the failure account (docs/ARCH_FAILURES.md) to the structural fixes tested so far. Every claim cites a registered read. No reads are pending. The account below is the state at SR §66. Later reads are added to the dated summaries and the §3 table.
+
+**Final account (2026-11-15, SR §45-§66).**
+
+*Diagnosis: the contribution.* Current VLAs route sub-goals by visual cues that covaried with them in training, not by the instruction's roles. Each failure below has the needed information in the input (C1) and persists across models (C2).
+- **F1, the place follows a cue, not the instruction.**
+  - It appears on 4 of 5 models in scene 1, and in scene 2 on 0 of 720 new-pairing episodes.
+  - The cue depends on the setting:
+    - scene 1, pi0.5: the held object's identity, or its outline (F1m);
+    - scene 2, pi0: the mug's start position;
+    - scene 2, pi0.5: the plate backed by two of {nearer, salient, trained}, .912 of 445 placements, pre-registered (SR §57-§61).
+- **F2, the habitual object is grasped.**
+  - On the weaker models it is the larger failure: 68% of pi0's and 83% of SmolVLA's new-pairing failures are at the grasp (SR §65).
+  - On pi0.5 in scene 2 the habit survives a scripted put-back: the same mug is grasped again 240 of 240 times (SR §64).
+- **F7, relational language is ignored** (on 5 of 5 VLAs; on 4 of 6 cells across pi0, X-VLA and SmolVLA; SR §45.1, §45.3).
+- **F6, a target seen once and then hidden leaves little trace** (SR §45.6).
+- **New layouts fail on every system.**
+
+*Fix: partial, with prior art.* Structural changes that add no information do remove each cue where they are allowed to act (C3), but no single front end carries across scenes and models.
+- **Scene 1:** the role front end (tvpb) reaches .938 on frozen pi0.5 and is EQUIVALENT to a reimplemented ReGuide (SR §55).
+  - It does not carry to pi0 or SmolVLA. ReGuide wins there (about .60), and tvpb costs the trained tasks (SR §65).
+  - Views alone help pi0 at no cost (+.183).
+- **Scene 2:** a hand-over to a target-only place, triggered at a hold of the named mug and run on OWLv2 perception, gives FIX WORKS on pi0.5 and pi0 (.450 / .333 and .267; SR §62-§64, §66).
+  - Depth and calibration stay privileged.
+  - Adding role views (simulator masks) moves N2's first grasp and reaches .508, but costs the trained tasks −.108, so it reads PARTIAL (SR §66).
+  - No scene-2 arm both clears §54's .50 bar and holds the trained tasks.
+- **Overall:** the fixes overlap ReGuide, LiLo-VLA, Harness VLA and AC-VLA (docs/NOVELTY.md). What is new is the cue-by-cue diagnosis and the scene-2 majority rule.
+
+*Open:*
+- perceived silhouettes for scene 2;
+- the trained-task cost of views on K2;
+- GR00T, which is below its testability floor in scene 2;
+- GR00T 2, when its code ships.
 
 **Summary (2026-11-14).**
 
