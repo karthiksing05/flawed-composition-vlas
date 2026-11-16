@@ -1,0 +1,40 @@
+RG_COMP predictions (SR 70; m3_prereg rg_comp).  Written 2026-11-16 before any job of this probe (build, check, smoke, rollout), from
+SR 45.1-45.6, 52, 55, 65, 68, 69 only.  Point predictions are success rates on the main states; "range" is my 80% interval.
+
+The question's account says ReGuide's binding takes the object NAMED in the instruction, so ReGuide alone will not fix F7 (the
+referent is picked by a relation) or F6 (the target is hidden after one view).  My expectation differs on F6: our ReGuide registers
+every pose ONCE at the first query (paper C.6, kept in SR 52), so it already holds the plate's pose from before the cover moves.
+That registration is a pose memory.  So I expect rgp alone to recover much of F6, and the composite's added image memory to add
+little beyond it.  On F7 I expect the account to hold: rgp binds an instance chosen without the relation (C ~ .5).
+
+PRIMARY, frozen pi0.5
+  Gates: floor TESTABLE (99%); SP U ~1.0, TESTABLE (95%); NG U ~.85, TESTABLE (90%); F6 a ~.93, TESTABLE (95%).
+  F7 SP (relL + relR): I .40 (range .25-.55); rgp .45 (.30-.60); f7r .95 (.85-1.0); rc .95 (.85-1.0).
+  F7 NG (pos + neg):   I .20 (.10-.35);  rgp .30 (.15-.45); f7r .78 (.60-.90); rc .80 (.60-.92).
+  F6_b: I .55 (.40-.70); rgp .80 (.62-.92); mem .80 (.65-.90); rc .87 (.75-.97).  F6_a (I) .93.
+  K (mean of K1t, K2t): I .99, rgp .99, rc .98.
+  V1 SP: RC WINS (90%), point +.50 (+.35 to +.65).
+  V1 NG: RC WINS (85%), point +.50 (+.30 to +.65).
+  V2 F6_b: NO CLEAR DIFFERENCE (55%), RC WINS (40%), RG WINS (5%); point +.07 (-.05 to +.20).
+  V3: SP FIX WORKS (90%); NG FIX WORKS (85%); F6_b FIX WORKS (85%); dK NON-INFERIOR (85%).
+  Descriptive: rgp - I on F6_b lower bound > 0 (70%) -- the account's F6 prediction for ReGuide alone fails here.
+  rc - f7r within +-.10 on both F7 families (75%).  rc - mem on F6_b > 0 (60%).
+
+SECONDARY, frozen pi0
+  Gates: floor TESTABLE (90%); SP U ~.65, TESTABLE (75%); NG U ~.50 (the plate bowl ~0, the table bowl ~1.0), TESTABLE (55%);
+  F6 a ~.55, TESTABLE (55%).  CEILING flags (own unique-name control < .50): pos (90%), relR (60%).
+  F7 SP: I .20; rgp .35 (.15-.55); f7r .40 (.25-.55); rc .55 (.35-.75).
+  F7 NG: I .20; rgp .30 (.15-.50); f7r .50 (.40-.60); rc .55 (.45-.70), with pos <= .15 under every arm.
+  F6_b: I .25 (.10-.45); rgp .55 (.30-.75); mem .35; rc .60 (.35-.80).
+  V1 SP: RC WINS (65%).  V1 NG: RC WINS (60%).  V2 F6_b: NO CLEAR DIFFERENCE (60%).
+  V3: SP FIX WORKS (65%); NG FIX WORKS (55%); F6_b FIX WORKS (50%); dK NON-INFERIOR (70%).
+
+Mechanism (both models)
+  Resolver (rc, f7r): correct on >= 98% of relational episodes (95%), as in SR 45.2-45.4 (640 / 640).
+  rgp's bound instance is the referent on .40-.60 of relational episodes (85%), and C(rgp) is .35-.65 on each family (80%).
+  C(rc) >= .90 on SP (pi0.5, 85%).
+  Registration error of the bound bowl, median <= 1 cm (80%); plate <= 1 cm (80%).
+  Memory slot: record ok >= 98% of episodes, mask IoU median >= .95, centre xy error median <= 1 cm (85%); latches on >= 95% of
+  F6_b episodes within 2 steps of the cover's move (env step 15) (85%); on K1t it latches on some episodes (the hand and bowl over
+  the plate), share <= .50 (60%), at no measurable cost.
+  ReGuide's registered plate pose on F6_b stays within 2 cm of the true plate at the episode's end (median) (80%).
