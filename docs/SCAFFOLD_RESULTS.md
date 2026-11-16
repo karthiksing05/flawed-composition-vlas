@@ -4861,3 +4861,136 @@ Per task:
 - Depth and camera calibration remain privileged.
 - The clear-away's place onto the right plate uses constants fitted on the other mug. 29 of 60 cleared mugs on pi0.5 N2 ended off both plates; that still clears the target.
 - C1 is unmet by .008 (N1 .583).
+
+## 68. Scene 2: ReGuide against the named-mug hand-over (m3_prereg s2_rg, ledger row m3_prereg__libero_10__s2_rg__s0__4b0f74ea.json, written before any main rollout; code commit 4b0f74ea, the commit the row is named for; prep job 4738449, smoke jobs 4738515-4738516, selftest 4738885, prereg job 4738889; rollout jobs 4738892-4738907, reference job 4738908, read job 4738909; results/flawed/s2rg/rg_stats_s2.json, s2rg_read.json, rollouts results/flawed/s2rg_roll)
+
+**Question.** In scene 1 a reimplemented ReGuide equals our front end on pi0.5 and beats it on pi0 and SmolVLA (about .60), because it steers the grasp to the instructed object (§52, §55, §65). In scene 2 every rule we tried was limited by the VLA's own grasps. After a put-back the VLA grasps the same mug again (§64). After a clear-away it stalls before the second grasp (§67). Hp gives N1+N2 .33-.48 with the trained tasks intact, below §54's .50 bar. Does ReGuide, ported to scene 2 with Hp's perception, fix scene 2, and how does it compare with Hp?
+
+**The port** (`experiments/s2rg.py`, `s2rg_roll.sh`). It uses `rg.py`'s ReGuide controller class unchanged (sha256 equal to the reguide row).
+- **Entities.** The referent set is the three mugs, and the destinations are the two plates: the only goal entities of the single training scene (§52 D3). There is no masked class. The instructed mug and plate come from the instruction (§64's and §67's parsers, asserted equal to the task's object and target).
+- **Geometry.** Asset meshes at rest in a scene-2 env. Every entity is declared round (world-axis box; posture = approach axis only), because OWLv2 boxes give no yaw. A mug's footprint half-width is its mesh radius, handle included (.066 m white, .071 m yellow-and-white).
+- **Statistics** (`s2rg.py stats`; rg_stats.py's rules and Table 5's levels). They come from scene 2's only training demos, the LIBERO-10 compound's 50 raw demos (recorded states replayed, never executed), with one close-open cycle per mug. The white mug's cycle counts as a K1 demo (→ plate_1) and the yellow-and-white mug's as a K2 demo (→ plate_2). The second cycle's approach starts after the first release. No N1 / N2 demo exists. All 100 cycles were usable. kappa is (.253, .225), against scene 1's (.242, .225). The red mug inherits the white mug's statistics. Hp's P constants come from the same demos.
+- **rgp perception:** §63's OWLv2 + rendered depth + calibration with unchanged constants, the same privilege as Hp. Registration happens once, at the first gated step. At every ProprioHeld onset OWLv2 runs again: detected mugs update their positions, and the held mug's identity follows Hp's rule (nearest perceived mug within .08 m). ReGuide's interaction state is "the instructed mug is held", as in rgo's oracle state, so a hold of another mug is not an attachment. While attached, the instructed mug follows the hand rigidly from the onset (rgp's rule).
+- **rgo (PRIVILEGED):** simulator poses of every mug and plate at every step, and rg.py's oracle hold rule on the instructed mug.
+- **Harness:** s2.py's (client seed 7, `--bind track`, §63's servers). ReGuide wraps the env and the websocket client as rg.py does. Prompt and images are never changed.
+
+**Arms:** I (`s2.py client`), Hp (`s2fix3.py client --arm Hp`, unchanged), rgp (PRIMARY), and rgo. Models: frozen pi0.5 (PRIMARY) and pi0 (SECONDARY).
+
+**Design.** 64 new states from LIBERO's sampler on K1's BDDL, seeds 980000 + k, none equal to an SR 50-67 state. k 0-3 are smoke, k 4-63 main (60). Branches use seed_base 46000000 + 1000 k.
+
+**Registered labels** (`s2rg.MAPPING`). Paired bootstrap over the 60 states, tasks fixed (`s2.boot2_states`, B = 2000, default_rng(0)).
+- **V1 (§62's rule):** rgp − I on N1+N2 has lower CI > 0 AND rgp − I on K1+K2 has lower CI > −.05 → FIX WORKS. PARTIAL iff exactly one holds; FAILS iff neither holds.
+- **V2:** rgp − Hp on N1+N2. RG WINS iff lo > 0; HP WINS iff hi < 0; EQUIVALENT iff the CI lies inside ±.10; otherwise NO CLEAR DIFFERENCE. A win takes precedence.
+- **V3 (§54's bar):** MEETS BAR iff rgp's N1+N2 ≥ .50 and V1's lower CI > 0.
+- **Applied to:** pi0.5 (PRIMARY) and pi0. The same labels are reported for rgo. §50's floor applies.
+- **Mechanism (descriptive):**
+  - the first hold-detector onset's mug by the simulator rule, for Hp (identical to I up to the first named hold), rgp and rgo;
+  - the plate each mug ends on;
+  - ReGuide's transports.
+- **C1:** the reference planner's N1-N2 ≥ .80.
+
+**Seen before registration** (`experiments/prereg/s2_rg_seen.txt`).
+- **Predictions** were written first, before any job of this probe.
+- **Prep (job 4738449):** statistics and states.
+- **Smoke (k 0-3):**
+  - pi0.5: I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/0/1, rgp 4/4/2/4, rgo 4/4/3/4.
+  - pi0: I 4/4/0/0, Hp 4/4/2/0, rgp 3/4/2/4, rgo 4/4/3/3.
+  - Reference planner 4/4/2/4.
+  - On pi0.5 K2 and N2 the wrong-binding approach fired on 8 of 8, and the first hold was the named mug on 8 of 8. So the smoke already showed the main result.
+- Nothing changed after the smoke, and the predictions were not revised.
+
+**Result** (60 new states per task).
+
+| model | arm | K1 | K2 | N1 | N2 | N1+N2 | K1+K2 |
+|---|---|---|---|---|---|---|---|
+| pi0.5 | I | 1.00 | 1.00 | .000 | .000 | .000 | 1.00 |
+| pi0.5 | Hp | .983 | 1.00 | .483 | .233 | .358 | .992 |
+| pi0.5 | **rgp (ReGuide, perceived poses)** | **1.00** | **1.00** | **.417** | **1.00** | **.708** | **1.00** |
+| pi0.5 | rgo (ReGuide, simulator poses) | 1.00 | 1.00 | .833 | 1.00 | .917 | 1.00 |
+| pi0 | I | .933 | .800 | .000 | .000 | .000 | .867 |
+| pi0 | Hp | .917 | .867 | .550 | .167 | .358 | .892 |
+| pi0 | rgp | 1.00 | .967 | .433 | .967 | .700 | .983 |
+| pi0 | rgo | .983 | .983 | .717 | .983 | .850 | .983 |
+
+| model / arm | V1: − I, N1+N2 / K1+K2 | V2: − Hp, N1+N2 | V3: N1+N2 vs .50 (state-bootstrap CI) |
+|---|---|---|---|
+| **pi0.5 rgp** (TESTABLE, I K 1.00) | **+.708 [+.650, +.775] / .000 [.000, .000] (NON-INFERIOR) → FIX WORKS** | **+.350 [+.242, +.458] RG WINS** | **.708 [.650, .775], MEETS BAR** |
+| pi0.5 rgo | +.917 [+.867, +.958] / .000 → FIX WORKS | +.558 [+.458, +.650] RG WINS | .917 [.867, .958], MEETS BAR |
+| pi0 rgp (TESTABLE, I K .867) | +.700 [+.633, +.767] / +.117 [+.050, +.183] → FIX WORKS | +.342 [+.250, +.433] RG WINS | .700 [.633, .767], MEETS BAR |
+| pi0 rgo | +.850 [+.792, +.908] / +.117 [+.058, +.175] → FIX WORKS | +.492 [+.400, +.575] RG WINS | .850 [.792, .908], MEETS BAR |
+
+**Secondary.**
+- **Hp replicates on both models.** On pi0.5, Hp − I is +.358 [+.275, +.450] on N1+N2 and −.008 [−.025, .000] on K1+K2 (FIX WORKS, BELOW BAR). On pi0 it is +.358 [+.283, +.442] and +.025 [−.025, +.075] (FIX WORKS, BELOW BAR).
+- **rgp − Hp per task on pi0.5:** N2 +.767 [+.650, +.867]; N1 −.067 [−.250, +.133]; K1+K2 +.008 [.000, +.025] (NO CLEAR DIFFERENCE); all four tasks +.179 [+.125, +.233] (GAIN).
+- **rgp − Hp per task on pi0:** N2 +.800 [+.700, +.900]; N1 −.117 [−.283, +.050]; K1+K2 +.092 [+.033, +.150] (GAIN); K2 +.100 [.000, +.200] (NO CLEAR DIFFERENCE).
+- **rgo − rgp (cost of perception)** on N1+N2: pi0.5 +.208 [+.125, +.283], pi0 +.150 [+.067, +.233]. All of it sits on N1 (pi0.5 .833 against .417; pi0 .717 against .433).
+
+**Mechanism** (logged simulator rule; 60 episodes per cell).
+
+| model / arm | N2 first hold is the named mug | K2 first hold is the named mug | N2: named mug ends on the left plate / white mug on any plate | N1: white mug on the right / on no plate |
+|---|---|---|---|---|
+| pi0.5 Hp | 0 of 60 | 0 of 60 | 14 / 9 | 29 / 31 |
+| pi0.5 rgp | **60 of 60** | **60 of 60** | **60 / 0** | 25 / 34 |
+| pi0.5 rgo | 60 of 60 | 60 of 60 | 60 / 0 | 50 / 9 |
+| pi0 Hp | 0 of 60 | 0 of 60 | 10 / 25 | 33 / 26 |
+| pi0 rgp | 60 of 60 | 58 of 60 | 58 / 0 | 26 / 34 |
+| pi0 rgo | 60 of 60 | 60 of 60 | 59 / 0 | 43 / 17 |
+
+- **ReGuide moves the first grasp on N2 and K2.** In every pi0.5 N2 and K2 episode the VLA's first chunk headed for the white mug, the trained first step (Hp: 60 of 60 white first). Eq. 3's predicted endpoint committed to the white mug, the wrong-binding approach fired (60 of 60 on each task, mean 20 steered steps), and it handed back at the yellow-and-white mug's pre-contact pose. The VLA then grasped the named mug on 60 of 60. That is the manipulation: §64's put-back and §67's clear-away left the scene in a state the VLA's program answers with the white mug or with nothing, whereas an approach transport that ends above the named mug changes the grasp directly.
+- **The carry then removes the place cue.** On N2, with the named mug held, a wrong-destination carry to the left plate fired on 60 of 60 (the VLA headed for the right plate, its trained plate for that mug). After the hand-back above the left plate the VLA released there: 60 of 60 named mugs end on the left plate, and the white mug is never moved (on no plate, 60 of 60). Because the white mug is never carried, the target plate is never occupied, the failure Hp met in §63-§67.
+- **K2 is unchanged in outcome but not in route.** ReGuide skips K2's trained white-mug first carry (white mug untouched on 60 of 60), and the VLA places the named mug on its trained plate itself (no carry needed). Median K2 length falls from 222 steps (Hp) to 99.
+- **N1 is the residual, and it is a perception cost.** On N1 a wrong-destination carry fired on 59 of 60 pi0.5 episodes. Under rgp, 34 of 60 white mugs end on no plate (35 time-outs). rgp also logs 20 re-arm carries (left Omega_d for n steps) and 17 re-arm approaches (released outside Omega_d), and 13 episodes spent the transport budget. rgo, the same controller on simulator poses, reaches .833 (10 time-outs). rgp's held mug follows the hand rigidly from an offset estimated at the hold onset, with no tracking (paper C.6), so its idea of where the mug is drifts from the truth. Since the N1 gap between rgp and rgo is the only difference in pose source, this is consistent with the carry ending with the real mug outside the release region. I did not test it directly (no tracking arm).
+- **pi0** shows the same pattern. Posture-mismatch approaches fire on .90 of its K1 and N1 episodes, and its K1+K2 rises over I (+.117), as P raised pi0's K1 in §63.
+
+**Perception** (rgp, pi0.5). All 240 registrations found the instructed mug and the target plate (ReGuide was never inactive). The target plate xy error had median .32 cm and max .69 cm, with the side right on 240 of 240. The instructed mug's error had median .39 cm and max .95 cm. Onset held-mug identity agreed with the simulator rule on 256 of 267 onsets (.959); on pi0 it agreed on 247 of 249.
+
+**C1 (reference planner):** K1 .783, K2 .933, N1 .567, N2 .950. N1-N2 is .758, so **C1 UNMET**, again on the planner's N1.
+
+**Predictions** (in the row) against the outcome.
+- **pi0.5 I and Hp:** I and TESTABLE right. Hp N1 ~.50 / N2 ~.25: .483 / .233. Hp FIX WORKS (85%): right.
+- **rgp (pi0.5):**
+  - N1 ~.55: .417. N2 ~.38: **1.00**. N1+N2 ~.46: .708. K1+K2 ~.94: 1.00.
+  - V1 FIX WORKS (48%): right. V2: I gave RG WINS 30% and NO CLEAR DIFFERENCE 50%; it read **RG WINS**. V3 MEETS BAR (35%): right outcome, against my favoured side. Lower bound < .50 (90%): **wrong** (.650).
+  - rgo within ±.08 of rgp: **wrong** (+.208, all on N1).
+- **Mechanism:**
+  - Named first hold on N2: rgp ~.35 → **1.00**, rgo ~.40 → 1.00. My main uncertainty was whether pi0.5 would return to the white mug after the rebinding. It never did.
+  - Approach on ≥ .80 of N2 and K2: right (1.00). Carry on ≥ .70 of N1: right (.983).
+  - Named mug on its trained plate ≤ .15 under rgp: right (N1 .017, N2 0).
+  - rgp − Hp on K1+K2 NO CLEAR DIFFERENCE (55%): right.
+- **pi0:** TESTABLE right. Hp FIX WORKS (60%) right. rgp N2 ~.20: .967. V1 FIX WORKS (45%) right. V2 NO CLEAR DIFFERENCE (55%): **wrong** (RG WINS). V3 BELOW BAR (95%): **wrong**. Named first ~.25: 1.00.
+- **Perception:** registration ≥ .97, target < 1 cm and onset identity ≥ .95: right on all three.
+- **C1 UNMET (55%):** right.
+
+**Checks.**
+- **Hashes.** The read found 0 hash mismatches against the row's files_sha256. The row covers the code, rg.py (equal to the reguide row), the statistics, states and branches, the predictions, the seen file and the job scripts.
+- **Ledger row name.** The row is named for 4b0f74ea, the commit that contains the prereg code.
+- **Jobs.**
+  - Every rollout log shows the registered server command (8 pi0.5, 8 pi0).
+  - Every Hp and rgp job logged the OWLv2 sidecar, every client exited 0, and no job was requeued.
+  - The main jobs refuse to run without the s2_rg row. I submitted them only after the row file showed tag s2_rg and status PRE-REGISTERED S2RG. The read was chained afterok on every rollout and on the reference.
+
+**Reading.**
+- **ReGuide fixes scene 2 by the registered rules, on both models.** On pi0.5, rgp lifts N1+N2 from 0 to .708 with K1+K2 at 1.00 (FIX WORKS), beats Hp by +.350 [+.242, +.458] (RG WINS), and is the first scene-2 arm to MEET BAR with the trained tasks held. Its lower bound (.650) is above the bar. pi0 reads the same (FIX WORKS, RG WINS, MEETS BAR at .700, trained tasks +.117).
+- **The gain is all on N2, and it comes from the grasp.**
+  - Hp's limit on N2 was the VLA's first grasp of the white mug, which fills the target plate.
+  - ReGuide's wrong-binding approach moves the hand to the named mug before the VLA reaches the white one, and the VLA then grasps what is under it (60 of 60).
+  - The carry then overrides the place cue.
+  - The arm manipulates the grasp target, and N2 goes from .233 to 1.00. That is consistent with §64-§67's account that the scene-2 N2 failure is the VLA's grasp choice. An arm that sets the grasp target directly removes it where undo rules could not; the views (§66) moved it on .42 of N2 at a trained-task cost.
+- **On N1 ReGuide is no better than Hp** (−.067 on pi0.5, −.117 on pi0, both NO CLEAR DIFFERENCE). With simulator poses it is (.833). The N1 residual is therefore the perceived carry (no tracking after the hold onset), not the controller.
+- **Information.** rgp uses Hp's privilege (OWLv2 boxes, rendered depth, camera calibration) plus demonstration statistics from the scene's training demos, which Hp's P also uses. It steers the arm before the grasp, which Hp never does. So the comparison is of two actuating wrappers with the same perception, and the one that also steers the approach wins.
+- **For the proposal:** in scene 2, as in scene 1 on pi0 and SmolVLA (§65), the fix that works is the one that acts on the grasp. ReGuide, prior art, reaches .70 on scene 2's new pairings on two models with the trained tasks held. Our hand-over does not.
+
+**Deviations.**
+- **The port** (above, in the row): entity sets, the round declaration with no yaw, statistics mined from the compound's per-mug cycles, §63's OWLv2 perception with re-detection at hold onsets and Hp's identity rule, and the interaction state restricted to the instructed mug. §52's 18 deviations are kept otherwise.
+- **rgo** logs a proprioceptive onset detector and the simulator held-mug rule for the first-hold read only.
+- **Side-file short names.** "porcelain" is the white mug (porcelain_mug_1) and "white" is the yellow-and-white mug (white_yellow_mug_1). The tables above use the full meaning.
+- **Partitions.** The prep, the pi0.5 smoke, the selftest and the prereg ran on tail-lab. All main, reference and read jobs ran on overcap.
+- **Ledger and commits.** The row carries dirty=true, because other agents' files were uncommitted. Commits are local, on main.
+- **Login node.** No python was run there, and no result JSON was opened. All numbers come from the read's SLURM log.
+
+**Limits.**
+- One scene, layout O, 60 states per task, one client seed.
+- Depth and camera calibration are privileged.
+- ReGuide here is our reimplementation (§52) with the port's choices. Its demonstration statistics come from the scene's own training demos, which suits it.
+- GR00T was not run.
+- C1 is unmet (N1 .567). N1, the planner's weak task, is also ReGuide-perc's.
