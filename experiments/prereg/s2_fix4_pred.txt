@@ -1,0 +1,30 @@
+S2FIX4 predictions (SR 64), written 2026-11-15 after the code and BEFORE any job of this probe (states, put-back development
+check, smoke or main).  Nothing of this probe has been run.
+
+Mechanism I expect: pi0.5 reads no state, so after a put-back the scene looks almost as it did at the start, and the trained program
+(position routing, SR 57) grasps the white mug again.  The put-back then mostly spends time.
+
+pi0.5 (60 new states, layout O):
+- I: K1 ~.99, K2 ~1.00, N1 0, N2 0.  TESTABLE (95%).
+- Hp: N1 ~.60, N2 ~.30, K1+K2 ~.99 (SR 63 replicates).  Hp FIX WORKS (85%).
+- Hb, put-back mechanics: fires on ~.95 of N2 and K2 episodes (the white mug first) and on <= .05 of K1 / N1; completes (done) on
+  >= .90 of put-backs; the mug ends within 3 cm of its start on >= .80; tipped <= .05.
+- Hb, after a put-back the next hold is the named mug on ~.20 of put-backs (the same white mug on ~.75); cap reached on ~.60 of N2.
+- Hb: N1 ~.58, N2 ~.33, N1+N2 ~.46; K1 ~.98, K2 ~.85 (time lost to put-backs and re-grasps under the 400-step limit), K1+K2 ~.91.
+- Hb - Hp on N2: ~+.03.  PUT-BACK HELPS 25%, NO CLEAR DIFFERENCE 65%, PUT-BACK HURTS 10%.
+- Hb FIX label: FIX WORKS 40%, PARTIAL 55% (through K non-inferiority NOT SHOWN, the K2 time cost), FAILS 5%.
+- BAR (N1+N2 >= .50): BELOW BAR 75%.
+- Secondary Hb - Hp on K2: ~-.15, PUT-BACK COSTS 55%.
+
+pi0 (60 new states):
+- I: K1+K2 ~.80 -> TESTABLE (70%); N 0.
+- Hp: N1 ~.45, N2 ~.03, K1+K2 ~.83; FIX WORKS 60%.
+- Hb: N2 ~.05; Hb - Hp on N2 NO CLEAR DIFFERENCE (80%); Hb FIX label FIX WORKS 40%, PARTIAL 50%; BELOW BAR 95%.
+
+GR00T (60 new states):
+- I: K1+K2 ~.50 -> NOT TESTABLE (80%); N ~0.
+- Hp: N1 ~.40, N2 ~.02.  Hb: N2 ~.04; rule outcome on put-back NO CLEAR DIFFERENCE (85%); BELOW BAR (95%).
+
+Perception (Hp and Hb on pi0.5): onset held-mug agreement with the simulator rule >= .97; target xy median < 1 cm (SR 63).
+
+C1 (reference planner on the new states): N1 ~.60, N2 ~.98, N1-N2 ~.79 -> C1 MET 45%, UNMET 55%.

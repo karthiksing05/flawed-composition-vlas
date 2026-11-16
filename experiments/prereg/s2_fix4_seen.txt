@@ -1,0 +1,17 @@
+S2FIX4 seen before this row (all on DEVELOPMENT states or smoke states k 0-3; no main state k 4-63 of this probe has been run by any
+policy or by the reference planner).
+
+1. Predictions (s2_fix4_pred.txt) written first, before any job of this probe.
+2. Prep + development check, job 4728783 (overcap job 4728657 was cancelled while pending and resubmitted to tail-lab; it never ran).
+   The instruction parse gives NAMED = {the task's object} on K1, K2, N1 and N2, and both mugs on KC and NC.  64 new states (seeds
+   950000 + k), none equal to an SR 50-63 state.  Put-back check: frozen pi0.5, arm Hb, K2 and N2, on SR 63's states k 4-19
+   (development only; outputs in .claude_tmp/pp/s2fix4_dev).  32 of 32 put-backs completed (released and retreated), 0 aborted,
+   0 tipped (tilt 0.0 deg), displacement from the mug's start .3-6.6 cm (the second put-back drifts further).  After every put-back
+   the next hold was the same white mug (32 of 32), so every episode reached the cap.  K2 16 of 16 succeeded (median ~350 steps,
+   against ~220 for I on the smoke states).  N2 2 of 16: the named mug's hand-over starts at steps ~300-390 and P runs out of the
+   400-step limit.  Nothing was changed after this check (cap 2 and every put-back constant as written in the code before it).
+3. Smoke, jobs 4728801-4728803 (k 0-3, outputs in .claude_tmp/pp/s2fix4_smoke), read selftest 4728804 ran clean:
+   pi0.5 I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/4/2, Hb 4/3/4/0 (Hb K2 k1 timed out at 400 steps after two put-backs);
+   pi0 I 4/3/0/0, Hp 4/3/2/0, Hb 4/2/2/0; GR00T I 1/0/0/0, Hp 2/2/3/0, Hb 2/1/3/0 (one GR00T put-back aborted on a drop);
+   reference planner 4/4/4/4.  Put-backs on smoke K2: pi0.5 8 of 8 done, pi0 8 of 8, GR00T 7 of 8.
+Nothing changed after the smoke.  The predictions were not revised after the development check or the smoke.
