@@ -1,0 +1,47 @@
+S2RGT predictions (SR 69), written 2026-11-16 BEFORE any job of this probe (development check, states, smoke or main), and before
+experiments/s2rgt.py was written.  Nothing of this probe has been run.
+
+What is tested.  SR 68's ported ReGuide on scene 2 (LIBERO-10 LIVING_ROOM_SCENE5) left two problems: its perception is privileged
+(OWLv2 boxes + RENDERED depth + camera calibration), and its N1 is low (rgp .417 against rgo .833 on pi0.5), which SR 68 found
+consistent with rgp's untracked rigid held-mug estimate (34 of 60 N1 white mugs on no plate) but never tested.  Arms:
+  I     the frozen policy alone.
+  rgp   SR 68's arm (replication; same controller, perception and rules).
+  rgt   rgp + tracking of the held mug during the attachment: OWLv2 re-detects the held mug every k control steps and its tracked
+        centre replaces the rigid estimate (the hand-frame offset is re-anchored to the measurement), so the carry steers the tracked
+        mug, not the assumed rigid offset, to the plate.  Rendered depth kept: rgt - rgp isolates problem (b).
+  rgtp  rgt with rendered depth replaced by table-plane depth: each box's camera ray (bottom-centre for a mug on the table, centre
+        for a plate) cut with the known table-plane height; the held mug's height from proprioception (hand height + the grasp
+        offset).  Camera intrinsics and extrinsics stay (the remaining assumption).
+Models: frozen pi0.5 (PRIMARY), pi0 (SECONDARY).  60 new states (seeds 990000 + k), layout O, tasks K1 K2 N1 N2.
+
+What I expect mechanistically.
+- If SR 68's account is right, rgp's carry ends with the real white mug a few cm off the estimate (the grasp slips / the mug swings
+  in the hand), outside the right plate's release region; tracking should cut the release-time error and move N1 toward rgo.  The
+  risks: (1) the held-mug box is partly occluded by the gripper, so the re-detected centre is biased or noisy (OWLv2 + inner-half
+  depth median picks up finger pixels), and tracking could even hurt; (2) the N1 residual may not be the estimate at all but the
+  policy after the hand-back (pi0.5 re-grasps / carries the mug back toward the left plate, SR 57-61's routing), which tracking
+  does not touch.  rgo's .833 says the estimate matters, but rgo also uses simulator poses for the registration and the onset.
+  I expect part of the gap to close, not all.
+- rgtp: plane-cut localisation of a resting mug from the box bottom edge should be about as good as the depth median for the plates
+  and mugs (1-2 cm); the held mug from a plane at hand height is rougher.  I expect a small cost, within the band on K1+K2 and
+  probably within it on N1+N2.
+
+Point predictions, pi0.5 (60 states per task):
+  I     K1 ~1.00  K2 ~1.00  N1 ~.00  N2 ~.00.
+  rgp   K1+K2 ~.99, N1 ~.42, N2 ~.97, N1+N2 ~.70 (replicates SR 68 within +-.08 on N1+N2: 80%).
+  rgt   K1+K2 ~.99, N1 ~.60, N2 ~.97, N1+N2 ~.78.
+  rgtp  K1+K2 ~.97, N1 ~.55, N2 ~.93, N1+N2 ~.74.
+Registered contrasts, pi0.5:
+  V1 rgt - rgp on N1: point +.18.  TRACKING HELPS (lo > 0): 55%; NO CLEAR DIFFERENCE: 40%; TRACKING HURTS: 5%.
+  V2 rgtp - rgt: N1+N2 point -.04, K1+K2 point -.02.  K1+K2 EQUIVALENT (CI inside +-.10): 80%.  N1+N2 EQUIVALENT: 45% (the CI
+     on N1+N2 is wide, about +-.09 around the point, so it may cross the band without a cost); COST (hi < 0) on N1+N2: 20%.
+  V3 rgtp - I: FIX WORKS 90%; MEETS BAR (N1+N2 >= .50 and lo > 0) 85%; the state-bootstrap lower bound of rgtp's N1+N2 >= .50:
+     75%.
+Mechanism, pi0.5 (N1, share of white mugs on no plate): rgp ~.55 (SR 68 .567), rgt ~.30, rgtp ~.35.  Held-mug xy error at the
+  release (estimate vs simulator, median): rgp ~3 cm, rgt ~1.5 cm, rgtp ~2 cm.  If V1 reads NO CLEAR DIFFERENCE while rgt's release
+  error is clearly below rgp's, SR 68's account is wrong (the residual lies after the hand-back): I give that 30%.
+pi0 (SECONDARY): I K1+K2 ~.87 (TESTABLE 90%).  rgp N1 ~.43, N2 ~.95; rgt N1 ~.55; rgtp N1 ~.50.  V1 TRACKING HELPS 40%.  V2
+  K1+K2 EQUIVALENT 70%.  V3 rgtp FIX WORKS 80%, MEETS BAR 75%.
+Perception (rgtp registration, against the simulator, logged only): target plate xy error median < 1.5 cm (70%); instructed mug
+  xy error median < 2 cm (70%); target side right >= .97 (90%).
+C1 (reference planner, N1-N2 >= .80): UNMET 60% (SR 68 .758, the planner's N1 ~.57).

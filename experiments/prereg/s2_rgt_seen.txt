@@ -1,0 +1,25 @@
+S2RGT: what was seen before the prereg row (2026-11-16).  Predictions (s2_rgt_pred.txt) were written before any job and were NOT
+revised after anything below.
+
+1. Development check (prep job 4740304; experiments/s2rgt.py pcheck on SR 68's states, seeds 980000 + k, k 0-63, scripted holds on
+   k 0-31; none in this probe's 60).  Z_TABLE .4368 m (median of 192 mug bottoms).  Resting mugs, table-plane: xy error median .56 cm
+   (split-half .56; rendered depth .34).  Plates: box-centre ray 1.52 cm, inner-edge + radius 1.01 cm -> PLATE_METHOD = edge by the
+   fixed rule (rendered depth .42).  Held mug at a 6 cm scripted lift: rendered depth .75 cm with its own constant (.88 with the
+   resting constant); proprioceptive plane .69 cm (z .33 cm); onset identity under table-plane positions 64 / 64.
+2. Smoke 1 (jobs 4741753 pi0.5, 4741756 pi0, read 4743489; SR 68's smoke states k 0-3, development).  pi0.5 (K1/K2/N1/N2 of 4):
+   I 4/4/0/0, rgp 4/4/2/4, rgt 4/4/2/1, rgtp 4/4/4/3.  pi0: I 4/4/0/0, rgp 3/4/2/4, rgt 3/4/3/4, rgtp 4/4/3/3.  Reference planner
+   4/4/2/4.  Held-mug xy error at release, median: rgp .59 cm on pi0.5 N1 (3 releases; 1.64 over all tasks), 4.5 cm on pi0 N1; rgt
+   11.7 cm over all pi0.5 releases.  Diagnosis from the side files (CPU jobs 4743493-4743494): in rgt the measured held-mug height ran
+   away (z error -7 to -70 cm within one carry; a low estimate makes the carry lift the hand and the next detection is worse) and
+   wrong boxes were taken (xy jumps 5-9 cm); rgtp's held-mug plane from the demonstrated grasp offset sat 3 cm low from the
+   attachment on (4-5 cm xy bias).
+3. DEVELOPMENT REVISION (the only one): tracking updates xy only (z stays the rigid estimate's: hand height + the offset fixed at the
+   attachment); the measurement is the localised box nearest the current estimate, accepted within GATE_XY = 3 cm; rgtp's held plane
+   height = the rigid estimate's z.  pcheck constants unchanged.  TRACK_K = 5 unchanged.
+4. Smoke 2 (jobs 4743505 pi0.5, 4743506 pi0, read 4743570; same development states, rgt and rgtp only).  pi0.5: rgt 4/4/3/1, rgtp
+   4/4/2/4; pi0: rgt 3/4/3/1, rgtp 4/4/1/4.  Tracking measurement xy error median 1.4-1.6 cm (rgt), 2.3-2.4 cm (rgtp), accepted .66-.87
+   of measurements; but the xy error AT RELEASE stays large (pi0.5 rgt median 5.4 cm over 5 releases, 4 of 5 with the estimate inside
+   the release region and the mug outside; pi0 rgt 4.0 cm, rgtp 3.1 cm), against rgp's rigid estimate in smoke 1 (1.6 / 2.1 cm).  So
+   on development states the tracker as built is not more accurate than the rigid estimate at the release, and rgt's N2 fell to
+   1 of 4 on both models in both smokes.  I stopped tuning here: the registered test reports whatever this tracker does.
+5. Nothing else was changed after smoke 2.
