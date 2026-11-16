@@ -18,7 +18,7 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
 - **F6, a target seen once and then hidden leaves little trace** (SR §45.6).
 - **New layouts fail on every system.**
 
-*Fix: partial, with prior art.* Structural changes that add no information do remove each cue where they are allowed to act (C3), but no single front end carries across scenes and models.
+*Fix: role binding must act on the actions, not only the inputs; the working form is prior art.* Structural changes that add no information do remove each cue where they act (C3). Input-only edits (views, phrases, boxes) work only where the cue is something the task does not need (scene 1, pi0.5). They do not carry to scene 2, where the cue is position, which the grasp needs, or to weaker models, whose failure is the grasp habit (F2). A structure that binds the instructed object and destination to the transport itself (ReGuide-class: approach the named object, carry to the named place, the VLA executes the rest) clears the bar in both scenes and on pi0.5 and pi0 with the trained tasks held (SR §55, §65, §68).
 - **Scene 1:** the role front end (tvpb) reaches .938 on frozen pi0.5 and is EQUIVALENT to a reimplemented ReGuide (SR §55).
   - It does not carry to pi0 or SmolVLA. ReGuide wins there (about .60), and tvpb costs the trained tasks (SR §65).
   - Views alone help pi0 at no cost (+.183).
@@ -29,8 +29,8 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
   - No arm of ours both clears §54's .50 bar and holds the trained tasks.
   - A reimplemented ReGuide does both (SR §68). With Hp's perception it reaches N1+N2 .708 on pi0.5 and .700 on pi0, the trained tasks held. Against I that reads FIX WORKS and MEETS BAR; against Hp it reads +.350 and +.342, RG WINS.
     - The gain is all on N2 (1.00, .967). There ReGuide's approach transport moves the first grasp to the named mug (60 of 60, Hp 0), and its carry then places that mug on the empty target.
-    - N1 stays at Hp's level (.417 / .433). ReGuide on simulator poses reaches .833 there, so the N1 residual is the perceived carry.
-- **Overall:** the fixes overlap ReGuide, LiLo-VLA, Harness VLA and AC-VLA (docs/NOVELTY.md). What is new is the cue-by-cue diagnosis and the scene-2 majority rule.
+    - N1 stays at Hp's level (.417 / .433). ReGuide on simulator poses reaches .833 there, consistent with the N1 residual coming from the perceived carry (untested; no tracking arm).
+- **Overall:** the structure that works is ReGuide's, and the other fixes overlap LiLo-VLA, Harness VLA and AC-VLA (docs/NOVELTY.md). Our hand-over, which binds only the place, falls short; ReGuide also binds the grasp. What is new is the diagnosis: the cue-by-cue account, the scene-2 majority rule, and its prediction that input-only fixes fail where the routing cue is task-relevant, which §50, §65 and §68 bear out. The alternative architecture this record vets is therefore role-addressed transport over a frozen VLA. Its perception still uses privileged depth and calibration, and GR00T and X-VLA are untested.
 
 *Open:*
 - perceived silhouettes for scene 2;
@@ -64,7 +64,7 @@ The scene-2 evidence (SR §57, m3_prereg s2_cue):
 
 An input edit can hide a cue the task does not need, such as identity or outline. Position is a different case, because the grasp needs it, so in scene 2 views cannot remove the cue, and only a hand-over (SR §54) does. Position routing replicates on pi0 (.993 of 145 placements on the start side, identity RULED OUT), and with both mugs started on the plates' bisector pi0.5 falls back to identity (C .933, C′ .787; depth and first-carry step RULED OUT), so the cue is a ranking, position over identity, not a single cue, and with the plates moved apart from the start sides, pi0.5 places on the nearer plate, not the start-side one (0 of 241 disagreeing placements on the start-side plate; pi0 points the same way but is UNRESOLVED). Separating the two in a third layout, where the nearer plate is the smaller, less central one, pi0.5 follows neither alone. It takes the small nearer plate when that plate is the mug's trained one (158 of 158) and the large far plate when that plate is (.859 of 149). The registered label is IDENTITY. A pre-registered test on new states and new layouts confirms the majority rule: the place goes to the plate backed by two of {nearer, salient, trained plate}. On pi0.5 arm I, .912 [.883, .942] of 445 two-against-one placements go there: trained plate outvoted 153 of 153, salience outvoted .974, nearness outvoted .752. The registered label is MAJORITY CONFIRMED, and §59-§60's layouts replicate at .970. This holds on pi0.5 only, the nearness-outvoted cell is just above its .70 bar, and the reference planner's C1 is unmet on A2, Sx and Sm (SR §61; GR00T matches §59's nearer-plate routing but is below its testability floor, SR §60). Either way, the destination comes from scene layout and the mug's trained plate, not from the language (SR §58-§60).
 
-*Where the fix runs out.* The views do not carry to a second scene (SR §50). There, only the hand-over to a target-only place removes F1 (SR §54). The contribution is therefore the diagnosis, meaning which cue routes each failure, more than the fix. See docs/NOVELTY.md.
+*Where the fix runs out.* The views do not carry to a second scene (SR §50). There, our hand-over removes F1 only in part (SR §54, §62-§67); the reimplemented ReGuide removes it and meets the bar (SR §68). The contribution is therefore the diagnosis, meaning which cue routes each failure, more than the fix. See docs/NOVELTY.md.
 
 ## 1. What the failures say about the architecture
 
