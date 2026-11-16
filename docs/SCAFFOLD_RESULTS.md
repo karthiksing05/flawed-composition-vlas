@@ -4483,3 +4483,97 @@ Per task, Hp − I: N1 +.600 [+.467, +.717]; N2 +.300 [+.183, +.417]; K1 .000 [�
 - Depth and camera calibration remain privileged.
 - The put-back returns the mug to where it was grasped. It does not test moving the mug elsewhere, which would change the scene and so add a manipulation the instruction does not ask for.
 - C1 is unmet on these states (N1 .517).
+
+## 65. Does the scene-1 front end carry to a third model? tvpb against I, tv and ReGuide on frozen pi0 and SmolVLA (m3_prereg s1_cross, ledger row m3_prereg__libero_goal__s1_cross__s0__f1ac0d63.json, written before any main rollout; code and predictions commit 940fd534, prereg code commit f1ac0d63; states job 4728649, smoke jobs 4728650 (pi0), 4728634 (SmolVLA), prereg job 4729207; rollout jobs 4729208-4729223, read job 4729224; results/flawed/s1_cross_read.json, rollouts results/flawed/s1_cross)
+
+**Question.** On frozen pi0.5 the refined front end tvpb (silhouette role views, role phrases, and the held object painted as its box in the target phase) lifts scene 1's new pairings from .454 to .938, EQUIVALENT to a reimplemented ReGuide (§55). On GR00T the views help and the box adds nothing (§56). On pi0, X-VLA and SmolVLA the earlier resolver-plus-view fix failed on 0 of 6 cells (§45.3). Does the scene-1 front end carry to a third model?
+
+**Models.** pi0 (openpi `pi0_libero`, PyTorch) and SmolVLA (`lerobot/smolvla_libero`), each served as the five-model atlas served it (`serve_guided.py --mode ours --seed 13`). pi0_libero predicts actions minus state in dims 0-5. Its output transform adds the state back (AbsoluteActions), so every client receives LIBERO delta eef commands, as from pi0.5. Both models' K tasks in the smoke and on the new states (.975) confirm the decoding. X-VLA was not run. Its server sends absolute eef targets and the client switches the OSC controller to absolute mode, while rg.py's transports issue delta commands, so rgp cannot run on X-VLA unchanged.
+
+**States.** There are 40 new familiar-layout states, k = 236-275 (`experiments/fc_n2_s1x.py`; harness trials 24-63, k = trial + 212), from fc_n2_fresh4.py's sampler rule unchanged (seed 600000 + k). The rule reproduced stored states 0, 1, 23, 24, 35, 36, 55, 56, 115, 116, 155, 156 and 195 exactly (max |diff| 0). Every new state differs from every other and from all 246 stored familiar states. Branch seed_base is 13000000 + 1000 k. Neither sampler seeds (600236-600275) nor branch seeds overlap §47-§56. k 196-235 were skipped, so that a concurrent batch drawing the next block cannot coincide with this one.
+
+**Arms** (all four new on these states, per model; launcher `experiments/s1_cross_roll.sh`; client seed 7, `--bind track`; clients unchanged):
+- **I.** `pp_atlas_client.py`.
+- **tv.** Role views (`tv_frozen.py client --arm tv`, §46 / §49).
+- **tvpb.** tv plus role phrases plus the held-object box (`f1m_cue.py client --arm sb`, §55).
+- **rgp.** ReGuide RG-perc (`rg.py client --arm rgp`, §52 / §55).
+
+**Mapping** (`experiments/s1_cross_read.py`). Paired bootstrap over (task, state), B = 2000, rng 0, tasks and states drawn jointly (tv_frozen.boot2), per model.
+- **F, testability floor** (the §50 rule): TESTABLE iff I's success on K1-K4, K6 is ≥ .70.
+- **V1, tvpb − I on N1-N6:** FRONT END HELPS iff the lower bound is > 0.
+- **V2, tvpb − rgp on N1-N6:** FRONT END WINS iff lo > 0; RG WINS iff hi < 0; EQUIVALENT iff the interval lies within ±.10; otherwise NO CLEAR DIFFERENCE. A win label takes precedence.
+- **V3, trained-task cost, tvpb − I on K1-K4, K6:** COST iff hi < 0; NO COST iff lo ≥ −.05; otherwise UNRESOLVED.
+- **Aggregate over testable models:** CARRIES iff V1 is FRONT END HELPS and V3 is not COST on every testable model; PARTIAL iff on some; DOES NOT CARRY iff on none.
+- **C1:** no reference planner was run, because §55 reported none.
+
+**Checks (all pass).** Client arguments and per-episode trial, branch, variant and branch step match I for every arm and task (harness matches I on both models). Every episode's trial is registered, and no episode errored. The 13 state and branch files and the 30 code files match the s1_cross row. The 5 ReGuide files match the reguide row, f1m_cue.py the f1m_cue row, and tv_frozen.py the tvpb_rg row. Each model's jobs logged one server command, seed 13.
+
+**Seen before registration** (`experiments/prereg/s1_cross_seen.txt`). The predictions were committed (940fd534) before the smoke was submitted. A smoke ran on stored states 0-1, all four arms, all 11 tasks, with output outside results/ and a dry read. N1-N6: pi0 I .00, tv .00, tvpb .17, rgp .58; SmolVLA the same. K: pi0 tvpb .60 (the others 1.00); SmolVLA tvpb .00, I .80. So the smoke already showed tvpb's trained-task cost. Nothing changed after the smoke.
+
+**Result.**
+
+| N1-N6 familiar, 40 new states | pi0 | SmolVLA |
+|---|---|---|
+| floor: I on K1-K4, K6 | .975 → **TESTABLE** | .945 → **TESTABLE** |
+| I (intact) | .021 [.000, .058] | .021 [.000, .075] |
+| tv (role views) | .204 [.037, .450] | .021 [.000, .075] |
+| tvpb (views + phrases + box) | .292 [.096, .517] | .108 [.000, .350] |
+| RG-perc | .608 [.333, .858] | .604 [.304, .863] |
+| **V1, tvpb − I** | +.271 [+.079, +.488]: **FRONT END HELPS** | +.087 [.000, +.287]: **NO CLEAR DIFFERENCE** |
+| **V2, tvpb − rgp** | −.317 [−.646, −.029]: **RG WINS** | −.496 [−.742, −.233]: **RG WINS** |
+| **V3, tvpb − I on K** | −.485 [−.725, −.220]: **COST** | −.935 [−1.00, −.810]: **COST** |
+| tv − I (no verdict) | +.183 [+.021, +.412] | .000 [−.042, +.037] |
+| tvpb − tv (no verdict) | +.087 [−.087, +.283] | +.087 [.000, +.300] |
+| rgp − I (no verdict) | +.588 [+.317, +.846] | +.583 [+.300, +.821] |
+| tv − rgp (no verdict) | −.404 [−.717, −.100] | −.583 [−.825, −.292] |
+| tvpb − tv on N4 + N6 (no verdict) | +.037 [−.037, +.175] | .000 [.000, .000] |
+
+**Aggregate: DOES NOT CARRY** (both models testable; neither has V1 HELPS without COST).
+
+Per task:
+
+| model, arm | N1 | N2 | N3 | N4 | N5 | N6 | K1 | K2 | K3 | K4 | K6 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| pi0 I | .03 | .05 | .00 | .05 | .00 | .00 | .98 | .95 | .98 | 1.00 | .98 |
+| pi0 tv | .18 | .73 | .00 | .10 | .23 | .00 | 1.00 | .98 | .93 | 1.00 | 1.00 |
+| pi0 tvpb | .40 | .53 | .00 | .18 | .65 | .00 | .98 | .45 | .55 | .33 | .15 |
+| pi0 rgp | 1.00 | .68 | 1.00 | .38 | .50 | .10 | 1.00 | 1.00 | .98 | 1.00 | 1.00 |
+| SmolVLA I | .00 | .13 | .00 | .00 | .00 | .00 | .98 | 1.00 | 1.00 | 1.00 | .75 |
+| SmolVLA tv | .00 | .13 | .00 | .00 | .00 | .00 | .85 | .98 | .93 | .83 | .08 |
+| SmolVLA tvpb | .00 | .65 | .00 | .00 | .00 | .00 | .03 | .00 | .00 | .00 | .03 |
+| SmolVLA rgp | .60 | .95 | 1.00 | .40 | .68 | .00 | .98 | 1.00 | .98 | 1.00 | .93 |
+
+**Known tasks (cost).** pi0: tv +.005 [−.045, +.050], tvpb −.485, rgp +.020 [.000, +.060]. SmolVLA: tv −.215 [−.480, −.045] (K6 .75 → .08), tvpb −.935, rgp +.030 [−.020, +.120].
+
+**Stages on new pairings (share of episodes).** Under I, most new-pairing episodes fail at the GRASP: pi0 .679, SmolVLA .829 (F2, as in the atlas). tv lowers pi0's GRASP share to .40, and tvpb to .10, while RELEASE failures rise (.096 → .329). On SmolVLA, tv leaves GRASP at .75. Under rgp, GRASP is .16 on both. The atlas verdicts are pi0 I BOTH (cross +.194 [.01, .42]), tvpb NEITHER, rgp WITHIN-CHUNK; SmolVLA I WITHIN-CHUNK, tvpb NEITHER, rgp WITHIN-CHUNK.
+
+**Front end (no verdict).** The proprioceptive hold detector, whose threshold was set on pi0.5 (sc_rv lex), is much less clean on these models. On pi0.5 it fired more than once in 7-10% of episodes, with the median onset one step from the oracle Held (§55). Here the oracle says the object is held at the first onset in only .58 (pi0 tvpb), .38 (pi0 tv), .28 (SmolVLA tvpb) and .16 (SmolVLA tv) of episodes, and the detector fires more than once in .25-.48. Under tvpb each false onset switches the prompt to the target phrase before the object is held. This is the likely route of tvpb's trained-task cost, since tv, which keeps the instruction, costs pi0 nothing. That reading is post hoc.
+
+**My predictions** (in the row).
+- Floor: pi0 TESTABLE (80%), right; SmolVLA TESTABLE (55%), right. K points .85 / .75 were low (.975 / .945).
+- N1-N6 points (pi0 / SmolVLA): I .25 / .12, too high (.021 / .021). tv .35 / .18 (.204 / .021). tvpb .40 / .20 (.292 / .108). rgp .55 / .35 (.608 / .604; SmolVLA far too low).
+- V1: pi0 FRONT END HELPS (65%), right (+.271 against +.15). SmolVLA HELPS (40%): the result is NO CLEAR DIFFERENCE, the side I gave 60%.
+- V2: RG WINS on both (50% / 45%), right.
+- V3: pi0 NO COST (55%), **wrong** (COST, −.485). SmolVLA UNRESOLVED (45%), **wrong** (COST, −.935).
+- Aggregate PARTIAL (40%), **wrong**. DOES NOT CARRY had 30%.
+- Descriptive: tvpb − tv within ±.08, wrong on both by .007 (+.087). rgp − I lo > 0 on pi0, right. I's verdict BOTH on pi0 and WITHIN-CHUNK on SmolVLA, right. GRASP share under I ≥ .40 / .50, right. No SmolVLA N4 / N6 above .15 under any arm, wrong (rgp N4 .40).
+
+**Reading.**
+- **The scene-1 front end does not carry to pi0 or SmolVLA.** On pi0, tvpb helps new pairings (+.271) but costs half the trained tasks (−.485), and ReGuide beats it by .317. On SmolVLA, tvpb does not clearly help, it destroys the trained tasks (K .945 → .010), and ReGuide beats it by .496. Neither result resembles pi0.5's EQUIVALENT.
+- **The failure these models show is different, so the fix that fits it differs.** On pi0.5 the new pairings fail after the grasp (F1, F1m), and hiding identity and outline in the target phase is enough. On pi0 and SmolVLA they fail mostly at the grasp (F2, GRASP .68 / .83 under I). ReGuide rebinds the referent and steers to the instructed object, which acts on the grasp directly, and it lifts both models to about .60 at no trained-task cost. On pi0 the views alone (tv) also reach part of F2 (+.183, GRASP .68 → .40) at no cost. On SmolVLA they do nothing.
+- **The phrases are the model-specific part.** pi0 and SmolVLA were trained on full LIBERO instructions only. Replacing the instruction with "object: ..." / "target: ..." costs pi0's trained tasks, and costs SmolVLA's almost all of them, as the phrases cost GR00T in §46. The hold detector, tuned on pi0.5, also fires early and repeatedly on these models, so the target phrase arrives before the hold. The registered arm is the §55 front end as a whole, so this read does not separate the phrases from the detector. A views-only front end (tv) is the part that transfers without cost on pi0, as on GR00T (§49, §56).
+- **For the proposal.** The input-only front end equals ReGuide on pi0.5 only. On two more models ReGuide wins outright. So the front end's equivalence is a pi0.5 result, and an actuating wrapper is the stronger fix where the failure is at the grasp.
+
+**Deviations.**
+- X-VLA was not run (absolute control, above). SmolVLA was chosen over it for that reason alone, before any result.
+- The states job and the pi0 smoke were first submitted on overcap (4728632, 4728633), cancelled while pending, and resubmitted unchanged on tail-lab (4728649, 4728650). The prereg job ran on tail-lab instead of q2_cpu.sh's default overcap, with the full exclude list on the command line. Rollout jobs pi0 I N and I K ran on tail-lab, the rest on overcap.
+- Overcap preempted and requeued 9 rollout jobs (restart counts: 4 × 1, 4 × 2, 1 × 3). The launcher skips finished task outputs, and an interrupted task reruns from its first episode, so every task's 40 episodes come from one uninterrupted client run with the registered arguments. I did not resubmit under new log names, because no job failed. The requeued runs appended to the same logs. The read's trial and harness checks pass on every task.
+- At hashing, experiments/serve_guided.py and lifelong_ood/policy/backbone.py carried another agent's uncommitted edits (new serve modes, an L90C config hook, a LEAF hook). None of them touches `--mode ours` with LEAF unset, which the launcher asserts. Both files still matched the row at the read (30 of 30). The ledger row carries dirty=true for the same reason.
+- 10 of 25 server logs name the seed. The SmolVLA server log does not print it. The launcher's server line, with seed 13, is identical across each model's jobs.
+- k 196-235 were skipped (above). This is a choice of block, not a change of rule.
+
+**Limits.**
+- One scene, 40 states, one client seed, two models.
+- ReGuide is our reimplementation with §52's deviations, run on its pi0.5-era statistics (rg_stats.json from trained-task demos, which do not depend on the model).
+- The hold detector and the phrases are pi0.5-tuned parts used unchanged. A model-specific detector threshold or a views-only arm would be a new registration, not a rescue of this one.
+- No C1 reference was run, matching §55.
