@@ -4577,3 +4577,154 @@ Per task:
 - ReGuide is our reimplementation with §52's deviations, run on its pi0.5-era statistics (rg_stats.json from trained-task demos, which do not depend on the model).
 - The hold detector and the phrases are pi0.5-tuned parts used unchanged. A model-specific detector threshold or a views-only arm would be a new registration, not a rescue of this one.
 - No C1 reference was run, matching §55.
+
+## 66. Scene 2: role views in front of the named-mug hand-over (m3_prereg s2_fix5, ledger row m3_prereg__libero_10__s2_fix5__s0__36d177de.json, written before any main rollout; code commit 36d177de, the commit the row is named for; prep job 4731126, smoke jobs 4731127-4731128, selftest 4731723, prereg job 4731755; rollout jobs 4731765-4731778, reference job 4731779, read job 4731780; results/flawed/s2fix5_read.json, rollouts results/flawed/s2fix5_roll)
+
+**Question.** Under §63's Hp the N2 limit is the VLA's first grasp: it takes the white mug, which N2 does not name, and §64 showed that putting it back does not change that choice. §50's role views moved pi0.5's first grasp to the named mug on about half of N2, but the VLA then carried it to its trained plate. Hypothesis: the views fix the grasp and Hp fixes the place, so views plus Hp (Hv) lifts N2, and N1+N2, over Hp.
+
+**Arms** (`experiments/s2fix5.py`, `s2fix5_roll.sh`; layout O; client seed 7, `--bind track`; §63's servers).
+- **I:** intact (`s2.py client`, unchanged).
+- **Hp:** §63's arm (`s2fix3.py client --arm Hp`, unchanged).
+- **Hv (PRIMARY on pi0.5):** §50's tvp front end in front of Hp. The client runs §63's Hp client unchanged and wraps the env it installs once more.
+  - Hp's env sees the raw observation, so its OWLv2 perception, hold detector, gate, target registration and P are Hp's.
+  - Every observation then passes through `tv_frozen.Front` (§50, unchanged), and the VLA receives only the painted one. Object phase: every movable except the task's mug is painted magenta, in both cameras. Target phase: every movable except the target plate.
+  - The prompt is "object: <the task's mug>" while the view detector is off and "target: <the target plate>" while it is on.
+  - **The masks are the simulator's entity maps (PRIVILEGED), as in §50.**
+  - tvp is §50's variant with the higher N2 named-mug-first share on pi0.5 (.533, against .500 for tv).
+- **Hv0 (SECONDARY, pi0.5 only):** Hv without the phrases (§50's tv in front of Hp). I added it because tvp cost K2 more than tv in §50 (.767 against .933).
+- **Not run:** Hvp (OWLv2-perceived views), because OWLv2 gives boxes, not silhouettes, and a box paint would be a different front end. GR00T, which was NOT TESTABLE on every earlier scene-2 state set.
+
+**Design.**
+- **New states:** 64 from LIBERO's sampler on K1's BDDL, seeds 960000 + k, none equal to an SR 50-64 state. k 0-3 are smoke, k 4-63 main (60). Branches use seed_base 42000000 + 1000 k.
+- §63's perception constants, unchanged.
+
+**Registered labels** (`s2fix5.MAPPING`). Paired bootstrap over the 60 states, tasks fixed (`s2.boot2_states`, B = 2000, default_rng(0)).
+- **V1:** Hv − Hp on N2. VIEWS HELP iff lo > 0, VIEWS HURT iff hi < 0, otherwise NO CLEAR DIFFERENCE.
+- **V2 (§62's rule):** Hv − I on N1+N2 has lower CI > 0 AND Hv − I on K1+K2 has lower CI > −.05 → FIX WORKS. PARTIAL iff exactly one holds; FAILS iff neither holds.
+- **V3 (§54's bar):** MEETS BAR iff Hv's N1+N2 ≥ .50 and Hv − I on N1+N2 has lower CI > 0.
+- **PRIMARY:** V1-V3 on pi0.5. The same labels are applied to pi0 (SECONDARY) and to Hv0. §50's floor (TESTABLE iff I K1+K2 ≥ .70) applies on every model.
+- **Mechanism read:** the share of N2 episodes whose first detector onset holds the named mug, by the logged simulator rule (an episode with no onset counts as not named), Hv against Hp.
+- **Also registered:** Hp's FIX label (§63's replication), Hv − Hp on N1+N2, K1+K2 and K2, perception accuracy, and C1 (the reference planner's N1-N2 ≥ .80).
+
+**Seen before registration** (`experiments/prereg/s2_fix5_seen.txt`).
+- **Predictions** were written first, before any job of this probe.
+- **Smoke (k 0-3):**
+  - pi0.5: I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/2/1, Hv 4/3/2/2, Hv0 4/4/2/3.
+  - pi0: I 2/4/0/0, Hp 3/4/3/0, Hv 2/1/2/0.
+  - Reference planner 4/4/3/4. The read selftest ran clean.
+- Nothing changed after the smoke, and the predictions were not revised.
+
+**Result** (60 new states per task).
+
+| model | arm | K1 | K2 | N1 | N2 | N1+N2 | K1+K2 |
+|---|---|---|---|---|---|---|---|
+| pi0.5 | I | .983 | 1.00 | .000 | .000 | .000 | .992 |
+| pi0.5 | Hp | 1.00 | 1.00 | .450 | .217 | .333 | 1.00 |
+| pi0.5 | **Hv (views + phrases + Hp)** | **1.00** | **.767** | **.533** | **.483** | **.508** | **.883** |
+| pi0.5 | Hv0 (views + Hp) | .967 | .883 | .450 | .567 | .508 | .925 |
+| pi0 | I | .900 | .717 | .000 | .000 | .000 | .808 |
+| pi0 | Hp | .917 | .750 | .450 | .083 | .267 | .833 |
+| pi0 | Hv | .833 | .067 | .550 | .083 | .317 | .450 |
+
+| model / arm | V1: Hv − Hp, N2 | V2: Hv − I, N1+N2 / K1+K2 | V3: N1+N2 vs .50 |
+|---|---|---|---|
+| **pi0.5 Hv** (TESTABLE, I K .992) | **+.267 [+.100, +.433] VIEWS HELP** | **+.508 [+.425, +.592] / −.108 [−.158, −.058] (INFERIOR) → PARTIAL** | **.508, MEETS BAR** |
+| pi0.5 Hv0 (secondary) | +.350 [+.183, +.517] VIEWS HELP | +.508 [+.425, +.592] / −.067 [−.125, −.017] (NOT SHOWN) → PARTIAL | .508, MEETS BAR |
+| pi0 Hv (TESTABLE, I K .808) | .000 [−.100, +.100] NO CLEAR DIFFERENCE | +.317 [+.250, +.383] / −.358 [−.450, −.250] (INFERIOR) → PARTIAL | .317, BELOW BAR |
+
+**Secondary.**
+- **pi0.5 Hp** − I is +.333 [+.250, +.417] on N1+N2 and +.008 [.000, +.025] on K1+K2: **FIX WORKS**, BELOW BAR (.333). §63 replicates, at a lower N2 (.217) than in §63 (.300) or §64 (.433).
+- **pi0.5 Hv − Hp:**
+  - N1+N2 +.175 [+.075, +.283], GAIN.
+  - K1+K2 −.117 [−.175, −.067], COST.
+  - K2 −.233 [−.350, −.133], COST.
+  - All four tasks +.029 [−.033, +.092], NO CLEAR DIFFERENCE.
+- **pi0.5 Hv0 − Hp:** K1+K2 −.075 [−.133, −.025] and K2 −.117 [−.200, −.033], COST on both.
+- **pi0.5 Hv − Hv0:** N2 −.083 [−.250, +.067], K1+K2 −.042 [−.117, +.033] and K2 −.117 [−.250, .000]. All NO CLEAR DIFFERENCE: the phrases add nothing measurable.
+- **pi0:** Hp reads FIX WORKS (+.267 [+.200, +.333] on N, +.025 [−.033, +.083] on K). Hv − Hp on K2 is −.683 [−.800, −.550].
+
+**Mechanism: the first hold** (logged simulator rule; 60 episodes per cell).
+
+| model / arm | N2: first hold is the named mug | N2 success, named first / other first | K2: first hold is the named mug | K2 success, named first / other first |
+|---|---|---|---|---|
+| pi0.5 Hp | 0 of 60 | — / .217 | 0 of 60 | — / 1.00 |
+| pi0.5 Hv | **.417 [.283, .533]** (25) | .680 / .343 | .417 (25) | 1.00 / .600 |
+| pi0.5 Hv0 | .350 [.233, .467] (21) | .714 / .487 | .367 (22) | 1.00 / .816 |
+| pi0 Hp | 0 of 60 | — / .083 | 0 of 60 | — / .750 |
+| pi0 Hv | .050 (3) | .667 / .053 | .050 (3) | .667 / .035 |
+
+- Hv − Hp in the N2 named-first share is +.417 [+.283, +.533] on pi0.5. The perceived held mug gives the same shares.
+- **On pi0.5 the views do what the hypothesis says on N2.** They move the first grasp to the named mug on .42 of episodes, against 0 under Hp, and those episodes succeed on .68. The other episodes also do better than under Hp (.343 against .217).
+- **The cost sits on K2's white-first episodes.** Under Hp, the white mug held first on K2 is carried to its trained left plate (59 of 60), and the VLA then takes the named mug, which P places (K2 1.00). Under Hv the white mug reaches the left plate on only 22 of 60. In the target phase every plate except the right one is painted, and the prompt reads "target: the right plate". In 16 of 60 K2 episodes the named mug is never held and P never starts (success .125 there). Without phrases the same episodes recover more often (.816 against .600; Hv − Hv0 on K2 is not significant).
+- **On pi0 the views do not move the first grasp** (3 of 60 on N2). Under the target-phase view, pi0 carries the white mug to the unpainted right plate (13 of 60 on K2), and the named mug is rarely held after that, so K2 falls .750 → .067. This matches §58: under tv, pi0 follows the unpainted plate.
+
+**Perception** (pi0.5).
+- **Target plate:** xy error median .41 cm, max .81 cm. Side right on 240 of 240, mug identity at registration 720 of 720. These are the same for every arm, because registration happens before the policy moves.
+- **Onset held-mug agreement with the oracle:** Hp .995 of 364 onsets. Hv .926 [.885, .966] of 408, and Hv0 .951 of 345.
+- **Hv's errors:** 23 holds of the white mug were read as no mug, and 7 holds of the named mug were read as the white mug. The gate decision equalled the oracle's on .983 of onsets. Hv missed 7 hand-overs (N2 5, K2 2) and made no wrong one.
+- I did not diagnose why agreement falls under the views. The OWLv2 sidecar sees the raw image in every arm.
+
+**C1 (reference planner):** K1 .633, K2 1.00, N1 .417, N2 1.00. N1-N2 is .708, so **C1 UNMET**, again on the planner's N1.
+
+**Predictions** (in the row) against the outcome.
+- **pi0.5 I and Hp:**
+  - I and TESTABLE: right.
+  - Hp N1 ~.57: .450. Hp N2 ~.37: .217.
+  - Hp FIX WORKS (85%): right.
+- **Hv outcome:**
+  - N1 ~.55: .533. N2 ~.52: .483. N1+N2 ~.53: .508.
+  - K2 ~.85: .767. K1+K2 ~.91: .883.
+- **Mechanism:** N2 named first, Hv ~.50 and Hp ~.02: .417 and 0. K2 Hv ~.50: .417.
+- **V1:** VIEWS HELP (55%): right, at +.267 against ~+.15.
+- **V2:** PARTIAL (62%): right, with K INFERIOR.
+- **V3:** BELOW BAR (60%): **wrong**. Hv meets the bar at .508.
+- **Hv − Hp on K2:** COST (55%): right (−.233 against ~−.15).
+- **Hv0:**
+  - N2 ~.48: .567. K1+K2 ~.95: .925.
+  - VIEWS HELP (45%): right.
+  - FIX WORKS (50%): wrong (PARTIAL; K non-inferiority NOT SHOWN).
+  - Hv − Hv0 on N2 NO CLEAR DIFFERENCE (85%): right.
+- **pi0:**
+  - TESTABLE (75%): right.
+  - Hp FIX WORKS (55%): right.
+  - Hv N2 ~.15: .083. Hv K1+K2 ~.75: .450.
+  - V1 NO CLEAR DIFFERENCE (55%), V2 PARTIAL (65%) and BELOW BAR: right.
+  - Mechanism ~.25: .05.
+- **Perception:** onset agreement ≥ .97, right for Hp (.995) and wrong for Hv (.926). Target error < 1 cm: right.
+- **C1 UNMET (55%):** right.
+
+**Checks.**
+- **Hashes.** The read found 0 hash mismatches against the row's files_sha256. The row covers the code, the states and branches, the predictions, the seen file and the job scripts.
+- **Ledger row name.** The row is named for 36d177de, the commit that contains the prereg code and every file it hashes. I committed those files before the prereg job ran.
+- **Jobs.**
+  - Every rollout log shows the registered server command (pi0.5 `pp_serve_purify --mode intact --comp= --seed 13`, pi0 `serve_guided --mode ours --seed 13`).
+  - Every Hp, Hv and Hv0 job logged the OWLv2 sidecar, and every client exited 0.
+  - The main jobs refuse to run without the s2_fix5 row. I submitted them only after the row file showed tag s2_fix5 and status PRE-REGISTERED S2FIX5. The read was chained afterok on every rollout and on the reference.
+- **Detector agreement.** The view detector and Hp's hand-over detector step on the same proprioception and the same executed gripper command. In the smoke logs checked by eye, their onsets coincided.
+
+**Reading.**
+- **The hypothesis holds on pi0.5 for the new pairings.** Views plus the named-mug hand-over lift N2 from .217 to .483 (VIEWS HELP), and N1+N2 from .333 to .508.
+  - The mechanism is the predicted one: the views move the first grasp to the named mug on .42 of N2 episodes, where Hp never does, and Hp's place then succeeds on .68 of those.
+  - This is the first scene-2 arm to meet §54's .50 bar, and it does so by .008.
+- **It is not a fix by the registered rule.** The views cost the trained tasks: K1+K2 falls .992 → .883, −.108 [−.158, −.058], INFERIOR at the −.05 margin, so the label is PARTIAL.
+  - The cost comes from K2's white-first episodes. There the target-phase view hides the white mug's trained plate and breaks the VLA's trained first carry, so the named mug is often never grasped.
+  - Dropping the phrases (Hv0) halves that cost (K2 .883) at the same N1+N2 (.508). Its trained-task non-inferiority is still NOT SHOWN, and Hv − Hv0 is not significant.
+- **It does not carry to pi0.** On pi0 the views do not move the first grasp (.05). They send the white mug to the unpainted plate, so N2 is unchanged (.083) and K2 collapses (.750 → .067).
+- **Privilege.** Hv adds simulator entity masks to Hp's remaining privilege (rendered depth and camera calibration). No perceived-mask version was tested, because the learned segmenter has no mug class (§50) and OWLv2 gives boxes.
+- **For the proposal:** in scene 2 the grasp and the place need different parts. The views supply a referent for the grasp on pi0.5, and the hand-over supplies the place. Together they reach the bar on new pairings, but only with privileged masks and with a trained-task cost that the registered rule does not accept.
+
+**Deviations.**
+- **Hv0 was added** as a secondary pi0.5 arm and declared in the row before any main rollout. Hvp and GR00T were not run (see Arms).
+- **Partitions.** The prep, both smokes, the reference and the read were submitted to overcap and moved to tail-lab while pending (`scontrol update`). The four primary pi0.5 Hp / Hv jobs ran on tail-lab, the rest on overcap.
+- **Requeues.** Overcap requeued pi0 Hp K1+K2 (4731775) twice. The first requeue reran K1 from its start. The second came after both tasks had finished; I moved it to tail-lab, where it skipped both finished outputs. No job failed on infrastructure, and nothing was rerun by hand.
+- **Side-file label.** Hv and Hv0 reuse §63's client unchanged, so their `_h.json` side files carry `arm: "Hp"`. The read identifies arms by file name. The view diagnostics are in `_tv.json`.
+- **View detector input.** The view detector is stepped on the executed gripper command (P's while P acts), not on the VLA's raw command as in §50. This keeps it in step with Hp's detector, and it matters only after a P abort.
+- **Ledger and commits.** The row carries dirty=true, because other agents' files were uncommitted. Commits are local, on main.
+- **Login node.** No python was run and no result JSON was opened; all numbers come from SLURM logs. The row file was checked by grep for its tag, status and dirty flag. On two occasions a second waiter briefly ran, and I stopped it.
+
+**Limits.**
+- One scene, layout O, 60 states per task, one client seed.
+- Simulator masks for the views; depth and camera calibration for the hand-over.
+- V3 is met by .008.
+- C1 is unmet on these states (N1 .417).
+- Hp's N2 on these states (.217) is the lowest of §63-§66, so part of V1 may reflect a weak Hp draw. V1 is a paired contrast on the same states.
