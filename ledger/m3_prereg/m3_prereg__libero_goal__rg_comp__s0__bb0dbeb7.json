@@ -1,0 +1,967 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: RG_COMP, the composite RC (F7R resolver + memory slot + ReGuide transport) against ReGuide alone (rgp) and the intact VLA on F7 (relational / negated) and F6 (seen once, then covered) with trained-task controls, frozen pi0.5 (PRIMARY) and pi0, NEW states (docs/SCAFFOLD_RESULTS.md 70)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4751754",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "bb0dbeb7a1540a1e70aa706182e111c7ca3e86d6",
+  "short": "bb0dbeb7"
+ },
+ "keys": {},
+ "metrics": {
+  "arms": "per task; the policy is frozen and served as in SR 45 / 65; the prompt is the task's instruction unless stated)\n  I     the harness alone (fx_client.py's / f6o2_client.py's env additions, restated here for the rgc suite: the hidden second bowl\n        of the unique-name controls, f6o's covers, the track).\n  rgp   ReGuide RG-perc (SR 52's controller, experiments/rg.py, unchanged; statistics results/flawed/rg_stats.json) given the\n        instruction as it is.  Its referents come from its own noun parser (rg_roles: the first and the last LIBERO-Goal noun of the\n        instruction, fa1_common.NOUN; equal to fa1_common.roles on every trained instruction).  Its perception is SR 52 / 55 / 65's:\n        the learned U-Net (sc_seg) + the RENDERED depth + the camera calibration through sc_pu.Estimator, registered ONCE at the\n        first policy query (paper C.6), the held object then rigid in the hand from ProprioHeld's onset.  The parser names \"bowl\";\n        two identical bowls give the bowl class two instances, and the Estimator would average them, so rgp takes ONE instance the\n        way a detector returns its top box for a noun: the bowl class's 8-connected components in the agentview at the first query\n        (fx_r.components, >= fx_r.MIN_COMP px); if there are >= 2, rgp binds the LARGEST and registers the second as a separate,\n        non-instructed movable bowl (both through the Estimator, each with the other's pixels removed: every bowl pixel is given to\n        the nearer of the two components' 3D centres).  With one component (every one-bowl task) nothing is restricted, so rgp is\n        exactly SR 65's arm there.  The binding is blind to the relation.\n  rc    the composite.  (1) The F7R resolver (experiments/fx_r.py, unchanged: template parser + learned segmenter + depth) turns a\n        relational instruction into one bowl instance; the VLA gets F7R's unique-name prompt and F7R's role view (the other bowl\n        painted magenta in both cameras); an instruction off F7R's 4 templates passes through unchanged (no paint).  (2) ReGuide\n        (rgp's perception and controller) binds the RESOLVED instance as the instructed object (registered with the other bowl's\n        pixels removed) and the parsed target as the destination; the other bowl is a non-instructed movable, as in rgp.  Off\n        template, ReGuide binds as rgp.  (3) The memory slot (SR 45.6's overlay, f6o2_tasks.Memory, unchanged paint rule) when the\n        destination is the plate: at the first query it stores the plate's learned mask, sprite and depth-projected plane; it\n        LATCHES at the first later step whose agentview plate component (fx_r.components on the learned segmenter) has fewer than\n        LATCH x the stored mask's pixels, and from then on repaints the remembered plate in both cameras (occlusion-aware:\n        12 cm height gate, gripper column, bowl pixels).  ReGuide's plate pose is the registration at the first query, held for the\n        episode (C.6: no tracking): that registration IS the slot's pose memory, and it is shared with rgp.\n  f7r   reference (F7 only): F7R alone (SR 45.2's arm: resolver, unique-name prompt, role view), no ReGuide.\n  mem   reference (F6 only): the memory slot alone (rc's slot, latched trigger), no ReGuide.",
+  "design": {
+   "B": 2000,
+   "agate": 0.5,
+   "f6_k": [
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409,
+    410,
+    411,
+    412,
+    413,
+    414,
+    415,
+    416,
+    417,
+    418,
+    419,
+    420,
+    421,
+    422,
+    423,
+    424,
+    425,
+    426,
+    427,
+    428,
+    429,
+    430,
+    431,
+    432,
+    433,
+    434,
+    435,
+    436,
+    437,
+    438,
+    439,
+    440,
+    441,
+    442,
+    443,
+    444,
+    445,
+    446,
+    447,
+    448,
+    449,
+    450,
+    451,
+    452,
+    453,
+    454,
+    455,
+    456,
+    457,
+    458,
+    459,
+    460,
+    461,
+    462,
+    463
+   ],
+   "f7_k": [
+    300,
+    301,
+    302,
+    304,
+    305,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311,
+    312,
+    313,
+    314,
+    315,
+    316,
+    317,
+    318,
+    319,
+    320,
+    321,
+    322,
+    323,
+    324,
+    325,
+    326,
+    327,
+    328,
+    329,
+    330,
+    331,
+    332,
+    333,
+    334,
+    335,
+    336,
+    337,
+    338,
+    339,
+    340,
+    341,
+    342,
+    343,
+    344
+   ],
+   "floor": 0.7,
+   "latch": 0.5,
+   "ni_margin": -0.05,
+   "rule": "F7: fx_tasks.main's F7 loop, sampler 820000 + k, layout 821000 + k, k = 300+; F6: fx's F6 rule, sampler 810000 + k, displacement 811000 + k, k = 400+; parks 830000 + k (fam), 830000 + 100 + k (disp); seed_base 14000000 + 1000 k",
+   "states": {
+    "f6": {
+     "main": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+     ],
+     "smoke": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    "f7": {
+     "main": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43
+     ],
+     "smoke": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   },
+   "ugate": 0.5
+  },
+  "deviations_planned": "rgp's instance rule (the largest bowl component; the second bowl a non-instructed movable) is ours: the scene-1 rgp averages a two-instance class.  rc's ReGuide binds the resolver's instance through the same restriction.  The memory slot's trigger is a latch on the learned plate mask (< LATCH of its first-query size), not SR 45.6's cover-move step; the paint rule is SR 45.6's.  ReGuide's one-shot registration (C.6) is the slot's pose memory in rc and is also present in rgp.  No reference planner and no fx reference gate (the F7 / F6 gates use I's own controls).  Client seed 7 and server seed 13 kept from SR 45.  GR00T, X-VLA and SmolVLA not run.  Ledger tree dirty (other agents' files).",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rgc_build.sh": "c874fbdfd29a12036680329fa1825824326cead60b585e0b9559dc40cda41cab",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rgc_job.sh": "54533052de875e807a9f13dc36db45520acfb4c31348f91e3496531862e0ed05",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rgc_read.sh": "198297c09bfcf60a0935048f778b2ff102ff4b62910971ff8c9ba45a7a556b08",
+   "experiments/f6o2_client.py": "14ebfe6514406dbabc1286b3645c84444d08433357d701df4065924d41fb5763",
+   "experiments/f6o2_tasks.py": "7bc3c56abf19fe055e39640f9b3e679e51ff1f1300ee55ef50540eb8d54691ea",
+   "experiments/f6o_tasks.py": "6be4a31bef264adf7804a4853cbac5a2411252a86260dc1904cee71b76f8b071",
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fa1b_common.py": "ddf11055f9a15658b771a2922d6b9003d18a4600256262d9306252c4cb749758",
+   "experiments/fx_client.py": "05de318ec5ae7ca305d82ef365776fd95bb535ad0b6df9098bd3318296622cdb",
+   "experiments/fx_r.py": "05fb2ff114a3c9a9dd70d86d1755a77337173539cbe8b27544cd39175271f978",
+   "experiments/fx_tasks.py": "434b04c257fc95e06cc343b32fb731cd53b86d22b89ff3e196723328b4b01a91",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "experiments/prereg/rg_comp.py": "20b87f37b53fe6913de8d5a2ad2ef232ed8ed28da1d822d6a4d8660669468503",
+   "experiments/prereg/rg_comp_pred.txt": "ef47d0207c5657e24a68d84cdb25b7e97559728b8ce380e40533192d4195fcd9",
+   "experiments/prereg/rg_comp_seen.txt": "b21ece487daa84c69431151c3eb964781e7a9173172a5a8a358027055771e581",
+   "experiments/rg.py": "98138a90bdea69f0c2ebeb5678c75ff31ab319ef770a2b83be5f74e7811d9291",
+   "experiments/rg_comp.py": "ee4caf70d4456b5fc247777e95d436e7606927da9a90a18db7b38fddd510be01",
+   "experiments/rg_comp_roll.sh": "c633cc61389a9eaf56abe1ab2b88124758543b77801e589ea97cf61655da6242",
+   "experiments/rg_stats.py": "eed4ac9bc1418742b08d9436704c5992c73cb386d8751d5a721bc1250a4b46ee",
+   "experiments/sc_pu.py": "0a78fd36d68817ee324f9120e69cc281a7ca11961e3c2a3fa5a75a7192c00964",
+   "experiments/sc_rv.py": "1d1d6fb977524a7254b42ff889f80d7785c2bfc302c96fca5629c3da0b3be265",
+   "experiments/sc_seg.py": "9b4254a30af2f95fc30d56976ab408256b53415bd096edd8f3115560dc7f0ba4",
+   "experiments/serve_guided.py": "00fb8826f7bb4cf3efc16c32851d7778a19a3ebe079d091120a51dfad3baf52b",
+   "lifelong_ood/policy/backbone.py": "1ed870a73c886eb3207b338353846cc2500538ccc0c8be71b53ac12546253173",
+   "lifelong_ood/policy/parts_flow.py": "a8fda7014a9a9b7072bf3c24432e7579005c0bd8339319d213f9f3bef81db626",
+   "lifelong_ood/policy/serve.py": "0ee7059a283444a08082b81d74d9af4fff8e3cb5854b00c67bef2898b9e90c58",
+   "results/flawed/f6o/f6o_tasks.json": "689115738044a3d1f5d5b2bdd733d8a997885ea6421ea878404f4415fdd34315",
+   "results/flawed/fx/fx_tasks.json": "1df5ef23eca2d837ac8dee3c4383b96421b610ed3770d11bd6648b6ff7892ff5",
+   "results/flawed/rg_comp/br6_main.json": "577adad1e2bf63a24e104ed90f11077e7880f8e6554900e5376399e87baa5d76",
+   "results/flawed/rg_comp/br6_smoke.json": "f20b007f6e4fe1ac682c5610d33087ed4f18e59c8460dfef2f0e9239f2d75a74",
+   "results/flawed/rg_comp/br7_main.json": "269b9ad72ca614bfe9272637852e67412c6d8bc4e42d56b614a6966f7a8b4cfb",
+   "results/flawed/rg_comp/br7_smoke.json": "9e0530d3f324b7e4dcb6d2c9b07c32d13a3956a370975037b51be01c6782dc0e",
+   "results/flawed/rg_comp/pcheck.json": "d719d24ea961a77b59212b734c210e87e8f558c4d557c10e58157cbdf3d85423",
+   "results/flawed/rg_comp/rg_comp_tasks.json": "500f87a3c59ce705622345617f062090680cb4cf368ee7456ca2845d626cf54f",
+   "results/flawed/rg_comp/states/rgc_0.npy": "3bf4421feb2b4cc84fa30f2f208f8b22178d1c8eb9f0a22745847743e9e38c6d",
+   "results/flawed/rg_comp/states/rgc_1.npy": "a89913a3b450f9b34bc1f368e4e150506244c752b4d72b370e90d57bbc351367",
+   "results/flawed/rg_comp/states/rgc_10.npy": "7815b04742300393979fe1934968354f0a7393a05a0dd7646dee5f3e16a1efa5",
+   "results/flawed/rg_comp/states/rgc_2.npy": "796c4ae57adc9df6e84619584566fc9152a195a82a09e10ecf1ee4c98f770fbe",
+   "results/flawed/rg_comp/states/rgc_3.npy": "42b169b8ef6dc6fc66675617e4b4b3e73aadad1a13cb93a22131308623ac2d67",
+   "results/flawed/rg_comp/states/rgc_4.npy": "360496046408cbd9d72b280b54de7d027cae1cbdcf0b717f43384678215728dc",
+   "results/flawed/rg_comp/states/rgc_5.npy": "ef34691d1c2e4c7e47af9a2135c53fc16829056dcb26b4fe90942480c8b30f9b",
+   "results/flawed/rg_comp/states/rgc_6.npy": "d81cf7abb53b5f9cee1197ffd0f836ac59e7fcc917b96dea13705c30aa74d105",
+   "results/flawed/rg_comp/states/rgc_7.npy": "9dfb970ef7e7ba2203f29b768820818f22720a92a5a17b46f1e8eec71446ff0e",
+   "results/flawed/rg_comp/states/rgc_8.npy": "a0154d2662a266958fbb9ba70452502811273422c5fce8409fd482937a864901",
+   "results/flawed/rg_comp/states/rgc_9.npy": "a0154d2662a266958fbb9ba70452502811273422c5fce8409fd482937a864901",
+   "results/flawed/rg_stats.json": "d7dc3c6c3762c7c21b3d4f76c7646dbdbd98b232eee50d50131a79cc438bd39a",
+   "results/flawed/sc_pu_calib.json": "7559a35128d7c194d27caa747f270a49ced2897d70dc3412c6475194e110a2b9",
+   "results/flawed/sc_rv_lex.json": "b7c4b70bfa0ef46e7e0cfd7fd989fc7081bc5cc2e7cd04ff7d93ba3afa440d5e"
+  },
+  "information": "rgp and rc read the learned U-Net masks, the rendered depth and the camera calibration (sc_pu.Estimator, SR 52 / 55 / 65), ProprioHeld, and ReGuide's demonstration statistics (rg_stats.json, trained-task demos).  rc and f7r also read F7R's template parser over the instruction (fx_r.py) with the learned masks and depth; the memory slot reads the learned plate mask, the RGB at the first query, the depth and the camera model (f6o2_tasks.Memory).  The depth render and the calibration are privileged in simulation in every non-I arm.  The simulator is read for diagnostics only (logged, never fed).",
+  "labels": "NEW states (F7: fx's two-bowl rule, k = 300+, 40 main; F6: fx's F6 rule + f6o's covers, k = 400+, 60 main), branches seed_base 14000000 + 1000 k; client seed 7, --bind track.  Models: frozen pi0.5 (PRIMARY; pp_serve_purify --model pi05 --mode intact --comp '' --seed 13, as SR 45) and frozen pi0 (SECONDARY; serve_guided --mode ours --seed 13, BACKBONE_CONFIG=pi0_libero, as SR 45.3 / 65).  Success = the BDDL goal.  Bootstrap over states (B = 2000, numpy default_rng(0), percentile 2.5 / 97.5); an F7 family = its two relational tasks on the same states, paired; K = the mean of K1t (F6 states) and K2t (F7 states), each task's states resampled separately in the same draw.  GATES per model: (floor, SR 50) TESTABLE iff I's K >= .70; (F7 family) TESTABLE iff U = the mean of I's two unique-name controls of the family >= .50 (fx's NO POWER rule, without the reference); (F6) TESTABLE iff I's F6_a >= .50 (f6o's NO POWER rule, without the reference).  A label on an untestable cell reads NOT TESTABLE with the rule's outcome descriptive.  REGISTERED CONTRASTS per model: (V1) RC - rgp on each F7 family (SP, NG): RC WINS iff lo > 0; RG WINS iff hi < 0; else NO CLEAR DIFFERENCE.  (V2) RC - rgp on F6_b: the same labels.  (V3) RC - I on each cell (SP, NG, F6_b): dF = RC - I on the cell, dK = RC - I on K: FIX WORKS iff dF lo > 0 AND dK lo > -.05; PARTIAL iff exactly one holds; FAILS iff neither (SR 62-69's rule); dK alone is labelled NON-INFERIOR iff lo > -.05, else NOT SHOWN.  PRIMARY: V1-V3 on pi0.5.  RECORDED (descriptive): the resolver's accuracy (rc, f7r: the resolved bowl is the referent, against the simulator); rgp's binding (the bound instance is the referent); registration error per entity (cm, against the simulator); the memory slot's record (mask IoU and centre xy error against the true plate), the latch step and painted pixels; ReGuide's plate-pose error held over the episode (registered vs true plate at the end); C = referent grasps among bowl grasps per arm and family (fx's C); per relational task, its own unique-name control (a task whose control is < .50 is flagged CEILING); rgp - I, f7r - I, mem - I, RC - f7r, RC - mem; ReGuide transports.  No reference planner is run (SR 55 / 65 ran none for ReGuide).",
+  "pcheck_summary": {
+   "F6_b": {
+    "mem": {
+     "n": 64,
+     "slot_centre_xy_err_median": 0.0016895019659486582,
+     "slot_iou_median": 0.9874428506875665,
+     "slot_latch_step_median": 15.0,
+     "slot_latched": 1.0,
+     "slot_record_ok": 1.0
+    },
+    "rc": {
+     "bound_err_cm_median": 0.053,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.1495,
+     "n": 64,
+     "other_err_cm_median": null,
+     "plate_xy_err_cm_median": 0.1485,
+     "slot_centre_xy_err_median": 0.0016895019659486582,
+     "slot_iou_median": 0.9874428506875665,
+     "slot_latch_step_median": 15.0,
+     "slot_latched": 1.0,
+     "slot_record_ok": 1.0
+    },
+    "rgp": {
+     "bound_err_cm_median": 0.051,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.145,
+     "n": 64,
+     "other_err_cm_median": null,
+     "plate_xy_err_cm_median": 0.145
+    }
+   },
+   "F7_NG_neg": {
+    "rc": {
+     "bound_err_cm_median": 0.49250000000000005,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.064,
+     "n": 44,
+     "other_err_cm_median": 0.226,
+     "plate_xy_err_cm_median": 2.7785,
+     "resolver_correct": 1.0
+    },
+    "rgp": {
+     "bound_err_cm_median": 5.1525,
+     "bound_referent": 0.5909090909090909,
+     "de_err_cm_median": 0.064,
+     "n": 44,
+     "other_err_cm_median": 0.111,
+     "plate_xy_err_cm_median": 2.783
+    }
+   },
+   "F7_NG_pos": {
+    "rc": {
+     "bound_err_cm_median": 0.226,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.064,
+     "n": 44,
+     "other_err_cm_median": 0.49250000000000005,
+     "plate_xy_err_cm_median": 2.7785,
+     "resolver_correct": 1.0
+    },
+    "rgp": {
+     "bound_err_cm_median": 5.0885,
+     "bound_referent": 0.38636363636363635,
+     "de_err_cm_median": 0.064,
+     "n": 44,
+     "other_err_cm_median": 0.111,
+     "plate_xy_err_cm_median": 2.7715
+    }
+   },
+   "F7_SP_relL": {
+    "rc": {
+     "bound_err_cm_median": 0.186,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.032,
+     "n": 44,
+     "other_err_cm_median": 0.1645,
+     "plate_xy_err_cm_median": 0.032,
+     "resolver_correct": 1.0,
+     "slot_centre_xy_err_median": 0.0037102315815787205,
+     "slot_iou_median": 0.9908913804895235,
+     "slot_latch_step_median": null,
+     "slot_latched": 0.0,
+     "slot_record_ok": 1.0
+    },
+    "rgp": {
+     "bound_err_cm_median": 0.1985,
+     "bound_referent": 0.75,
+     "de_err_cm_median": 0.031,
+     "n": 44,
+     "other_err_cm_median": 0.1775,
+     "plate_xy_err_cm_median": 0.031
+    }
+   },
+   "F7_SP_relR": {
+    "rc": {
+     "bound_err_cm_median": 0.16999999999999998,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.032,
+     "n": 44,
+     "other_err_cm_median": 0.1745,
+     "plate_xy_err_cm_median": 0.032,
+     "resolver_correct": 1.0,
+     "slot_centre_xy_err_median": 0.0037102315815787205,
+     "slot_iou_median": 0.9908913804895235,
+     "slot_latch_step_median": null,
+     "slot_latched": 0.0,
+     "slot_record_ok": 1.0
+    },
+    "rgp": {
+     "bound_err_cm_median": 0.191,
+     "bound_referent": 0.25,
+     "de_err_cm_median": 0.031,
+     "n": 44,
+     "other_err_cm_median": 0.162,
+     "plate_xy_err_cm_median": 0.031
+    }
+   },
+   "K1t": {
+    "rc": {
+     "bound_err_cm_median": 0.0515,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.035500000000000004,
+     "n": 64,
+     "other_err_cm_median": null,
+     "plate_xy_err_cm_median": 0.035500000000000004,
+     "slot_centre_xy_err_median": 0.0036431859162491817,
+     "slot_iou_median": 0.9909262746954556,
+     "slot_latch_step_median": null,
+     "slot_latched": 0.0,
+     "slot_record_ok": 1.0
+    },
+    "rgp": {
+     "bound_err_cm_median": 0.051,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.035,
+     "n": 64,
+     "other_err_cm_median": null,
+     "plate_xy_err_cm_median": 0.0345
+    }
+   },
+   "K2t": {
+    "rc": {
+     "bound_err_cm_median": 0.052,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.068,
+     "n": 44,
+     "other_err_cm_median": null,
+     "plate_xy_err_cm_median": 0.032
+    },
+    "rgp": {
+     "bound_err_cm_median": 0.052,
+     "bound_referent": 1.0,
+     "de_err_cm_median": 0.068,
+     "n": 44,
+     "other_err_cm_median": null,
+     "plate_xy_err_cm_median": 0.032
+    }
+   }
+  },
+  "prediction": "RG_COMP predictions (SR 70; m3_prereg rg_comp).  Written 2026-11-16 before any job of this probe (build, check, smoke, rollout), from\nSR 45.1-45.6, 52, 55, 65, 68, 69 only.  Point predictions are success rates on the main states; \"range\" is my 80% interval.\n\nThe question's account says ReGuide's binding takes the object NAMED in the instruction, so ReGuide alone will not fix F7 (the\nreferent is picked by a relation) or F6 (the target is hidden after one view).  My expectation differs on F6: our ReGuide registers\nevery pose ONCE at the first query (paper C.6, kept in SR 52), so it already holds the plate's pose from before the cover moves.\nThat registration is a pose memory.  So I expect rgp alone to recover much of F6, and the composite's added image memory to add\nlittle beyond it.  On F7 I expect the account to hold: rgp binds an instance chosen without the relation (C ~ .5).\n\nPRIMARY, frozen pi0.5\n  Gates: floor TESTABLE (99%); SP U ~1.0, TESTABLE (95%); NG U ~.85, TESTABLE (90%); F6 a ~.93, TESTABLE (95%).\n  F7 SP (relL + relR): I .40 (range .25-.55); rgp .45 (.30-.60); f7r .95 (.85-1.0); rc .95 (.85-1.0).\n  F7 NG (pos + neg):   I .20 (.10-.35);  rgp .30 (.15-.45); f7r .78 (.60-.90); rc .80 (.60-.92).\n  F6_b: I .55 (.40-.70); rgp .80 (.62-.92); mem .80 (.65-.90); rc .87 (.75-.97).  F6_a (I) .93.\n  K (mean of K1t, K2t): I .99, rgp .99, rc .98.\n  V1 SP: RC WINS (90%), point +.50 (+.35 to +.65).\n  V1 NG: RC WINS (85%), point +.50 (+.30 to +.65).\n  V2 F6_b: NO CLEAR DIFFERENCE (55%), RC WINS (40%), RG WINS (5%); point +.07 (-.05 to +.20).\n  V3: SP FIX WORKS (90%); NG FIX WORKS (85%); F6_b FIX WORKS (85%); dK NON-INFERIOR (85%).\n  Descriptive: rgp - I on F6_b lower bound > 0 (70%) -- the account's F6 prediction for ReGuide alone fails here.\n  rc - f7r within +-.10 on both F7 families (75%).  rc - mem on F6_b > 0 (60%).\n\nSECONDARY, frozen pi0\n  Gates: floor TESTABLE (90%); SP U ~.65, TESTABLE (75%); NG U ~.50 (the plate bowl ~0, the table bowl ~1.0), TESTABLE (55%);\n  F6 a ~.55, TESTABLE (55%).  CEILING flags (own unique-name control < .50): pos (90%), relR (60%).\n  F7 SP: I .20; rgp .35 (.15-.55); f7r .40 (.25-.55); rc .55 (.35-.75).\n  F7 NG: I .20; rgp .30 (.15-.50); f7r .50 (.40-.60); rc .55 (.45-.70), with pos <= .15 under every arm.\n  F6_b: I .25 (.10-.45); rgp .55 (.30-.75); mem .35; rc .60 (.35-.80).\n  V1 SP: RC WINS (65%).  V1 NG: RC WINS (60%).  V2 F6_b: NO CLEAR DIFFERENCE (60%).\n  V3: SP FIX WORKS (65%); NG FIX WORKS (55%); F6_b FIX WORKS (50%); dK NON-INFERIOR (70%).\n\nMechanism (both models)\n  Resolver (rc, f7r): correct on >= 98% of relational episodes (95%), as in SR 45.2-45.4 (640 / 640).\n  rgp's bound instance is the referent on .40-.60 of relational episodes (85%), and C(rgp) is .35-.65 on each family (80%).\n  C(rc) >= .90 on SP (pi0.5, 85%).\n  Registration error of the bound bowl, median <= 1 cm (80%); plate <= 1 cm (80%).\n  Memory slot: record ok >= 98% of episodes, mask IoU median >= .95, centre xy error median <= 1 cm (85%); latches on >= 95% of\n  F6_b episodes within 2 steps of the cover's move (env step 15) (85%); on K1t it latches on some episodes (the hand and bowl over\n  the plate), share <= .50 (60%), at no measurable cost.\n  ReGuide's registered plate pose on F6_b stays within 2 cm of the true plate at the episode's end (median) (80%).",
+  "runs": [
+   [
+    "pi05",
+    "F7_SP_relL",
+    "I",
+    "PRIMARY",
+    0
+   ],
+   [
+    "pi05",
+    "F7_SP_relL",
+    "rgp",
+    "PRIMARY",
+    0
+   ],
+   [
+    "pi05",
+    "F7_SP_relL",
+    "rc",
+    "PRIMARY",
+    0
+   ],
+   [
+    "pi05",
+    "F7_SP_relL",
+    "f7r",
+    "PRIMARY",
+    0
+   ],
+   [
+    "pi05",
+    "F7_SP_relR",
+    "I",
+    "PRIMARY",
+    1
+   ],
+   [
+    "pi05",
+    "F7_SP_relR",
+    "rgp",
+    "PRIMARY",
+    1
+   ],
+   [
+    "pi05",
+    "F7_SP_relR",
+    "rc",
+    "PRIMARY",
+    1
+   ],
+   [
+    "pi05",
+    "F7_SP_relR",
+    "f7r",
+    "PRIMARY",
+    1
+   ],
+   [
+    "pi05",
+    "F7_NG_pos",
+    "I",
+    "PRIMARY",
+    2
+   ],
+   [
+    "pi05",
+    "F7_NG_pos",
+    "rgp",
+    "PRIMARY",
+    2
+   ],
+   [
+    "pi05",
+    "F7_NG_pos",
+    "rc",
+    "PRIMARY",
+    2
+   ],
+   [
+    "pi05",
+    "F7_NG_pos",
+    "f7r",
+    "PRIMARY",
+    2
+   ],
+   [
+    "pi05",
+    "F7_NG_neg",
+    "I",
+    "PRIMARY",
+    3
+   ],
+   [
+    "pi05",
+    "F7_NG_neg",
+    "rgp",
+    "PRIMARY",
+    3
+   ],
+   [
+    "pi05",
+    "F7_NG_neg",
+    "rc",
+    "PRIMARY",
+    3
+   ],
+   [
+    "pi05",
+    "F7_NG_neg",
+    "f7r",
+    "PRIMARY",
+    3
+   ],
+   [
+    "pi05",
+    "F7_SP_uniL",
+    "I",
+    "PRIMARY",
+    4
+   ],
+   [
+    "pi05",
+    "F7_SP_uniR",
+    "I",
+    "PRIMARY",
+    5
+   ],
+   [
+    "pi05",
+    "F7_NG_uniP",
+    "I",
+    "PRIMARY",
+    6
+   ],
+   [
+    "pi05",
+    "K2t",
+    "I",
+    "PRIMARY",
+    7
+   ],
+   [
+    "pi05",
+    "K2t",
+    "rgp",
+    "PRIMARY",
+    7
+   ],
+   [
+    "pi05",
+    "K2t",
+    "rc",
+    "PRIMARY",
+    7
+   ],
+   [
+    "pi05",
+    "F6_b",
+    "I",
+    "PRIMARY",
+    8
+   ],
+   [
+    "pi05",
+    "F6_b",
+    "rgp",
+    "PRIMARY",
+    8
+   ],
+   [
+    "pi05",
+    "F6_b",
+    "rc",
+    "PRIMARY",
+    8
+   ],
+   [
+    "pi05",
+    "F6_b",
+    "mem",
+    "PRIMARY",
+    8
+   ],
+   [
+    "pi05",
+    "F6_a",
+    "I",
+    "PRIMARY",
+    9
+   ],
+   [
+    "pi05",
+    "K1t",
+    "I",
+    "PRIMARY",
+    10
+   ],
+   [
+    "pi05",
+    "K1t",
+    "rgp",
+    "PRIMARY",
+    10
+   ],
+   [
+    "pi05",
+    "K1t",
+    "rc",
+    "PRIMARY",
+    10
+   ],
+   [
+    "pi0",
+    "F7_SP_relL",
+    "I",
+    "SECONDARY",
+    0
+   ],
+   [
+    "pi0",
+    "F7_SP_relL",
+    "rgp",
+    "SECONDARY",
+    0
+   ],
+   [
+    "pi0",
+    "F7_SP_relL",
+    "rc",
+    "SECONDARY",
+    0
+   ],
+   [
+    "pi0",
+    "F7_SP_relL",
+    "f7r",
+    "SECONDARY",
+    0
+   ],
+   [
+    "pi0",
+    "F7_SP_relR",
+    "I",
+    "SECONDARY",
+    1
+   ],
+   [
+    "pi0",
+    "F7_SP_relR",
+    "rgp",
+    "SECONDARY",
+    1
+   ],
+   [
+    "pi0",
+    "F7_SP_relR",
+    "rc",
+    "SECONDARY",
+    1
+   ],
+   [
+    "pi0",
+    "F7_SP_relR",
+    "f7r",
+    "SECONDARY",
+    1
+   ],
+   [
+    "pi0",
+    "F7_NG_pos",
+    "I",
+    "SECONDARY",
+    2
+   ],
+   [
+    "pi0",
+    "F7_NG_pos",
+    "rgp",
+    "SECONDARY",
+    2
+   ],
+   [
+    "pi0",
+    "F7_NG_pos",
+    "rc",
+    "SECONDARY",
+    2
+   ],
+   [
+    "pi0",
+    "F7_NG_pos",
+    "f7r",
+    "SECONDARY",
+    2
+   ],
+   [
+    "pi0",
+    "F7_NG_neg",
+    "I",
+    "SECONDARY",
+    3
+   ],
+   [
+    "pi0",
+    "F7_NG_neg",
+    "rgp",
+    "SECONDARY",
+    3
+   ],
+   [
+    "pi0",
+    "F7_NG_neg",
+    "rc",
+    "SECONDARY",
+    3
+   ],
+   [
+    "pi0",
+    "F7_NG_neg",
+    "f7r",
+    "SECONDARY",
+    3
+   ],
+   [
+    "pi0",
+    "F7_SP_uniL",
+    "I",
+    "SECONDARY",
+    4
+   ],
+   [
+    "pi0",
+    "F7_SP_uniR",
+    "I",
+    "SECONDARY",
+    5
+   ],
+   [
+    "pi0",
+    "F7_NG_uniP",
+    "I",
+    "SECONDARY",
+    6
+   ],
+   [
+    "pi0",
+    "K2t",
+    "I",
+    "SECONDARY",
+    7
+   ],
+   [
+    "pi0",
+    "K2t",
+    "rgp",
+    "SECONDARY",
+    7
+   ],
+   [
+    "pi0",
+    "K2t",
+    "rc",
+    "SECONDARY",
+    7
+   ],
+   [
+    "pi0",
+    "F6_b",
+    "I",
+    "SECONDARY",
+    8
+   ],
+   [
+    "pi0",
+    "F6_b",
+    "rgp",
+    "SECONDARY",
+    8
+   ],
+   [
+    "pi0",
+    "F6_b",
+    "rc",
+    "SECONDARY",
+    8
+   ],
+   [
+    "pi0",
+    "F6_b",
+    "mem",
+    "SECONDARY",
+    8
+   ],
+   [
+    "pi0",
+    "F6_a",
+    "I",
+    "SECONDARY",
+    9
+   ],
+   [
+    "pi0",
+    "K1t",
+    "I",
+    "SECONDARY",
+    10
+   ],
+   [
+    "pi0",
+    "K1t",
+    "rgp",
+    "SECONDARY",
+    10
+   ],
+   [
+    "pi0",
+    "K1t",
+    "rc",
+    "SECONDARY",
+    10
+   ]
+  ],
+  "same_sha_as_prior_rows": {
+   "f6o2": {
+    "experiments/f6o2_client.py": true,
+    "experiments/f6o2_tasks.py": true
+   },
+   "fx_r": {
+    "experiments/fx_client.py": true,
+    "experiments/fx_r.py": true,
+    "experiments/fx_tasks.py": true
+   },
+   "reguide": {
+    "experiments/fa1_common.py": true,
+    "experiments/libero_client.py": true,
+    "experiments/pp_serve_purify.py": true,
+    "experiments/rg.py": true,
+    "experiments/rg_stats.py": true,
+    "experiments/sc_pu.py": true,
+    "experiments/sc_rv.py": true,
+    "experiments/sc_seg.py": true,
+    "results/flawed/rg_stats.json": true,
+    "results/flawed/sc_pu_calib.json": true,
+    "results/flawed/sc_rv_lex.json": true
+   },
+   "s1_cross": {
+    "experiments/fa1_common.py": true,
+    "experiments/libero_client.py": true,
+    "experiments/rg.py": true,
+    "experiments/rg_stats.py": true,
+    "experiments/sc_pu.py": true,
+    "experiments/sc_rv.py": true,
+    "experiments/sc_seg.py": true,
+    "experiments/serve_guided.py": true,
+    "lifelong_ood/policy/backbone.py": true,
+    "lifelong_ood/policy/serve.py": true,
+    "results/flawed/rg_stats.json": true,
+    "results/flawed/sc_pu_calib.json": true,
+    "results/flawed/sc_rv_lex.json": true
+   }
+  },
+  "seen": "RG_COMP: what was seen before the prereg row (SR 70; m3_prereg rg_comp).  Written 2026-11-16, after the build, perception check and smoke, before any main rollout.\n\nSeen (policy-free): build jobs 4744639 (F7, k 300-344, 1 rejected), 4744640 (F6, k 400-463); assemble 4744641 failed at pcheck on a KeyError (no relational\nnouns in the template parse); fix = rg_roles cross-check also catches KeyError, rgp's binding unchanged (first and last noun by position); assemble 4751051\n(tail-lab; the overcap resubmission 4750738 was cancelled while pending) COMPLETED.  pcheck (n = 44 per F7 family, 64 F6): resolver correct 44/44 on all\nfour F7 families; rc binds the referent 44/44; rgp's bound instance is the referent on .75 (relL), .25 (relR), .39 (pos), .59 (neg); bound-bowl registration\nerror median .2-.5 cm (pos / neg 5 cm for rgp: the plate bowl); slot record ok 1.0, mask IoU median .987-.991, centre error .2-.4 cm; slot latches on F6_b\n(step 15 median) -- all as predicted or better.  The F6_b plate registration error median .15 cm.\n\nSeen (smoke, 4 states per family, 1 trial; jobs 4751335 pi0.5, 4751336 pi0, read 4751744; files in .claude_tmp/pp/rgc_smoke*): 0 client errors, 60 of 60 cells\nexit 0.  pi0.5: floor I on K 1.00; gates TESTABLE (SP U 1.0, NG U .75, F6 a 1.0); V1 SP / NG RC WINS, V2 NO CLEAR DIFFERENCE, V3 FIX WORKS on all three\n(n = 4: no inference).  pi0: floor TESTABLE; SP U .625, NG U .50 TESTABLE; F6 a 0.0 at n = 4 (NOT TESTABLE on smoke; the main read applies the gate on n = 64).\nSmoke point values moved no code, no arm, no gate and no prediction.  The main rollouts use the registered files br7_main / br6_main.",
+  "status": "PRE-REGISTERED RG_COMP",
+  "written_before": "any main-state rollout of this probe"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__rg_comp__s0__bb0dbeb7",
+ "schema": 1,
+ "script": "experiments/prereg/rg_comp.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-16T21:21:54+00:00",
+ "stream": null,
+ "tag": "rg_comp"
+}
