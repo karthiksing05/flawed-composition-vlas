@@ -4994,3 +4994,180 @@ Per task:
 - ReGuide here is our reimplementation (§52) with the port's choices. Its demonstration statistics come from the scene's own training demos, which suits it.
 - GR00T was not run.
 - C1 is unmet (N1 .567). N1, the planner's weak task, is also ReGuide-perc's.
+
+## 69. Scene 2: tracking the held mug, and ReGuide without rendered depth (m3_prereg s2_rgt, ledger row m3_prereg__libero_10__s2_rgt__s0__c3e42156.json, written before any main rollout; code commit c3e42156, the commit the row is named for; prep and development job 4740304, smoke jobs 4741753 (pi0.5), 4741756 (pi0), smoke read 4743489, diagnostic jobs 4743493-4743494, second smoke 4743505-4743506, its read 4743570, prereg job 4743572; rollout jobs 4743576-4743591, reference job 4743592, read job 4743593; results/flawed/s2rgt/pcheck.json, s2rgt_read.json, rollouts results/flawed/s2rgt_roll)
+
+**Question.** §68 left two problems with the ported ReGuide (rgp).
+- (a) Its perception is privileged: OWLv2 boxes plus RENDERED depth plus camera calibration.
+- (b) Its N1 is low (.417, against .833 on simulator poses). §68 found that consistent with rgp's untracked rigid held-mug estimate: 34 of 60 N1 white mugs end on no plate. It never tested that.
+
+Does tracking the held mug during the carry lift N1 (rgt)? Does ReGuide hold its result when rendered depth is replaced by table-plane depth (rgtp)?
+
+**Arms** (`experiments/s2rgt.py`, `s2rgt_roll.sh`; rg.py's controller and §68's port unchanged).
+- **I:** `s2.py client`.
+- **rgp:** §68's arm, replicated. It runs through s2rgt.py's client with tracking off. The decision path is s2rg.py's; only logging is added.
+- **rgt (rgp + tracking; rendered depth kept):**
+  - While the instructed mug is attached, OWLv2 re-detects the mugs every **k = 5** control steps, starting at the attachment step. k was chosen for cost: one detector call per 5 steps. It was not tuned.
+  - Each mug box is localised by §63's inner-half depth median plus a held-mug constant.
+  - The measurement is the box nearest the current estimate in xy. It is accepted only within 3 cm of that estimate.
+  - An accepted measurement replaces the estimate's xy. Its z stays the rigid estimate's: hand height plus the offset fixed at the attachment.
+  - The hand-frame offset is then re-anchored, so the carry steers the tracked centre to the plate.
+- **rgtp (rgt without any depth render):**
+  - **Resting mug:** the camera ray through its box's bottom-centre, cut with the table plane, plus a constant.
+  - **Plate:** the ray through the box's inner side edge (centre row), cut with the same plane, plus the plate radius and a constant. The plates sit at the image borders with their outer side cut off.
+  - **Held mug:** the ray through its box centre, cut with the horizontal plane at the mug's mid height. That height comes from proprioception: the rigid estimate's z, which is hand height plus the offset fixed at the attachment.
+  - **Remaining assumption:** camera intrinsics and extrinsics, a fixed calibration as on a real robot.
+  - **Table height:** a one-off calibration on development states, the median simulator height of 192 mug bottoms (.4368 m). It is not read from the scene file.
+- **Models:** frozen pi0.5 (PRIMARY) and pi0 (SECONDARY), with §63's servers, client seed 7 and `--bind track`.
+
+**Design.** 60 new states from LIBERO's sampler on K1's BDDL, seeds 990000 + k, k 0-59. None equals an SR 50-68 state. Branches use seed_base 48000000 + 1000 k. Layout O; tasks K1, K2, N1, N2.
+
+**Registered contrasts** (`s2rgt.MAPPING`; paired bootstrap over states, tasks fixed, B = 2000).
+- **V1:** rgt − rgp on N1. TRACKING HELPS iff lo > 0; HURTS iff hi < 0; otherwise NO CLEAR DIFFERENCE.
+- **V2 (the de-privilege cost):** rgtp − rgt on N1+N2 and, separately, on K1+K2. EQUIVALENT iff the CI lies inside ±.10; otherwise COST iff hi < 0, GAIN iff lo > 0, else INCONCLUSIVE.
+- **V3:** rgtp − I, with §62-§68's FIX WORKS / PARTIAL / FAILS rule and the .50 bar.
+- **Floor:** §50's floor applies.
+- **Mechanism (descriptive):**
+  - the share of N1 white mugs that end on no plate, per arm;
+  - the held-mug estimate against the simulator at each release of the attached instructed mug (ProprioHeld off);
+  - the tracking measurements.
+- **C1:** the reference planner.
+
+**Development, before the row** (`experiments/prereg/s2_rgt_seen.txt`). All of it used §68's states (seeds 980000 + k), none of which is in this probe's 60. The predictions were written before any job and were not revised.
+- **Development check (job 4740304).** xy error against the simulator after each constant:
+  - resting mugs on the table plane: .56 cm (rendered depth .34);
+  - plates: inner edge 1.01 cm, box centre 1.52 cm, so the edge method was chosen by the fixed rule (rendered depth .42);
+  - held mug at a 6 cm scripted lift: rendered depth .75 cm, proprioceptive plane .69 cm;
+  - onset identity under table-plane positions: 64 of 64.
+- **Smoke 1 (k 0-3), and one development revision.** In real carries the first tracker failed in two ways.
+  - Its measured height ran away: the z error fell from −7 to −70 cm within one carry. A low estimate makes the carry lift the hand, and the next detection is worse.
+  - It also took wrong boxes, with xy jumps of 5-9 cm.
+  - rgtp's held plane sat 3 cm low from the attachment on, because the plane came from the demonstrated grasp offset and the VLA grasps lower than the demos.
+  - I revised it once. Updates became xy-only, a 3 cm gate around the current estimate was added, and rgtp's plane height now comes from the rigid z.
+- **Smoke 2 (revised arms).**
+  - Measurement error during carries fell to 1.4-2.4 cm.
+  - At the release, rgt's estimate was still worse than rgp's rigid one in smoke 1: 5.4 against 1.6 cm on pi0.5.
+  - rgt's N2 fell to 1 of 4 on both models.
+  - I stopped tuning there.
+
+**Result** (60 new states per task).
+
+| model | arm | K1 | K2 | N1 | N2 | N1+N2 | K1+K2 |
+|---|---|---|---|---|---|---|---|
+| pi0.5 | I | 1.00 | .983 | .000 | .000 | .000 | .992 |
+| pi0.5 | rgp (§68 replication) | 1.00 | .983 | .417 | .983 | .700 | .992 |
+| pi0.5 | rgt (tracking, rendered depth) | 1.00 | .983 | .550 | **.400** | .475 | .992 |
+| pi0.5 | **rgtp (tracking, table-plane depth)** | **1.00** | **.983** | **.433** | **.967** | **.700** | **.992** |
+| pi0 | I | 1.00 | .833 | .000 | .000 | .000 | .917 |
+| pi0 | rgp | .967 | .883 | .333 | .933 | .633 | .925 |
+| pi0 | rgt | .983 | .883 | .383 | .400 | .392 | .933 |
+| pi0 | rgtp | .967 | .833 | .283 | .933 | .608 | .900 |
+
+| model | V1: rgt − rgp, N1 | V2: rgtp − rgt, N1+N2 / K1+K2 | V3: rgtp − I, N1+N2 / K1+K2 | rgtp N1+N2 vs .50 |
+|---|---|---|---|---|
+| **pi0.5** (TESTABLE, I K .992) | **+.133 [−.033, +.283] NO CLEAR DIFFERENCE** | **+.225 [+.133, +.325] GAIN / .000 [−.025, +.025] EQUIVALENT** | **+.700 [+.633, +.775] / .000 [−.025, +.025] → FIX WORKS** | **.700 [.633, .775], MEETS BAR** |
+| pi0 (TESTABLE, I K .917) | +.050 [−.033, +.133] NO CLEAR DIFFERENCE | +.217 [+.125, +.308] GAIN / −.033 [−.092, +.033] EQUIVALENT | +.608 [+.542, +.675] / −.017 [−.083, +.050] (NOT SHOWN) → PARTIAL | .608 [.542, .675], MEETS BAR |
+
+**Secondary.**
+- **rgp replicates §68 on pi0.5:** N1+N2 .700 here against .708 there (FIX WORKS, MEETS BAR).
+  - On pi0, rgp's K1+K2 margin is +.008 [−.067, +.075], NOT SHOWN, so the label is PARTIAL, not §68's FIX WORKS.
+  - pi0's I K1+K2 is .917 here against .867 in §68, which leaves less room to gain.
+- **rgt − rgp on N1+N2:** pi0.5 −.225 [−.317, −.133], pi0 −.242 [−.325, −.150], COST on both.
+  - The cost is all on N2: −.583 [−.700, −.467] and −.533.
+  - rgt is FIX WORKS but BELOW BAR on pi0.5 (.475), and PARTIAL and BELOW BAR on pi0 (.392).
+- **rgtp − rgp:** N1+N2 .000 [−.083, +.083] and K1+K2 .000 [.000, .000] on pi0.5; −.025 [−.092, +.042] and −.025 [−.083, +.042] on pi0. NO CLEAR DIFFERENCE on both.
+- **V2's GAIN comes from rgt's N2 loss,** not from anything rgtp adds. rgtp equals rgp.
+
+**Mechanism** (simulator logged, never fed).
+
+| model / arm | N1 white mug on no plate | held-mug xy error at release, N1: median (p90), n | N1 releases: estimate in region / mug in region | all tasks: median release error |
+|---|---|---|---|---|
+| pi0.5 rgp | 33 of 60 (.550) | 5.65 cm (21.7), 44 | .23 / .20 | 3.34 cm |
+| pi0.5 rgt | 25 of 60 (.417) | 5.71 cm (17.5), 43 | .44 / .05 (17 estimate in, mug out) | 4.85 cm |
+| pi0.5 rgtp | 32 of 60 (.533) | 8.39 cm (20.0), 51 | .27 / .04 | 5.27 cm |
+| pi0 rgp | 39 of 60 | 6.84 cm (15.0), 19 | .16 / .11 | 1.81 cm |
+| pi0 rgt | 36 of 60 | 5.17 cm (14.4), 22 | .32 / .00 | 4.03 cm |
+| pi0 rgtp | 41 of 60 | 6.48 cm (12.8), 20 | .15 / .05 | 3.11 cm |
+
+- **On N1 the rigid estimate is off at the release.**
+  - On pi0.5 rgp, the median xy error at the release is 5.65 cm.
+  - The real mug is inside the release region on only .20 of N1 releases.
+  - This supports the premise of §68's account: the perceived carry ends with the real mug off target.
+- **The tracker did not fix the estimate at the release, so V1 does not test that account.**
+  - During the carry, rgt's accepted measurements are close to the simulator. On pi0.5 N1 the median error is 1.19 cm, and the estimate just before each measurement is off by 2.06 cm.
+  - But only .56 of N1 measurements pass the gate. At the release the tracked estimate is as far off as the rigid one: 5.71 against 5.65 cm.
+  - The tracked estimate is wrong more often in the direction that matters. On 17 of 43 N1 releases it claims the region while the mug is outside (rgp: 3 of 44).
+  - Where the error arises was not measured. It is consistent with the measurements failing near the plate, but I logged no per-row breakdown by phase.
+- **N1 white mugs on no plate:** rgt − rgp −.133 [−.283, +.033]; rgtp − rgp −.017 [−.183, +.150]. Neither is a clear difference.
+- **Why rgt loses N2 (descriptive).**
+  - On pi0.5 N2, rgt's controller declares the mug released inside the region (done) on 41 of 60 episodes, against rgp's 0.
+  - Yet the named mug ends on the left plate on only 24 of 60, and 36 episodes time out.
+  - Under rgp the controller never declares an N2 release inside (0 of 60) and the VLA places the mug; under rgtp it does so on 7 of 60. rgt's tracked estimate reads the mug as inside on most episodes, while the real mug is elsewhere on 36 of them.
+  - This is consistent with tracking errors over the left plate; I did not isolate the cause.
+  - rgtp, also tracked, keeps N2 at .967. So the N2 loss is specific to the depth tracker on these poses, not to tracking as such.
+
+**Perception against the simulator** (registration, 240 per model; one state per task left the instructed mug or the target plate unperceived, so ReGuide stayed inactive there in every perceiving arm).
+- **rgtp (no depth render):**
+  - target plate xy median 1.01 cm (max 1.18);
+  - instructed mug .61 cm (max .77); all mugs .56 cm (max 1.02);
+  - mug height error median .17 cm;
+  - target side right on 236 of 236;
+  - onset held-mug identity .966 (pi0.5) and .946 (pi0).
+- **rgp:** target plate .42 cm, instructed mug .39 cm, onset identity .969.
+- **Correction to §68:** §68's "target plate xy error, median .32 cm" was plate_2's error in every task. s2rg.py keyed both plates as "plate". The side check there was computed separately and is unaffected. This probe keys the plates by name.
+
+**C1 (reference planner):** K1 .817, K2 1.00, N1 .567, N2 1.00. N1-N2 is .783, so **C1 UNMET**.
+
+**Predictions** (in the row) against the outcome.
+- **rgp replicates §68 within ±.08 (80%):** right (.700).
+- **rgt, point predictions:** N1 ~.60 gave .550. N2 ~.97 gave **.400** (wrong). N1+N2 ~.78 gave .475 (wrong).
+- **rgtp, point predictions:** N1 ~.55 → .433; N2 ~.93 → .967; N1+N2 ~.74 → .700; K1+K2 ~.97 → .992.
+- **V1:** HELPS 55% / NO CLEAR DIFFERENCE 40%. It read NO CLEAR DIFFERENCE.
+- **V2:** K1+K2 EQUIVALENT (80%): right. N1+N2 EQUIVALENT 45% / COST 20%: it read GAIN, which I did not foresee; it comes from rgt's N2 loss.
+- **V3 on pi0.5:** FIX WORKS (90%) right, MEETS BAR (85%) right, lower bound ≥ .50 (75%) right (.633).
+- **Mechanism:**
+  - N1 white on no plate: rgp ~.55 → .550 (right); rgt ~.30 → .417; rgtp ~.35 → .533.
+  - Release error rgp ~3 cm → 5.65 cm on N1 (3.34 over all tasks); rgt ~1.5 → 5.71 cm; rgtp ~2 → 8.39 cm. All wrong.
+  - My conditional test of the account needed V1 NO CLEAR DIFFERENCE with rgt's release error clearly below rgp's. Its precondition did not hold, so it does not apply.
+- **pi0:** TESTABLE right. V1 HELPS 40%: no. V2 K EQUIVALENT (70%): right. V3 FIX WORKS (80%): **wrong** (PARTIAL). MEETS BAR (75%): right.
+- **Perception:** target plate < 1.5 cm, mug < 2 cm, side ≥ .97: right on all three.
+- **C1 UNMET (60%):** right.
+
+**Checks.**
+- **Hashes.** The read found 0 hash mismatches against the row's files_sha256. The row covers the code, the development constants, the states and branches, the predictions, the seen file and the job scripts.
+- **Ledger row name.** The row is named for c3e42156.
+- **Jobs.**
+  - Every rollout log shows the registered server command: 8 pi0.5; 10 pi0, including two requeue restarts of 4743584.
+  - Job 4743584 (pi0 I, K1/K2) was requeued twice. Restart 2 found both outputs complete and skipped them. The read's trial-list asserts passed.
+  - Every perceiving job logged the OWLv2 sidecar, and every client exited 0.
+  - The main jobs refuse to run without the s2_rgt row. I submitted them only after the row file showed tag s2_rgt and status PRE-REGISTERED S2RGT. The read was chained afterok on all rollouts and the reference.
+
+**Reading.**
+- **ReGuide on scene 2 does not need rendered depth (problem (a)).** With table-plane depth, rgtp equals rgp on every task on both models (rgtp − rgp .000 on pi0.5).
+  - On pi0.5, rgtp − I is FIX WORKS and MEETS BAR at .700 [.633, .775], with the trained tasks unchanged.
+  - Localisation costs about .6 cm on the plates (1.01 against .42 cm) and .2 cm on the mugs, and the controller absorbs it.
+  - The remaining privilege is the fixed camera calibration and a table height fitted once on development states.
+  - On pi0 the same arm reaches .608 (MEETS BAR), but its trained-task margin is NOT SHOWN (−.017 [−.083, +.050]), so it reads PARTIAL. rgp reads PARTIAL there too.
+- **Problem (b) is not resolved.**
+  - The rigid held-mug estimate is off at the N1 release: 5.65 cm median, with the real mug in the region on .20 of releases. That is consistent with §68's account.
+  - The tracker I built did not reduce that error at the release (5.71 cm), and N1 did not move by the registered rule (+.133, NO CLEAR DIFFERENCE).
+  - The manipulation did not change the quantity it targeted, so this probe neither confirms nor rules out that a better held-mug estimate would lift N1. The rgo gap (§68: .833) stays the only evidence that pose quality matters on N1.
+  - The tracker cost N2 (−.58) by making the controller believe a release succeeded. Box-based tracking at this precision is harmful when the controller trusts it.
+- **For the proposal:** the scene-2 ReGuide result now holds without rendered depth on pi0.5 (.700, FIX WORKS, MEETS BAR). N1's residual is still open.
+
+**Deviations.**
+- **Development revision of the tracker after smoke 1** (xy-only updates, the 3 cm gate, rgtp's plane from the rigid z). Disclosed in the seen file, before the row.
+- **rgp ran through s2rgt.py's client** (tracking off, logging added), not s2rg.py's.
+- **Plate keys fixed** in the registration log (see the correction above).
+- **The table height** is a development-state calibration, not scene geometry. All plane and held-mug constants come from development states.
+- **Not rerun:** Hp and rgo (§68).
+- **Partitions.** All jobs ran on overcap.
+- **Ledger and commits.** The row carries dirty=true (other agents' uncommitted files). Commits are local, on main.
+- **Login node.** No python was run there and no result JSON was opened. All numbers come from SLURM logs.
+
+**Limits.**
+- One scene, layout O, 60 states per task, one client seed.
+- The tracker is one design with one development revision. A better tracker, for example one with a tracked z or segmentation masks, is untested.
+- Camera calibration stays privileged.
+- GR00T was not run.
+- C1 is unmet (N1 .567).
