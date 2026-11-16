@@ -1,0 +1,22 @@
+S2RG seen before this row (all on smoke states k 0-3 or on scene 2's training demos; no main state k 4-63 of this probe has been run
+by any policy or by the reference planner).
+
+1. Predictions (s2_rg_pred.txt) written first, before any job of this probe.
+2. Prep, job 4738449 (tail-lab): compile and roll syntax ok.  ReGuide statistics (results/flawed/s2rg/rg_stats_s2.json) from the
+   LIBERO-10 compound's 50 raw demos: 100 of 100 per-mug cycles usable (none skipped); kappa (.253, .225) (scene 1: .242, .225);
+   white mug: grasp offset (-.015, .029, .102) m, entry altitude .100 m, rho .083 m; yellow-and-white mug: (-.013, .060, .075),
+   .074 m, rho .049 m; plate_1 release offset (.008, .010) m, Omega_d .021 m; plate_2 (-.003, -.013) m, .019 m; the red mug
+   inherits the white mug's statistics.  Mug footprints from the meshes: radius .066 (white), .071 (yellow-and-white) m, handle
+   included.  64 new states (seeds 980000 + k), none equal to an SR 50-67 state; branches smoke / main.
+3. Smoke, jobs 4738515 (pi0.5, tail-lab) and 4738516 (pi0, overcap), k 0-3, all four arms, outputs in .claude_tmp/pp/s2rg_smoke:
+   pi0.5 I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/0/1, rgp 4/4/2/4, rgo 4/4/3/4;
+   pi0   I 4/4/0/0, Hp 4/4/2/0, rgp 3/4/2/4, rgo 4/4/3/3;
+   reference planner 4/4/2/4.
+   pi0.5 rgp: on K2 and N2 ReGuide's wrong-binding approach fired at the start on 8 of 8 (the VLA headed for the white mug), and the
+   first hold was then the named yellow-and-white mug on 8 of 8; on N2 a wrong-destination carry to the left plate followed on 4 of
+   4.  On N1 a wrong-destination carry fired on 4 of 4.  On K1 nothing fired.  Perception: 16 of 16 registrations, target plate xy
+   median .26 cm, onset identity 16 of 16.  pi0 rgp K1: posture-mismatch approaches fired on 4 of 4 (1 failure).
+   (Side-file short names: "porcelain" = the white mug porcelain_mug_1, "white" = the yellow-and-white mug white_yellow_mug_1.)
+4. Read selftest, job 4738885: summary and read ran clean.
+Nothing in the client, the port, the statistics, the states or the labels changed after the smoke.  The predictions were not
+revised.

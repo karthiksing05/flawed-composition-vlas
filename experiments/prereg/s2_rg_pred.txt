@@ -1,0 +1,52 @@
+S2RG predictions (SR 68), written 2026-11-16 BEFORE any job of this probe (prep, statistics, states, smoke or main), and before
+experiments/s2rg.py was finished.  Nothing of this probe has been run.
+
+What is tested.  ReGuide (SR 52's reimplementation, experiments/rg.py's controller class, unchanged) ported to scene 2 (LIBERO-10
+LIVING_ROOM_SCENE5): it rebinds the instructed mug (approach transports to the instructed mug's demonstrated pre-contact pose when
+the policy's predicted endpoint commits to another mug, or on no progress), and steers the held instructed mug to the instructed
+plate (carry transports on a wrong-destination commitment), then hands control back to the frozen policy.  Arms: I, Hp (SR 63,
+unchanged), rgp (poses from SR 63's OWLv2 + rendered depth + calibration, the same privilege as Hp; registration at the first gated
+step, re-detection at hold onsets, the held mug's identity by Hp's rule), rgo (simulator poses every step, rg.py's oracle hold rule).
+Statistics from scene 2's only training demos (the LIBERO-10 compound, one close-open cycle per mug: K1 = white -> left, K2 =
+yellow-and-white -> right).  Models: frozen pi0.5 (PRIMARY), pi0 (SECONDARY).  60 new states (seeds 980000 + k), layout O.
+
+What I expect mechanistically, before any run.
+- N1 (white -> right): the VLA grasps the right mug (its trained K1 grasp) and heads for the left plate; ReGuide's wrong-destination
+  trigger fires and carries it to the right plate, then hands back one step above release height.  The open risk is that pi0.5,
+  re-queried above the right plate, carries it back toward the left plate (strong F1 routing in this scene, SR 57-61); the re-arm
+  certificate allows a second carry and the dwell rule a scripted release.  I expect N1 near Hp's.
+- N2 (yellow-and-white -> left): pi0.5 heads for the white mug first (SR 63-67: 60 of 60 under I / Hp).  ReGuide's wrong-binding
+  trigger should fire and move the hand to the yellow-and-white mug's pre-contact pose.  Whether pi0.5 then grasps that mug or goes
+  back to the white mug (its trained first step, SR 64 / 67) is the main uncertainty.  If the named mug is held first, the VLA heads
+  for the right plate and ReGuide carries it to the still-empty left plate, which should succeed often.  If the white mug is held
+  first, ReGuide does not treat it as the instructed object; the VLA places it on the left plate, then takes the named mug, and
+  ReGuide carries that onto the occupied left plate, as Hp's P does (success given that ~.25, SR 67).
+- K2: the same early wrong-binding trigger fires on K2 (white first is the VLA's trained order), so rgp may disturb K2's trained
+  program, as the views did (SR 66).  K1: few triggers.
+
+pi0.5 (60 new states; PRIMARY):
+- I: K1 ~.99, K2 ~1.00, N1 0, N2 0.  TESTABLE (95%).
+- Hp: N1 ~.50, N2 ~.25, N1+N2 ~.38, K1+K2 ~.99.  Hp FIX WORKS (85%).
+- rgp: N1 ~.55, N2 ~.38, N1+N2 ~.46; K1 ~.98, K2 ~.90, K1+K2 ~.94.
+- rgo: within +-.08 of rgp on N1+N2 (70%).
+- V1 (rgp - I): dN lo > 0 (95%); K1+K2 non-inferiority at -.05 shown 50%.  FIX WORKS 48%, PARTIAL 50%, FAILS 2%.
+- V2 (rgp - Hp on N1+N2, ~+.08): RG WINS 30%, NO CLEAR DIFFERENCE 50%, EQUIVALENT (CI inside +-.10) 12%, HP WINS 8%.
+- V3 (.50 bar): MEETS BAR 35%, BELOW BAR 65%.  State-bootstrap lower bound of rgp's N1+N2 < .50 (90%).
+- Mechanism: N2 first hold is the named mug: Hp 0 (= I up to the first hold, by construction), rgp ~.35 (range .10-.60), rgo ~.40.
+  N2 success given a named first hold under rgp ~.70; given a white first hold ~.20.  ReGuide fires an approach transport on >= .80
+  of N2 and of K2 episodes, and a carry transport on >= .70 of N1 episodes.  When the named mug is held under rgp on N1 / N2, it
+  ends on its trained plate (the plate the instruction does not name) on <= .15 of those episodes (the F1 place cue is overridden),
+  against ~.10-.20 under Hp (P also carries it).
+- Secondary rgp - Hp on K1+K2: ~-.05, NO CLEAR DIFFERENCE 55%, COST 45%.
+
+pi0 (60 new states; SECONDARY):
+- I: K1+K2 ~.82 -> TESTABLE (75%); N 0.
+- Hp: N1 ~.45, N2 ~.10, K1+K2 ~.85; Hp FIX WORKS 60%.
+- rgp: N1 ~.45, N2 ~.20, N1+N2 ~.33, K1+K2 ~.80.
+- V1: FIX WORKS 45%, PARTIAL 50%.  V2: NO CLEAR DIFFERENCE 55%, RG WINS 30%, HP WINS 10%, EQUIVALENT 5%.  V3: BELOW BAR 95%.
+- Mechanism: N2 named first hold under rgp ~.25 (SR 65: ReGuide moved pi0's grasp in scene 1).
+
+Perception (pi0.5 rgp): registration of the instructed mug and both plates on >= .97 of episodes; target plate xy median < 1 cm;
+onset held-mug identity agreement with the simulator rule >= .95.
+
+C1 (reference planner on the new states): N1 ~.55, N2 ~.98, N1-N2 ~.77 -> C1 MET 45%, UNMET 55%.
