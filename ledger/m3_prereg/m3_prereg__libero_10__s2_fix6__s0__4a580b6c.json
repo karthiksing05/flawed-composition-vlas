@@ -1,0 +1,308 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_10",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: S2FIX6, scene 2 (LIVING_ROOM_SCENE5) on NEW states, layout O: SR 63's named-mug hand-over with perception (Hp) plus KEEP THE TARGET CLEAR (Hc: an unnamed held mug is carried by P to the plate the instruction does not name, cap 1), against I and Hp, on frozen pi0.5 (PRIMARY) and pi0 (docs/SCAFFOLD_RESULTS.md 67)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4735894",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "4a580b6c75056a600e0c0b2256c243f141652151",
+  "short": "4a580b6c"
+ },
+ "keys": {},
+ "metrics": {
+  "arm_Hc": "this file, `client --arm Hc`): Hp plus CLEAR-AWAY.\n  - The instruction text (the prompt the VLA receives) is parsed for the mug names (s2fix4.parse_named, SR 64's parser, unchanged)\n    and for the plate names it contains (PLATE_PHRASES: \"left plate\", \"right plate\") -> NAMED mugs, NAMED_PLATES.  On the four\n    single-step tasks NAMED = {the task's object} and NAMED_PLATES = {the task's target} (asserted).\n  - Hold events, detector, perception, target registration, the held-mug rule and P are Hp's, unchanged (s2fix3.Percept,\n    ProprioHeld, s2fix.Place).  Hp's registration (one OWLv2 + depth scene at n = WAIT) already detects both plates and assigns\n    \"left\" / \"right\" by SIDE_RULE; Hc keeps the OTHER side's point as well (no extra detector call, no extra simulator read).\n  - At a detector onset with no named hand-over committed and neither P nor a clear-away active, the perceived held mug m decides:\n      m in NAMED                                -> P takes over to the target plate (Hp's rule);\n      m not None, m not in NAMED, no clear-away\n      yet in this episode (cap CL_CAP = 1)       -> CLEAR-AWAY, then control returns to the VLA with the same instruction;\n      otherwise (m None, or the cap reached)    -> the VLA keeps control (Hp's rule).\n  - CLEAR-AWAY.  Destination = the plate the instruction does NOT name (exactly one plate unnamed), at its perceived registration\n    point: P (s2fix.Place, unchanged, with the constants of the trained half ending on that plate, s2fix.HALF_OF_PLATE, as Hp does for\n    its target; rng default_rng(seed_base + 30)) carries and releases the mug there.  After P's release and 10 cm retreat (phase 4,\n    err < .015 or CL_RETREAT steps) the clear-away is done and the VLA acts again.  FALLBACK (both plates named, neither named, or the\n    other plate not perceived at registration): SR 64's scripted put-back to the grasp spot (s2fix4.PutBack, unchanged; the grasp\n    spot is the hand's lowest point since the executed gripper command last closed).  If the hold detector is off for 3 steps during\n    P's carry or descent (a drop), the clear-away aborts and the VLA acts again (s2fix.Place's / PutBack's own abort rule).  Every\n    started clear-away counts toward the cap, so an episode cannot loop.\n  - What Hc reads beyond Hp: the instruction's plate words (the VLA receives the text; Hp already reads the target plate, as the\n    task's target) and the second plate of Hp's own registration scene.  No lookup of trained pairings (the destination is\n    \"the plate not named\", never \"the mug's trained plate\"); no new simulator read (depth and camera calibration stay privileged, as\n    in Hp).  The simulator oracle (H's held-mug rule, Hc's decision on the oracle's held mug, the other plate's registration error,\n    and after every clear-away the mug's displacement, tilt and on-plate predicates) is LOGGED in the side file, never fed.\n  - For an instruction that names both mugs (KC, NC) the rule never fires on them; KC / NC are not run here.",
+  "design": {
+   "bar": 0.5,
+   "base": 970000,
+   "br_base": 44000000,
+   "cl_cap": 1,
+   "cl_retreat": 30,
+   "floor": 0.7,
+   "hp_constants": {
+    "assign": "perm",
+    "cal": {
+     "mug": [
+      -0.0336,
+      0.0017,
+      -0.0783
+     ],
+     "plate": [
+      0.0072,
+      0.0,
+      -0.0063
+     ]
+    },
+    "held_r": 0.08,
+    "plate_loc": "edge_radius",
+    "plate_r": 0.0554,
+    "queries": [
+     "a white mug",
+     "a yellow and white mug",
+     "a red mug",
+     "a plate"
+    ],
+    "side_rule": "world_y_min"
+   },
+   "main": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+   ],
+   "ni_margin": -0.05,
+   "plate_phrases": [
+    [
+     "plate_1",
+     "left plate"
+    ],
+    [
+     "plate_2",
+     "right plate"
+    ]
+   ],
+   "smoke": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  "deviations_planned": "Layout O only.  Client seed 7 and server seed 13 kept from SR 50-66 (state and branch seeds are new).  Hp runs SR 63's client unchanged; Hc is SR 64's Hb client with the put-back replaced by P to the unnamed plate (put-back kept as the fallback) and the cap set to 1.  GR00T not run (NOT TESTABLE on every earlier scene-2 state set).  Depth and camera calibration stay privileged.  Ledger tree dirty (other agents' files).",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix6_job.sh": "e28a333baea7447ae0a6017d96691c61b9b0420b12c36fe07d7d25bf94578e56",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix6_prep.sh": "c1d1b5a6753c5c695bbed9b1a8110b73aabdd8a4c65f717210b3723e8ea4619b",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix6_read.sh": "f1a0a974252cba01e228014018fbd735553b51f949559c2bea475241e577e385",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix6_ref.sh": "99a25e075eb46e2dc2d07f6a50842806b4640fd773270a9211f6b639a0197282",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix6_smoke.sh": "196c54423c18e82073e03bbc891605f4d4db82f3d9c766b5f15ad67093b04de9",
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fa1b_common.py": "ddf11055f9a15658b771a2922d6b9003d18a4600256262d9306252c4cb749758",
+   "experiments/fa1g_plan.py": "bc6d30bb4c1da0f3e66495b8a228246ecd15f4fa3c5224e1b06b9e0f5dd600a6",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "experiments/prereg/s2_fix6.py": "07c6de7c88c574ee7449166036df043be6433ff1247ea173159d1222d81c7b97",
+   "experiments/prereg/s2_fix6_pred.txt": "abb724cafbe21bcf6c964909cfbe21e34e742c5ad6bdad5c8980038cc701f35d",
+   "experiments/prereg/s2_fix6_seen.txt": "dda39f376e5d692cc7b4a4c76b90ab4cb71a875ece06f5910e3d75de4830420c",
+   "experiments/s2.py": "100936370710f40bb6583140a8be06d0f43ffd9398f44a432cc773438b56828b",
+   "experiments/s2_tasks.py": "04b33cc98b3a45ceca175c9fd3d4ad0307efa5a4cbe78db222b5c8d32b224860",
+   "experiments/s2cue.py": "21cd27ba9d24d276db1d8fcfae413c595dd5a6c5db85f41da8931aa1e7b23582",
+   "experiments/s2cue3.py": "97231fc2679d6060a9155ff8dab45620cc8612ebf103403a7826e53477d96dcf",
+   "experiments/s2fix.py": "a80db43d06cf3c7962015d0fd5f3dc6c715d63f19785f9cc8092f31b90b3740f",
+   "experiments/s2fix2.py": "c9ff37c216f0031a63fd36d9a8c72389f9fedfd0b181d0e83867d357a4e2577f",
+   "experiments/s2fix3.py": "245f909fe6dc2e5e307cd232fbdbb6be5ebd7fac2dba96fb05ceee4940e6a521",
+   "experiments/s2fix3_det.py": "ef9318a9761382139c83780ea10f53c556a7454517496a12630f00b19898827c",
+   "experiments/s2fix4.py": "2edf53f72e19fab94d6b177ead085cfc3b38547a87aad16828c7266c367ff5a0",
+   "experiments/s2fix6.py": "9178391292e1ce66a99c3333d10ef6631769c66ae9bf0ec447f9c1385cfb1b75",
+   "experiments/s2fix6_roll.sh": "e75384bd64abd7a0a141a82f755c32a3387a805faac6ccf31438b547560da6ee",
+   "experiments/sc_pu.py": "0a78fd36d68817ee324f9120e69cc281a7ca11961e3c2a3fa5a75a7192c00964",
+   "experiments/sc_rv.py": "1d1d6fb977524a7254b42ff889f80d7785c2bfc302c96fca5629c3da0b3be265",
+   "experiments/sc_rv_w.py": "6ebbc93050af55546854998eade1e909b523cb9aec1aa4f5da4d50c854314d21",
+   "experiments/serve_guided.py": "00fb8826f7bb4cf3efc16c32851d7778a19a3ebe079d091120a51dfad3baf52b",
+   "lifelong_ood/policy/backbone.py": "1ed870a73c886eb3207b338353846cc2500538ccc0c8be71b53ac12546253173",
+   "lifelong_ood/policy/parts_flow.py": "a8fda7014a9a9b7072bf3c24432e7579005c0bd8339319d213f9f3bef81db626",
+   "lifelong_ood/policy/serve.py": "0ee7059a283444a08082b81d74d9af4fff8e3cb5854b00c67bef2898b9e90c58",
+   "lifelong_ood/policy/where.py": "5af0ddd390f6e833358af466b2862ce3cf56d24688c1e80e0ba1ca3d4005dd90",
+   "results/flawed/s2/keypoints.json": "71ee68ad75e1956b30de9bc3a8b7277f615865186e072dec99de6e64c6575a51",
+   "results/flawed/s2/s2_tasks.json": "7a9d0b7dd49ee3278baad73fec2bd4e571ae584b66d7b43c7da2b4276dee9df7",
+   "results/flawed/s2fix6/O/s2_living_0.npy": "993dc03779069d9deff3d22c54a31a9746ee992ff147ae16d84b299c97290555",
+   "results/flawed/s2fix6/O/s2_living_1.npy": "993dc03779069d9deff3d22c54a31a9746ee992ff147ae16d84b299c97290555",
+   "results/flawed/s2fix6/O/s2_living_2.npy": "993dc03779069d9deff3d22c54a31a9746ee992ff147ae16d84b299c97290555",
+   "results/flawed/s2fix6/O/s2_living_3.npy": "993dc03779069d9deff3d22c54a31a9746ee992ff147ae16d84b299c97290555",
+   "results/flawed/s2fix6/branches_main.json": "f7f02c7416c3f1d3188032bf784e6eaf2d2a2dcd361a69ca110eee5a66fdba61",
+   "results/flawed/s2fix6/branches_smoke.json": "949621cc0e7bf54c0c06bd18270deedd3dab84ae46c6959990b95ec742c7a7f4",
+   "results/flawed/s2fix6/hist.json": "dd71059e1544d4356b5d05d8b8dfc9eadbb2b40f4e0c157a02cdcfc7f94beeb4",
+   "results/flawed/sc_rv_lex.json": "b7c4b70bfa0ef46e7e0cfd7fd989fc7081bc5cc2e7cd04ff7d93ba3afa440d5e"
+  },
+  "information": "Hc reads, beyond Hp, the instruction's plate words (the text the VLA receives; Hp already reads the target plate) and the second plate of Hp's own registration scene (OWLv2 + rendered depth + camera calibration, the same call).  No lookup of trained pairings; no new simulator read.  Depth and calibration stay privileged as in Hp.  The simulator oracle is logged, never fed.",
+  "labels": "NEW states (LIBERO sampler on K1's BDDL, seeds 970000 + k, none equal to an SR 50-66 state), main k = 4-63 (60), branches seed_base 44000000 + 1000 k; layout O; tasks K1, K2, N1, N2; client seed 7, --bind track.  Models: frozen pi0.5 (PRIMARY; pp_serve_purify --model pi05 --mode intact --comp= --seed 13) and frozen pi0 (SECONDARY; serve_guided --mode ours --seed 13, BACKBONE_CONFIG=pi0_libero).  Arms per model: I (s2.py client), Hp (SR 63's arm, s2fix3.py client --arm Hp, unchanged), Hc (Hp + CLEAR-AWAY: at a hold of a mug the instruction does not name, P carries it to the plate the instruction does not name, fallback the grasp spot, cap 1; s2fix6.py client --arm Hc).  Success = the BDDL goal.  Matrices [task, state].  Paired bootstrap over states, tasks fixed (s2.boot2_states, B = 2000, numpy default_rng(0); CI = 2.5 / 97.5).  Per model, registered labels: (V1) Hc - Hp on N2: CLEAR-AWAY HELPS iff lo > 0; CLEAR-AWAY HURTS iff hi < 0; else NO CLEAR DIFFERENCE.  (V2, SR 62's rule) dN = Hc - I on N1+N2, dK = Hc - I on K1+K2: FIX WORKS iff dN lo > 0 AND dK lo > -.05 (NON-INFERIOR at margin -.05); PARTIAL iff exactly one holds; FAILS iff neither.  (V3) BAR: MEETS BAR iff Hc's N1+N2 success >= .50 AND dN lo > 0 (SR 54's FIXED); else BELOW BAR; descriptive beside it: the state-bootstrap CI of Hc's N1+N2 success (s2.boot2_states against zeros) and whether its lower bound is >= .50.  PRIMARY: V1, V2, V3 on pi0.5.  SR 50's floor on every model: TESTABLE iff its I K1+K2 success >= .70 on these states; a NOT TESTABLE model's labels read NOT TESTABLE with the rule's outcome descriptive.  MECHANISM (registered read, descriptive): per task, clear-aways fired (share of episodes, s2cue.boot_share), kind (plate / spot), result (done / abort), held mug (simulator rule and perceived), the cleared mug's final plate per the logged oracle; on N2 the share of the 60 episodes in which the named mug is held at an onset after a completed clear-away, in which P takes over the named mug after it (the registered mechanism share; a success can end the episode during P's descent, before its release is logged), and in which P's release of the named mug is logged after it, with N2 success given each; the next onset's held mug after a clear-away (named / same / other / none); for Hp the same N2 shares after the first hold of an unnamed mug.  SECONDARY: Hp's FIX label per model (SR 63 replication); Hc - Hp on N1+N2, K1+K2, K2 and all four tasks (GAIN iff lo > 0, COST iff hi < 0, else NO CLEAR DIFFERENCE).  Descriptive: perception accuracy (SR 63's accuracy() on the Hp / Hc side files) and the cleared-to plate's registration error, final plate of each mug (s2fix2.describe), episode length and time-outs.  C1: the reference planner (s2.plan_episode via s2cue3.ref_eps, unchanged) on the main states; MET iff its N1-N2 success >= .80.",
+  "prediction": "S2FIX6 predictions (SR 67), written 2026-11-15 BEFORE any job of this probe (prep, history, states, smoke or main), and before\nexperiments/s2fix6.py was finished.  Nothing of this probe has been run.\n\nArm Hc (\"keep the target clear\") = SR 63's Hp plus one rule: at a hold of a mug the instruction does not name, SR 54's target-only\nplace P carries it to the plate the instruction does NOT name (perceived by Hp's registration); if that plate is not available\n(both or neither plate named, or not perceived), the mug goes back to its grasp spot (SR 64's put-back); then the VLA acts again\nwith the same instruction.  Cap 1 per episode.  Hp's named-mug hand-over unchanged.\n\nFacts checked before writing (SR 50's task table, s2_tasks.TASKS, results/flawed/s2/bddl/*.bddl): K1 white -> left (plate_1), K2\nyellow-and-white -> right (plate_2), N1 white -> right, N2 yellow-and-white -> left; the trained compound KC is white -> left and\nyellow-and-white -> right.  So on K2 the plate the instruction does not name (left) IS the white mug's trained plate: Hc only\nreplaces the VLA's own trained first carry (SR 66: 59 of 60 white-first K2 episodes under Hp put the white mug on the left plate)\nby P's.  On N2 the unnamed plate is the right plate, so the white mug goes off N2's target.  On K1 / N1 the white mug is named; the\nrule fires only if the VLA holds another mug first (SR 64: 1 N1 episode).  No fact differed from the brief; no adaptation.\n\nWhat I know of the key risk before any job: SR 66's text does not give the share of Hp N2 episodes in which the named mug is grasped\nafter the white mug was placed; it gives only a lower bound (every Hp N2 success needs a named hold: >= .217 in SR 66, >= .30 in SR\n63, >= .433 in SR 64).  The prep job computes it from SR 63/64/66's Hp side files (disclosed in the seen file, after these\npredictions).  SR 64: after a put-back to the grasp spot the VLA re-grasped the same white mug 240 of 240.  My expectation is that a\nwhite mug standing on a plate looks like the trained mid-program scene, so the VLA's next grasp is the yellow-and-white mug more\noften than after a put-back, but this is the main uncertainty.\n\npi0.5 (60 new states, layout O; PRIMARY):\n- I: K1 ~.99, K2 ~1.00, N1 0, N2 0.  TESTABLE (95%).\n- Hp: N1 ~.53, N2 ~.32, N1+N2 ~.43, K1+K2 ~.99.  Hp FIX WORKS (85%).\n- Hc: N1 ~.52, N2 ~.45, N1+N2 ~.48; K1 ~.99, K2 ~.93, K1+K2 ~.96.\n- Mechanism: clear-away fires on >= .90 of N2 and of K2 episodes (90%), on <= .05 of K1 and N1 (85%); kind = plate on >= .95 of\n  firings; clear-away completes (P released) on ~.90 of firings.  After the clear-away on N2 the next hold is the named mug on ~.55\n  of episodes (same white mug ~.35); the named mug is released by P after the clear-away on ~.50 of N2 episodes; N2 success given\n  that ~.80.  Hp on these states: named mug held after a white hold on ~.40 of N2 episodes.\n- V1 (Hc - Hp on N2, ~+.13): CLEAR-AWAY HELPS 45%, NO CLEAR DIFFERENCE 45%, HURTS 10%.\n- V2 (Hc - I): dN lo > 0 (98%); K1+K2 non-inferiority at -.05 shown 45%.  FIX WORKS 44%, PARTIAL 54%, FAILS 2%.\n- V3 (.50 bar): MEETS BAR 35%, BELOW BAR 65%.  Bootstrap lower bound of Hc's N1+N2 success < .50 (90%).\n- Secondary Hc - Hp on K2 ~-.05: NO CLEAR DIFFERENCE 65%, COST 33%; on K1+K2 NO CLEAR DIFFERENCE 70%.\n- Episode length: K2 median +20 to +60 steps over Hp; N2 time-outs a minority (<= .25 of N2 episodes, 70%).\n\npi0 (60 new states; SECONDARY):\n- I: K1+K2 ~.80 -> TESTABLE (75%); N 0.\n- Hp: N1 ~.42, N2 ~.08, K1+K2 ~.82; Hp FIX WORKS 50%.\n- Hc: N2 ~.18, N1 ~.42, K2 ~.68, K1+K2 ~.79.  Clear-away fires on >= .85 of N2 / K2.\n- V1: CLEAR-AWAY HELPS 40%, NO CLEAR DIFFERENCE 50%, HURTS 10%.  V2: PARTIAL 50%, FIX WORKS 40%, FAILS 10%.  V3: BELOW BAR 97%.\n\nPerception (pi0.5): onset held-mug agreement with the simulator rule >= .97 for Hp and Hc; target plate xy median < 1 cm; the\ncleared-to plate (the other perceived plate) xy median < 1 cm and side right >= .97.\n\nC1 (reference planner on the new states): N1 ~.55, N2 ~.98, N1-N2 ~.77 -> C1 MET 40%, UNMET 60%.",
+  "runs": [
+   [
+    "pi05",
+    "O",
+    "I",
+    "PRIMARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi05",
+    "O",
+    "Hp",
+    "PRIMARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi05",
+    "O",
+    "Hc",
+    "PRIMARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi0",
+    "O",
+    "I",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi0",
+    "O",
+    "Hp",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi0",
+    "O",
+    "Hc",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ]
+  ],
+  "same_sha_as_s2_fix3_row": {
+   "experiments/fa1_common.py": true,
+   "experiments/fa1b_common.py": true,
+   "experiments/fa1g_plan.py": true,
+   "experiments/libero_client.py": true,
+   "experiments/pp_atlas.py": true,
+   "experiments/pp_serve_purify.py": true,
+   "experiments/s2.py": true,
+   "experiments/s2_tasks.py": true,
+   "experiments/s2cue.py": true,
+   "experiments/s2cue3.py": true,
+   "experiments/s2fix.py": true,
+   "experiments/s2fix2.py": true,
+   "experiments/s2fix3.py": true,
+   "experiments/s2fix3_det.py": true,
+   "experiments/sc_pu.py": true,
+   "experiments/sc_rv.py": true,
+   "experiments/serve_guided.py": true,
+   "lifelong_ood/policy/backbone.py": true,
+   "lifelong_ood/policy/parts_flow.py": true,
+   "lifelong_ood/policy/serve.py": true,
+   "lifelong_ood/policy/where.py": true,
+   "results/flawed/s2/keypoints.json": true,
+   "results/flawed/s2/s2_tasks.json": true
+  },
+  "seen": "S2FIX6 seen before this row (all on smoke states k 0-3 or on EXISTING outputs of SR 63/64/66; no main state k 4-63 of this probe\nhas been run by any policy or by the reference planner).\n\n1. Predictions (s2_fix6_pred.txt) written first, before any job of this probe.\n2. Prep, job 4733690 (tail-lab): compile and roll syntax ok; the instruction parse on all six tasks (K1 dest right, K2 dest left, N1\n   dest left, N2 dest right, KC / NC dest None = fallback); 64 new states (seeds 970000 + k), none equal to an SR 50-66 state;\n   branches smoke / main.\n3. The key risk on EXISTING outputs (prep job, mode hist -> results/flawed/s2fix6/hist.json; SR 63/64/66 main states, arm Hp):\n   on pi0.5 N2 the first hold is the white mug on 60 of 60 in each of SR 63/64/66, and the named mug is held at a later onset on\n   60 of 60 in each; P takes it over on 59 / 59 / 60 of 60 and its release is logged on 43 / 44 / 49 of 60, but N2 success given\n   that release is only .116 / .318 / .122 (white mug on the left plate at the end on 7 / 12 / 7 of 60).  So under Hp the VLA DOES\n   grasp the named mug after it has placed the white mug; the limit is P's place onto the occupied plate.  (My prediction \"named\n   mug held after a white hold on ~.40 of N2\" was wrong before any run of this probe; I did not revise it.)  pi0 (SR 64/66): named\n   mug held after the white mug on 51 / 46 of 60 N2 episodes.  K2 pi0.5: white on the left plate at the end 57-59 of 60.\n4. Smoke, jobs 4733712 (pi0.5; submitted to overcap, moved to tail-lab while pending) and 4733713 (pi0, overcap), k 0-3, outputs\n   in .claude_tmp/pp/s2fix6_smoke:\n   pi0.5 I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/2/1, Hc 4/4/2/0;\n   pi0   I 4/4/0/0, Hp 4/4/2/0, Hc 4/4/2/0;\n   reference planner 2/4/2/4.\n   Clear-away: fired on 4/4 K2 and 4/4 N2 on both models, never on K1 / N1; always the white mug, always kind = plate.  K2: the\n   white mug ended on the left plate after 7 of 8 (1 pi0 abort, then the VLA kept it), and the VLA then held the named mug on 8 of\n   8 (P took it; K2 8/8).  N2: 6 of 8 completed (2 aborts with the mug tipped 44 and 69 degrees), the white mug on the right plate\n   after 4 of 8; after the clear-away the VLA held the named mug on 0 of 8 (one later hold of no mug), so N2 0/8.\n5. Selftest job 4735117 ran clean.  ONE CHANGE after the smoke, to the read only (no change to the client, the arms or the labels):\n   the mechanism read also reports the share of episodes in which P takes over the named mug after the clear-away (and success\n   given it), because a success can end an episode during P's descent, before `committed` (P's release) is logged (K2 smoke: 0 of\n   4 releases logged although 4 of 4 succeeded).  The registered mechanism share is the hand-over share; the release share is kept\n   beside it.  Hp's after-unnamed read gets the same hand-over share.  Selftest job 4735890 re-ran the read after the change.\nNothing in the client, the rule, the states or the labels changed after the smoke.  The predictions were not revised after the\nhistory or the smoke.",
+  "status": "PRE-REGISTERED S2FIX6",
+  "written_before": "any main (k = 4-63) rollout or reference run of this probe"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_10__s2_fix6__s0__4a580b6c",
+ "schema": 1,
+ "script": "experiments/prereg/s2_fix6.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-16T05:33:29+00:00",
+ "stream": null,
+ "tag": "s2_fix6"
+}

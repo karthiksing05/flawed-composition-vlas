@@ -4728,3 +4728,136 @@ Per task:
 - V3 is met by .008.
 - C1 is unmet on these states (N1 .417).
 - Hp's N2 on these states (.217) is the lowest of §63-§66, so part of V1 may reflect a weak Hp draw. V1 is a paired contrast on the same states.
+
+## 67. Scene 2: keep the target clear (m3_prereg s2_fix6, ledger row m3_prereg__libero_10__s2_fix6__s0__4a580b6c.json, written before any main rollout; code commit 4a580b6c, the commit the row is named for; prep job 4733690, smoke jobs 4733712-4733713, selftests 4735117 and 4735890, prereg job 4735894; rollout jobs 4735896-4735906 and 4735910, reference job 4735907, read job 4735911; results/flawed/s2fix6/hist.json, s2fix6_read.json, rollouts results/flawed/s2fix6_roll)
+
+**Question.** Under §63's Hp the VLA first carries the white mug, which N2 does not name, onto the left plate, which N2 instructs. When the named mug arrives, that plate is occupied. §64's put-back to the grasp spot made the VLA grasp the white mug again, and §66's views cost the trained tasks. If the white mug is instead carried to the plate the instruction does NOT name, is the target kept clear, so that P's place of the named mug succeeds?
+
+**Facts checked before the design** (§50's task table, `s2_tasks.TASKS`, `results/flawed/s2/bddl`).
+- K1: white → left (plate_1). K2: yellow-and-white → right (plate_2). N1: white → right. N2: yellow-and-white → left. The trained compound KC is white → left, yellow-and-white → right.
+- **On K2, the plate the instruction does not name (left) is the white mug's trained plate.** There Hc only replaces the VLA's own trained first carry (§66: 59 of 60 white-first K2 episodes under Hp ended with the white mug on the left plate) by P's carry to the same plate. On N2 the unnamed plate is the right plate, so the white mug leaves N2's target.
+- On K1 and N1 the white mug is named, so the rule fires only if another mug is held first.
+- Every fact in the brief held, so the rule was not adapted.
+
+**The key risk, read on existing outputs before the smoke** (`s2fix6.py hist`, §63/§64/§66 Hp side files, main states; `results/flawed/s2fix6/hist.json`). On pi0.5 N2 the first hold is the white mug on 60 of 60 in each probe. After it, the named mug is held on 60 of 60 in each probe. P takes it over on 59, 59 and 60. Its release is logged on 43, 44 and 49, but N2 success given that release is only .116, .318 and .122. So under Hp the VLA does reach the named mug after it has placed the white mug, and the limit is P's place onto the occupied plate. On pi0 (§64, §66) the named mug is held after the white mug on 51 and 46 of 60.
+
+**Arms** (`experiments/s2fix6.py`, `s2fix6_roll.sh`; layout O; client seed 7, `--bind track`; §63's servers).
+- **I:** intact (`s2.py client`, unchanged).
+- **Hp:** §63's arm (`s2fix3.py client --arm Hp`, unchanged).
+- **Hc (PRIMARY on pi0.5):** Hp plus CLEAR-AWAY.
+  - The instruction text is parsed for its mug names (§64's parser) and its plate names ("left plate", "right plate"). On the four tasks the parse equals the task's object and target (asserted).
+  - At a detector onset with no named hand-over committed and no P or clear-away active: if the perceived held mug is named, Hp's P takes over. If it is not named and no clear-away has run in the episode (cap 1), P (§54's place, unchanged, with the constants of the trained half ending on that plate, as Hp does for its target) carries it to the plate the instruction does not name. The destination is that plate's point from Hp's own registration scene, the same OWLv2 + depth call. After P's release and 10 cm retreat, the VLA acts again with the same instruction.
+  - **Fallback:** if both plates or neither are named, or the other plate was not perceived, §64's put-back to the grasp spot runs. It never ran (the other plate was perceived on 240 of 240 Hc episodes per model).
+  - Drops abort as in P. Every started clear-away counts toward the cap.
+- **What Hc reads beyond Hp:** the instruction's plate words and the second plate of Hp's registration scene. It uses no lookup of trained pairings and no new simulator read. Depth and calibration stay privileged. The oracle is logged, never fed.
+- **Models:** frozen pi0.5 (PRIMARY) and pi0 (SECONDARY). GR00T was not run (NOT TESTABLE on every earlier scene-2 state set).
+
+**Design.** 64 new states from LIBERO's sampler on K1's BDDL, seeds 970000 + k, none equal to an SR 50-66 state. k 0-3 are smoke, k 4-63 main (60). Branches use seed_base 44000000 + 1000 k. §63's perception constants, unchanged.
+
+**Registered labels** (`s2fix6.MAPPING`). Paired bootstrap over the 60 states, tasks fixed (`s2.boot2_states`, B = 2000, default_rng(0)).
+- **V1:** Hc − Hp on N2. CLEAR-AWAY HELPS iff lo > 0, CLEAR-AWAY HURTS iff hi < 0, otherwise NO CLEAR DIFFERENCE.
+- **V2 (§62's rule):** Hc − I on N1+N2 has lower CI > 0 AND Hc − I on K1+K2 has lower CI > −.05 → FIX WORKS. PARTIAL iff exactly one holds; FAILS iff neither holds.
+- **V3 (§54's bar):** MEETS BAR iff Hc's N1+N2 ≥ .50 and Hc − I on N1+N2 has lower CI > 0. Descriptive beside it: the state-bootstrap CI of Hc's N1+N2 against .50.
+- **PRIMARY:** V1-V3 on pi0.5; the same labels on pi0. §50's floor (TESTABLE iff I K1+K2 ≥ .70) on every model.
+- **Mechanism (registered, descriptive):** clear-aways fired per task, their kind and result, where the cleared mug ended; on N2 the share of the 60 episodes in which P takes over the named mug after a completed clear-away (and success given it); for Hp the same N2 shares after the first unnamed hold.
+- **Also registered:** Hp's FIX label, Hc − Hp on N1+N2, K1+K2, K2 and all tasks, perception accuracy, and C1 (the reference planner's N1-N2 ≥ .80).
+
+**Seen before registration** (`experiments/prereg/s2_fix6_seen.txt`).
+- **Predictions** were written first, before any job of this probe.
+- **Prep (job 4733690):** compile, the instruction parse, the states, and the key-risk history above. The history contradicted one prediction (named mug held after the white mug on ~.40 of Hp N2; it is 1.00). The predictions were not revised.
+- **Smoke (k 0-3):**
+  - pi0.5: I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/2/1, Hc 4/4/2/0.
+  - pi0: I 4/4/0/0, Hp 4/4/2/0, Hc 4/4/2/0.
+  - Reference planner 2/4/2/4.
+  - On N2 the clear-away fired 8 of 8, and after it the VLA held the named mug 0 of 8 times. That is, the smoke already showed the failure mode.
+- **One change after the smoke, to the read only.** The mechanism read also reports the named-mug hand-over after the clear-away, because a success can end an episode during P's descent, before P's release is logged (K2 smoke: 0 of 4 releases logged, 4 of 4 successes). Selftest 4735890 re-ran the read. The client, the rule, the states and the labels did not change.
+
+**Result** (60 new states per task).
+
+| model | arm | K1 | K2 | N1 | N2 | N1+N2 | K1+K2 |
+|---|---|---|---|---|---|---|---|
+| pi0.5 | I | 1.00 | 1.00 | .000 | .000 | .000 | 1.00 |
+| pi0.5 | Hp | 1.00 | 1.00 | .450 | .250 | .350 | 1.00 |
+| pi0.5 | **Hc (clear-away)** | **1.00** | **.967** | **.450** | **.100** | **.275** | **.983** |
+| pi0 | I | .933 | .800 | .000 | .000 | .000 | .867 |
+| pi0 | Hp | .950 | .783 | .517 | .133 | .325 | .867 |
+| pi0 | Hc | .950 | .833 | .533 | .033 | .283 | .892 |
+
+| model / arm | V1: Hc − Hp, N2 | V2: Hc − I, N1+N2 / K1+K2 | V3: N1+N2 vs .50 (state-bootstrap CI) |
+|---|---|---|---|
+| **pi0.5 Hc** (TESTABLE, I K 1.00) | **−.150 [−.283, −.016] CLEAR-AWAY HURTS** | **+.275 [+.200, +.350] / −.017 [−.042, .000] (NON-INFERIOR) → FIX WORKS** | **.275 [.200, .350], BELOW BAR** |
+| pi0 Hc (TESTABLE, I K .867) | −.100 [−.200, −.017] CLEAR-AWAY HURTS | +.283 [+.208, +.358] / +.025 [−.042, +.100] (NON-INFERIOR) → FIX WORKS | .283 [.208, .358], BELOW BAR |
+
+**Secondary.**
+- **pi0.5 Hp − I:** +.350 [+.275, +.417] on N1+N2 and .000 on K1+K2, so **FIX WORKS**, BELOW BAR (.350 [.275, .417]). §63 replicates.
+- **pi0.5 Hc − Hp:** N1+N2 −.075 [−.142, −.008] (COST), K1+K2 −.017 [−.042, .000] and K2 −.033 [−.083, .000] (both NO CLEAR DIFFERENCE), all four tasks −.046 [−.083, −.008] (COST). N1 is identical (.450 in both).
+- **pi0 Hp − I:** +.325 [+.250, +.408] on N and .000 [−.033, +.033] on K, so FIX WORKS. Hc − Hp is −.042 [−.092, +.008] on N1+N2 and +.050 [−.067, +.183] on K2, both NO CLEAR DIFFERENCE.
+
+**Mechanism** (logged simulator oracle; 60 episodes per cell).
+
+| model / arm | clear-away fired: K1 / K2 / N1 / N2 | completed (K2 / N2) | cleared mug on the unnamed plate (K2 / N2) | N2: P takes the named mug after the white mug | N2 success given that |
+|---|---|---|---|---|---|
+| pi0.5 Hp | — | — | — | **.967 [.917, 1.00]** (after the VLA's own white carry) | .26 (15 of 58) |
+| pi0.5 Hc | 0 / 60 / 0 / 60 | 60 / 55 (5 aborts, tipped) | 60 / 31 | **.167 [.083, .267]** (after the clear-away) | .500 |
+| pi0 Hp | — | — | — | .817 [.717, .900] | — |
+| pi0 Hc | 1 / 59 / 3 / 59 | 56 / 49 | 54 / 30 | .033 [.000, .083] | .000 |
+
+- **On K2 the clear-away does what the VLA did itself.** On pi0.5 it fired on 60 of 60 K2 episodes, always on the white mug, and always completed. The white mug ended on the left plate on 60 of 60. The next hold was the named mug on 58, and P took it on .967 (success given that 1.00). K2 is .967 against Hp's 1.00, with 2 time-outs. The median K2 episode is shorter (207 steps against 223).
+- **On N2 the VLA stops after the clear-away.** On pi0.5, after a completed clear-away, the next detector onset was no hold at all in 40 of 55 episodes. It was the named mug in 8, the same white mug in 2, and a hold of no mug in 5. P took the named mug in only 10 of 60 episodes, against 58 of 60 under Hp, where the VLA had placed the white mug on the left plate itself. N2 timed out on 54 of 60 (Hp 45).
+- **When the named mug was taken, the clear target helped.** Success given a hand-over after the clear-away was .50 (5 of 10). Given a release, it was .71. Under Hp, success given a hand-over was .26 (15 of 58), because the left plate held the white mug. The arm loses on N2 because the VLA rarely gets to the named mug, not because the place fails.
+- **The clear-away's own place is imperfect on the right plate.** On pi0.5 N2, 5 of 60 clear-aways aborted on a drop with the mug tipped, and only 31 of 60 cleared mugs ended on the right plate (the rest beside it, off the left plate). P's constants for the right plate are fitted on the yellow-and-white mug, as in Hp's N1 place, which also succeeds on only .45.
+- **pi0 shows the same pattern, more strongly.** After the clear-away, P took the named mug on N2 in 2 of 60 episodes (Hp 49 of 60). K2 is unchanged (+.050, NO CLEAR DIFFERENCE).
+
+**Perception** (pi0.5). The target plate xy error had median .42 cm and max .82 cm, with the side right on 240 of 240. The cleared-to plate had a per-task median of .30-.49 cm and a max of .82 cm, with the side right on 240 of 240. Onset held-mug agreement with the oracle was Hp .995 of 367 onsets and Hc .991 of 337. The fallback never ran.
+
+**C1 (reference planner):** K1 .900, K2 1.00, N1 .583, N2 1.00. N1-N2 is .792, so **C1 UNMET** by .008, again on the planner's N1.
+
+**Predictions** (in the row) against the outcome.
+- **I and Hp (pi0.5):**
+  - I and TESTABLE: right.
+  - Hp N1 ~.53: .450. Hp N2 ~.32: .250. Hp FIX WORKS (85%): right.
+- **Hc (pi0.5):**
+  - N1 ~.52: .450. N2 ~.45: **.100**. K2 ~.93: .967. K1+K2 ~.96: .983.
+- **Mechanism:**
+  - Fires on ≥ .90 of N2 and K2: right (1.00). Fires on ≤ .05 of K1 and N1: right (0). Kind = plate: right (1.00). Completes ~.90: .958.
+  - After the clear-away the named mug is next on ~.55 of N2: **wrong**, 8 of 55. "Same mug" ~.35: wrong, 2 of 55. The VLA mostly did nothing.
+  - The named mug is released after the clear-away on ~.50 of N2: wrong (.117).
+  - Hp named mug held after a white hold ~.40: wrong (1.00). The history had already shown this before the smoke.
+- **V1:** I gave HELPS 45%, NO CLEAR DIFFERENCE 45% and HURTS 10%. It read **HURTS**, so the prediction was wrong.
+- **V2:** FIX WORKS 44%: right, but only because N1 carries the N1+N2 gain and K stays non-inferior.
+- **V3:** BELOW BAR (65%): right. Lower bound < .50 (90%): right.
+- **Hc − Hp on K2:** NO CLEAR DIFFERENCE (65%): right.
+- **pi0:**
+  - TESTABLE: right. Hp N2 ~.08: .133. Hc N2 ~.18: .033.
+  - V1 NO CLEAR DIFFERENCE (50%): wrong (HURTS).
+  - V2 PARTIAL (50%): wrong (FIX WORKS). BELOW BAR: right.
+- **Perception:** right on all three (≥ .97 agreement, < 1 cm on both plates).
+- **C1 UNMET (60%):** right.
+
+**Checks.**
+- **Hashes.** The read found 0 hash mismatches against the row's files_sha256. The row covers the code, the states and branches, hist.json, the predictions, the seen file and the job scripts.
+- **Ledger row name.** The row is named for 4a580b6c, the commit that contains the prereg code and every file it hashes.
+- **Jobs.**
+  - Every rollout log shows the registered server command.
+  - Every Hp and Hc job logged the OWLv2 sidecar, and every client exited 0.
+  - The main jobs refuse to run without the s2_fix6 row. I submitted them only after the row file showed tag s2_fix6 and status PRE-REGISTERED S2FIX6. The read was chained afterok on every rollout and on the reference.
+
+**Reading.**
+- **Keeping the target clear does not lift N2; it lowers it.** On pi0.5, N2 falls from .250 to .100 against Hp (−.150 [−.283, −.016], CLEAR-AWAY HURTS), and N1+N2 from .350 to .275. pi0 reads the same way (−.100, HURTS).
+- **The registered FIX label is FIX WORKS on both models.** Hc − I on N1+N2 is carried by N1, where Hc and Hp are the same, and K1+K2 stays non-inferior. Against Hp, the arm adds nothing and costs N2. Every arm is BELOW BAR.
+- **The rule kept the target clear, and that helped the place:** success given a named hand-over rose from .26 (Hp) to .50 (5 of 10). But the VLA rarely reached the named mug afterwards (P took it on .167 of N2, against .967 under Hp).
+- **What this says about the VLA's second step.** Under Hp the VLA grasps the yellow-and-white mug after it has put the white mug on the LEFT plate: the trained mid-program arrangement. With the white mug on the RIGHT plate (the yellow-and-white mug's trained plate) the scene is no trained arrangement, and pi0.5 mostly stops (no new hold in 40 of 55 episodes). On K2 the same rule puts the white mug on the left plate, and the VLA continues as trained (58 of 60). So the second grasp is triggered by the trained intermediate scene, not by the instruction. This is §57's "program continues" read from the other side. Together with §64, it means the VLA's grasp sequence follows the scene's trained arrangement at both steps: return the white mug to its start, and the VLA grasps it again; move it to the non-trained plate, and the VLA stops.
+- **For N2, a fix has to take the named mug without the VLA's trained second step.** That could be an object-blind pick of the named mug, or a front end that moves the grasp (§66's views). Leaving the white mug where the VLA's program expects it, Hp's choice, is still the best scene-2 arm that adds no task information and holds the trained tasks, at .33-.48 across §63-§67.
+
+**Deviations.**
+- **Read-only change after the smoke:** the hand-over share was added to the mechanism read (see Seen). It is the registered mechanism share; the release share is reported beside it.
+- **Partitions.** The pi0.5 smoke, the selftests and the prereg ran on tail-lab. pi0.5 Hc N1+N2 (4735910) ran on tail-lab, with a 4 h limit after an 8 h request was refused there. All other main jobs ran on overcap.
+- **Requeue.** Overcap requeued pi0.5 I K1+K2 (4735899) once after both tasks had finished. The restart skipped the finished outputs. No job failed, and nothing was rerun by hand.
+- **Ledger and commits.** The row carries dirty=true, because other agents' files were uncommitted (among them `lifelong_ood/policy/backbone.py`, hashed as found; no mismatch at the read). Commits are local, on main.
+- **Login node.** No python was run and no result JSON was opened; all numbers come from SLURM logs. The row file was checked by grep for its tag, status and dirty flag.
+
+**Limits.**
+- One scene, layout O, 60 states per task, one client seed.
+- Depth and camera calibration remain privileged.
+- The clear-away's place onto the right plate uses constants fitted on the other mug. 29 of 60 cleared mugs on pi0.5 N2 ended off both plates; that still clears the target.
+- C1 is unmet by .008 (N1 .583).
