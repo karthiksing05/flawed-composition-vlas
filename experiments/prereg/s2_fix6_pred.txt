@@ -1,0 +1,46 @@
+S2FIX6 predictions (SR 67), written 2026-11-15 BEFORE any job of this probe (prep, history, states, smoke or main), and before
+experiments/s2fix6.py was finished.  Nothing of this probe has been run.
+
+Arm Hc ("keep the target clear") = SR 63's Hp plus one rule: at a hold of a mug the instruction does not name, SR 54's target-only
+place P carries it to the plate the instruction does NOT name (perceived by Hp's registration); if that plate is not available
+(both or neither plate named, or not perceived), the mug goes back to its grasp spot (SR 64's put-back); then the VLA acts again
+with the same instruction.  Cap 1 per episode.  Hp's named-mug hand-over unchanged.
+
+Facts checked before writing (SR 50's task table, s2_tasks.TASKS, results/flawed/s2/bddl/*.bddl): K1 white -> left (plate_1), K2
+yellow-and-white -> right (plate_2), N1 white -> right, N2 yellow-and-white -> left; the trained compound KC is white -> left and
+yellow-and-white -> right.  So on K2 the plate the instruction does not name (left) IS the white mug's trained plate: Hc only
+replaces the VLA's own trained first carry (SR 66: 59 of 60 white-first K2 episodes under Hp put the white mug on the left plate)
+by P's.  On N2 the unnamed plate is the right plate, so the white mug goes off N2's target.  On K1 / N1 the white mug is named; the
+rule fires only if the VLA holds another mug first (SR 64: 1 N1 episode).  No fact differed from the brief; no adaptation.
+
+What I know of the key risk before any job: SR 66's text does not give the share of Hp N2 episodes in which the named mug is grasped
+after the white mug was placed; it gives only a lower bound (every Hp N2 success needs a named hold: >= .217 in SR 66, >= .30 in SR
+63, >= .433 in SR 64).  The prep job computes it from SR 63/64/66's Hp side files (disclosed in the seen file, after these
+predictions).  SR 64: after a put-back to the grasp spot the VLA re-grasped the same white mug 240 of 240.  My expectation is that a
+white mug standing on a plate looks like the trained mid-program scene, so the VLA's next grasp is the yellow-and-white mug more
+often than after a put-back, but this is the main uncertainty.
+
+pi0.5 (60 new states, layout O; PRIMARY):
+- I: K1 ~.99, K2 ~1.00, N1 0, N2 0.  TESTABLE (95%).
+- Hp: N1 ~.53, N2 ~.32, N1+N2 ~.43, K1+K2 ~.99.  Hp FIX WORKS (85%).
+- Hc: N1 ~.52, N2 ~.45, N1+N2 ~.48; K1 ~.99, K2 ~.93, K1+K2 ~.96.
+- Mechanism: clear-away fires on >= .90 of N2 and of K2 episodes (90%), on <= .05 of K1 and N1 (85%); kind = plate on >= .95 of
+  firings; clear-away completes (P released) on ~.90 of firings.  After the clear-away on N2 the next hold is the named mug on ~.55
+  of episodes (same white mug ~.35); the named mug is released by P after the clear-away on ~.50 of N2 episodes; N2 success given
+  that ~.80.  Hp on these states: named mug held after a white hold on ~.40 of N2 episodes.
+- V1 (Hc - Hp on N2, ~+.13): CLEAR-AWAY HELPS 45%, NO CLEAR DIFFERENCE 45%, HURTS 10%.
+- V2 (Hc - I): dN lo > 0 (98%); K1+K2 non-inferiority at -.05 shown 45%.  FIX WORKS 44%, PARTIAL 54%, FAILS 2%.
+- V3 (.50 bar): MEETS BAR 35%, BELOW BAR 65%.  Bootstrap lower bound of Hc's N1+N2 success < .50 (90%).
+- Secondary Hc - Hp on K2 ~-.05: NO CLEAR DIFFERENCE 65%, COST 33%; on K1+K2 NO CLEAR DIFFERENCE 70%.
+- Episode length: K2 median +20 to +60 steps over Hp; N2 time-outs a minority (<= .25 of N2 episodes, 70%).
+
+pi0 (60 new states; SECONDARY):
+- I: K1+K2 ~.80 -> TESTABLE (75%); N 0.
+- Hp: N1 ~.42, N2 ~.08, K1+K2 ~.82; Hp FIX WORKS 50%.
+- Hc: N2 ~.18, N1 ~.42, K2 ~.68, K1+K2 ~.79.  Clear-away fires on >= .85 of N2 / K2.
+- V1: CLEAR-AWAY HELPS 40%, NO CLEAR DIFFERENCE 50%, HURTS 10%.  V2: PARTIAL 50%, FIX WORKS 40%, FAILS 10%.  V3: BELOW BAR 97%.
+
+Perception (pi0.5): onset held-mug agreement with the simulator rule >= .97 for Hp and Hc; target plate xy median < 1 cm; the
+cleared-to plate (the other perceived plate) xy median < 1 cm and side right >= .97.
+
+C1 (reference planner on the new states): N1 ~.55, N2 ~.98, N1-N2 ~.77 -> C1 MET 40%, UNMET 60%.

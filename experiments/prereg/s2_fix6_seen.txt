@@ -1,0 +1,30 @@
+S2FIX6 seen before this row (all on smoke states k 0-3 or on EXISTING outputs of SR 63/64/66; no main state k 4-63 of this probe
+has been run by any policy or by the reference planner).
+
+1. Predictions (s2_fix6_pred.txt) written first, before any job of this probe.
+2. Prep, job 4733690 (tail-lab): compile and roll syntax ok; the instruction parse on all six tasks (K1 dest right, K2 dest left, N1
+   dest left, N2 dest right, KC / NC dest None = fallback); 64 new states (seeds 970000 + k), none equal to an SR 50-66 state;
+   branches smoke / main.
+3. The key risk on EXISTING outputs (prep job, mode hist -> results/flawed/s2fix6/hist.json; SR 63/64/66 main states, arm Hp):
+   on pi0.5 N2 the first hold is the white mug on 60 of 60 in each of SR 63/64/66, and the named mug is held at a later onset on
+   60 of 60 in each; P takes it over on 59 / 59 / 60 of 60 and its release is logged on 43 / 44 / 49 of 60, but N2 success given
+   that release is only .116 / .318 / .122 (white mug on the left plate at the end on 7 / 12 / 7 of 60).  So under Hp the VLA DOES
+   grasp the named mug after it has placed the white mug; the limit is P's place onto the occupied plate.  (My prediction "named
+   mug held after a white hold on ~.40 of N2" was wrong before any run of this probe; I did not revise it.)  pi0 (SR 64/66): named
+   mug held after the white mug on 51 / 46 of 60 N2 episodes.  K2 pi0.5: white on the left plate at the end 57-59 of 60.
+4. Smoke, jobs 4733712 (pi0.5; submitted to overcap, moved to tail-lab while pending) and 4733713 (pi0, overcap), k 0-3, outputs
+   in .claude_tmp/pp/s2fix6_smoke:
+   pi0.5 I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/2/1, Hc 4/4/2/0;
+   pi0   I 4/4/0/0, Hp 4/4/2/0, Hc 4/4/2/0;
+   reference planner 2/4/2/4.
+   Clear-away: fired on 4/4 K2 and 4/4 N2 on both models, never on K1 / N1; always the white mug, always kind = plate.  K2: the
+   white mug ended on the left plate after 7 of 8 (1 pi0 abort, then the VLA kept it), and the VLA then held the named mug on 8 of
+   8 (P took it; K2 8/8).  N2: 6 of 8 completed (2 aborts with the mug tipped 44 and 69 degrees), the white mug on the right plate
+   after 4 of 8; after the clear-away the VLA held the named mug on 0 of 8 (one later hold of no mug), so N2 0/8.
+5. Selftest job 4735117 ran clean.  ONE CHANGE after the smoke, to the read only (no change to the client, the arms or the labels):
+   the mechanism read also reports the share of episodes in which P takes over the named mug after the clear-away (and success
+   given it), because a success can end an episode during P's descent, before `committed` (P's release) is logged (K2 smoke: 0 of
+   4 releases logged although 4 of 4 succeeded).  The registered mechanism share is the hand-over share; the release share is kept
+   beside it.  Hp's after-unnamed read gets the same hand-over share.  Selftest job 4735890 re-ran the read after the change.
+Nothing in the client, the rule, the states or the labels changed after the smoke.  The predictions were not revised after the
+history or the smoke.
