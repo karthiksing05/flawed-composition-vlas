@@ -1,0 +1,13 @@
+RG_COMP: what was seen before the prereg row (SR 70; m3_prereg rg_comp).  Written 2026-11-16, after the build, perception check and smoke, before any main rollout.
+
+Seen (policy-free): build jobs 4744639 (F7, k 300-344, 1 rejected), 4744640 (F6, k 400-463); assemble 4744641 failed at pcheck on a KeyError (no relational
+nouns in the template parse); fix = rg_roles cross-check also catches KeyError, rgp's binding unchanged (first and last noun by position); assemble 4751051
+(tail-lab; the overcap resubmission 4750738 was cancelled while pending) COMPLETED.  pcheck (n = 44 per F7 family, 64 F6): resolver correct 44/44 on all
+four F7 families; rc binds the referent 44/44; rgp's bound instance is the referent on .75 (relL), .25 (relR), .39 (pos), .59 (neg); bound-bowl registration
+error median .2-.5 cm (pos / neg 5 cm for rgp: the plate bowl); slot record ok 1.0, mask IoU median .987-.991, centre error .2-.4 cm; slot latches on F6_b
+(step 15 median) -- all as predicted or better.  The F6_b plate registration error median .15 cm.
+
+Seen (smoke, 4 states per family, 1 trial; jobs 4751335 pi0.5, 4751336 pi0, read 4751744; files in .claude_tmp/pp/rgc_smoke*): 0 client errors, 60 of 60 cells
+exit 0.  pi0.5: floor I on K 1.00; gates TESTABLE (SP U 1.0, NG U .75, F6 a 1.0); V1 SP / NG RC WINS, V2 NO CLEAR DIFFERENCE, V3 FIX WORKS on all three
+(n = 4: no inference).  pi0: floor TESTABLE; SP U .625, NG U .50 TESTABLE; F6 a 0.0 at n = 4 (NOT TESTABLE on smoke; the main read applies the gate on n = 64).
+Smoke point values moved no code, no arm, no gate and no prediction.  The main rollouts use the registered files br7_main / br6_main.

@@ -47,7 +47,8 @@ States: NEW.  F7: fx's two-bowl rule (fx_tasks.main's F7 loop, copied; sampler s
 (fx's rule; no seed reused from fx / f6o / f6o2).  Before drawing, both rules must reproduce fx's stored states k = 0-1.
 
 Modes (LIBERO venv, py3.8, EGL, one GPU except read):
-    python experiments/rg_comp.py build                          new states, render check -> results/flawed/rg_comp/
+    python experiments/rg_comp.py build --step f7|f6|assemble    new states (f7, f6: resumable, cached), render check; assemble
+                                                                 writes results/flawed/rg_comp/
     python experiments/rg_comp.py pcheck [--out X]               policy-free perception check on every row (resolver, rgp binding,
                                                                  registration error, memory slot record and latch)
     python experiments/rg_comp.py client --arm I|rgp|rc|f7r|mem <libero_client.py's arguments>     one rgc task per process
@@ -140,7 +141,7 @@ def rg_roles(instr):
     try:
         r = FC.roles(instr)
         assert (oe, de) == r, (instr, (oe, de), r)
-    except ValueError:
+    except (ValueError, KeyError):  # template parse has no relational nouns ("left bowl"); cross-check only where it applies
         pass
     return oe, de
 
@@ -228,8 +229,28 @@ def render6(OT, env, s, park, zc, conds):
     return bad, px
 
 
-def build(a):
-    import imageio
+CACHE7, CACHE6 = os.path.join(OUT, "cache_f7.pkl"), os.path.join(OUT, "cache_f6.pkl")
+KINDS7 = ("SP_L", "SP_R", "SP_UL", "SP_UR", "NG_P", "NG_T", "NG_UP", "NG_UT")
+FXKEY = dict(SP_L="F7_SP_relL", SP_R="F7_SP_relR", SP_UL="F7_SP_uniL", SP_UR="F7_SP_uniR", NG_P="F7_NG_pos", NG_T="F7_NG_neg",
+             NG_UP="F7_NG_uniP", NG_UT="F7_NG_uniT")
+
+
+def _pload(p):
+    import pickle
+    if not os.path.exists(p):
+        return None
+    with open(p, "rb") as fh:
+        return pickle.load(fh)
+
+
+def _psave(p, obj):
+    import pickle
+    with open(p + ".tmp", "wb") as fh:
+        pickle.dump(obj, fh)
+    os.replace(p + ".tmp", p)
+
+
+def _setup():
     import fx_tasks as FT
     import f6o_tasks as OT
     import f6o2_tasks as O2
@@ -239,48 +260,145 @@ def build(a):
     fx = json.load(open(FT.META, encoding="utf-8"))
     f6 = json.load(open(OT.META, encoding="utf-8"))
     n2 = json.load(open(os.path.join(ROOT, "results", "flawed", "n2_tasks.json"), encoding="utf-8"))
-    TX = {t["key"]: t for t in fx["tasks"]}
     mov4 = n2["movable"]
-    centre_p = np.array(n2["training"]["centre"])[mov4.index("plate_1")]
     c = n2["constraints"]
-    lo, hi = np.array(c["box"][0]) - FT.BOX_EXTRA, np.array(c["box"][1]) + FT.BOX_EXTRA
-    fixp, sf = np.array(c["fixture_xy"]), c["stove_front_world"]
-    C = dict(FT=FT, lo=lo, hi=hi, fixp=fixp, sf=sf)
-    checks = {}
-    kinds7 = ("SP_L", "SP_R", "SP_UL", "SP_UR", "NG_P", "NG_T", "NG_UP", "NG_UT")
-    fxkey = dict(SP_L="F7_SP_relL", SP_R="F7_SP_relR", SP_UL="F7_SP_uniL", SP_UR="F7_SP_uniR", NG_P="F7_NG_pos", NG_T="F7_NG_neg",
-                 NG_UP="F7_NG_uniP", NG_UT="F7_NG_uniT")
+    return dict(FT=FT, OT=OT, O2=O2, fx=fx, f6=f6, TX={t["key"]: t for t in fx["tasks"]}, mov4=mov4,
+                centre_p=np.array(n2["training"]["centre"])[mov4.index("plate_1")],
+                lo=np.array(c["box"][0]) - FT.BOX_EXTRA, hi=np.array(c["box"][1]) + FT.BOX_EXTRA,
+                fixp=np.array(c["fixture_xy"]), sf=c["stove_front_world"])
 
-    # ---- F7: reproduce fx k = 0-1, then new k (no covers installed yet)
+
+def build_f7(X):
+    """F7 states, resumable: every candidate's outcome is cached (a resumed run continues on a fresh env; recorded)."""
+    FT, TX = X["FT"], X["TX"]
+    C = dict(FT=FT, lo=X["lo"], hi=X["hi"], fixp=X["fixp"], sf=X["sf"])
+    cache = _pload(CACHE7) or dict(checks={}, acc=[], rej=[], next_k=F7_K0, resumed=0)
     env = FT.make_env(os.path.join(ROOT, TX["F7_SP_relL"]["bddl"]))
     env.seed(0)
-    rep = {}
-    for k in (0, 1):
-        st, _ = f7_one(env, k, C)
-        for kd in kinds7:
-            ref = np.load(os.path.join(FT.ST, "fx_%d.npy" % TX[fxkey[kd]]["tid"]))[k]
-            rep[f"{kd}_k{k}"] = float(np.abs(st[kd] - ref).max())
-    checks["reproduce_fx_F7_k0_1_max_abs_diff"] = rep
-    print(f"[rgc] F7 reproduce fx k 0-1: max |diff| {max(rep.values()):.3g} ({rep})", flush=True)
-    assert max(rep.values()) <= 1e-6, rep
-    stored7 = {kd: np.load(os.path.join(FT.ST, "fx_%d.npy" % TX[fxkey[kd]]["tid"])) for kd in kinds7}
-    acc7, rej7 = [], []
-    for k in range(F7_K0, F7_K0 + N_CAND7):
+    if not cache["checks"]:
+        rep = {}
+        for k in (0, 1):
+            st, _ = f7_one(env, k, C)
+            for kd in KINDS7:
+                ref = np.load(os.path.join(FT.ST, "fx_%d.npy" % TX[FXKEY[kd]]["tid"]))[k]
+                rep[f"{kd}_k{k}"] = float(np.abs(st[kd] - ref).max())
+        print(f"[rgc] F7 reproduce fx k 0-1: max |diff| {max(rep.values()):.3g}", flush=True)
+        assert max(rep.values()) <= 1e-6, rep
+        cache["checks"]["reproduce_fx_F7_k0_1_max_abs_diff"] = rep
+        _psave(CACHE7, cache)
+    else:
+        cache["resumed"] += 1
+        print(f"[rgc] F7 resumed at k {cache['next_k']} with {len(cache['acc'])} accepted", flush=True)
+    stored7 = {kd: np.load(os.path.join(FT.ST, "fx_%d.npy" % TX[FXKEY[kd]]["tid"])) for kd in KINDS7}
+    acc7, rej7 = cache["acc"], cache["rej"]
+    for k in range(cache["next_k"], F7_K0 + N_CAND7):
         if len(acc7) == N_SMOKE + N7_MAIN:
             break
         try:
             st, lay = f7_one(env, k, C)
+            if any(np.allclose(st[kd], o) for kd in KINDS7 for o in stored7[kd]) or \
+                    any(np.allclose(st["SP_L"], x["st"]["SP_L"]) for x in acc7):
+                rej7.append([k, "duplicate"])
+            else:
+                acc7.append(dict(k=k, st=st, lay=lay))
+                print(f"[rgc] F7 accepted k {k} ({len(acc7)}): sep {lay['sep']:.3f}", flush=True)
         except AssertionError as ex:
             rej7.append([k, str(ex)[:200]])
-            continue
-        if any(np.allclose(st[kd], o) for kd in kinds7 for o in stored7[kd]) or \
-                any(np.allclose(st["SP_L"], x["st"]["SP_L"]) for x in acc7):
-            rej7.append([k, "duplicate"])
-            continue
-        acc7.append(dict(k=k, st=st, lay=lay))
-        print(f"[rgc] F7 accepted k {k} ({len(acc7)}): sep {lay['sep']:.3f}", flush=True)
+        cache["next_k"] = k + 1
+        _psave(CACHE7, cache)
     env.close()
     assert len(acc7) == N_SMOKE + N7_MAIN, f"F7: only {len(acc7)} accepted; rejected {rej7}"
+    cache["done"] = True
+    _psave(CACHE7, cache)
+    print("[rgc] F7 done", flush=True)
+
+
+def build_f6(X):
+    """F6 states (fam + disp), f6o's covers, parks and render check, resumable as build_f7."""
+    FT, OT, O2, fx, f6, TX = X["FT"], X["OT"], X["O2"], X["fx"], X["f6"], X["TX"]
+    mov4, centre_p, lo, hi, fixp, sf = X["mov4"], X["centre_p"], X["lo"], X["hi"], X["fixp"], X["sf"]
+    bddl6 = os.path.join(ROOT, TX["F6_fam_vis"]["bddl"])
+    fam0, disp0 = np.load(os.path.join(FT.ST, "fx_0.npy")), np.load(os.path.join(FT.ST, "fx_2.npy"))
+    cache = _pload(CACHE6)
+    ks6 = list(range(F6_K0, F6_K0 + N_CAND6))
+    if cache is None:
+        env = FT.make_env(bddl6)
+        env.seed(0)
+        assert fx["tasks"][0]["states"] == "F6_fam" and fx["tasks"][2]["states"] == "F6_disp"
+        fr = [FT.sampled(env, FT.BASE6 + k) for k in range(FT.N)]            # fx's order: every fam state first, then disp
+        dr = [O2.displace(env, fr[k], k, mov4, centre_p, lo, hi, fixp, sf)[0] for k in (0, 1)]
+        rep6 = dict(fam=float(np.abs(np.stack(fr) - fam0).max()), disp=float(np.abs(np.stack(dr) - disp0[:2]).max()))
+        print(f"[rgc] F6 reproduce fx k 0-1: {rep6}", flush=True)
+        assert rep6["fam"] == 0.0 and rep6["disp"] <= 1e-6, rep6
+        famN = {k: FT.sampled(env, FT.BASE6 + k) for k in ks6}
+        dispN, plateN = {}, {}
+        for k in ks6:
+            dispN[k], plateN[k] = O2.displace(env, famN[k], k, mov4, centre_p, lo, hi, fixp, sf)
+        env.close()
+        cache = dict(checks=dict(reproduce_fx_F6_k0_1_max_abs_diff=rep6), famN=famN, dispN=dispN, plateN=plateN, acc=[], rej=[],
+                     next_i=0, resumed=0)
+        _psave(CACHE6, cache)
+        print(f"[rgc] F6 drew {len(ks6)} candidates", flush=True)
+    else:
+        cache["resumed"] += 1
+        print(f"[rgc] F6 resumed at candidate {cache['next_i']} with {len(cache['acc'])} accepted", flush=True)
+    famN, dispN, plateN = cache["famN"], cache["dispN"], cache["plateN"]
+    CV = f6["cover"]
+    rc, zc, r_plate = CV["radius"], CV["zc"], f6["checks"]["plate_extent"]["r_xy_max"]
+    OT.install(rc, CV["half_h"], CV["n"])
+    env = FT.make_env(bddl6)
+    env.seed(0)
+    stored6 = [fam0, disp0, np.load(os.path.join(O2.ST, "f6o2_0.npy"))]
+    acc6, rej6 = cache["acc"], cache["rej"]
+    for i in range(cache["next_i"], len(ks6)):
+        if len(acc6) == N_SMOKE + N6_MAIN:
+            break
+        k = ks6[i]
+        cache["next_i"] = i + 1
+        sd, sfm = dispN[k], famN[k]
+        if sd is None:
+            rej6.append([k, "no displaced plate"])
+            continue
+        if any(np.allclose(x, o) for x in (sd, sfm) for S_ in stored6 for o in S_) or \
+                any(np.allclose(sd, y["disp"]) or np.allclose(sfm, y["fam"]) for y in acc6):
+            rej6.append([k, "duplicate"])
+            continue
+        try:
+            pd = OT.park_spots(env, sd, rc, r_plate, centre_p, mov4, lo, hi, fixp, sf, np.random.default_rng(OT.PARK_SEED + 100 + k))
+            pf = OT.park_spots(env, sfm, rc, r_plate, centre_p, mov4, lo, hi, fixp, sf, np.random.default_rng(OT.PARK_SEED + k))
+        except AssertionError as ex:
+            rej6.append([k, "no park spots: " + str(ex)[:200]])
+            continue
+        bad_d, px_d = render6(OT, env, sd, pd, zc, ("a", "b"))
+        bad_f, px_f = render6(OT, env, sfm, pf, zc, ("a",))
+        if bad_d or bad_f:
+            rej6.append([k, "render: " + str((bad_d + bad_f)[:3])[:300]])
+        else:
+            acc6.append(dict(k=k, disp=sd, fam=sfm, park_d=pd, park_f=pf, plate_xy=np.asarray(plateN[k]).tolist(),
+                             shift=float(np.linalg.norm(np.asarray(plateN[k]) - centre_p)), px=dict(disp=px_d, fam=px_f)))
+            print(f"[rgc] F6 accepted k {k} ({len(acc6)}): shift {acc6[-1]['shift']:.3f}", flush=True)
+        _psave(CACHE6, cache)
+    env.close()
+    assert len(acc6) == N_SMOKE + N6_MAIN, f"F6: only {len(acc6)} accepted; rejected {rej6}"
+    cache["done"] = True
+    _psave(CACHE6, cache)
+    print("[rgc] F6 done", flush=True)
+
+
+def build(a):
+    X = _setup()
+    if a.step == "f7":
+        return build_f7(X)
+    if a.step == "f6":
+        return build_f6(X)
+    import imageio
+    FT, OT, TX, f6 = X["FT"], X["OT"], X["TX"], X["f6"]
+    c7, c6 = _pload(CACHE7), _pload(CACHE6)
+    assert c7 and c7.get("done") and c6 and c6.get("done"), "run --step f7 and --step f6 first"
+    acc7, rej7, acc6, rej6 = c7["acc"], c7["rej"], c6["acc"], c6["rej"]
+    checks = dict(c7["checks"], **c6["checks"])
+    checks["resumed"] = dict(f7=c7["resumed"], f6=c6["resumed"])
+    CV = f6["cover"]
     # the flip pairs give the policy the same images (fx's check, smoke rows)
     env = FT.make_env(os.path.join(ROOT, TX["F7_SP_relL"]["bddl"]))
     env.seed(0)
@@ -307,58 +425,6 @@ def build(a):
     imageio.imwrite(os.path.join(OUT, "check_F7.png"), np.concatenate(rows, axis=0))
     print(f"[rgc] F7 flip differences {diffs}", flush=True)
 
-    # ---- F6: reproduce fx k = 0-1 (fam first, then disp, as fx), then new k
-    bddl6 = os.path.join(ROOT, TX["F6_fam_vis"]["bddl"])
-    env = FT.make_env(bddl6)
-    env.seed(0)
-    fam0, disp0 = np.load(os.path.join(FT.ST, "fx_0.npy")), np.load(os.path.join(FT.ST, "fx_2.npy"))
-    assert fx["tasks"][0]["states"] == "F6_fam" and fx["tasks"][2]["states"] == "F6_disp"
-    fr = [FT.sampled(env, FT.BASE6 + k) for k in range(FT.N)]                # fx's order: every fam state first, then disp
-    dr = [O2.displace(env, fr[k], k, mov4, centre_p, lo, hi, fixp, sf)[0] for k in (0, 1)]
-    rep6 = dict(fam=float(np.abs(np.stack(fr) - fam0).max()), disp=float(np.abs(np.stack(dr) - disp0[:2]).max()))
-    checks["reproduce_fx_F6_k0_1_max_abs_diff"] = rep6
-    print(f"[rgc] F6 reproduce fx k 0-1: {rep6}", flush=True)
-    assert rep6["fam"] == 0.0 and rep6["disp"] <= 1e-6, rep6
-    ks6 = list(range(F6_K0, F6_K0 + N_CAND6))
-    famN = {k: FT.sampled(env, FT.BASE6 + k) for k in ks6}
-    dispN, plateN = {}, {}
-    for k in ks6:
-        dispN[k], plateN[k] = O2.displace(env, famN[k], k, mov4, centre_p, lo, hi, fixp, sf)
-    env.close()
-    CV = f6["cover"]
-    rc, zc, r_plate = CV["radius"], CV["zc"], f6["checks"]["plate_extent"]["r_xy_max"]
-    OT.install(rc, CV["half_h"], CV["n"])
-    env = FT.make_env(bddl6)
-    env.seed(0)
-    stored6 = [fam0, disp0, np.load(os.path.join(O2.ST, "f6o2_0.npy"))]
-    acc6, rej6 = [], []
-    for k in ks6:
-        if len(acc6) == N_SMOKE + N6_MAIN:
-            break
-        sd, sfm = dispN[k], famN[k]
-        if sd is None:
-            rej6.append([k, "no displaced plate"])
-            continue
-        if any(np.allclose(x, o) for x in (sd, sfm) for S_ in stored6 for o in S_) or \
-                any(np.allclose(sd, y["disp"]) or np.allclose(sfm, y["fam"]) for y in acc6):
-            rej6.append([k, "duplicate"])
-            continue
-        try:
-            pd = OT.park_spots(env, sd, rc, r_plate, centre_p, mov4, lo, hi, fixp, sf, np.random.default_rng(OT.PARK_SEED + 100 + k))
-            pf = OT.park_spots(env, sfm, rc, r_plate, centre_p, mov4, lo, hi, fixp, sf, np.random.default_rng(OT.PARK_SEED + k))
-        except AssertionError as ex:
-            rej6.append([k, "no park spots: " + str(ex)[:200]])
-            continue
-        bad_d, px_d = render6(OT, env, sd, pd, zc, ("a", "b"))
-        bad_f, px_f = render6(OT, env, sfm, pf, zc, ("a",))
-        if bad_d or bad_f:
-            rej6.append([k, "render: " + str((bad_d + bad_f)[:3])[:300]])
-            continue
-        acc6.append(dict(k=k, disp=sd, fam=sfm, park_d=pd, park_f=pf, plate_xy=np.asarray(plateN[k]).tolist(),
-                         shift=float(np.linalg.norm(np.asarray(plateN[k]) - centre_p)), px=dict(disp=px_d, fam=px_f)))
-        print(f"[rgc] F6 accepted k {k} ({len(acc6)}): shift {acc6[-1]['shift']:.3f}", flush=True)
-    env.close()
-    assert len(acc6) == N_SMOKE + N6_MAIN, f"F6: only {len(acc6)} accepted; rejected {rej6}"
     checks["rejected_F7"], checks["rejected_F6"] = rej7, rej6
 
     # ---- write
@@ -1171,6 +1237,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("mode", choices=("build", "pcheck", "read"))
     ap.add_argument("--phase", default="main", choices=("smoke", "main"))
+    ap.add_argument("--step", default="assemble", choices=("f7", "f6", "assemble"))
     ap.add_argument("--roll", default="")
     ap.add_argument("--out", default="")
     ap.add_argument("--models", default="pi05+pi0")
