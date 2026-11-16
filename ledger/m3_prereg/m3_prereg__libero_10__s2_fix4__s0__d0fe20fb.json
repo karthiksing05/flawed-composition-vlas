@@ -1,0 +1,371 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_10",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: S2FIX4, scene 2 (LIVING_ROOM_SCENE5) on NEW states, layout O: SR 63's named-mug hand-over with perception (Hp) plus a put-back of any held mug the instruction does not name (Hb), on frozen pi0.5 (PRIMARY), pi0 and GR00T (docs/SCAFFOLD_RESULTS.md 64)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4729245",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "d0fe20fb9d05851a31f24bac5ec5ed8128191983",
+  "short": "d0fe20fb"
+ },
+ "keys": {},
+ "metrics": {
+  "arm_Hb": "(this file, `client --arm Hb`): Hp plus PUT-BACK.\n  - The instruction text (the prompt the VLA receives) is parsed for the mug names it contains (NAME_PHRASES, longest phrase first,\n    each match removed before the next is searched) -> NAMED.  On the four single-step tasks NAMED = {the task's object} (asserted).\n  - Hold events, detector, perception, target registration, the held-mug rule and P are Hp's, unchanged (s2fix3.Percept, ProprioHeld,\n    s2fix.Place with the registered target).\n  - At a detector onset with no hand-over committed and neither P nor a put-back active, the perceived held mug m decides:\n      m in NAMED                         -> P takes over (Hp's rule);\n      m not None, m not in NAMED, and\n      fewer than PB_CAP put-backs so far -> PUT-BACK (below), then control returns to the VLA with the same instruction;\n      otherwise (m None or cap reached)  -> the VLA keeps control (Hp's rule).\n  - PUT-BACK (scripted, proprioception only): the set-down point is the hand position at its lowest point since the executed gripper\n    command last turned to close (the same z_min ProprioHeld tracks), i.e. where the mug was grasped.  Phases (fa1g_plan.ctrl, the hand\n    rotation held at the onset's, rng default_rng(seed_base + 30)):\n      0 carry    to (grasp x, grasp y, max(onset z, grasp z + PB_CLEAR)), gripper closed (<= PB_CARRY steps, or err < .015)\n      1 descend  to the grasp point + PB_DZ in z (<= PB_DESC steps, or err < .008)\n      2 open     OPEN_STEPS (12) steps\n      3 retreat  PB_UP (10 cm) straight up (<= PB_RETREAT steps, or err < .015) -> done\n    During 0-1, if the hold detector is off for 3 consecutive steps (the mug was dropped), the put-back aborts and the VLA acts again.\n    Every started put-back counts toward PB_CAP (2 per episode), so an episode cannot loop.\n  - For an instruction that names both mugs (the scene's trained compound KC, or the swapped compound NC), NAMED holds every mug the\n    rule can see except the red distractor, so PUT-BACK never fires on either mug by construction.  K1 and K2 are single-step: each\n    names one mug, so on K2 the rule does fire at the trained program's first hold (the white mug).  (KC / NC are not run here.)\n  - What Hb reads beyond Hp: the instruction's text (which the VLA already receives; Hp already reads the named mug, as the task's\n    object) and the hand's own position at the grasp (proprioception; Hp's ProprioHeld already reads the hand height).  No object pose\n    is read by the put-back; no simulator read is added (depth and camera calibration stay rgp's remaining privilege, as in Hp).\n  - The simulator oracle (H's held-mug rule, Hb's decision on the oracle's held mug, and after every put-back the mug's displacement\n    from its start position and its tilt) is LOGGED in the side file, never fed.",
+  "design": {
+   "bar": 0.5,
+   "base": 950000,
+   "br_base": 40000000,
+   "dev": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+   ],
+   "floor": 0.7,
+   "held_r": 0.08,
+   "hp_constants": {
+    "assign": "perm",
+    "cal": {
+     "mug": [
+      -0.0336,
+      0.0017,
+      -0.0783
+     ],
+     "plate": [
+      0.0072,
+      0.0,
+      -0.0063
+     ]
+    },
+    "plate_loc": "edge_radius",
+    "plate_r": 0.0554,
+    "queries": [
+     "a white mug",
+     "a yellow and white mug",
+     "a red mug",
+     "a plate"
+    ],
+    "side_rule": "world_y_min"
+   },
+   "main": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+   ],
+   "name_phrases": [
+    [
+     "white_yellow_mug_1",
+     "yellow and white mug"
+    ],
+    [
+     "porcelain_mug_1",
+     "white mug"
+    ],
+    [
+     "red_coffee_mug_1",
+     "red mug"
+    ]
+   ],
+   "ni_margin": -0.05,
+   "off_abort": 3,
+   "open_steps": 12,
+   "pb_cap": 2,
+   "pb_carry": 60,
+   "pb_clear": 0.03,
+   "pb_desc": 40,
+   "pb_dz": 0.01,
+   "pb_retreat": 30,
+   "pb_up": 0.1,
+   "smoke": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  "deviations_planned": "Layout O only.  Client seed 7 and server seed 13 kept from SR 50-63 (state and branch seeds are new).  Hp runs SR 63's client unchanged; Hp and Hb share SR 63's perception constants (fitted on SR 62's states).  pi0 and GR00T run Hp (SR 63 ran H on them).  Depth and camera calibration stay privileged.  Ledger tree dirty (other agents' files).",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix4_job.sh": "ff418bb5905eaec0900a0aff2422f9fbbd1952934426b9b35f03618242073473",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix4_prep.sh": "283406590315f15ad8f009cd385ed49cf6b16f38614362637784b15f80d68e62",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix4_read.sh": "545a7d71eec33443e728b0f9ad4102cde95ea8d9c85bab67ace7f64cacee083b",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix4_ref.sh": "4732ae8085ba49d439fc926dcf048f06fda4992b2456e75d9352de918d29301f",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/s2fix4_smoke.sh": "3af3bc4ccb83f2691be1499a58cf6c96524a42ee1a0cf3dc9df30d45f3dc7c97",
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fa1b_common.py": "ddf11055f9a15658b771a2922d6b9003d18a4600256262d9306252c4cb749758",
+   "experiments/fa1g_plan.py": "bc6d30bb4c1da0f3e66495b8a228246ecd15f4fa3c5224e1b06b9e0f5dd600a6",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_atlas.py": "6d861b04ec8a95d8470d0f6f5011df1ca4fc01d5eee37cbf3f2d0c3a27f864b3",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "experiments/prereg/s2_fix4.py": "c4d309beb797e570c23e139a165c3bf73a0af9b59a9a0d4e0b25ff8b68be264c",
+   "experiments/prereg/s2_fix4_pred.txt": "7c553b8ec8b96e50defd82eb234104457c1fc3a247b66d45f56baa4684a9488a",
+   "experiments/prereg/s2_fix4_seen.txt": "b11230d1becc6bb53ca86fe2079fa899ebcb8a15a3cc4a2db93bb9ac203d0839",
+   "experiments/s2.py": "100936370710f40bb6583140a8be06d0f43ffd9398f44a432cc773438b56828b",
+   "experiments/s2_tasks.py": "04b33cc98b3a45ceca175c9fd3d4ad0307efa5a4cbe78db222b5c8d32b224860",
+   "experiments/s2cue.py": "21cd27ba9d24d276db1d8fcfae413c595dd5a6c5db85f41da8931aa1e7b23582",
+   "experiments/s2cue3.py": "97231fc2679d6060a9155ff8dab45620cc8612ebf103403a7826e53477d96dcf",
+   "experiments/s2fix.py": "a80db43d06cf3c7962015d0fd5f3dc6c715d63f19785f9cc8092f31b90b3740f",
+   "experiments/s2fix2.py": "c9ff37c216f0031a63fd36d9a8c72389f9fedfd0b181d0e83867d357a4e2577f",
+   "experiments/s2fix3.py": "245f909fe6dc2e5e307cd232fbdbb6be5ebd7fac2dba96fb05ceee4940e6a521",
+   "experiments/s2fix3_det.py": "ef9318a9761382139c83780ea10f53c556a7454517496a12630f00b19898827c",
+   "experiments/s2fix4.py": "2edf53f72e19fab94d6b177ead085cfc3b38547a87aad16828c7266c367ff5a0",
+   "experiments/s2fix4_roll.sh": "d534c5f4727847aeb010a72a9b48e01e763488fc738616f33d2aabcb038cda5c",
+   "experiments/sc_pu.py": "0a78fd36d68817ee324f9120e69cc281a7ca11961e3c2a3fa5a75a7192c00964",
+   "experiments/sc_rv.py": "1d1d6fb977524a7254b42ff889f80d7785c2bfc302c96fca5629c3da0b3be265",
+   "experiments/serve_guided.py": "00fb8826f7bb4cf3efc16c32851d7778a19a3ebe079d091120a51dfad3baf52b",
+   "lifelong_ood/policy/backbone.py": "1ed870a73c886eb3207b338353846cc2500538ccc0c8be71b53ac12546253173",
+   "lifelong_ood/policy/parts_flow.py": "a8fda7014a9a9b7072bf3c24432e7579005c0bd8339319d213f9f3bef81db626",
+   "lifelong_ood/policy/serve.py": "0ee7059a283444a08082b81d74d9af4fff8e3cb5854b00c67bef2898b9e90c58",
+   "lifelong_ood/policy/where.py": "5af0ddd390f6e833358af466b2862ce3cf56d24688c1e80e0ba1ca3d4005dd90",
+   "results/flawed/s2/keypoints.json": "71ee68ad75e1956b30de9bc3a8b7277f615865186e072dec99de6e64c6575a51",
+   "results/flawed/s2/s2_tasks.json": "7a9d0b7dd49ee3278baad73fec2bd4e571ae584b66d7b43c7da2b4276dee9df7",
+   "results/flawed/s2fix4/O/s2_living_0.npy": "5f8f2ecc9c83b31773c9e10e8adad47682880b6f7629daeed1647c1f0afaac43",
+   "results/flawed/s2fix4/O/s2_living_1.npy": "5f8f2ecc9c83b31773c9e10e8adad47682880b6f7629daeed1647c1f0afaac43",
+   "results/flawed/s2fix4/O/s2_living_2.npy": "5f8f2ecc9c83b31773c9e10e8adad47682880b6f7629daeed1647c1f0afaac43",
+   "results/flawed/s2fix4/O/s2_living_3.npy": "5f8f2ecc9c83b31773c9e10e8adad47682880b6f7629daeed1647c1f0afaac43",
+   "results/flawed/s2fix4/branches_dev.json": "671ab953c88ae6407112bd8eb19bba97951962ede71adfcd53b5aa2bb342d3e8",
+   "results/flawed/s2fix4/branches_main.json": "51b8a21670a8f8d4ef112066113318a2398586d190609e67ab2d26ac6c83b056",
+   "results/flawed/s2fix4/branches_smoke.json": "4f539a6d54880a67f3057a605c51022c41414feee9319edce85e957904e213f0"
+  },
+  "information": "Hb reads, beyond Hp, (a) the instruction text, parsed for the mug names it contains (the VLA receives the same text, and Hp already reads the named mug as the task's object), and (b) the hand's position at its lowest point since the gripper closed (proprioception, the z_min ProprioHeld already tracks) as the set-down point.  The put-back reads no object pose.  No simulator read is added: as in Hp, only the agentview depth render and the camera model (rgp's remaining privilege).  The simulator oracle is logged, never fed.",
+  "k2_note": "K1 and K2 are single-step instructions that name one mug each; on K2 the rule fires at the trained program's first hold (the white mug).  Only the compounds KC / NC name both mugs, so only there the rule never fires by construction; KC / NC are not run.",
+  "labels": "NEW states (LIBERO sampler on K1's BDDL, seeds 950000 + k, none equal to an SR 50-63 state), main k = 4-63 (60), branches seed_base 40000000 + 1000 k; layout O; tasks K1, K2, N1, N2; client seed 7, --bind track.  Models: frozen pi0.5 (PRIMARY; pp_serve_purify --model pi05 --mode intact --comp= --seed 13), frozen pi0 (serve_guided --mode ours --seed 13, BACKBONE_CONFIG=pi0_libero) and frozen GR00T (pp_serve_purify --model groot --mode intact --comp= --seed 13), SECONDARY.  Arms per model: I (s2.py client), Hp (SR 63's arm, s2fix3.py client --arm Hp, unchanged), Hb (Hp + PUT-BACK, s2fix4.py client --arm Hb, cap 2 per episode).  Success = the BDDL goal.  Matrices [task, state].  Paired bootstrap over states, tasks fixed (s2.boot2_states, B = 2000, numpy default_rng(0); CI = 2.5 / 97.5).  Per model, three registered labels: (1) PUT-BACK: Hb - Hp on N2: PUT-BACK HELPS iff lo > 0; PUT-BACK HURTS iff hi < 0; else NO CLEAR DIFFERENCE.  (2) FIX (SR 62's rule): dN = Hb - I on N1+N2, dK = Hb - I on K1+K2; FIX WORKS iff dN lo > 0 AND dK lo > -.05 (NON-INFERIOR at margin -.05); PARTIAL iff exactly one holds; FAILS iff neither.  (3) BAR: MEETS BAR iff Hb's N1+N2 success >= .50 AND dN lo > 0 (SR 54's FIXED); else BELOW BAR.  PRIMARY: the three labels on pi0.5.  SR 50's floor on every model: TESTABLE iff its I K1+K2 success >= .70 on these states; a NOT TESTABLE model's labels read NOT TESTABLE with the rule's outcome descriptive.  SECONDARY: Hp's FIX label per model (SR 63's replication); Hb - Hp on N1+N2, on K1+K2 and on K2 (PUT-BACK COSTS iff hi < 0; else NO CLEAR DIFFERENCE or GAINS iff lo > 0).  Descriptive: put-backs per task (fired, done, aborted, steps, the mug's displacement from its start and tilt per the logged oracle), the held mug at the next onset after a put-back, episodes reaching the cap, episode length, perception accuracy (SR 63's accuracy() on Hp and Hb side files), the final plate of each mug.  C1: the reference planner (s2.plan_episode, unchanged) on the main states; MET iff its N1-N2 success >= .80.",
+  "prediction": "S2FIX4 predictions (SR 64), written 2026-11-15 after the code and BEFORE any job of this probe (states, put-back development\ncheck, smoke or main).  Nothing of this probe has been run.\n\nMechanism I expect: pi0.5 reads no state, so after a put-back the scene looks almost as it did at the start, and the trained program\n(position routing, SR 57) grasps the white mug again.  The put-back then mostly spends time.\n\npi0.5 (60 new states, layout O):\n- I: K1 ~.99, K2 ~1.00, N1 0, N2 0.  TESTABLE (95%).\n- Hp: N1 ~.60, N2 ~.30, K1+K2 ~.99 (SR 63 replicates).  Hp FIX WORKS (85%).\n- Hb, put-back mechanics: fires on ~.95 of N2 and K2 episodes (the white mug first) and on <= .05 of K1 / N1; completes (done) on\n  >= .90 of put-backs; the mug ends within 3 cm of its start on >= .80; tipped <= .05.\n- Hb, after a put-back the next hold is the named mug on ~.20 of put-backs (the same white mug on ~.75); cap reached on ~.60 of N2.\n- Hb: N1 ~.58, N2 ~.33, N1+N2 ~.46; K1 ~.98, K2 ~.85 (time lost to put-backs and re-grasps under the 400-step limit), K1+K2 ~.91.\n- Hb - Hp on N2: ~+.03.  PUT-BACK HELPS 25%, NO CLEAR DIFFERENCE 65%, PUT-BACK HURTS 10%.\n- Hb FIX label: FIX WORKS 40%, PARTIAL 55% (through K non-inferiority NOT SHOWN, the K2 time cost), FAILS 5%.\n- BAR (N1+N2 >= .50): BELOW BAR 75%.\n- Secondary Hb - Hp on K2: ~-.15, PUT-BACK COSTS 55%.\n\npi0 (60 new states):\n- I: K1+K2 ~.80 -> TESTABLE (70%); N 0.\n- Hp: N1 ~.45, N2 ~.03, K1+K2 ~.83; FIX WORKS 60%.\n- Hb: N2 ~.05; Hb - Hp on N2 NO CLEAR DIFFERENCE (80%); Hb FIX label FIX WORKS 40%, PARTIAL 50%; BELOW BAR 95%.\n\nGR00T (60 new states):\n- I: K1+K2 ~.50 -> NOT TESTABLE (80%); N ~0.\n- Hp: N1 ~.40, N2 ~.02.  Hb: N2 ~.04; rule outcome on put-back NO CLEAR DIFFERENCE (85%); BELOW BAR (95%).\n\nPerception (Hp and Hb on pi0.5): onset held-mug agreement with the simulator rule >= .97; target xy median < 1 cm (SR 63).\n\nC1 (reference planner on the new states): N1 ~.60, N2 ~.98, N1-N2 ~.79 -> C1 MET 45%, UNMET 55%.",
+  "runs": [
+   [
+    "pi05",
+    "O",
+    "I",
+    "PRIMARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi05",
+    "O",
+    "Hp",
+    "PRIMARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi05",
+    "O",
+    "Hb",
+    "PRIMARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi0",
+    "O",
+    "I",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi0",
+    "O",
+    "Hp",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "pi0",
+    "O",
+    "Hb",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "groot",
+    "O",
+    "I",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "groot",
+    "O",
+    "Hp",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    "groot",
+    "O",
+    "Hb",
+    "SECONDARY",
+    [
+     0,
+     1,
+     2,
+     3
+    ]
+   ]
+  ],
+  "same_sha_as_s2_fix3_row": {
+   "experiments/fa1_common.py": true,
+   "experiments/fa1b_common.py": true,
+   "experiments/fa1g_plan.py": true,
+   "experiments/libero_client.py": true,
+   "experiments/pp_atlas.py": true,
+   "experiments/pp_serve_purify.py": true,
+   "experiments/s2.py": true,
+   "experiments/s2_tasks.py": true,
+   "experiments/s2cue.py": true,
+   "experiments/s2cue3.py": true,
+   "experiments/s2fix.py": true,
+   "experiments/s2fix2.py": true,
+   "experiments/s2fix3.py": true,
+   "experiments/s2fix3_det.py": true,
+   "experiments/sc_pu.py": true,
+   "experiments/sc_rv.py": true,
+   "experiments/serve_guided.py": true,
+   "lifelong_ood/policy/backbone.py": true,
+   "lifelong_ood/policy/parts_flow.py": true,
+   "lifelong_ood/policy/serve.py": true,
+   "lifelong_ood/policy/where.py": true,
+   "results/flawed/s2/keypoints.json": true,
+   "results/flawed/s2/s2_tasks.json": true
+  },
+  "seen": "S2FIX4 seen before this row (all on DEVELOPMENT states or smoke states k 0-3; no main state k 4-63 of this probe has been run by any\npolicy or by the reference planner).\n\n1. Predictions (s2_fix4_pred.txt) written first, before any job of this probe.\n2. Prep + development check, job 4728783 (overcap job 4728657 was cancelled while pending and resubmitted to tail-lab; it never ran).\n   The instruction parse gives NAMED = {the task's object} on K1, K2, N1 and N2, and both mugs on KC and NC.  64 new states (seeds\n   950000 + k), none equal to an SR 50-63 state.  Put-back check: frozen pi0.5, arm Hb, K2 and N2, on SR 63's states k 4-19\n   (development only; outputs in .claude_tmp/pp/s2fix4_dev).  32 of 32 put-backs completed (released and retreated), 0 aborted,\n   0 tipped (tilt 0.0 deg), displacement from the mug's start .3-6.6 cm (the second put-back drifts further).  After every put-back\n   the next hold was the same white mug (32 of 32), so every episode reached the cap.  K2 16 of 16 succeeded (median ~350 steps,\n   against ~220 for I on the smoke states).  N2 2 of 16: the named mug's hand-over starts at steps ~300-390 and P runs out of the\n   400-step limit.  Nothing was changed after this check (cap 2 and every put-back constant as written in the code before it).\n3. Smoke, jobs 4728801-4728803 (k 0-3, outputs in .claude_tmp/pp/s2fix4_smoke), read selftest 4728804 ran clean:\n   pi0.5 I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/4/2, Hb 4/3/4/0 (Hb K2 k1 timed out at 400 steps after two put-backs);\n   pi0 I 4/3/0/0, Hp 4/3/2/0, Hb 4/2/2/0; GR00T I 1/0/0/0, Hp 2/2/3/0, Hb 2/1/3/0 (one GR00T put-back aborted on a drop);\n   reference planner 4/4/4/4.  Put-backs on smoke K2: pi0.5 8 of 8 done, pi0 8 of 8, GR00T 7 of 8.\nNothing changed after the smoke.  The predictions were not revised after the development check or the smoke.",
+  "status": "PRE-REGISTERED S2FIX4",
+  "written_before": "any main (k = 4-63) rollout or reference run of this probe"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_10__s2_fix4__s0__d0fe20fb",
+ "schema": 1,
+ "script": "experiments/prereg/s2_fix4.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-16T00:05:54+00:00",
+ "stream": null,
+ "tag": "s2_fix4"
+}

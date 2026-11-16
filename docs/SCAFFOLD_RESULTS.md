@@ -4338,3 +4338,148 @@ Per task, Hp − I: N1 +.600 [+.467, +.717]; N2 +.300 [+.183, +.417]; K1 .000 [�
 - The perception constants are fitted to this scene's camera and plates. The plate rule assumes plates cut by the side borders.
 - The onset identity was checked against the simulator rule, not against contact.
 - C1 is met only at the bar.
+
+## 64. Scene 2: putting back a mug the instruction does not name (m3_prereg s2_fix4, ledger row m3_prereg__libero_10__s2_fix4__s0__d0fe20fb.json, written before any main rollout; code commit d0fe20fb, the commit the row is named for; prep and development job 4728783 (4728657 cancelled while pending), smoke jobs 4728801-4728803, selftest 4728804, prereg job 4729245; rollout jobs 4729246-4729263, reference job 4729264, read job 4729265; results/flawed/s2fix4_read.json, rollouts results/flawed/s2fix4_roll)
+
+**Question.** Under §63's Hp, N2 is the weak pairing (pi0.5 .30, pi0 .03, GR00T .02). The VLA's trained first step grasps the white mug, which N2's instruction does not name, and fills the target plate with it before the named mug is held. If every hold of an unnamed mug is undone and control goes back to the VLA, does the VLA then reach for the named mug?
+
+**Arms** (`experiments/s2fix4.py`, `s2fix4_roll.sh`; layout O; client seed 7, `--bind track`; §63's servers).
+- **I:** intact (`s2.py client`, unchanged).
+- **Hp:** §63's arm, run through §63's client unchanged (`s2fix3.py client --arm Hp`), now on all three models (§63 ran H, not Hp, on pi0 and GR00T).
+- **Hb (PRIMARY on pi0.5):** Hp plus PUT-BACK.
+  - The instruction text is parsed for the mug names it contains, longest phrase first ("yellow and white mug", then "white mug", then "red mug"). On K1, K2, N1 and N2 the parse equals the task's object (asserted).
+  - At a detector onset, the perceived held mug decides. If it is named, P takes over, as in Hp. If it is not named and fewer than 2 put-backs have run in the episode, a scripted put-back runs. Otherwise the VLA keeps control.
+  - **Put-back** (proprioception only): carry the hand back over the grasp point, descend to 1 cm above it, open for 12 steps, retreat 10 cm up, then return control to the VLA with the same instruction. The grasp point is the hand's lowest position since the gripper command last closed (the z_min that ProprioHeld already tracks). The put-back aborts if the hold detector is off for 3 steps (a drop). Every started put-back counts toward the cap of 2, so an episode cannot loop.
+  - **Where it never fires.** The brief expected K2 to name both mugs, but K1 and K2 are single-step instructions that name one mug each (§50). So the rule does fire on K2, at the trained program's first hold (the white mug). Only the compounds KC and NC name both mugs, and only there does the rule never fire, by construction. KC and NC were not run.
+- **What Hb reads beyond Hp.** Two things, neither of them new information. (a) The instruction text, which the VLA already receives; Hp already reads the named mug, as the task's object. (b) The hand's own position at the grasp, from proprioception. The put-back reads no object pose. No simulator read is added: as in Hp, only the agentview depth render and the camera model. The simulator oracle is logged and never fed.
+
+**Design.**
+- **New states:** 64 from LIBERO's sampler on K1's BDDL, seeds 950000 + k, none equal to an SR 50-63 state. k 0-3 are smoke, k 4-63 main (60). Branches use seed_base 40000000 + 1000 k.
+- **Development states** (put-back mechanics only): §63's states k 4-19.
+- Perception constants are §63's, unchanged.
+
+**Registered labels** (`s2fix4.MAPPING`). Paired bootstrap over the 60 states, tasks fixed (`s2.boot2_states`, B = 2000, default_rng(0)).
+- **PUT-BACK:** Hb − Hp on N2. PUT-BACK HELPS iff lo > 0, PUT-BACK HURTS iff hi < 0, otherwise NO CLEAR DIFFERENCE.
+- **FIX (§62's rule):** Hb − I on N1+N2 has lower CI > 0 AND Hb − I on K1+K2 has lower CI > −.05 → FIX WORKS. PARTIAL iff exactly one holds; FAILS iff neither holds.
+- **BAR:** MEETS BAR iff Hb's N1+N2 success is ≥ .50 and Hb − I on N1+N2 has lower CI > 0 (§54's FIXED); otherwise BELOW BAR.
+- **PRIMARY:** the three labels on pi0.5. The same three labels are applied to pi0 and GR00T.
+- **§50's floor on every model:** a model is TESTABLE iff its I K1+K2 ≥ .70. A NOT TESTABLE model's labels are descriptive.
+- **Secondary:** Hp's FIX label per model, and Hb − Hp on N1+N2, K1+K2 and K2.
+- **Also registered:** C1 (the reference planner's N1-N2 ≥ .80), perception accuracy against the logged oracle, and put-back descriptives.
+
+**Seen before registration** (`experiments/prereg/s2_fix4_seen.txt`).
+- **Predictions** were written first, before any job of this probe.
+- **Development check (job 4728783):** pi0.5 Hb on K2 and N2, §63's states k 4-19.
+  - All 32 put-backs completed, and none tipped a mug.
+  - After every put-back the next hold was the same white mug (32 of 32), so every episode reached the cap.
+  - K2 scored 16 of 16 at about 350 steps. N2 scored 2 of 16, because P started at steps 300-390 and ran out of the 400-step limit.
+  - Nothing was changed after this check.
+- **Smoke (k 0-3):**
+  - pi0.5: I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/4/2, Hb 4/3/4/0.
+  - pi0: I 4/3/0/0, Hp 4/3/2/0, Hb 4/2/2/0.
+  - GR00T: I 1/0/0/0, Hp 2/2/3/0, Hb 2/1/3/0.
+  - Reference planner: 4/4/4/4. The read selftest ran clean.
+- Nothing changed after the smoke, and the predictions were not revised.
+
+**Result** (60 new states per task).
+
+| model | arm | K1 | K2 | N1 | N2 | N1+N2 | K1+K2 |
+|---|---|---|---|---|---|---|---|
+| pi0.5 | I | 1.00 | 1.00 | .000 | .000 | .000 | 1.00 |
+| pi0.5 | Hp | 1.00 | 1.00 | .533 | .433 | .483 | 1.00 |
+| pi0.5 | **Hb (put-back)** | **1.00** | **.800** | **.533** | **.167** | **.350** | **.900** |
+| pi0 | I | .933 | .733 | .000 | .000 | .000 | .833 |
+| pi0 | Hp | .933 | .733 | .367 | .100 | .233 | .833 |
+| pi0 | Hb | .933 | .050 | .367 | .000 | .183 | .492 |
+| GR00T | I | .667 | .400 | .000 | .000 | .000 | .533 |
+| GR00T | Hp | .717 | .450 | .467 | .017 | .242 | .583 |
+| GR00T | Hb | .717 | .600 | .467 | .033 | .250 | .658 |
+
+| model | Hb − Hp, N2 (PUT-BACK) | Hb − I, N1+N2 / K1+K2 (FIX) | Hb N1+N2 vs .50 (BAR) |
+|---|---|---|---|
+| **pi0.5** (TESTABLE, I K 1.00) | **−.267 [−.417, −.100] PUT-BACK HURTS** | **+.350 [+.275, +.433] / −.100 [−.150, −.050] → PARTIAL** (K non-inferiority NOT SHOWN) | **.350, BELOW BAR** |
+| pi0 (TESTABLE, I K .833) | −.100 [−.183, −.033] PUT-BACK HURTS | +.183 [+.125, +.250] / −.342 [−.417, −.258] (INFERIOR) → PARTIAL | .183, BELOW BAR |
+| GR00T (NOT TESTABLE, I K .533) | +.017 [−.033, +.067] (rule: NO CLEAR DIFFERENCE) | +.250 [+.183, +.325] / +.125 [+.025, +.225] (rule: FIX WORKS) | .250 (rule: BELOW BAR) |
+
+- **Secondary, pi0.5.** Hb − Hp is −.133 [−.208, −.050] on N1+N2, −.100 [−.150, −.050] on K1+K2 and −.200 [−.300, −.100] on K2: PUT-BACK COSTS on all three. Hp − I is +.483 [+.400, +.567] on N1+N2 and .000 on K1+K2, so Hp reads FIX WORKS and §63 replicates.
+- **Secondary, pi0.** Hb − Hp on K2 is −.683 [−.800, −.567]. Hp − I is +.233 [+.158, +.317] on N and .000 [−.058, +.058] on K, so Hp reads PARTIAL: its lower bound misses the margin by .008.
+- **Secondary, GR00T** (descriptive). Hp reads FIX WORKS by the rule, and Hb − Hp on K2 is +.150 [−.033, +.333].
+
+**What the put-back did** (descriptive, logged oracle).
+- **pi0.5.** It fired on every K2 and N2 episode, 240 times in all, always on the white mug. 239 completed and 1 aborted. No mug tipped. The mug's median displacement from its start was 2.2 cm (max 6.1 cm).
+- **The next hold after a put-back was the same white mug on 240 of 240**, so every K2 and N2 episode reached the cap. Then the VLA kept the white mug and ran its trained program, as under Hp, about 120 steps later.
+- **pi0.5, K2.** The median episode length rose from 225 steps (Hp) to 360. 12 of 60 episodes timed out.
+- **pi0.5, N2.** P took over in only 35 of 60 episodes, and 50 timed out.
+- **Misidentified holds.** Hb's held-mug agreement with the oracle fell to .961 [.944, .976] of 583 onsets, against Hp's .984 [.968, .995] of 370. On 23 onsets the held yellow-and-white mug was perceived as the displaced white mug, so the hand-over was missed (8 on K2, 15 on N2).
+- **pi0** re-held the same mug after 239 of 240 put-backs. On K2 its trained program ran out of time on 57 of 60 episodes.
+- **GR00T** re-held the same mug after 219 of 236 put-backs (19 aborted on a drop). Its K2 gain under Hb (+.150, not significant) comes with no change in which mug is held. It is descriptive, because GR00T is below the floor.
+- **K1 and N1** name the white mug, and the rule fired rarely there (pi0.5: 1 N1 episode; GR00T K1: 4 episodes).
+
+**Perception** (pi0.5 Hp): the target plate's xy error had median .40 cm and max .80 cm, the side was right on 240 of 240, and mug identity at registration was right on 720 of 720. Onset agreement is above.
+
+**C1 (reference planner):** K1 .750, K2 .983, N1 .517, N2 .983. N1-N2 is .750, so **C1 UNMET**. The planner's N1 weakness holds, as in §50 and §62.
+
+**Predictions** (in the row) against the outcome.
+- **pi0.5 I and Hp:**
+  - I and TESTABLE: right.
+  - Hp N1 ~.60: .533. Hp N2 ~.30: .433.
+  - Hp FIX WORKS (85%): right.
+- **Put-back mechanics:**
+  - Fires on ≥ .95 of K2 and N2: right (1.00).
+  - Completes ≥ .90: right (239 of 240).
+  - Tipped ≤ .05: right (0).
+  - Displacement within 3 cm: median 2.2 cm. The share was not computed.
+- **After a put-back:**
+  - Named mug next on ~.20: wrong (0 of 240).
+  - Cap reached on ~.60 of N2: wrong (60 of 60).
+- **Hb outcome:**
+  - N2 ~.33: .167. K2 ~.85: .800. K1+K2 ~.91: .900.
+  - PUT-BACK: I gave NO CLEAR DIFFERENCE 65% and HURTS 10%. It read **HURTS**, so the prediction was wrong.
+  - FIX PARTIAL (55%): right, through K non-inferiority NOT SHOWN.
+  - BELOW BAR (75%): right.
+  - Hb − Hp on K2 PUT-BACK COSTS (55%): right (−.200).
+- **pi0:**
+  - TESTABLE (70%): right.
+  - Hp N1 ~.45: .367. Hp N2 ~.03: .100.
+  - Hp FIX WORKS (60%): wrong (PARTIAL).
+  - Hb − Hp on N2 NO CLEAR DIFFERENCE (80%): wrong (HURTS).
+  - Hb PARTIAL (50%): right.
+  - BELOW BAR: right.
+- **GR00T:**
+  - NOT TESTABLE (80%): right.
+  - Hp N1 ~.40: .467. Hp N2 ~.02: .017.
+  - Put-back NO CLEAR DIFFERENCE (85%): right.
+  - BELOW BAR: right.
+- **Perception:**
+  - Onset agreement ≥ .97: right for Hp (.984), wrong for Hb (.961).
+  - Target error < 1 cm: right.
+- **C1 UNMET (55%):** right.
+
+**Checks.**
+- **Hashes.** The read found 0 hash mismatches against the row's files_sha256. The row covers the code, the states and branches, the predictions, the seen file and the job scripts.
+- **Ledger row name.** The row is named for d0fe20fb, the commit that contains the prereg code and every file it hashes. I committed those files before the prereg job ran.
+- **Jobs.**
+  - Every rollout log shows the registered server command (pi0.5 and GR00T `pp_serve_purify --mode intact --comp= --seed 13`, pi0 `serve_guided --mode ours --seed 13`).
+  - Every Hp and Hb job logged the OWLv2 sidecar, and every client exited 0.
+  - The rollout, reference and read jobs were submitted held and chained afterok on the prereg job. I released them only after the row file showed tag s2_fix4 and status PRE-REGISTERED S2FIX4.
+
+**Reading.**
+- **Undoing the wrong hold does not change the VLA's choice.** pi0.5 reads no state. Once the white mug is back, the scene looks as it did at the start, and the trained first step grasps the white mug again: 240 of 240 put-backs on pi0.5, and nearly all on pi0 and GR00T. This is §57's position routing seen from another side. The first grasp is set by the scene, not by the instruction or by what happened before.
+- **So the put-back only spends steps.** On pi0.5 it costs K2 .20 (time-outs) and N2 .27, against Hp. On N2, P starts about 120 steps later, and the displaced white mug misleads the held-mug perception on 15 onsets. The registered labels read PUT-BACK HURTS, PARTIAL (trained tasks NOT SHOWN non-inferior) and BELOW BAR. pi0 shows the same pattern, more strongly (K2 .733 → .050).
+- **The N2 limit is the VLA's first step itself.** A rule that hands control back unchanged cannot move it while the scene is unchanged. The reference planner, which grasps the named mug directly, reaches .983 on N2. A fix for N2 would have to replace the first grasp (for example with an object-blind pick of the named mug), not undo it. That is a different arm, and I have not tested it.
+- **The best registered arm on pi0.5 is still Hp** (.483 here, .450 in §63), below the .50 bar.
+
+**Deviations.**
+- **The brief's premise about K2 was wrong.** K2 names one mug, so the rule fires there. The never-fires case holds only for the compounds KC and NC, which were not run.
+- **The development check** of the put-back ran on §63's states, after the predictions and before the smoke. Nothing changed after it. The smokes were submitted while it was still running, after its first episode showed the mechanics working.
+- **Hp on pi0 and GR00T.** These models run Hp, not §63's H.
+- **Overcap preemptions.** Six main jobs (the four GR00T I / Hp jobs, GR00T Hb K1+K2 and pi0 I N1+N2) were requeued by SLURM once or twice. Each requeue reran the unfinished task from its start, with the same script and arguments, and skipped finished tasks. No job failed on infrastructure, and I did not rerun anything by hand.
+- **Missing prereg log.** The prereg job's stdout log (`q2_cpu_4729245.out`) was never written, although the job COMPLETED and the row exists. The row stores its comparison of shared-file hashes with §63's row.
+- **Ledger and commits.** The row carries dirty=true, because other agents' files were uncommitted. Commits are local, on main.
+- **Login node.** No python was run and no result JSON was opened; all numbers come from SLURM logs. The row file was checked by grep for its tag, status and dirty flag. On two occasions a second waiter briefly ran, and I stopped it.
+
+**Limits.**
+- One scene, layout O, 60 states per task, one client seed.
+- Depth and camera calibration remain privileged.
+- The put-back returns the mug to where it was grasped. It does not test moving the mug elsewhere, which would change the scene and so add a manipulation the instruction does not ask for.
+- C1 is unmet on these states (N1 .517).
