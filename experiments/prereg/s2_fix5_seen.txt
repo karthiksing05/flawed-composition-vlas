@@ -1,0 +1,16 @@
+S2FIX5 seen before this row (all on smoke states k 0-3; no main state k 4-63 of this probe has been run by any policy or by the
+reference planner).
+
+1. Predictions (s2_fix5_pred.txt) written first, after the code and before any job of this probe.
+2. Prep, job 4731126 (submitted to overcap, moved to tail-lab while pending): compile and roll syntax ok; 64 new states (seeds
+   960000 + k), none equal to an SR 50-64 state; branches smoke / main.
+3. Smoke, jobs 4731127 (pi0.5) and 4731128 (pi0) (both submitted to overcap, moved to tail-lab while pending; k 0-3, outputs in
+   .claude_tmp/pp/s2fix5_smoke), summary + read selftest job 4731723 ran clean:
+   pi0.5 I 4/4/0/0 (K1/K2/N1/N2), Hp 4/4/2/1, Hv 4/3/2/2, Hv0 4/4/2/3;
+   pi0 I 2/4/0/0, Hp 3/4/3/0, Hv 2/1/2/0;
+   reference planner 4/4/3/4.
+   N2 first detector onset holds the named mug (simulator rule): pi0.5 Hp 0/4, Hv 2/4, Hv0 2/4; pi0 Hp 0/4, Hv 0/4.
+   The view detector's onsets matched the hand-over detector's in the episode logs checked by eye (pi0 Hv K1 k0: onsets 59, 123 in
+   both).  OWLv2 sees the raw image in Hv (held-mug agreement on pi0.5 Hv N2 13 of 18 onsets, every gate decision equal to the
+   oracle's; 18 onsets on 4 episodes = repeated holds of the white mug).
+Nothing changed after the smoke.  The predictions were not revised after the smoke.

@@ -1,0 +1,32 @@
+S2FIX5 predictions (SR 66), written 2026-11-15 after the code (experiments/s2fix5.py, s2fix5_roll.sh) and BEFORE any job of this
+probe (states, smoke or main).  Nothing of this probe has been run.
+
+Mechanism I expect: on N2 the views move pi0.5's first grasp to the named mug on about half the episodes (SR 50 tvp .533); those go
+to P and succeed at about SR 54 htvp's .84.  On the other half the VLA holds the white mug under the target-phase view (only the
+left plate unpainted, prompt "target: the left plate"); some of those later grasp the named mug and P places it, as under Hp.  On
+K2 the views cost less than in SR 50 (.767 under tvp), because a hold of the named mug now goes to P; but the white-first episodes
+under the target-phase view are a new risk.  N1 and K1 name the white mug, which the VLA grasps first anyway: little change there.
+
+pi0.5 (60 new states, layout O):
+- I: K1 ~.99, K2 ~1.00, N1 0, N2 0.  TESTABLE (95%).
+- Hp: N1 ~.57, N2 ~.37, K1+K2 ~.99.  Hp FIX WORKS (85%).
+- Hv: N1 ~.55, N2 ~.52, N1+N2 ~.53; K1 ~.97, K2 ~.85, K1+K2 ~.91.
+- MECHANISM, N2 first onset holds the named mug: Hv ~.50, Hp ~.02.  On K2: Hv ~.50, Hp ~.02.
+- V1 (Hv - Hp on N2, ~+.15): VIEWS HELP 55%, NO CLEAR DIFFERENCE 40%, VIEWS HURT 5%.
+- V2 (Hv - I): dN lo > 0 (97%); K non-inferiority at -.05 shown 35%.  FIX WORKS 35%, PARTIAL 62%, FAILS 3%.
+- V3: MEETS BAR 40%, BELOW BAR 60%.
+- Secondary Hv - Hp on K2: ~-.15, VIEWS COST 55%.
+- Hv0 (tv + Hp, secondary): N2 ~.48, K2 ~.92, K1+K2 ~.95; first-onset-named on N2 ~.47; Hv0 - Hp on N2 VIEWS HELP 45%; Hv0 FIX
+  WORKS 50%; Hv - Hv0 on N2 NO CLEAR DIFFERENCE 85%.
+
+pi0 (60 new states; SECONDARY):
+- I: K1+K2 ~.82 -> TESTABLE (75%); N 0.
+- Hp: N1 ~.40, N2 ~.07, K1+K2 ~.83; Hp FIX WORKS 55%.
+- Hv: N2 ~.15 (views not tested on pi0 before; I expect a smaller grasp shift than pi0.5's), N1 ~.38, K1+K2 ~.75.
+- V1 on pi0: NO CLEAR DIFFERENCE 55%, VIEWS HELP 40%, HURT 5%.  V2: PARTIAL 65%, FIX WORKS 25%.  V3: BELOW BAR 97%.
+- Mechanism on pi0, N2 first onset named: Hv ~.25, Hp ~.03.
+
+Perception (Hp / Hv on pi0.5): onset held-mug agreement with the simulator rule >= .97 on both (the detector sees the raw image);
+target xy median < 1 cm.
+
+C1 (reference planner on the new states): N1 ~.60, N2 ~.98, N1-N2 ~.79 -> C1 MET 45%, UNMET 55%.
