@@ -116,3 +116,10 @@ That is about 15-20 policies, with roughly 5 model families. Fewer servable poli
 2. My design decision. Then the RAA prereg and implementation (Sonnet, from the ladder templates).
 3. The paper rewrite, starting with the diagnosis sections, which do not depend on RAA.
 4. A2 probes, then A4 scene 3.
+
+**Exploratory follow-up (5fec75f7, post-hoc, results/flawed/steer_v2_explore.json).**
+- Subtracting the true-prompt floor (V-a) raises all-90 AUC from .742 to .770. Multiplying in trained success (k×a) reaches .787 and Spearman .579. Both gains are inside v1's CI.
+- Entity normalisation lowers all-90 AUC to about .60–.65. So v1's pooled signal is mostly entity difficulty: the bottle and bowl tasks are hard for every policy.
+- On the wrapper-free four, no variant beats trained success alone (.800).
+- Decision: the predictor stays a reported negative. The paper's claim is that steerability tracks which entities a family can be steered to, not which policies generalise.
+- One confirmatory test of k×a is registered before reading, using new policies: Rrel and RAA, probed in §73 phase 2.
