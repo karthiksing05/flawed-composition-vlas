@@ -2,7 +2,7 @@
 
 This document joins the failure account (docs/ARCH_FAILURES.md) to the structural fixes tested so far. Every claim cites a registered read. No reads are pending. The account below is the state at SR §69. Later reads are added to the dated summaries and the §3 table.
 
-**Final account (2026-11-17, SR §45-§72).**
+**Final account (2026-11-16, SR §45-§72).**
 
 *Diagnosis: the contribution.* Current VLAs route sub-goals by visual cues that covaried with them in training, not by the instruction's roles. Each failure below has the needed information in the input (C1) and persists across models (C2).
 - **F1, the place follows a cue, not the instruction.**
