@@ -122,4 +122,4 @@ That is about 15-20 policies, with roughly 5 model families. Fewer servable poli
 - Entity normalisation lowers all-90 AUC to about .60–.65. So v1's pooled signal is mostly entity difficulty: the bottle and bowl tasks are hard for every policy.
 - On the wrapper-free four, no variant beats trained success alone (.800).
 - Decision: the predictor stays a reported negative. The paper's claim is that steerability tracks which entities a family can be steered to, not which policies generalise.
-- One confirmatory test of k×a is registered before reading, using new policies: Rrel and RAA, probed in §73 phase 2.
+- Planned: one confirmatory test of k×a on new policies (Rrel and RAA, probed in §73 phase 2). Its prereg row must be written before that probe runs.
