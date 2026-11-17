@@ -60,6 +60,7 @@ No paper we found combines them, and none tests a combination on held-out pairin
   - frozen pi0.5 and rgp ReGuide as references.
 - **Primary contrast:** RAA − R2 on N1-N6, placed given a right grasp, and success.
 - **Secondary contrasts:** Rrel − R0, and RAA − rgp. The K1-K6 non-inferiority margin is −.05.
+- **Result (SR §73 phase 2, 2026-11-17): SUPPORTED.** RAA − R2 on N1-N6: success +.267 [+.092, +.467], placed given right grasp +.256 [+.077, +.461] (RAA .656 vs R2 .400; right grasp 1.000 vs .972). Rrel − R0 +.236 [−.006, +.553] (NO CLEAR DIFFERENCE); RAA − Rrel +.378 [+.133, +.658]. RAA − rgp −.242 [−.464, −.033] (rgp .897; not non-inferior). K1-K6: RAA − R2 +.086 [+.011, +.172] non-inferior; Rrel − R0 not shown. The place gap shrinks, it does not close.
 - **Later:** scene 2, where position is the cue, and the F7/F6 tasks.
 
 ## 2c. The novelty pillar: predicting new-pairing failure from trained tasks (user choice, 2026-11-16)
@@ -123,3 +124,4 @@ That is about 15-20 policies, with roughly 5 model families. Fewer servable poli
 - On the wrapper-free four, no variant beats trained success alone (.800).
 - Decision: the predictor stays a reported negative. The paper's claim is that steerability tracks which entities a family can be steered to, not which policies generalise.
 - Planned: one confirmatory test of k×a on new policies (Rrel and RAA, probed in §73 phase 2). Its prereg row must be written before that probe runs.
+- **Result (SR §75, 2026-11-17): k×a confirmed on new policies.** C1 AUC on the 12 Rrel/RAA × N1-N6 cells .944 (PASS, CI [.667, 1.0]); C2 pooled AUC over 102 cells .805, lower bound .603 (PASS); C3 sign test PASS (one pair). Trained-task success alone gives AUC .50 on these cells. Still two policies, six tasks, and one scene.

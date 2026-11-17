@@ -121,7 +121,7 @@ def read(a):
 
     def pair(name, ra, rb, grp, kind, margin=0.0, what="mean"):
         d = diff(G[(ra, grp)], G[(rb, grp)], what)
-        V[name] = dict(a=ra, b=rb, group=grp, metric="success" if what == "mean" else "placed given right grasp", **d,
+        V[name] = dict(arm_a=ra, arm_b=rb, group=grp, metric="success" if what == "mean" else "placed given right grasp", **d,
                        label=label(d, margin, kind) if kind != "none" else None)
         return V[name]
     v1a = pair("V1a RAA - R2, success, N1-N6", "raa", "r2", "N", "help")

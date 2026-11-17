@@ -5578,3 +5578,70 @@ Variants on the 90 scene-1 cells (descriptive): g_s alone AUC .699, p_s alone .7
 **Reading.** The product predicts the cell ranking across all scene-1 systems (AUC .74, Spearman .44, both lower bounds above chance) and the gaps between policies inside a family (GR00T family rho .92), and it beats trained-task success alone and a nonsense-word score on the 90 cells. It does not pass the headline: on the four wrapper-free policies it has no power (4 positive cells; the bootstrap interval is the whole unit square), and a policy-level trained-success score ranks those four better. The rung and front-end cells carry the full-set result: R2, R2b, r2l, tv and tvp show higher g_s and p_s than their bases and higher new-pairing success, which is consistent with the probe measuring what the front ends change. The place steerability of the intact policies is not near zero (.33-.55), so F1 is not visible as p_s = 0; it is visible, if at all, in the contrast p_s(tv) > p_s(I) on pi0.5 (+.18) and GR00T (+.04). Most of g_s and p_s is set by which entity is swapped in (wine bottle, bowl target), so s_hat partly ranks the new tasks by geometry; the tasks it ranks lowest (N4, N5, N6) are the lowest-success tasks of most policies, which is consistent with a geometry-and-habit explanation and is not separated from steering by these data. T0 headline NOT SUPPORTED; full scene-1 set MISSED by .008; T1 NOT SUPPORTED; T2 SUPPORTED; T3 NOT SUPPORTED.
 
 **Deviations.** (1) Swap candidates are every other movable object / target present whether or not the composed instruction is a suite task (role-phrase servers' lookup tables were extended); scene 2's objects are the mugs only. (2) Side queries use the real query's noise (server counters restored); the executed episode is therefore the unprobed one, which was not verified episode by episode. (3) The phase label is a per-step ProprioHeld in the client; a role-phrase server's own detector steps per query, and the absent / nonsense phrase override missed 2 of 391 slot-matched side queries in the r1 smoke (counted in each server log). (4) For absent and nonsense words a rung keeps the true task's routing and painting and only the slot phrase changes; a front end on a frozen policy treats the word as an unknown entity (every movable object painted). (5) K5 is not probed (the K set of Tables A and B). (6) The d8 variant (first 8 steps) is stored in every record and was not read. (7) Hp / rgp / H / RC and the scene-2 Hp half of T3 were skipped, X-VLA has no target. (8) One empty `python3 -` heredoc was run on the login node by mistake (no code executed). (9) The first rung smoke (jobs 4757861-4757862) exposed an override-install bug, fixed before the prereg row and re-run (v2).
+
+### 73 results: RAA-min phase 2 (2026-11-17; checkpoints pi05_g8v_rrel_ae_tl6000 and pi05_g8v_raa_ae_tl6000, both from the tail-lab chains at step 6,000; Rrel chain exit 0 at 08:31, RAA chain job 4757796 exit 0 at 10:22, RAA overcap chain 4757790-93 cancelled; exports jobs 4766146 (Rrel) and 4766430 (RAA); read job 4770365, results/flawed/raa_read.json, rollouts results/flawed/raa)
+
+**Rollout jobs.** Rrel and RAA on dev (main) and new states (rx): 4766256-59 and 4766473-76. R0, R2, R2l on the new states: 4766094-96 (new script `raa_ref_roll.sh`; their dev files are SR 37 / 43's, unchanged). rgp (`rg_roll.sh`, arm rgp) on dev and new states: 4766097-4766100, copied to raa/rgp_main_<tid>.json and rgp_rx_<tid>.json. Smoke: Rrel 4766184 (unprobed, trials 0-1 of the steer smoke branches, 2 of 2 successes); RAA 4766486 (unprobed, 1 of 2). The `raa_read.py selftest` passed (job 4767478: R2 - R0 +.400 [+.167, +.625], matching sc_t37_read.json). Fit gate: R0 on K1-K6 .853 (>= .80, passes).
+
+**Pooled success, 60 states per task (N1-N6 | K1-K6; right-grasp rate; placed given right grasp on N1-N6):**
+
+| arm | N1-N6 | right grasp | placed given right grasp | K1-K6 |
+|---|---|---|---|---|
+| R0 | .042 | .417 | .100 | .853 |
+| R2 | .389 | .972 | .400 | .753 |
+| R2l | .392 | .981 | .399 | .739 |
+| rgp | .897 | .989 | .907 | .950 |
+| Rrel | .278 | .861 | .323 | .911 |
+| RAA | .656 | 1.000 | .656 | .839 |
+
+Per task, N1..N6 success: RAA .683 .850 1.000 .217 .933 .250; Rrel .000 .700 .917 .033 .000 .017 (Rrel's right-grasp rate on N4 and N6 is .733 and .567: its grasp, not only its place, fails on the bottle pairings).
+
+**Registered contrasts (paired bootstrap, B = 2000, rng 0, tasks and states):**
+
+| contrast | delta [95% CI] | label |
+|---|---|---|
+| V1a RAA - R2, success N1-N6 | +.267 [+.092, +.467] | A BEATS B |
+| V1b RAA - R2, placed given right grasp | +.256 [+.077, +.461] | A BEATS B |
+| **V1 primary** | | **SUPPORTED** |
+| V1l RAA - R2l, success / placed given right grasp | +.264 [+.105, +.456] / +.256 [+.096, +.449] | A BEATS B / A BEATS B |
+| V2a Rrel - R0, success | +.236 [-.006, +.553] | NO CLEAR DIFFERENCE |
+| V2b Rrel - R0, placed given right grasp | +.223 [-.028, +.515] | NO CLEAR DIFFERENCE |
+| V2c RAA - Rrel, success | +.378 [+.133, +.658] | A BEATS B |
+| V3a RAA - rgp (non-inferiority -.10) | -.242 [-.464, -.033] | COST |
+| V3b RAA - rgp (beats) | same | B BEATS A |
+| V3c Rrel - rgp | -.619 [-.889, -.308] | COST |
+| K1 RAA - R2, K1-K6 (margin -.05) | +.086 [+.011, +.172] | NON-INFERIOR |
+| K2 Rrel - R0 | +.058 [-.053, +.158] | NOT SHOWN |
+| K3 RAA - R0 | -.014 [-.186, +.125] | NOT SHOWN |
+| K4 RAA - rgp | -.111 [-.236, -.019] | COST |
+| D1 RAA - R2, cheese pairings | +.322 [+.005, +.717] | A BEATS B |
+| D2 RAA - R2, bottle pairings | +.211 [+.078, +.367] | A BEATS B |
+
+**Overall: SUPPORTED** (V1a and V1b lower bounds above 0). The place gap shrinks but does not close: RAA places .656 of its right grasps (R2 .400) against rgp's .907. RAA's right-grasp rate is 1.000 against R2's .972, so about .03 of the success gain is grasp. The "counts against" condition (both upper bounds under +.10 with the grasp rate unchanged) did not occur.
+
+**Channel error (RAA, 23,843 main-query records vs simulator truth).** Object role median 0.30 cm, p90 6.8 cm, 69% within 1 cm; target role median 0.06 cm, p90 1.1 cm, 89% within 1 cm (max 119 cm, one occlusion outlier). Rrel's chan files (results/flawed/raa/chan_rrel_*.jsonl) were not summarised.
+
+**Predictions (experiments/prereg/raa_pred.txt) scored.** 1 fit gate: HELD (.853). 2 RAA N1-N6 .70 (.50-.85): HELD (.656); R2 .43: .389 (low), R2l .42: .392 (low), R0 .03: .042 (held); RAA right grasp .95: 1.000 (.05 above); RAA placed given right grasp about .75: MISSED (.656). 3 V1 SUPPORTED (45%): HELD; V1a +.25 [+.10, +.40]: +.267 [+.092, +.467], HELD. 4 Rrel about .30: HELD (.278); V2a A BEATS B (60%): MISSED (lower bound -.006); V2c A BEATS B (55%): HELD. 5 V3 non-inferior (15%): not reached, HELD; V3b no beat (97%): HELD. 6 K1 non-inferior (50%): HELD; K2 non-inferior (50%): MISSED (lower bound -.053; the point estimate is +.058); RAA K1-K6 about .75: .839, above. 7 channel error (object median < 1.5 cm, target < 2 cm): HELD for RAA (.30, .06); the 'occl' / 'last' worsening was not tabulated. 8 D1 > D2 (60%): HELD (+.322 vs +.211).
+
+**Deviations.** (1) The R0 / R2 / R2l new-state rollouts used a new script (`raa_ref_roll.sh`: rv_roll2.sh / seg_roll.sh with FRESH and branches parameters; same servers, ckpts and client flags) and the rgp rollouts the existing `rg_roll.sh` through `rg_job.sh` with FRESH / BR / OUTD set to the dev and rx states; they got no separate 4-episode smoke (the first episodes ran and matched the harness). rgp's dev-state file is a new rollout on trials 4-23, not SR 65's (which used other states). (2) Smoke for Rrel and RAA served their own checkpoints on 2 episodes each (the steer smoke branches), not 4; the RAA main rollouts were submitted while its smoke ran. (3) `raa_read.py` had a bug in `pair()` (`dict(a=..., **d)` where d has key 'a'; TypeError on the first read, job 4770345, no output written). I renamed the two keys to arm_a / arm_b before any label was seen; numbers are unchanged, the file's hash differs from the prereg row's. (4) A read job (4769975) hung in the node prolog on clank and was cancelled and resubmitted. (5) The Rrel and RAA checkpoints are the tl-chain exports (exp tl); the main chains were at step 5,750 (Rrel) and 5,640 (RAA) or cancelled. The pending tail-lab jobs 4757797-99 (afterany dependents that train 0 steps) were left alone. (6) Channel error was summarised for RAA only.
+
+## 75. STEER-CONF: does k x a predict which of Rrel and RAA fail a new pairing? (m3_prereg steer_conf, ledger row m3_prereg__libero_goal__steer_conf__s0__1db812d4.json, written before any probe of either policy; predictions commit 9caa4443, code and prereg code commit 1db812d4, row commit 188f64d1; adapter and smoke commit d37320d4; smoke jobs 4766183 (failed), 4766250 (Rrel), 4766471 (failed), 4766485 (RAA); main probe jobs 4766680 (Rrel) and 4766681 (RAA); check job 4770016, read job 4770398; results/flawed/steer_conf_read.json, probes results/flawed/steer/s1_rrel and s1_raa)
+
+**Test.** Frozen score k x a (SR 74 follow-up, steer_v2_explore.py) on the 12 new cells Rrel, RAA x N1-N6; labels = SR 73 success >= .5 (labels in steer_conf_read.json equal raa_read.json's per-task numbers). Probe as SR 74 (scene 1, K1 K2 K3 K4 K6, 10 states k 4-13, 3 side queries per probed query: counterfactual word, absent word, nonsense word). Rrel probed on 5 tasks: 171-224 queries each; RAA: 166-232. Peeked estimator equals the real client's to 0.0 m in every probed episode. K (the probe's own K success): Rrel .94, RAA .94.
+
+**Result (experiments/steer_conf_read.py, verdicts as registered):**
+
+| test | value | verdict |
+|---|---|---|
+| C1 AUC of k x a on the 12 new cells (>= .75) | .944 (descriptive CI [.667, 1.0], 84 of 2000 draws dropped for a missing class; 6 positive, 6 negative) | **PASS** |
+| C2 pooled AUC, 90 old + 12 new cells (lower bound > .5) | .805, joint bootstrap [.603, .940]; Spearman .575 [.254, .756]; 102 cells, 17 policies, 39 positive | **PASS** |
+| C3 sign of mean k x a, Rrel - RAA, equals the sign of mean success | mean k x a Rrel .301, RAA .364; mean success Rrel .278, RAA .656; both negative | PASS (one pair, chance .5; carries no claim alone) |
+| Overall | C1 and C2 PASS | **k x a confirmed on new policies** |
+
+New-cell scores (score / success): RAA N1 .324 / .683, N2 .707 / .850, N3 .517 / 1.000, N4 .177 / .217, N5 .386 / .933, N6 .070 / .250; Rrel N1 .393 / .000, N2 .545 / .700, N3 .415 / .917, N4 .127 / .033, N5 .176 / .000, N6 .149 / .017. Descriptive: trained-task success K alone gives AUC .50 on the 12 cells (K equal for both policies). The old 90-cell AUC is .787 (selftest reproduces it to 1e-9).
+
+**Reading.** On new policies, k x a ranks the 12 cells (.944) and the pooled 102 cells (.805, lower bound .603) as the exploratory variant did. The one clear failure of the ranking is Rrel N1 (score .393, the second highest Rrel score, success 0): Rrel steers toward the cream cheese but never carries it to the plate. Two policies and six tasks are few cells, so the C1 interval is wide (the lower end .667 sits below the .75 bar) and the C1 pass is a point estimate, as registered. K carries nothing here, so the ranking comes from the entity factors a(o), a(t), as predicted. The variant was chosen after the 90 old cells; this test removes the selection concern for the sign and size of the signal but does not cover a different policy family.
+
+**Predictions (docs/notes/steer_conf_predictions.md) scored.** P1 both classes present (.85): HELD. P2 C1 PASS .38 / FAIL .47 / NOT TESTABLE .15: PASS (the less likely outcome); conditional AUC >= .75 .45: occurred. P3 C2 PASS (.70): HELD; pooled AUC in [.70, .82] (.65): HELD (.805); pooled AUC below the old .787 (.60): MISSED (.805 is above). P4 C3 PASS (.62): HELD. P5 C1 and C2 both PASS (.27): occurred. P6 measured: RAA > Rrel success: HELD (.656 vs .278); RAA >= .40 (.50): HELD; Rrel >= .25 (.40): HELD (.278); both K1-K6 success >= .85 (.70): HELD on the probe's K (.94 each; on the 60 read states RAA is .839); mean k x a RAA > Rrel (.65): HELD. P7 K alone AUC within .15 of .5 (.70): HELD (.50). P8 grasp-phase a above the 90-cell median for both (.55): not evaluated.
+
+**Deviations (all plumbing, logged before the main probe; nothing changed after any probe output or label was seen).** (1) `steer_probe.py` got arm RA (+ `--ra-arm`) and the new `steer_conf_serve.py` wraps `steer_serve.py` (CHILD extended with "rv", so the chain RAAServer -> RoleView -> GuidedPolicy restores its counters and hold detector after side queries; Override keeps the channel suffix; Rrel's whole-instruction word swap travels as meta/side_text). `steer_serve.py` itself is unchanged; its STATE needed no change for RAAServer.cur (overwritten by every query before use, side queries run first). (2) The client computes the side-query channel from copies of raa.py's detector and Estimator (read from the closure of `channel`), so side queries never step the Estimator; ra_check found a maximum difference of 0.0 m. (3) Two failed smoke attempts (4766183: client-side suffix hit sc_t16.given KeyError; 4766471: side queries skipped the --seg payload layer) were fixed in plumbing and re-smoked (4766250, 4766485); the failed runs' files remain in results/flawed/steer_smoke. Smoke executed episodes equal the unprobed raa.py client's on the same states (Rrel 78 / 81 steps, 2 of 2; RAA 300-step failure and 72-step success, both runs). The Rrel smoke ran before the second fix, which does not touch Rrel's path. (4) The main probes ran from `steer_conf_roll.sh` (a copy of steer_roll.sh with rrel / raa; steer_roll.sh untouched) at the registered branches file; the Rrel smoke used 2 states and K1 only. (5) Raa_read's dict-key bug (SR 73 deviation 3) was fixed before the labels were read; steer_conf_read.py recomputes labels from the rollout files and agreed with raa_read.json to every digit.
