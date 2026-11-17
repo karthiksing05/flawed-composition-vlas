@@ -5384,3 +5384,126 @@ Under rgp, N4's 38 grasped episodes carry low (median lift .103 m) and succeed .
 - ReGuide is our reimplementation with §52's deviations; its statistics come from the trained-task demonstrations, and depth and calibration stay privileged (§40, §52). The hold detector and its threshold were set on pi0.5.
 - The N6 and N4 readings rest on 40 episodes each; the pooled V5 interval is wide.
 - No reference planner was run, so no ceiling on N6 is claimed.
+
+## 72. Scene 2: which pose source carries ReGuide's N1 gap? Swapping the held-mug pose and the target-plate pose one at a time (m3_prereg s2_rgs, ledger row m3_prereg__libero_10__s2_rgs__s0__ed85a442.json, written before any main rollout; predictions and code commit 0b4b2c0a, seen note and prereg-row code commit ed85a442, the commit the row is named for, row file commit 1b4ba0e2; prep job 4755794, smoke job 4755804, smoke read 4755951, prereg job 4755962; rollout jobs 4755964-4755973, reference job 4755974, read job 4755975; results/flawed/s2rgs_read.json, rollouts results/flawed/s2rgs_roll)
+
+**Question.** In scene 2 (LIBERO-10 LIVING_ROOM_SCENE5) ReGuide with perception (rgp) reached N1 .417 on frozen pi0.5 (§69) and with simulator poses (rgo) .833 (§68). §69 found the rigid held-mug estimate 5.65 cm off at the N1 release and a box tracker did not shrink it, so "the N1 residual is the perceived held-mug carry" was only consistent with the data. Does giving ReGuide the simulator's held-mug pose alone (rgoH) lift N1 toward rgo? Does the simulator's target-plate pose alone (rgoT)?
+
+**Arms** (`experiments/s2rgs.py`, `s2rgs_roll.sh`; rg.py's controller and §68's port unchanged; frozen pi0.5 only; the same states protocol as §69).
+- **I:** `s2.py client`.
+- **rgp:** perception everywhere (§68's arm, replicated): OWLv2 + rendered depth + camera calibration, the perceived hold event and identity, and a rigid held-mug estimate.
+- **rgo:** simulator poses everywhere, including rg.py's oracle interaction rule (§68's privileged arm, replicated).
+- **rgoH:** rgp, but from the attachment until the release the instructed mug's position is the simulator's. The attachment (ProprioHeld onset plus the perceived identity rule), the resting mugs, both plates and the hold events stay perceived. At the release the remembered position is the simulator's.
+- **rgoT:** rgp, but the instructed target plate's position is the simulator's, set at the registration. The held mug (rigid estimate), the other plate, all mugs and the hold events stay perceived.
+- The simulator's mug position is logged in every arm. In rgp and rgoH the rigid perceived estimate is logged at each release, never fed.
+- No constant was fitted for this probe.
+
+**Design.** 60 new states from LIBERO's sampler on K1's BDDL, seeds 1000000 + k, k 0-59, none equal to an SR 50-69 state (asserted against every earlier layout O). Branches use seed_base 49000000 + 1000 k. Layout O; tasks K1, K2, N1, N2; client seed 7.
+
+**Registered contrasts** (paired bootstrap over states, tasks fixed, B = 2000, seed 0). Each reads on N1 (primary) and on N1+N2.
+- **V1:** rgoH − rgp. HELD POSE CARRIES iff lo > 0; HELD POSE LOWERS iff hi < 0; otherwise NO CLEAR DIFFERENCE.
+- **V2:** rgoT − rgp. TARGET POSE CARRIES / LOWERS / NO CLEAR DIFFERENCE by the same rule.
+- **V3:** rgo − rgoH. REMAINDER IN OTHER POSES iff lo > 0; rgo BELOW rgoH iff hi < 0; else NO CLEAR DIFFERENCE. "Equivalent inside ±.10" is reported beside it, descriptively.
+- **Direction pre-registered:** if the held-mug account is right, V1 > 0 and V3 ≈ 0.
+- **K1+K2 non-inferiority** at −.05 against I for each arm. The FIX / BAR rule and §50's floor apply as before.
+
+**Before the row** (`experiments/prereg/s2_rgs_pred.txt`, `s2_rgs_seen.txt`). The predictions were written and committed (0b4b2c0a) before any job and were not revised. The smoke (job 4755804, §68's smoke states, 4 states per task, all five arms) only checked that the arms run: every client exited 0, every perceiving arm registered the instructed mug and plate in 16 of 16 episodes, and the read selftest passed. At n = 4 it read nothing about the contrasts (rgoH N1 1 of 4, rgp 2, rgo 3).
+
+**Result** (60 new states per task).
+
+| arm | K1 | K2 | N1 | N2 | N1+N2 | K1+K2 |
+|---|---|---|---|---|---|---|
+| I | .983 | .983 | .000 | .000 | .000 | .983 |
+| rgp (perception everywhere) | 1.00 | .983 | .500 | 1.00 | .750 | .992 |
+| rgo (simulator everywhere) | 1.00 | 1.00 | **.900** | 1.00 | .950 | 1.00 |
+| **rgoH** (held mug from the simulator) | 1.00 | .983 | **.567** | 1.00 | .783 | .992 |
+| **rgoT** (target plate from the simulator) | 1.00 | .983 | **.450** | 1.00 | .725 | .992 |
+
+| registered contrast | on N1 | on N1+N2 |
+|---|---|---|
+| **V1: rgoH − rgp** | **+.067 [−.067, +.200] NO CLEAR DIFFERENCE** | +.033 [−.033, +.100] NO CLEAR DIFFERENCE (inside ±.10) |
+| **V2: rgoT − rgp** | **−.050 [−.183, +.084] NO CLEAR DIFFERENCE** | −.025 [−.092, +.042] NO CLEAR DIFFERENCE (inside ±.10) |
+| **V3: rgo − rgoH** | **+.333 [+.183, +.467] REMAINDER IN OTHER POSES** | +.167 [+.092, +.233] REMAINDER IN OTHER POSES |
+
+| arm | arm − I on N1+N2 | arm − I on K1+K2 | label |
+|---|---|---|---|
+| rgp | +.750 [+.692, +.808] | +.008 [−.017, +.042] | FIX WORKS, MEETS BAR, NON-INFERIOR |
+| rgo | +.950 [+.908, +.983] | +.017 [.000, +.042] | FIX WORKS, MEETS BAR, NON-INFERIOR |
+| rgoH | +.783 [+.725, +.842] | +.008 [−.017, +.042] | FIX WORKS, MEETS BAR, NON-INFERIOR |
+| rgoT | +.725 [+.667, +.792] | +.008 [−.017, +.042] | FIX WORKS, MEETS BAR, NON-INFERIOR |
+
+- I's K1+K2 is .983, so the model is TESTABLE.
+- **Secondary, rgo − rgp:** N1 +.400 [+.267, +.533] and N1+N2 +.200 [+.133, +.267] (GAIN); K1+K2 +.008 [.000, +.025] (NO CLEAR DIFFERENCE). The §68 gap replicates.
+- **Replication:** rgp N1 .500 against §69's .417 (within ±.10); rgo N1 .900 against §68's .833 (within ±.10).
+
+**Mechanism** (simulator logged, never fed; N1, descriptive).
+
+| arm | N1 white mug on no plate | median xy error of the arm's held-mug estimate at a release (p90), n | rigid perceived estimate at a release: median (p90) | releases with the real mug in the region | rigid estimate in region and mug not |
+|---|---|---|---|---|---|
+| rgp | 29 of 60 (.483) | 5.54 cm (18.1), 49 | the same | .184 | 7 of 49 |
+| rgoH | 25 of 60 (.417) | 0.0 by construction, 53 | 4.86 cm (17.8) | .226 | 0 of 53 |
+| rgoT | 32 of 60 (.533) | 5.76 cm (16.2), 43 | the same | .163 | 6 of 43 |
+| rgo | 5 of 60 (.083) | see the note | not comparable | not comparable | not comparable |
+
+- **The held-mug estimate was off, and fixing it did not move N1.** In rgp the rigid estimate's median error at the N1 release is 5.54 cm, as §69 found (5.65). Replacing it with the simulator's position leaves the white mug on no plate on 25 of 60 N1 episodes, against 29 (rgoH − rgp on that count was not registered).
+- **ReGuide's interaction events differ between the perceiving arms and rgo.** From the controller's start log on N1:
+
+| arm | "approach: re-arm: released outside Omega_d" | "carry: re-arm: left Omega_d" | episodes the controller declared done | N1 episodes timed out |
+|---|---|---|---|---|
+| rgp | 16 | 20 | 16 | 30 |
+| rgoH | 24 | 15 | 12 | 26 |
+| rgoT | 15 | 19 | 12 | 33 |
+| rgo | 5 | 1 | 0 | 6 |
+
+  rgoH, which shares rgp's perceived hold events, behaves like rgp here; rgo, which uses the oracle co-motion rule, re-arms rarely and times out on 6 of 60. This is consistent with the gap sitting in how the hold and release events are read, not in the held-mug pose. The arms do not manipulate it: rgo and rgoH differ in the hold rule, in the perceived resting mugs and plates (median .35 and .42 cm), and in the hold-identity step.
+- **Note on rgo's release rows.** The oracle rule logs a release when the mug and hand stop moving together. Those rows (55 on N1, the real mug in the region on none) are mostly mid-carry slips and regrasps, so they are not comparable with the hold-event releases of the perceiving arms.
+
+**Perception against the simulator** (240 registrations per perceiving arm; every one registered the instructed mug and the target plate, so ReGuide was active in all). Target plate xy median .42 cm (max .77); instructed mug .40 cm (max .92); all mugs .35 cm; side right 240 of 240. Onset held-mug identity .974 (rgp, 264 of 271), .955 (rgoH), .992 (rgoT). These are the perceived values, also in rgoT, whose controller used the simulator's plate.
+
+**C1 (reference planner):** K1 .800, K2 .967, N1 .550, N2 .983. N1−N2 is .767, so **C1 UNMET** (§69: .783).
+
+**Predictions** (in the row) against the outcome.
+- **Replications:** rgp N1 within ±.10 of .42 (80%): right (.500). rgo N1 within ±.10 of .83 (70%): right (.900).
+- **Point predictions:**
+  - rgp N1 ~.42 gave .500; N1+N2 ~.70 gave .750.
+  - rgo N1 ~.83 gave .900; N1+N2 ~.90 gave .950.
+  - **rgoH N1 ~.70 gave .567 (wrong); N1+N2 ~.84 gave .783.**
+  - rgoT N1 ~.45 gave .450; N1+N2 ~.71 gave .725.
+- **V1 on N1:** CARRIES 80% / NO CLEAR DIFFERENCE 19%. It read **NO CLEAR DIFFERENCE (wrong)**. On N1+N2: CARRIES 70%, read NO CLEAR DIFFERENCE (wrong).
+- **V2 on N1 and N1+N2:** NO CLEAR DIFFERENCE 80%: right on both.
+- **V3 on N1:** NO CLEAR DIFFERENCE 55% / REMAINDER 43%. It read **REMAINDER IN OTHER POSES**, the less likely outcome. N1+N2 likewise.
+- **The registered account ("V1 CARRIES and V3 NO CLEAR DIFFERENCE", 45%):** not borne out. V1 read NO CLEAR DIFFERENCE and V3 read REMAINDER.
+- **K1+K2 non-inferiority (90% each):** right for all four arms. FIX WORKS and MEETS BAR for rgoH and rgoT: right.
+- **Mechanism:**
+  - N1 white on no plate: rgp ~.52 gave .483 (right); rgoT ~.50 gave .533 (right); rgo ~.10 gave .083 (right); **rgoH ~.25 gave .417 (wrong)**.
+  - The rigid estimate's median error at the N1 release within 3.5-8.0 cm (70%): right (5.54).
+  - Share of N1 releases with the rigid estimate in the region and the mug out of it ≥ .15 (60%): wrong, rgp .143 (7 of 49).
+  - Perception (target < .5 cm, side ~1.0, mug < .5 cm): right. Inactive episodes were 0 of 240, so my "one state per task may be missed" did not occur.
+  - C1 UNMET (65%): right.
+
+**Checks.**
+- **Hashes.** The read found 0 hash mismatches against the row's files_sha256 (the row covers the code, the states, the branches, the predictions, the seen file and the job scripts).
+- **Ledger row name.** The row is named for ed85a442. The prereg job reported COMPLETED; I confirmed the row file exists and carries status PRE-REGISTERED S2RGS before submitting any main job.
+- **Jobs.** Every rollout log shows the registered server command (10 of 10), 6 OWLv2 sidecar lines (the rgp, rgoH and rgoT jobs), and every client exit 0. No job was requeued or resubmitted. The read was chained afterok on all rollouts and the reference.
+
+**Reading.**
+- **The held-mug pose does not carry the N1 gap.** With the simulator's mug position steering the carry, N1 is .567, a gain of +.067 [−.067, +.200] over rgp, NO CLEAR DIFFERENCE, against rgo's .900. The registered prediction (V1 > 0, V3 ≈ 0) did not hold: V3 is +.333 [+.183, +.467].
+- **Neither does the target-plate pose** (V2 −.050 [−.183, +.084]).
+- **What the swap does not say.** n = 60 gives V1 an interval from −.067 to +.200, so a held-mug effect up to +.20 on N1 is not excluded; the data rule out only that the held mug alone closes the .400 gap to rgo. The N1+N2 interval of V1 lies inside ±.10, but N1 alone does not.
+- **The remainder is not in either pose.** rgo differs from rgoH in the hold rule (the oracle co-motion rule, against ProprioHeld and the perceived identity step), in the perceived resting mugs and plates (about .4 cm), and in nothing else I changed. The re-arm counts above are consistent with the hold and release events being the difference, but this probe did not swap them, so it does not show it. A swap of the interaction rule alone (the perceived hold event replaced by the oracle's, poses perceived) is the next test.
+- **For the proposal:** §68-§69's reading "the N1 residual is the perceived held-mug carry" is not supported on its stated direction. The scene-2 ReGuide result (rgp: FIX WORKS, MEETS BAR, N1+N2 .750) stands unchanged.
+
+**Deviations.**
+- **rgp and rgo ran through s2rgs.py's client**, not s2rg.py's or s2rgt.py's. The decision path is s2rg.py's; the logging is s2rgt.py's, with the plates keyed by name and the rigid estimate logged at releases.
+- **rgoT's target plate is always "perceived"**, so ReGuide was active in episodes where perception could miss the plate. It missed none (0 inactive of 240), so this did not change which episodes ran.
+- **rgo's release logging** is not comparable with the others (see the note above).
+- **Partitions.** All jobs ran on overcap.
+- **Ledger and commits.** The row carries dirty=true (other agents' uncommitted files). Commits are local, on main; not pushed.
+- **Login node.** No python was run there and no result JSON was opened. Every number comes from the SLURM logs of the read job 4755975.
+- **Waiters.** A capped waiter polled the queue; none was left running.
+
+**Limits.**
+- One scene, layout O, 60 states per task, one client seed, frozen pi0.5 only.
+- Camera calibration stays privileged in every perceiving arm.
+- The arms swap whole pose sources, not the hold rule; the remainder is localised only to "not the held-mug pose and not the target-plate pose".
+- The registered-account label names "poses", but rgo also changes the interaction rule, so V3 is not a pose-only contrast.
