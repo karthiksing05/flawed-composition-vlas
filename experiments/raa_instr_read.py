@@ -73,9 +73,15 @@ def runs(m, minlen=3):
     return out
 
 
+def tipgate(d):
+    """TIPPED applies only where upright is the valid pose: the cream cheese (N1).  A wine bottle ends lying (tilt change 30-90 deg) in
+    successful placements on a plate, a bowl or the rack, so its tilt is reported but never a failure category."""
+    return str(d["oe"]) == "cream_cheese_1"
+
+
 def cat(d, i):
     """Outcome category of the object at row i, by the terms of On(obj, tgt)."""
-    if (not d["site"]) and d["tilt"][i] > TIP_DEG:
+    if tipgate(d) and d["tilt"][i] > TIP_DEG:
         return "TIPPED"
     if d["site"]:
         if d["under"][i] < 0.5:
@@ -90,7 +96,7 @@ def cat(d, i):
 
 def near_valid(d, i):
     """Upright and within a slack of the valid set: xy <= 4 cm (body target); inside the site box widened by 1 cm in x/y and 3 cm in z."""
-    if (not d["site"]) and d["tilt"][i] > TIP_DEG:
+    if tipgate(d) and d["tilt"][i] > TIP_DEG:
         return False
     if d["site"]:
         s, ds = d["site_size"], d["dsite"][i]
@@ -124,6 +130,20 @@ def episode(d, roles):
                    eef_speed=float(np.linalg.norm(d["eef"][p] - d["eef"][max(p - 3, 0)]) / 3.0),
                    obj_to_eef=float(np.linalg.norm(d["obj"][p] - d["eef"][p])), dropped_closed=bool(np.linalg.norm(d["obj"][p] - d["eef"][p]) > 0.15), terms_rel=dict(z_ok=float(d["z_ok"][p]), contact=float(d["contact"][p]),
                    under=float(d["under"][p])), cat_rel=cat(d, p))
+        hand = d["obj"][p, :2] - d["eef"][p, :2]
+        rec["hand_xy_cm"] = float(100 * np.linalg.norm(hand))                          # the object's offset from the gripper in the hand
+        rec["eef_to_tgt_xy_cm"] = float(100 * np.linalg.norm(d["eef"][p, :2] - d["tgt"][p, :2]))
+        if d["site"]:
+            sz, ds = d["site_size"], d["dsite"][p]
+            rec["site"] = dict(dsite_cm=[float(100 * v) for v in ds], size_cm=[float(100 * v) for v in sz],
+                               x_out=bool(abs(ds[0]) >= sz[0]), y_out=bool(abs(ds[1]) >= sz[1]), z_low=bool(ds[2] <= sz[2] - 0.005),
+                               z_high=bool(ds[2] >= sz[2] + 0.10), contact=float(d["contact"][p]))
+        if roles is not None:                                                         # the channel the policy saw at its last target-role query
+            tq = [x for x in roles if x["role"] == "target" and x["t"] + WAIT <= j]
+            if tq:
+                x = tq[-1]
+                rec["chan"] = dict(t=int(x["t"]), age=int(j - (x["t"] + WAIT)), est_xy_cm=float(np.linalg.norm(x["rel_cm"][:2])),
+                                   true_xy_cm=float(np.linalg.norm(x["true_cm"][:2])), err_cm=float(x["err_cm"]), src=str(x["src"]))
         nxt = R[q + 1][0] if q + 1 < len(R) else n
         s_i = int(min(j + SETTLE, nxt - 1, n - 1))
         xy2, dz2 = rel_obj(d, s_i)
@@ -159,6 +179,11 @@ def episode(d, roles):
             f = dict(t=int(t[i]), row=row, held=bool(H[row]), cat=cat(d, row), near_valid=near_valid(d, row), tilt=float(d["tilt"][row]),
                      xy=rel_obj(d, row)[0], on_terms_window10=bool((d["on_terms"][max(row - 10, 0):row + 1] > 0.5).any()),
                      on_terms_window20=bool((d["on_terms"][max(row - 20, 0):row + 1] > 0.5).any()))
+            cr = [(s, e) for s, e in R if s <= row <= e]                              # inside a closed-command carry (cmd closed, lifted or not)
+            f.update(in_carry=bool(cr), steps_to_carry_end=int(cr[0][1] + 1 - row) if cr else None,
+                     carry_ends_in_release=bool(cr and cr[0][1] < n - 1), a6=float(d["a"][row, 6]),
+                     lift_cm=float(100 * (d["obj"][row, 2] - d["obj"][0, 2])), obj_eef_cm=float(100 * np.linalg.norm(d["obj"][row] - d["eef"][row])),
+                     width=float(d["grip"][row, 0] - d["grip"][row, 1]), cmd_open_next10=bool((d["a"][row:row + 10, 6] <= 0).any()))
             prev = [r for r in ev if "release_row" in r and r["release_row"] <= row]
             f["since_release"] = int(row - prev[-1]["release_row"]) if prev else None
             fl.append(f)
@@ -221,6 +246,18 @@ def summarize(eps, roles_on):
             o["reclose"] = dict(n=len(rc), cat=_count([r["reclose_cat"] for r in rc]), near_valid=int(sum(r["reclose_near_valid"] for r in rc)),
                                 delay_p50=pct(np.array([r["reclose_delay"] for r in rc], float), 50), xy_p50=pct(np.array([r["reclose_xy"] for r in rc], float), 50))
             o["no_reclose"] = int(len(R) - len(rc))
+            if len(R) >= 4:
+                xyv = np.array([r["xy_rel"] for r in R], float)
+                o["pearson_xy_rel_vs_hand"] = float(np.corrcoef(xyv, [r["hand_xy_cm"] for r in R])[0, 1])
+                o["pearson_xy_rel_vs_eef_tgt"] = float(np.corrcoef(xyv, [r["eef_to_tgt_xy_cm"] for r in R])[0, 1])
+            o["hand_xy_cm"] = dict(p10=pct(np.array([r["hand_xy_cm"] for r in R], float), 10), p50=pct(np.array([r["hand_xy_cm"] for r in R], float), 50), p90=pct(np.array([r["hand_xy_cm"] for r in R], float), 90))
+            o["eef_to_tgt_xy_cm"] = dict(p10=pct(np.array([r["eef_to_tgt_xy_cm"] for r in R], float), 10), p50=pct(np.array([r["eef_to_tgt_xy_cm"] for r in R], float), 50), p90=pct(np.array([r["eef_to_tgt_xy_cm"] for r in R], float), 90))
+            ch = [r["chan"] for r in R if "chan" in r]
+            if ch:
+                o["chan"] = dict(n=len(ch), err_cm_p50=pct(np.array([c["err_cm"] for c in ch], float), 50), err_cm_p90=pct(np.array([c["err_cm"] for c in ch], float), 90), err_gt3=int(sum(c["err_cm"] > 3 for c in ch)), est_xy_cm_p50=pct(np.array([c["est_xy_cm"] for c in ch], float), 50), true_xy_cm_p50=pct(np.array([c["true_xy_cm"] for c in ch], float), 50), src=_count([c["src"] for c in ch]))
+            st = [r["site"] for r in R if "site" in r]
+            if st:
+                o["site_viol"] = dict(n=len(st), x_out=int(sum(s["x_out"] for s in st)), y_out=int(sum(s["y_out"] for s in st)), z_low=int(sum(s["z_low"] for s in st)), z_high=int(sum(s["z_high"] for s in st)), contact_false=int(sum(s["contact"] < 0.5 for s in st)), dsite_cm_p50=[pct(np.array([s["dsite_cm"][k] for s in st], float), 50) for k in range(3)], size_cm=st[0]["size_cm"])
         out[tag] = o
     if roles_on:
         fl = [(e, f) for e in eps for f in e.get("flips", [])]
@@ -234,7 +271,13 @@ def summarize(eps, roles_on):
                             since_release=dict(p10=pct(np.array([f["since_release"] for _, f in fl if f["since_release"] is not None], float), 10),
                                                p50=pct(np.array([f["since_release"] for _, f in fl if f["since_release"] is not None], float), 50),
                                                p90=pct(np.array([f["since_release"] for _, f in fl if f["since_release"] is not None], float), 90)),
-                            flips_before_first_release=int(sum(f["since_release"] is None for _, f in fl)))
+                            flips_before_first_release=int(sum(f["since_release"] is None for _, f in fl)),
+                            flips_in_carry=int(sum(f["in_carry"] for _, f in fl)),
+                            flips_in_carry_then_release_le10=int(sum(f["in_carry"] and f["carry_ends_in_release"] and f["steps_to_carry_end"] <= 10 for _, f in fl)),
+                            flips_in_carry_cmd_closed_lifted=int(sum(f["in_carry"] and f["a6"] > 0 and f["lift_cm"] > 1 for _, f in fl)),
+                            flips_after_release=int(sum(not f["in_carry"] for _, f in fl)),
+                            flips_in_carry_width_p50=pct(np.array([f["width"] for _, f in fl if f["in_carry"]], float), 50),
+                            flips_in_carry_steps_to_end_p50=pct(np.array([f["steps_to_carry_end"] for _, f in fl if f["in_carry"] and f["steps_to_carry_end"] is not None], float), 50))
     return out
 
 
