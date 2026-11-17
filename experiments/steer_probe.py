@@ -20,7 +20,7 @@ Records (one JSON line per probed query, <out>_steer.jsonl): chunk displacement 
 targets the n-th target minus the hand) of the true, cf, absent and nonsense chunks; the hand; p_old, p_new (simulator positions of the true and
 the swapped-in entity: measurement only).  The scores are computed in steer_read.py.
 
-    python experiments/steer_probe.py client --arm I|IR|tv|tvp|tvpb|tvb --scene 1|2 --steer-out X_steer.jsonl [--seg] <libero_client args>
+    python experiments/steer_probe.py client --arm I|IR|tv|tvp|tvpb|tvb|RA [--ra-arm rrel|raa] --scene 1|2 --steer-out X_steer.jsonl [--seg] <libero_client args>
       IR = I against a role-phrase rung server (absent / nonsense words travel as meta/side_slot + meta/side_phrase).
 """
 import copy
@@ -116,12 +116,14 @@ def install(arm, scene, phrases):
     def main():
         Cur = LC._wcp.WebsocketClientPolicy
         task = CFG["task"]
-        kind = "front" if arm in ("tv", "tvp", "tvpb", "tvb") else ("rung" if arm == "IR" else "plain")
+        kind = "front" if arm in ("tv", "tvp", "tvpb", "tvb") else ("rung" if arm == "IR" else ("ra" if arm == "RA" else "plain"))
 
         class SteerClient(Cur):
             absolute = None
 
             def side(self, e):
+                if kind == "ra":                                          # below RAAClient (no channel step), above the --seg payload layer
+                    return Cur.__mro__[1].infer(self, e)
                 return TRUE_INFER(self, e) if kind == "front" else Cur.infer(self, e)
 
             def infer(self, el):
@@ -148,6 +150,8 @@ def install(arm, scene, phrases):
                 kinds = [("cf", cand), ("absent", None), ("nonsense", None)]
                 chunks = {}
                 words = {}
+                if kind == "ra":
+                    RAP = ra_peek(Cur, el, tap)
                 for kd, c in kinds:
                     e = dict(el)
                     e["meta/side"] = True
@@ -170,6 +174,8 @@ def install(arm, scene, phrases):
                             ims.append(image_tools.convert_to_uint8(image_tools.resize_with_pad(im, CFG["resize"], CFG["resize"])))
                         e["observation/image"], e["observation/wrist_image"] = ims
                         e["prompt"] = P2[int(q["on"])] if phrases else text
+                    elif kind == "ra":
+                        e.update(ra_side(RAP, CFG["ra_arm"], kd, text, el, q, ph, tap, w if kd != "cf" else None))
                     elif kind == "rung" and kd != "cf":
                         e["prompt"] = el["prompt"]
                         e["meta/side_slot"] = "object" if ph == "grasp" else "target"
@@ -179,6 +185,8 @@ def install(arm, scene, phrases):
                     chunks[kd] = np.asarray(self.side(e)["actions"], np.float64)
                     ST_["n_side"] += 1
                 r = Cur.infer(self, el)                                    # the real query: executed
+                if kind == "ra":
+                    ra_check(RAP)
                 chunks["true"] = np.asarray(r["actions"], np.float64)
                 p_old = ST.entity_pos(raw_env, o if ph == "grasp" else t)
                 p_new = ST.entity_pos(raw_env, cand)
@@ -205,8 +213,79 @@ def install(arm, scene, phrases):
         print("[steer] arm %s scene %s kind %s task %s %r phrases %s out %s" % (arm, CFG["scene"], kind, task["key"], task["language"],
                                                                               phrases, CFG["out"]), flush=True)
         orig_main()
-        print("[steer] queries probed %d side queries %d" % (ST_["n_q"], ST_["n_side"]), flush=True)
+        print("[steer] queries probed %d side queries %d ra_peek_max_diff %s" % (ST_["n_q"], ST_["n_side"], ST_.get("ra_diff")), flush=True)
     LC.main = main
+
+
+def _free(fn):
+    return dict(zip(fn.__code__.co_freevars, [c.cell_contents for c in (fn.__closure__ or ())]))
+
+
+def ra_peek(Cur, el, tap):
+    """STEER-CONF adapter, arm RA (Rrel / RAA).  The estimate of every entity at THIS query, computed on COPIES of raa.py's client state
+    (detector, Estimator) with exactly the steps raa.py's `channel` takes, so a side query never steps the client's Estimator.  The real
+    query that follows steps the originals once, as an unprobed episode would; ra_check compares the two."""
+    g = _free(_free(Cur.infer)["channel"])
+    S, CUR, PF, lex, X, Cal, RV, FC, PU, PH = (g[k] for k in ("S", "CUR", "PF", "lex", "X", "Cal", "RV", "FC", "PU", "ProprioHeld"))
+    env = CUR["env"]
+    raw = env._e
+    text = str(el["prompt"])
+    if el.get("meta/episode_start") or S["det"] is None:
+        roles = PF.role_parse(lex, text)
+        det, E, first = PH(X["tw"], X["lift"]), RV.entity_tables(raw), True
+        est = PU.Estimator(Cal, roles[0]) if roles else None
+    else:
+        roles, det, E, first, est = S["roles"], copy.deepcopy(S["det"]), S["E"], S["first"], copy.deepcopy(S["est"])
+    out = dict(S=S, roles=roles, ok=roles is not None, FC=FC, RV=RV, PF=PF, lex=lex, pos=None)
+    if roles is None:
+        return out
+    obs = env.obs
+    ee = np.asarray(obs["robot0_eef_pos"], np.float64)
+    R = FC._quat_mat(np.asarray(obs["robot0_eef_quat"], np.float64))
+    held = bool(det.step(np.asarray(obs["robot0_gripper_qpos"], np.float64), env.cmd, ee[2]))
+    A, _ = PU.measure(raw, E, PU.AGENT, PU.MOV)
+    F = PU.measure(raw, E, PU.AGENT, PU.fixture_names(E))[0] if first else None
+    est.step(A, lambda: PU.measure(raw, E, PU.WRIST, PU.MOV)[0], F, held, ee, R, env.cmd)
+    out["pos"] = np.asarray(est.pos, np.float64).copy()
+    return out
+
+
+def ra_side(P, arm, kd, text, el, q, ph, tap, w):
+    """The side query's fields.  Channel rule (registered): cf = the lexicon parse of the swapped instruction and the estimate of the
+    swapped-in entity minus the end effector; absent / nonsense words keep the true instruction's channel.  Rrel reads the whole
+    instruction, so its prompt carries the suffix from here; RAA's server appends it from meta/raa_obj / meta/raa_tgt and paints the
+    views (the absent / nonsense word goes in as a slot phrase, as for the role-phrase rungs)."""
+    roles = P["roles"]
+    if kd == "cf" and P["ok"]:
+        roles = P["PF"].role_parse(P["lex"], text)
+    ok = bool(P["ok"] and roles is not None)
+    ent = P["FC"].ENT
+    on = bool(q["on"])
+    out = {"meta/raa_ok": ok}
+    if ok:
+        out["meta/raa_obj"] = [float(x) for x in P["pos"][ent.index(roles[0])]]
+        out["meta/raa_tgt"] = [float(x) for x in P["pos"][ent.index(roles[1])]]
+    else:
+        out["meta/raa_why"] = "side query: no roles"
+    if kd == "cf":
+        out["prompt"] = text
+    else:
+        out["prompt"] = el["prompt"]
+        if arm == "rrel":                                                   # whole-instruction prompt: the server swaps the text, keeps the suffix
+            out["meta/side_text"] = text
+            return out
+        out["meta/side_slot"] = "object" if ph == "grasp" else "target"
+        out["meta/side_phrase"] = w if ph == "grasp" else strip_prep(w)
+    return out
+
+
+def ra_check(P):
+    if P["pos"] is None:
+        return
+    d = float(np.abs(P["S"]["est"].pos - P["pos"]).max())
+    ST_["ra_diff"] = max(ST_.get("ra_diff", 0.0), d)
+    if d > 1e-9:
+        print("[steer] RA peek differs from the real estimator by %.3g m" % d, flush=True)
 
 
 def strip_prep(w):
@@ -229,7 +308,8 @@ def take(name, default=None):
 def client_main():
     sys.argv.pop(1)                                                         # "client"
     arm = take("--arm")
-    assert arm in ("I", "IR", "tv", "tvp", "tvpb", "tvb"), arm
+    assert arm in ("I", "IR", "tv", "tvp", "tvpb", "tvb", "RA"), arm
+    CFG["ra_arm"] = take("--ra-arm") if arm == "RA" else None
     scene = int(take("--scene", "1"))
     CFG.update(arm=arm, scene=scene, out=take("--steer-out"))
     assert CFG["out"], "--steer-out"
@@ -247,7 +327,12 @@ def client_main():
     phrases = arm in ("tvp", "tvpb")
     install(arm, scene, phrases)
     if scene == 1:
-        if arm in ("I", "IR"):
+        if arm == "RA":                                                     # STEER-CONF: Rrel / RAA through raa.py's client
+            assert CFG["ra_arm"] in ("rrel", "raa"), CFG["ra_arm"]
+            import raa as RAA
+            sys.argv[1:1] = ["client", "--arm", CFG["ra_arm"]]
+            RAA.client_main()
+        elif arm in ("I", "IR"):
             import fc_n2_client as FN
             if seg:
                 FN._seg_px()
