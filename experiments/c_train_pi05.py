@@ -149,7 +149,7 @@ if __name__ == "__main__":
     ap.add_argument("--roles", action="store_true", help="pi05_goal8_roles: the same frames with per-frame role prompts (docs/SCAFFOLD_RESULTS.md 33)")
     ap.add_argument("--rsup", action="store_true", help="pi05_goal8_rsup: supervised stage, given role phrases (docs/SCAFFOLD_RESULTS.md 33.1)")
     ap.add_argument("--ae", action="store_true", help="with --goal8/--rsup/--roles: the '_ae' config, frozen VLM and trainable action expert (docs/SCAFFOLD_RESULTS.md 34)")
-    ap.add_argument("--g8v", default=None, choices=("plain", "rsup", "rview", "rview2", "rbox"), help="pi05_g8v_<arm>_ae: the ladder's "
+    ap.add_argument("--g8v", default=None, choices=("plain", "rsup", "rview", "rview2", "rbox", "rrel", "raa"), help="pi05_g8v_<arm>_ae: the ladder's "
                     "re-rendered K1-K8 frames, R0 plain / R1 role phrases / R2 role views (rview: first rule; rview2, rbox: second rule, "
                     "masks / boxes) (experiments/sc_rv.py); implies the _ae recipe")
     ap.add_argument("--init", default=None, help="a NEW run starts from this JAX params dir (default: the config's loader)")

@@ -1,0 +1,28 @@
+RAA-min (SR 73; docs/PLAN_PAPER.md 2b).  Written 2026-11-16, before the training jobs start and before any rollout of Rrel or RAA.  Known when written: SR 34, 37 (R0 .025 and R2 .425 on N1-N6 familiar, dev states 4-23; R2 grasps the right object .975 and places .436 given a right grasp; K1-K6 R0 .85, R2 .758), SR 43 (R2l .417), SR 52, 55, 65 (ReGuide on frozen pi0.5: rgp .929 on N1-N6), SR 70-72.
+
+The test.  One added input, the active role entity's position minus the end effector's, in whole centimetres, with a role id, as a text suffix on the prompt of each routed frame (K1-K6; N1-N6 at test).  Rrel = R0's inputs + the channel.  RAA = R2's inputs (role phrases, the other movable objects painted) + the channel.  Same frames, recipe (frozen VLM, action expert, batch 32, 6,000 steps, lr 5e-5, 1,000 warmup, no EMA) and one seed as R0 and R2.  Test time: the channel comes from learned masks + rendered depth + calibration (sc_pu.Estimator), the pointer from the contact-induced lexicon (role_parse); the server paints R2's views from the learned masks (as R2l).  The prompt carries no other new information.
+
+States: 60 familiar-layout states per task: the 20 dev states R0 / R2 / R2l were read on (harness trials 4-23, read from SR 37 / 43 unchanged) and 40 new states (k = 540-579, harness trials 24-63).  Tasks K1-K6 and N1-N6.  Every arm is read on all 60.
+
+Predictions (N1-N6 familiar, pooled 60 states unless stated).
+1. Fit gate: R0 on K1-K6 >= .80 (.85 on the dev states).  I expect it to pass (90%).
+2. RAA N1-N6 success about .70 (range .50-.85); R2 about .43 and R2l about .42 on these states; R0 about .03.  RAA grasps the right object about .95 (R2's rate).  RAA's placed-given-right-grasp about .75 against R2's .44.
+3. V1 primary (RAA - R2 on N1-N6 success and on placed-given-right-grasp): SUPPORTED 45%, PARTIAL 20%, NOT SUPPORTED 35%.  Point estimate of V1a about +.25 [+.10, +.40].  My doubt: the model must read digits from the frozen VLM's prefix with an action expert trained for 6,000 steps; it may use the role id and ignore the numbers.
+4. V2 Rrel - R0: Rrel about .30 on N1-N6; V2a A BEATS B (lower bound > 0) 60%.  Geometry alone is likely to help less than the views: RAA - Rrel (V2c) A BEATS B 55%.
+5. V3 RAA - rgp (ReGuide on frozen pi0.5, perception arm; rgp about .90 on these states): RAA NON-INFERIOR (lower bound > -.10) 15%.  RAA does not beat rgp (V3b) 97%.  I expect the policy-internal fix to trail the wrapper that drives the arm itself.
+6. K1-K6 cost: K1 (RAA - R2) NON-INFERIOR (lower bound > -.05) 50%; K2 (Rrel - R0) 50%.  The numbers in the prompt are a new nuisance on tasks the model already solves.  RAA's K1-K6 about .75.
+7. Channel error at test (smoke and main): median |estimate - simulator| under 1.5 cm on object-role queries before the hold, 2 cm on target-role queries; the estimator's 1 cm rounding adds under 0.5 cm.  The object estimate worsens when the arm hides it (source 'occl' or 'last').
+8. Which pairings: cheese pairings (N1-N3) gain more than bottle pairings (N4-N6) over R2 (D1 > D2 in the point estimate) 60%, because R2 places the cheese worse (.52 vs .33 success, grasp equal).  Neither D1 nor D2 carries a verdict.
+
+Labels and margins (experiments/raa_read.py, B = 2000 paired bootstrap over tasks and states, rng 0, as sc_t34).
+V1a RAA - R2, success, N1-N6.  A BEATS B iff the lower bound > 0; B BEATS A iff the upper bound < 0; otherwise NO CLEAR DIFFERENCE.
+V1b RAA - R2, placed given right grasp (success rate / right-grasp rate), N1-N6, same labels.
+V1 primary: SUPPORTED iff V1a and V1b both have lower bound > 0; PARTIAL iff exactly one; NOT SUPPORTED otherwise.
+V1l, V1l2: V1a and V1b against R2l (R2 painted from learned masks), reported with the same labels, no weight in V1.
+V2a, V2b: Rrel - R0, success and placed given right grasp.  V2c: RAA - Rrel, success.
+V3a: RAA - rgp, N1-N6 success: NON-INFERIOR iff the lower bound > -.10; COST iff the upper bound < 0; otherwise NOT SHOWN.  V3b: BEATS iff the lower bound > 0.  V3c: Rrel - rgp, as V3a.
+K1: RAA - R2, K1-K6 success; K2: Rrel - R0; K3: RAA - R0; K4: RAA - rgp.  NON-INFERIOR iff the lower bound > -.05; COST iff the upper bound < 0; otherwise NOT SHOWN.
+Fit gate: R0 on K1-K6 below .80 reads UNDERFIT and nothing is read as a statement about composition (sc_t34).  RAA's and Rrel's own K1-K6 rates are reported.
+Reported with no label: per-task success, right-grasp rate and placed-given-right-grasp for every arm; D1 / D2 (cheese and bottle pairings, RAA - R2); channel error per query.
+
+What would count against the plan's claim.  RAA - R2 with an upper bound under +.10 on both V1a and V1b while RAA's right-grasp rate stays at R2's: then a position channel in the prompt does not close the place gap at matched data, and the place failure is not an addressing failure alone.  Rrel - R0 near 0 and RAA - Rrel near RAA - R2: the views carry what gain there is and the channel adds nothing.

@@ -54,8 +54,13 @@ RV_ROOT = "/coc/flash10/ksingara3/robot/data/fa1/rv"
 OUT = os.path.join(ROOT, "results", "flawed")
 CHECK_DIR = os.path.join(OUT, "sc_rv_check")
 KNOWN = tuple("K%d" % i for i in range(1, 9))
-ARMS = ("plain", "rsup", "rview", "rview2", "rbox")
-PAINTED = ("rview", "rview2", "rbox")
+ARMS = ("plain", "rsup", "rview", "rview2", "rbox", "rrel", "raa")
+PAINTED = ("rview", "rview2", "rbox", "raa")
+# SCAFFOLD_RESULTS 73 (RAA-min): the same frames as the base arm plus the role channel in the prompt text.  rrel = plain + channel
+# (Rrel = R0 + channel), raa = rview2 + channel (RAA = R2 + channel).  The channel is on exactly the frames the base arm routes
+# (sc_t16.given is not None: K1-K6); K7 and K8 stay whole with no channel.
+BASE = {"rrel": "plain", "raa": "rview2"}
+CHAN_ARMS = tuple(BASE)
 # rview2 / rbox (the second rule): only the four movable objects are paintable; on every routed frame every one of them is painted
 # except the active role's filler (before the hold the task's object; during it the task's target if movable, else none).
 # rview2 paints exact masks; rbox paints each object's axis-aligned box in that camera, except the active filler's own pixels
@@ -111,6 +116,18 @@ def quat2axisangle(quat):
     if math.isclose(den, 0.0):
         return np.zeros(3)
     return (q[:3] * 2.0 * math.acos(q[3])) / den
+
+
+def chan_cm(rel):
+    """Metres -> whole centimetres, rounded half away from zero (the role channel's 1 cm resolution)."""
+    return [int(math.floor(abs(float(v)) * 100.0 + 0.5)) * (1 if float(v) >= 0 else -1) for v in rel]
+
+
+def chan_text(base, rel, on):
+    """SR 73: the role channel as a text suffix.  rel = the active role entity's position minus the end effector's, base-frame axes,
+    metres; on = ProprioHeld (role target while held, else role object).  Used by training (convert) and by the test-time server."""
+    c = chan_cm(rel)
+    return "%s. rel: %+d %+d %+d cm, role %s" % (base, c[0], c[1], c[2], "target" if on else "object")
 
 
 def paint(img, seg, idx):
@@ -460,19 +477,22 @@ def lex(a):
     return X
 
 
-def frames_of(z, c, arm, X, T16, roles):
-    """One rendered demo -> per frame (image, wrist, prompt, held, painted agent px, painted wrist px)."""
+def frames_of(z, c, arm, X, T16, roles, rel=None):
+    """One rendered demo -> per frame (image, wrist, prompt, held, painted agent px, painted wrist px).  rel (SR 73, arms rrel / raa):
+    [n, 2, 3] metres, per frame the role channel for the object role [:, 0] and the target role [:, 1]; the frame takes the one of its phase."""
+    base_arm = BASE.get(arm, arm)
+    assert (rel is not None) == (arm in CHAN_ARMS), (arm, rel is None)
     text = str(z["language"])
     P = T16.given(text)
     H = T16.held_rows(z["state"], z["actions"], X["tw"], X["lift"])
     ids = (None, None)
-    if arm == "rview" and P is not None:
+    if base_arm == "rview" and P is not None:
         obj, tgt = roles[c]
         ids = (slot_index(z["names"], z["slot_names"], z["slot_ents"], tgt),          # before the hold: the target is painted
                slot_index(z["names"], z["slot_names"], z["slot_ents"], obj))          # during it: the held object
         assert ids[0] is not None and ids[1] is not None, (c, roles[c], list(z["slot_ents"]))
     plan = None
-    if arm in ("rview2", "rbox") and P is not None:
+    if base_arm in ("rview2", "rbox") and P is not None:
         obj, tgt = roles[c]
         plan = []
         for h in (False, True):                                             # per phase: (entity ids to paint, active filler id)
@@ -482,17 +502,92 @@ def frames_of(z, c, arm, X, T16, roles):
             plan.append((pid, None if act is None else slot_index(z["names"], z["slot_names"], z["slot_ents"], act)))
     for i in range(len(z["actions"])):
         h = bool(H[i])
-        task = text if (arm == "plain" or P is None) else P[int(h)]
+        task = text if (base_arm == "plain" or P is None) else P[int(h)]
+        if rel is not None and P is not None:
+            task = chan_text(task, rel[i, int(h)], h)
         img, wimg = z["image"][i], z["wrist"][i]
         na = nw = 0
-        if arm == "rview" and P is not None:
+        if base_arm == "rview" and P is not None:
             img, na = paint(img, z["seg"][i], ids[int(h)])
             wimg, nw = paint(wimg, z["wseg"][i], ids[int(h)])
         elif plan is not None:
             pid, aid = plan[int(h)]
-            img, na = paint_many(img, z["seg"][i], pid, aid, box=arm == "rbox")
-            wimg, nw = paint_many(wimg, z["wseg"][i], pid, aid, box=arm == "rbox")
+            img, na = paint_many(img, z["seg"][i], pid, aid, box=base_arm == "rbox")
+            wimg, nw = paint_many(wimg, z["wseg"][i], pid, aid, box=base_arm == "rbox")
         yield img, wimg, task, h, na, nw
+
+
+def chan_path(root, task, i):
+    return os.path.join(root, task, "chan_%02d.npz" % int(i))
+
+
+def chan(a):
+    """SR 73, LIBERO venv (CPU is enough: no rendering).  Per rendered demo of K1-K6 (K7 and K8 are not routed, so carry no channel):
+    each kept raw state is set in the task's own env and the nine role slots' positions (fa1_common.scene: movable bodies, fixture
+    sites; the demo's own recorded scene) and the end effector are read -> <root>/<task>/chan_<demo>.npz.  The end effector must
+    equal the rendered demo's state[:, :3]."""
+    import fa1_common as FC
+    for c in [t for t in tasks_arg(a) if t not in ("K7", "K8")]:
+        raw = np.load(raw_path(a.root, c))
+        todo = [f for f in demo_files(a.root, c) if not os.path.exists(chan_path(a.root, c, int(os.path.basename(f)[5:-4])))]
+        print("[rv] chan %s: %d demos to do" % (c, len(todo)), flush=True)
+        if not todo:
+            continue
+        env = FC.make_env(_bddl(c))
+        env.seed(0)
+        env.reset()
+        dj = FC.drawer_joint(env)
+        sim = env.env.sim
+        try:
+            bq = np.asarray(sim.data.body_xquat[sim.model.body_name2id("robot0_base")], np.float64).tolist()
+            bp = np.asarray(sim.data.body_xpos[sim.model.body_name2id("robot0_base")], np.float64).tolist()
+        except Exception as e:                                               # noqa: BLE001
+            bq, bp = None, repr(e)
+        print("[rv] %s robot0_base quat %s pos %s (identity quat: base axes = world axes, so rel is the base-frame offset)" % (c, bq, bp), flush=True)
+        for f in todo:
+            z = np.load(f)
+            j = int(z["demo"])
+            kept = np.asarray(z["kept"])
+            st = raw["states_%d" % j]
+            pos, ee = [], []
+            for t in kept:
+                obs = env.set_init_state(st[t])
+                sc = FC.scene(env, obs, dj)
+                pos.append(sc["pos"])
+                ee.append(sc["ee_pos"])
+            pos, ee = np.asarray(pos, np.float32), np.asarray(ee, np.float32)
+            d = float(np.abs(ee - np.asarray(z["state"])[:, :3]).max())
+            assert d < 2e-3, "%s demo %d: end effector differs from the rendered state by %.4g" % (c, j, d)
+            atomic_savez(chan_path(a.root, c, j), pos=pos, ee=ee, kept=kept, ee_maxdiff=np.float32(d),
+                         base_quat=np.asarray(bq if bq is not None else [np.nan] * 4, np.float64), ent=np.array(FC.ENT))
+            print("[rv] chan %s demo %d: %d frames, ee max diff %.2g" % (c, j, len(kept), d), flush=True)
+        env.close()
+    print("[rv] chan done", flush=True)
+
+
+def demo_rel(z, c, f, a, X, T16, roles, info):
+    """SR 73 (openpi venv): one rendered demo -> rel [n, 2, 3], the role channel of each frame for both roles: slot position minus the
+    end effector, metres.  The slots come from the demo's OWN contact events: pp_p_train.demo_sites (ladder L4 step 1) on the demo's
+    recorded slot positions and ProprioHeld rows: g = the slot that moves farthest over the hold, r = the slot nearest g at the last
+    held row.  A demo with no hold event takes the task definition's slots (counted in info['fallback']).  No instruction text is read."""
+    import fa1_common as FC
+    import pp_p_train as PP
+    ch = np.load(chan_path(a.root, c, int(os.path.basename(f)[5:-4])))
+    pos, ee = np.asarray(ch["pos"], np.float64), np.asarray(ch["ee"], np.float64)
+    assert len(pos) == len(z["actions"]) and list(ch["ent"]) == list(FC.ENT), (f, pos.shape, len(z["actions"]))
+    H = np.asarray(T16.held_rows(z["state"], z["actions"], X["tw"], X["lift"]), np.float64)
+    D = dict(task=np.zeros(len(H), np.int32), demo=np.zeros(len(H), np.int32), pos=pos)
+    s = PP.demo_sites(D, H).get((0, 0))
+    info["demos"] += 1
+    obj, tgt = FC.roles(str(z["language"]))                                  # fa1_common slot names (the task definition; fallback and a count only)
+    if s is None:
+        info["fallback"].append(os.path.basename(f) + ":" + c)
+        g, r = obj, tgt
+    else:
+        g, r = s["g"], s["r"]
+        info["g_ne_given"] += int(g != obj)
+        info["r_ne_given"] += int(r != tgt)
+    return np.stack([pos[:, FC.ENT.index(g)] - ee, pos[:, FC.ENT.index(r)] - ee], axis=1)
 
 
 def convert(a):
@@ -509,7 +604,7 @@ def convert(a):
     if root.exists():                                  # this job's own interrupted run (LeRobot writes meta/info.json at create)
         print("[rv] removing incomplete %s (no %s)" % (root, man_path), flush=True)
         shutil.rmtree(root)
-    files = {c: demo_files(a.root, c) for c in KNOWN}
+    files = {c: demo_files(a.root, c)[:(a.ndemo or None)] for c in KNOWN}
     print("[rv] convert %s -> %s; demos per task %s" % (a.arm, repo, {c: len(v) for c, v in files.items()}), flush=True)
     if not a.suffix:
         assert all(len(files[c]) > 0 for c in KNOWN), "a task has no rendered demos"
@@ -520,11 +615,14 @@ def convert(a):
     ds = LeRobotDataset.create(repo_id=repo, root=root, robot_type="panda", fps=10, features=features, image_writer_threads=8,
                                image_writer_processes=4)
     k, counts, per_task, paint_stats = 0, {}, {}, {}
+    chan_info = dict(demos=0, fallback=[], g_ne_given=0, r_ne_given=0)
     for c in KNOWN:
         for f in files[c]:
             z = dict(np.load(f))                                             # once: NpzFile decompresses on every access
             assert str(z["task"]) == c, (f, str(z["task"]))
-            for i, (img, wimg, task, h, na, nw) in enumerate(frames_of(z, c, a.arm, X, T16, by_c)):
+            routed = T16.given(str(z["language"])) is not None                  # K7, K8 are not routed: no channel, no chan file
+            rel = (demo_rel(z, c, f, a, X, T16, by_c, chan_info) if routed else np.zeros((len(z["actions"]), 2, 3))) if a.arm in CHAN_ARMS else None
+            for i, (img, wimg, task, h, na, nw) in enumerate(frames_of(z, c, a.arm, X, T16, by_c, rel)):
                 counts[task] = counts.get(task, 0) + 1
                 s = paint_stats.setdefault("%s|%s" % (c, "held" if h else "pre"), dict(frames=0, agent_px=0, wrist_px=0, agent_empty=0,
                                                                                         wrist_empty=0))
@@ -544,12 +642,16 @@ def convert(a):
     for s in paint_stats.values():
         s["agent_frac"] = s["agent_px"] / float(s["frames"] * SIZE * SIZE)
         s["wrist_frac"] = s["wrist_px"] / float(s["frames"] * SIZE * SIZE)
-    man = dict(repo_id=repo, arm=a.arm, episodes=k, frames=int(ds.meta.total_frames), per_task=per_task, frames_per_prompt=counts,
+    man = dict(repo_id=repo, arm=a.arm, episodes=k, frames=int(ds.meta.total_frames), per_task=per_task,
+               frames_per_prompt=counts if a.arm not in CHAN_ARMS else dict(distinct=len(counts), sample=dict(list(counts.items())[:12])),
+               channel=chan_info if a.arm in CHAN_ARMS else None,
                paint=paint_stats if a.arm in PAINTED else None, tw=X["tw"], lift=X["lift"], root=a.root)
     with open(man_path, "w", encoding="utf-8") as fh:
         json.dump(man, fh, indent=1)
     print("[rv] done %s: %d episodes, %d frames, per task %s" % (repo, k, int(ds.meta.total_frames), json.dumps(per_task)), flush=True)
-    print("[rv] frames per prompt %s" % json.dumps(counts), flush=True)
+    print("[rv] frames per prompt %s" % json.dumps(counts if a.arm not in CHAN_ARMS else man["frames_per_prompt"]), flush=True)
+    if a.arm in CHAN_ARMS:
+        print("[rv] channel %s" % json.dumps(chan_info), flush=True)
     if a.arm in PAINTED:
         for key, s in sorted(paint_stats.items()):
             print("[rv] paint %-9s frames %6d  agent frac %.4f (empty %d)  wrist frac %.4f (empty %d)" % (
@@ -785,7 +887,8 @@ def boxes(a):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("what", choices=("extract", "render", "probe", "lex", "convert", "norm", "serve", "check", "boxes"))
+    ap.add_argument("what", choices=("extract", "render", "probe", "lex", "convert", "norm", "serve", "check", "boxes", "chan"))
+    ap.add_argument("--ndemo", type=int, default=0, help="convert: only the first N rendered demos per task (smoke datasets)")
     ap.add_argument("--frames", default="", help="boxes: frame indices, '+'-joined")
     ap.add_argument("--task", default="", help="K1..K8, '+'-joined (default: all)")
     ap.add_argument("--demos", default="", help="render: demo numbers, '+'-joined (default: all)")
@@ -801,4 +904,4 @@ if __name__ == "__main__":
     if a.what == "serve":
         serve_cmd(a)
     else:
-        dict(extract=extract, render=render, probe=probe, lex=lex, convert=convert, norm=norm, check=check, boxes=boxes)[a.what](a)
+        dict(extract=extract, render=render, probe=probe, lex=lex, convert=convert, norm=norm, check=check, boxes=boxes, chan=chan)[a.what](a)
