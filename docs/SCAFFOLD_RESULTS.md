@@ -5171,3 +5171,94 @@ Does tracking the held mug during the carry lift N1 (rgt)? Does ReGuide hold its
 - Camera calibration stays privileged.
 - GR00T was not run.
 - C1 is unmet (N1 .567).
+
+## 70. The composite RC against ReGuide alone: relational language (F7) and a target seen once, then hidden (F6) (m3_prereg rg_comp, ledger row m3_prereg__libero_goal__rg_comp__s0__bb0dbeb7.json, written before any main rollout; code and predictions commit f37e2840, prereg row commit 92f3c2d7; build jobs 4744639 (F7) and 4744640 (F6), assemble 4744641 (failed, KeyError) and 4751051 (passed; 4750738 cancelled while pending), smoke jobs 4751335 (pi0.5) and 4751336 (pi0), smoke read 4751744, prereg job 4751754; rollout jobs 4751755-4751770, read job 4751966; results/flawed/rg_comp/pcheck.json, rg_comp_read.json, rollouts results/flawed/rg_comp_roll)
+
+**Question.** The candidate architecture is RC: the F7R referent resolver (§45.2), an F6 memory slot (§45.6), ReGuide transport that binds the resolved referent and its destination (§52, §68-§69), and a frozen VLA that executes. Does RC beat ReGuide alone (rgp) and the intact VLA (I) on two failures, with no cost on trained tasks?
+- F7: relational and negated language.
+- F6: a target seen once, then covered.
+
+**Design** (`experiments/rg_comp.py`, `rg_comp_roll.sh`, predictions `experiments/prereg/rg_comp_pred.txt`, written before any job; what was seen before the row: `rg_comp_seen.txt`).
+- **Models.** Frozen pi0.5 (primary) and pi0 (secondary). One client seed, one trial per state.
+- **F7 tasks** (40 states per family): relational relL and relR (SP), positional pos and negated neg (NG). Unique-name controls uniL, uniR, uniP run under I only and set the gates and CEILING flags. K2t is the trained layout.
+- **F6 tasks** (60 states): F6_b (the displaced plate is covered after the first query); F6_a (the same states uncovered, I only; the gate); K1t (trained, 60 states).
+- **Arms.** I, rgp, rc, plus reference arms f7r (resolver only, I executes) and mem (memory slot only).
+- **Contrasts.** V1: RC - rgp per F7 family. V2: RC - rgp on F6_b. V3: RC - I per cell, with K non-inferiority at -.05.
+- **Gates.** Model floor: I on K >= .70. F7 family: U >= .50. F6: I on F6_a >= .50. A cell below its gate is reported NOT TESTABLE and kept.
+
+**Gates.**
+
+| gate | pi0.5 | pi0 |
+|---|---|---|
+| floor, I on K | 1.000, TESTABLE | .967, TESTABLE |
+| SP, U | .950, TESTABLE | .663, TESTABLE |
+| NG, U | .875, TESTABLE | .475, NOT TESTABLE |
+| F6, I on F6_a | .967, TESTABLE | .017, NOT TESTABLE |
+| CEILING flags | none | pos (uniP 0.0) |
+
+**Success rates** (n: 40 per F7 family, 60 per F6 cell and K1t, 40 K2t; pooled SP = relL + relR, NG = pos + neg; 95% intervals in rg_comp_read.json). Prediction in brackets, from the pred file.
+
+| cell | I | rgp | rc | f7r | mem |
+|---|---|---|---|---|---|
+| pi0.5 SP | .425 [.40] | .425 [.45] | .975 [.95] | .975 [.95] | |
+| pi0.5 NG | .275 [.20] | .287 [.30] | .950 [.80] | .863 [.78] | |
+| pi0.5 F6_b | .517 [.55] | .633 [.80] | .800 [.87] | | .817 [.80] |
+| pi0.5 K (K1t, K2t mean) | 1.000 [.99] | .992 [.99] | .992 [.98] | | |
+| pi0 SP | .225 [.20] | .312 [.35] | .688 [.55] | .675 [.40] | |
+| pi0 NG (NOT TESTABLE) | .287 [.20] | .338 [.30] | .500 [.55] | .500 [.50] | |
+| pi0 F6_b (NOT TESTABLE) | .000 [.25] | .183 [.55] | .217 [.60] | | .000 [.35] |
+| pi0 K | .967 | .938 | .929 | | |
+
+Per family, pi0.5 relL / relR: I .850 / .000, rgp .800 / .050, rc .950 / 1.000. pos / neg: I .000 / .550, rgp .000 / .575, rc .900 / 1.000. pi0 relL / relR: I .450 / .000, rgp .500 / .125, rc .750 / .625; pos is 0.000 under every arm; neg I .575, rgp .675, rc 1.000.
+
+**Contrasts.**
+
+| contrast | pi0.5 (95% interval) | label | pi0 | label |
+|---|---|---|---|---|
+| V1 SP, rc - rgp | +.550 [+.488, +.625] | RC WINS | +.375 [+.263, +.488] | RC WINS |
+| V1 NG, rc - rgp | +.663 [+.587, +.738] | RC WINS | +.163 [+.088, +.238] | NOT TESTABLE (gate) |
+| V2 F6_b, rc - rgp | +.167 [+.050, +.284] | RC WINS | +.033 [-.083, +.167] | NOT TESTABLE (gate) |
+| V3 SP, rc - I | +.550 [+.500, +.613] | FIX WORKS | +.463 [+.338, +.588] | PARTIAL (K cost not shown) |
+| V3 NG, rc - I | +.675 [+.587, +.763] | FIX WORKS | +.213 [+.138, +.300] | NOT TESTABLE |
+| V3 F6_b, rc - I | +.283 [+.150, +.417] | FIX WORKS | +.217 [+.117, +.333] | NOT TESTABLE |
+| dK, rc - I | -.008 [-.025, .000] | NON-INFERIOR | -.037 [-.083, +.004] | NOT SHOWN |
+
+Descriptive (pi0.5): rgp - I on F6_b +.117 [-.033, +.267]; mem - I +.300 [+.167, +.433]; rc - mem -.017 [-.100, +.067]; rc - f7r +.000 [-.037, +.037] on SP and +.087 [+.037, +.150] on NG; rgp - I on SP +.000 and on NG +.012. On pi0: rc - f7r +.012 (SP), .000 (NG); rgp - I on F6_b +.183 (not testable). The pi0 trained-task cost sits on K1t: rc - I -.100 [-.183, -.033], rgp - I -.083 [-.150, -.017]; K2t +.025 for both.
+
+**Mechanism.**
+- **Resolver.** Correct on 40 of 40 episodes in every F7 family, both models (predicted >= 98%).
+- **rgp's binding.** The bound instance is the referent on 34 / 40 (relL), 6 / 40 (relR), 16 / 40 (pos), 24 / 40 (neg), pooled .50 per family pair, as predicted (.40-.60). rgp's success equals I's to within .012 on every pi0.5 F7 family pair, so the choice of instance carries the F7 failure. C (chosen-referent rate) on pi0.5: I .500, rgp .512 (SP), .500 (NG); rc .988 (SP), .987 (NG).
+- **Registration.** The bound bowl's median error is .17-.89 cm under rc. Under rgp on pos and neg it is 5.1 cm, because rgp binds the largest bowl component and the plate bowl sits in the table bowl's region. The plate's own median error is 2.77 cm in both NG families under every arm, above the 1 cm predicted; the destination plate is the NG cells' remaining error. F6_b: bound plate .05 cm, plate error at the episode's end .21 cm (pi0.5) and .45 cm (pi0) under rgp, below the predicted 2 cm.
+- **Memory slot.** Record ok on every episode checked (F7 and F6), mask IoU median .987-.991, centre error median <= .46 cm. It latches on 60 of 60 F6_b episodes at env step 15 (median), the cover's move. It latches on 39 of 40 pi0.5 relR episodes (the hand over the plate), so the slot is not silent on F7, and rc's pi0.5 relR success was unharmed (1.000).
+- **Why pi0 stays low.** pi0's unique-name control for pos is 0.0, F6_a is .017, and neither the resolver nor the slot changes a policy that cannot execute the unhidden or named-plate task. Under rc on pi0 the pos episodes log transports on every episode (mean 3.05) with 39 of 40 wrong-binding events and 40 re-arms, consistent with an executor that does not follow the bound target.
+
+**Predictions against outcomes.**
+- **Held.** Gates on pi0.5 (all TESTABLE); resolver >= 98%; V1 SP and NG RC WINS on pi0.5 (predicted 90% / 85%; points +.55 and +.66, the NG point at the top of the predicted +.30 to +.65 range); V3 SP and NG FIX WORKS; K non-inferior; C(rc) on SP .988 (predicted >= .90); slot record, IoU and latch; pi0 pos CEILING; pi0 SP V1 RC WINS.
+- **Missed.**
+  - V2 on pi0.5: predicted NO CLEAR DIFFERENCE (55%), RC WINS (40%); outcome RC WINS (+.167).
+  - rgp - I on F6_b: predicted lower bound > 0 (70%); outcome +.117 [-.033, +.267], so the registered-pose account of ReGuide as a memory is not supported at this n. rgp F6_b point .633 (predicted .80).
+  - rc - mem on F6_b > 0 (60%): outcome -.017 [-.100, +.067].
+  - pi0 NG gate (predicted TESTABLE 55%): U .475, NOT TESTABLE. pi0 F6 gate (predicted .55, TESTABLE 55%): .017, NOT TESTABLE. pi0 V3 on F6_b was predicted FIX WORKS 50%, now NOT TESTABLE.
+  - pi0 F7R points were higher than predicted (f7r SP .675 against .40).
+  - Plate registration median <= 1 cm on the NG families (2.77 cm).
+
+**Reading (pi0.5, consistent with, not proven).**
+- **F7.** Swapping rgp's positional binding for the resolver (rc against rgp) lifts SP by +.55 and NG by +.66, and I executing the resolver's painted view (f7r) reaches .975 / .863. ReGuide's transport adds +.087 [+.037, +.150] on NG over f7r (rc - f7r) and nothing on SP. So the F7 repair is carried by the resolver; the transport is consistent with carrying the negated or positional destination. ReGuide alone does not fix F7: rgp - I is +.000 on SP and +.012 on NG, as the account predicted. The manipulation is the binding rule (rc and rgp share the transport and perception code).
+- **F6.** The memory-only arm (mem) lifts I by +.300; rgp alone by +.117 (interval includes 0); rc over rgp by +.167. rc and mem are indistinguishable (-.017). The gain is consistent with the image memory slot and not with ReGuide's one-shot registered pose. A mem-only arm is a removal control for ReGuide's pose; there is no arm that removes the slot from rc other than rgp.
+- **Cost.** pi0.5 K moves -.008 [-.025, .000] under rc (K1t -.017, one episode in 60).
+- RC is not tested against a reference planner (none was built), so no ceiling on F6_b is claimed. rc's F6_b (.800) stays below F6_a (.967) by .167.
+
+**pi0 (secondary).** SP: RC WINS over rgp (+.375), at a K1t cost of -.100 [-.183, -.033] that makes the K label NOT SHOWN, so V3 SP reads PARTIAL. NG, F6_b and every NG / F6 contrast are NOT TESTABLE under the registered gates. pos stays 0.000 under all arms (CEILING). Those cells are listed, not dropped.
+
+**Deviations (all disclosed).**
+- rgp binds the largest bowl component when two identical bowls are present (its template rule has no relation).
+- The memory slot latches when the plate mask falls below 50% of its first-view size.
+- ReGuide's one-shot registration holds a pose from before the cover, so V2 tests image memory on top of ReGuide.
+- No reference planner.
+- The build was split and made resumable after job 4744507 was cancelled.
+- In `rg_roles`, the cross-check against `fa1_common.roles` also catches KeyError, because the template parse has no relational nouns such as "left bowl". Made by the orchestrator before the prereg; rgp's binding (first and last noun by position) is unchanged. Assemble 4744641 failed on it.
+- Assemble was rerun on tail-lab (4751051) because the overcap resubmission 4750738 sat pending; 4750738 was cancelled. Rollouts used overcap and tail-lab (f7r, mem jobs). Job 4751763 (pi0 I) was requeued once by the scheduler; its finished cells were skipped by design.
+- The ledger row carries dirty=true (other agents' uncommitted files). Commits are local, on main.
+- No python was run on the login node and no result JSON was opened there; all numbers come from SLURM logs of the read job.
+
+**Limits.** One simulator layout per family, 40-60 states per cell, one client seed. The F7R resolver covers fixed templates only and reads a parsed scene (routing fix, not language understanding). pi0 cannot execute the plate-bowl or unhidden F6 task, so its F6 and NG verdicts are untestable here. The NG plate registration (2.77 cm) is an open perception limit.
