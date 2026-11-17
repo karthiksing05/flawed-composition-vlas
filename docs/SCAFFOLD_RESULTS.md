@@ -5262,3 +5262,125 @@ Descriptive (pi0.5): rgp - I on F6_b +.117 [-.033, +.267]; mem - I +.300 [+.167,
 - No python was run on the login node and no result JSON was opened there; all numbers come from SLURM logs of the read job.
 
 **Limits.** One simulator layout per family, 40-60 states per cell, one client seed. The F7R resolver covers fixed templates only and reads a parsed scene (routing fix, not language understanding). pi0 cannot execute the plate-bowl or unhidden F6 task, so its F6 and NG verdicts are untestable here. The NG plate registration (2.77 cm) is an open perception limit.
+
+
+## 71. ReGuide transport on frozen GR00T in scene 1 (m3_prereg groot_rg, ledger row m3_prereg__libero_goal__groot_rg__s0__e22cc64f.json, written before any main rollout; code and predictions commit c307aed5, prereg code commit e22cc64f, the commit the row is named for; states job 4754510, smoke job 4754541, prereg job 4754776; rollout jobs 4754777-4754782, read job 4755762; results/flawed/groot_rg_read.json, rollouts results/flawed/groot_rg)
+
+**Question.** ReGuide, reimplemented in §52, equals our front end on pi0.5 (rgp .929, §55) and beats it on pi0 and SmolVLA (about .60, §65). On GR00T the role views help (+.20) and the held-object box adds nothing, because GR00T's high carry survives the box and a finger-width swap (F1m, §51, §56). Does ReGuide's transport fix GR00T's new pairings (F1, F1m, F2), and is the carry still a limit under it? This tests C2 (the failure persists across models) for the fix on a CoRL-era model.
+
+**Feasibility.** GR00T N1.5 is served as in §49 and §56 (`pp_serve_purify.py --model groot --mode intact --comp= --seed 13`) and returns LIBERO delta eef commands in chunks of 16, as pi0.5 does. rg.py's client and transports read the observation and the chunk and issue delta commands, so rg.py needed no change. The new files are a state builder, a launcher and a read. (X-VLA, which §65 could not run, is not part of this test.)
+
+**States.** There are 40 new familiar-layout states, k = 500-539 (`experiments/fc_n2_gx.py`; harness trials 24-63, k = trial + 476), from fc_n2_s1x.py's sampler rule unchanged (seed 600000 + k). The rule reproduced stored states 0, 1, 23, 24, 35, 36, 55, 56, 115, 116, 155, 156, 195, 236 and 275 exactly (max |diff| 0). Every new state differs from every other new state and from all 286 stored states. Branch seed_base is 13000000 + 1000 k. No arm of any model has run on them. k 276-499 were skipped, so that a concurrent batch cannot coincide with this one.
+
+**Arms** (all three new on these states; launcher `experiments/groot_rg_roll.sh`; clients unchanged; client seed 7, `--bind track`).
+- **I.** `pp_atlas_client.py`.
+- **rgp.** ReGuide RG-perc (`rg.py client --arm rgp`, §52 / §55 / §65), statistics `results/flawed/rg_stats.json`, hashed in the reguide row.
+- **rgo.** ReGuide RG-oracle (simulator poses; privileged reference).
+
+**Mapping** (`experiments/groot_rg_read.py`). Paired bootstrap over (task, state), B = 2000, rng 0, tasks and states drawn jointly (tv_frozen.boot2).
+- **F, floor:** TESTABLE iff I's success on K1-K4, K6 is ≥ .70.
+- **V1, rgp − I on N1-N6:** REGUIDE HELPS iff the lower bound is > 0.
+- **V2, rgp − I on K1-K4, K6:** NON-INFERIOR iff the lower bound is > −.05; COST iff the upper bound is < 0; otherwise NOT SHOWN.
+- **V3, FIX label (§62-§69's rule):** FIX WORKS iff V1's lower bound is > 0 and V2's is > −.05; PARTIAL iff exactly one; FAILS iff neither.
+- **V4, bar (§54):** MEETS BAR iff rgp's N1-N6 success is ≥ .50 and V1's lower bound is > 0.
+- **V5, carry (F1m), N4 + N6:** CARRY CLEARED iff rgp's N4 + N6 success is ≥ .50 and rgp − I has lower bound > 0; CARRY REMAINS iff the success is < .50; otherwise UNRESOLVED.
+- **V6, rgp − rgo on N1-N6 (no weight):** PERCEPTION COSTS iff hi < 0; RGP WINS iff lo > 0; EQUIVALENT iff the interval lies within ±.10; otherwise NO CLEAR DIFFERENCE.
+- The same V1-V5 are reported for rgo. No reference planner was run, as in §55 and §65.
+
+**Checks (all pass).** Client arguments and per-episode trial, branch, variant and branch step match I for both ReGuide arms on all 11 tasks. Every episode's trial is registered and no episode errored. The 13 state and branch files and the 28 code files match the groot_rg row. The 5 ReGuide files match the reguide row. All server lines are the one registered command (seed 13); the GR00T server log does not print the seed (0 of 8 logs).
+
+**Seen before registration** (`experiments/prereg/groot_rg_seen.txt`). The predictions were committed (c307aed5) before the states job and the smoke were submitted. The smoke (job 4754541) ran I, rgp and rgo on all 11 tasks on stored states 0-1, with output outside results/ and a dry read. N1-N6: I .25, rgp .58, rgo .83; K was 1.00 under all arms. Nothing changed after the smoke.
+
+**Result.**
+
+| N1-N6 familiar, 40 new states, GR00T | success [CI] |
+|---|---|
+| floor: I on K1-K4, K6 | .985 [.950, 1.000] → **TESTABLE** |
+| I (intact) | .212 [.017, .475] |
+| rgp (ReGuide RG-perc) | .838 [.567, .992] |
+| rgo (ReGuide RG-oracle) | .879 [.679, .992] |
+| **V1, rgp − I** | +.625 [+.350, +.879]: **REGUIDE HELPS** |
+| **V2, rgp − I on K** | .000 [−.035, +.035]: **NON-INFERIOR** |
+| **V3, FIX label** | **FIX WORKS** |
+| **V4, bar** | **MEETS BAR** (.838 ≥ .50) |
+| **V5, N4 + N6** (I .000 [.000, .000]; rgp .550 [.125, .975]; rgp − I +.550 [+.125, +.975]) | **CARRY CLEARED** (see the next section: N4 yes, N6 no) |
+| V6, rgp − rgo on N1-N6 (no weight) | −.042 [−.154, +.029]: **NO CLEAR DIFFERENCE** |
+| rgo − I (no verdict) | +.667 [+.442, +.875]; K +.005 [−.030, +.040]; N4 + N6 +.675 [+.350, +.950] |
+| rgp − rgo on N4 + N6, K (no verdict) | −.125 [−.375, +.075]; −.005 [−.030, .000] |
+
+rgo carries the same labels as rgp: REGUIDE HELPS, NON-INFERIOR, FIX WORKS, MEETS BAR, CARRY CLEARED.
+
+Per task (success; 40 states each):
+
+| arm | N1 | N2 | N3 | N4 | N5 | N6 | K1 | K2 | K3 | K4 | K6 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| I | .075 | .350 | .800 | .000 | .050 | .000 | .975 | 1.00 | .950 | 1.00 | 1.00 |
+| rgp | 1.00 | 1.00 | .950 | .900 | .975 | .200 | 1.00 | 1.00 | .950 | 1.00 | .975 |
+| rgo | 1.00 | 1.00 | 1.00 | .900 | .925 | .450 | 1.00 | 1.00 | .950 | 1.00 | 1.00 |
+
+**Where the failures sit.** Stage shares on new pairings (share of episodes):
+
+| arm | success | GRASP | HANDOFF | TRANSPORT | RELEASE |
+|---|---|---|---|---|---|
+| I | .213 | .013 | .387 | .046 | .342 |
+| rgp | .838 | .013 | .004 | .008 | .138 |
+| rgo | .879 | .037 | .012 | .000 | .071 |
+
+The atlas verdicts are I BOTH (within +.350 [.104, .633], cross +.429 [.192, .675]), rgp NEITHER (within +.142 [−.017, .421], cross +.008 [−.008, .037]), rgo NEITHER (within +.108, cross +.008).
+
+**High carry** (lift while held > .22 m, §51's cut; share of grasped episodes; success after a high carry in brackets where defined).
+
+| arm | N4 | N6 | N4 + N6 | N5 | K4 |
+|---|---|---|---|---|---|
+| I | 1.00 (39 / 39; 0 succeed) | .949 (37 / 39; 0) | .974 (76 / 78) | .923 | 1.00 (40 / 40; 1.00) |
+| rgp | .000 (0 / 38) | .821 (32 / 39; .031) | .416 (32 / 77) | .050 | 1.00 (40 / 40; 1.00) |
+| rgo | .077 (3 / 39) | .500 (17 / 34; .059) | .274 (20 / 73) | .053 | 1.00 (40 / 40; 1.00) |
+
+Under rgp, N4's 38 grasped episodes carry low (median lift .103 m) and succeed .947. On N6, 32 of 39 carry high and 1 of those succeeds; the 7 low carries all succeed. K4 is unchanged: every episode carries high and succeeds, because ReGuide rarely acts on trained tasks (transports on .135 of known-task episodes under rgp, against 1.00 on new-task episodes).
+
+**ReGuide diagnostics (rgp, 240 new-task episodes).** Transports per episode 1.46; the transport starts logged "wrong destination" 232 times and "wrong binding" 19 times, and 211 carry transports ended one step above release height in the destination region. The registered pose error is small (median bottle .18 cm, plate .03 cm; reg p90 for the bottle .71 cm).
+
+**My predictions** (in the row; `experiments/prereg/groot_rg_pred.txt`).
+- **Held.**
+  - Floor TESTABLE (97%): right; K point .97 (.985).
+  - I N1-N6 .18 (range .08-.30): .212.
+  - V1 REGUIDE HELPS (90%): right, with lo > +.20 (70%): +.350.
+  - V2 NON-INFERIOR (65%): right.
+  - V3 FIX WORKS (60%): right.
+  - V4 MEETS BAR (65%): right.
+  - V6 NO CLEAR DIFFERENCE (40%): right; point −.05 (−.042).
+  - rgp's N4 + N6 high-carry share ≤ .50 (65%): right (.416).
+  - rgp's N6 success > 0 (80%): right (.20).
+  - Atlas: I BOTH (70%) right; rgp NEITHER or WITHIN-CHUNK (60%) right.
+  - Per-task minimum on the trained tasks under rgp ≥ .85 (55%): right (.95).
+  - rgo carries the FIX label (60%): FIX WORKS.
+- **Missed.**
+  - **V5: predicted CARRY REMAINS (65%) and CLEARED (25%); the outcome is CARRY CLEARED.** The N4 + N6 point was .38 and is .550.
+  - N1-N6 points were low: rgp .60 (range .35-.85) was .838 and rgo .65 (range .40-.90) was .879, both inside the range's top.
+  - N4 .45 against .900; N5 .65 against .975; N1 .65 against 1.00. N6 .30 against .20 is the one task where the prediction was above the result.
+  - GRASP share under I ≥ .30 (70%): wrong (.013). GR00T's new pairings fail after the grasp (HANDOFF .387, RELEASE .342), not at it. §65 found the opposite on pi0 and SmolVLA.
+  - Not checked by the registered read: the hold detector's first-onset agreement with the oracle (≥ .70 within 5 steps, 60%), because the read does not extract it. It is not scored.
+
+**Reading (consistent with, not proven).**
+- **ReGuide fixes GR00T's new pairings on scene 1.** rgp lifts N1-N6 from .212 to .838 (+.625 [+.350, +.879]) with the trained tasks unchanged (.000 [−.035, +.035]), which is FIX WORKS and MEETS BAR. This is the third model on which a ReGuide-class transport reaches the bar in scene 1 (pi0.5 .929, §55; pi0 .608 and SmolVLA .604, §65; GR00T .838 here), so C2 holds for the fix on a CoRL-era model. rgp is statistically indistinguishable from the oracle-pose arm (−.042 [−.154, +.029]; the interval does not lie within ±.10, so the label is NO CLEAR DIFFERENCE and not EQUIVALENT).
+- **It also beats the input-only fix.** On GR00T the best front end (tv, tvb, §56) reached .379-.383 on k = 156-195. Those are different states, so this is a comparison of point values, not a registered contrast.
+- **The failure ReGuide removes is the cross-chunk and place side.** Under I, HANDOFF and RELEASE hold .73 of the new-pairing episodes and the atlas reads BOTH. Under rgp those two stages hold .142, and the cross excess is +.008. The registered manipulation is the transport; which of its parts (the binding, the approach, the carry, the release) matters is not separated here.
+- **High carry is a limit that ReGuide clears on N4 and not on N6.**
+  - N4's carry goes from 1.00 high to 0 of 38, and N4 reaches .900. No earlier arm on GR00T came close (N4's high-carry share was .87 under the views, .69 under the box, .90 under the finger swap, §56).
+  - N6 stays at .821 high (rgo .500) and .200 (rgo .450). Its low carries all succeed (7 of 7), its high carries almost never (1 of 32). The pooled V5 label reads CLEARED because N4 supplies most of the N4 + N6 successes; its interval is wide ([.125, .975]).
+  - So GR00T's N6 (bottle → bowl) is still limited, consistent with §51's place gap (0 of 14 even from above the bowl) and with a carry that the transport's hand-back does not remove. I did not manipulate either, so these readings are not tested here.
+- **Trained tasks are not harmed because ReGuide rarely acts on them.** It started a transport on .135 of known-task episodes and K4 still carries high and succeeds on 40 of 40. The GR00T trained carry survives, unlike under the box (K4 .825, §56).
+
+**Deviations.**
+- X-VLA was not run (as §65).
+- The prereg job ran on tail-lab with the full exclude list on the command line (q2_cpu.sh's own list is shorter). The ledger row carries dirty=true, because other agents' files were uncommitted.
+- Rollout jobs I N, I K, rgp K, rgo N and rgo K ran on overcap; rgp N ran on tail-lab. The scheduler requeued the rgo K job twice (restart counts 1 and 2). The launcher skips finished task outputs, so every task's 40 episodes come from one uninterrupted client run with the registered arguments; no job failed and none was resubmitted.
+- The server log of the GR00T server does not print the seed. The launcher's server line (seed 13) is identical across all 8 job logs.
+- The prereg row hashes backbone.py and serve.py, which carried other agents' uncommitted edits at that time (the row's dirty flag); the read's 28 of 28 code match shows they did not change between the row and the read.
+- No python was run on the login node for results; every number comes from the read job's log (4755762).
+
+**Limits.**
+- One scene, one model, 40 states, one client seed, one trial per (task, state).
+- ReGuide is our reimplementation with §52's deviations; its statistics come from the trained-task demonstrations, and depth and calibration stay privileged (§40, §52). The hold detector and its threshold were set on pi0.5.
+- The N6 and N4 readings rest on 40 episodes each; the pooled V5 interval is wide.
+- No reference planner was run, so no ceiling on N6 is claimed.

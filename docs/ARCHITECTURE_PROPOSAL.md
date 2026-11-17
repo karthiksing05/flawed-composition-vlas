@@ -2,7 +2,7 @@
 
 This document joins the failure account (docs/ARCH_FAILURES.md) to the structural fixes tested so far. Every claim cites a registered read. No reads are pending. The account below is the state at SR §69. Later reads are added to the dated summaries and the §3 table.
 
-**Final account (2026-11-17, SR §45-§70).**
+**Final account (2026-11-17, SR §45-§71).**
 
 *Diagnosis: the contribution.* Current VLAs route sub-goals by visual cues that covaried with them in training, not by the instruction's roles. Each failure below has the needed information in the input (C1) and persists across models (C2).
 - **F1, the place follows a cue, not the instruction.**
@@ -26,6 +26,7 @@ This document joins the failure account (docs/ARCH_FAILURES.md) to the structura
 - **Scene 1:** the role front end (tvpb) reaches .938 on frozen pi0.5 and is EQUIVALENT to a reimplemented ReGuide (SR §55).
   - It does not carry to pi0 or SmolVLA. ReGuide wins there (about .60), and tvpb costs the trained tasks (SR §65).
   - Views alone help pi0 at no cost (+.183).
+  - **GR00T (SR §71, m3_prereg groot_rg, 40 new states):** ReGuide's transport (rgp, no change to rg.py) lifts N1-N6 from .212 to .838, +.625 [+.350, +.879], with the trained tasks unchanged (.000 [−.035, +.035]): FIX WORKS, MEETS BAR, and not separable from the oracle-pose arm (−.042 [−.154, +.029]). GR00T's N4 carry goes from 1.00 high to 0 of 38 (N4 .900), but N6 still carries high on .821 and reaches .200 (rgo .450), so the carry remains a limit on N6, consistent with §51's place gap; the pooled N4 + N6 label reads CARRY CLEARED (.550 [.125, .975]) on N4's strength. C2 for the fix now holds on four models in scene 1.
 - **Scene 2:** a hand-over to a target-only place, triggered at a hold of the named mug and run on OWLv2 perception, gives FIX WORKS on pi0.5 and pi0 (.450 / .333 and .267; SR §62-§64, §66).
   - Depth and calibration stay privileged.
   - Adding role views (simulator masks) moves N2's first grasp and reaches .508, but costs the trained tasks −.108, so it reads PARTIAL (SR §66).
@@ -123,6 +124,7 @@ The same principles in their strongest form give the **hand-over variant**: the 
 | entity memory slot on frozen VLAs | M − b, plate seen once then covered, 120 new states (SR §45.6, m3_prereg f6o2) | pi0.5 .58 → .84, +.26 [+.15, +.35]; GR00T .14 → .28, +.14 [+.04, +.24]; recovers 67% / 24% of the cost of covering; overlay IoU median .987 | MEMORY RESTORED on pi0.5; on GR00T at the rule's boundary (M's lower bound equals b's upper bound, .208) and only 24% recovered, so treat it as weak |
 | composite RC (resolver + memory slot + ReGuide transport) vs rgp and I, F7 relational / negated (SR §70, m3_prereg rg_comp, 40 new states per family) | V1 RC − rgp, V3 RC − I, K non-inferiority −.05 | pi0.5 SP +.550 [+.488, +.625] over rgp, +.550 over I; NG +.663 [+.587, +.738] over rgp, +.675 over I; K −.008 [−.025, .000]; rgp − I +.000 (SP), +.012 (NG); resolver 40/40. pi0: SP +.375 over rgp, K1t −.100 [−.183, −.033]; NG NOT TESTABLE (gate .475) | FIX WORKS on pi0.5 (SP, NG); pi0 SP PARTIAL, pi0 NG NOT TESTABLE |
 | composite RC vs rgp and I, F6 target covered after one view (SR §70, 60 new states) | V2 RC − rgp, V3 RC − I | pi0.5 .517 (I), .633 (rgp), .800 (RC), .817 (slot alone); RC − rgp +.167 [+.050, +.284]; RC − slot −.017 [−.100, +.067]; unhidden control .967. pi0: gate .017 | RC WINS over rgp, FIX WORKS on pi0.5; pi0 NOT TESTABLE |
+| ReGuide transport on frozen GR00T, scene 1 (SR §71, m3_prereg groot_rg, 40 new states k 500-539) | V1 rgp − I on N1-N6, V2 K non-inferiority −.05, V5 carry on N4 + N6 | I .212 [.017, .475], rgp .838 [.567, .992], rgo .879 [.679, .992]; rgp − I +.625 [+.350, +.879]; K .000 [−.035, +.035]; rgp − rgo −.042 [−.154, +.029]; N4 + N6 .000 → .550 [.125, .975] (N4 .900, N6 .200; high-carry share N4 1.00 → .000, N6 .949 → .821) | FIX WORKS, MEETS BAR, NON-INFERIOR; carry cleared on N4, not on N6 |
 
 ## 4. What the vetting does not yet support
 
