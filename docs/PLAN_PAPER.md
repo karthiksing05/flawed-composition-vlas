@@ -75,6 +75,12 @@ After the full-text reads the user picked a failure predictor to carry the novel
 - **Prediction with no fitting:** ŝ = g_s × p_s. This is the theory's product form s(o, t) = g(o) · p(t), with "competence" read as following the role.
 
 **Registered tests.**
+
+Goal, 2026-11-16: "Want to establish a failure atlas, design a failure predictor for provided tasks, and then find ways to repair VLAs with an adaptation to the architecture". So the primary test is per task.
+- **T0, primary.** Take a provided new task (o, t) and a policy. Predict its success from g_s(o) and p_s(t). Measure g_s(o) on trained tasks whose prompt is swapped to name o; measure p_s(t) on trained tasks whose prompt is swapped to name t. The prediction is ŝ(o, t) = g_s(o) · p_s(t).
+  - Score with AUC, using the cell's measured success ≥ .5 as the label, and with Spearman over all (policy, new task) cells in both scenes.
+  - Pass if the AUC lower bound is > .5 and the AUC is ≥ .75.
+  - The cells are bootstrapped jointly by task and by policy.
 - **T1.** Spearman ρ between ŝ and measured new-pairing success across all policies in scene 1. The probe is run fresh on K tasks; success is re-read or taken from existing sections on the same task set. Pass if ρ ≥ .6 and the bootstrap lower bound is > 0.
 - **T2.** Leave-one-model-family-out. Fit a one-parameter calibration on the other families and check its error on the held-out family.
 - **T3.** Scene 2, where the cue is position. Use p_s from the plate-word swap on K1/K2 against N1/N2 success. The diagnosis predicts p_s ≈ 0 for every input-only front end, and p_s high for ReGuide and Hp.
