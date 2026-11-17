@@ -88,6 +88,16 @@ Goal, 2026-11-16: "Want to establish a failure atlas, design a failure predictor
   - trained-task success alone, which the diagnosis predicts does not rank new-pairing success;
   - a language-sensitivity score that swaps to a nonsense word (LIBERO-PRO style).
 
+**Additions from the novelty check (reports/novelty_predictor.md, abstract level):**
+- **Wrapper-free subset.** Report T0 and T1 on the wrapper-free subset as the headline. ReGuide, Hp and RC inherit steerability by design, so they appear only in the full set.
+- **Within-family ρ.** Report ρ inside each family as well as across families. T2, leave-one-family-out, is co-primary.
+- **Validity control.** Swap to an object or target word that is absent from the scene. A valid probe gives about 0 displacement toward any entity. This separates steering from a detector reflex.
+- **Prior art to cite:**
+  - the product form: Okawa et al. 2310.09336;
+  - action sensitivity as a diagnostic: STAGE 2609.13458 and LIBERO-PRO;
+  - policy ranking by world-model evaluators, e.g. Veo 2512.10675. We compare cost; we do not compare accuracy.
+- **Scope of the claim:** pick-place object-target families only.
+
 **Policies:**
 - frozen pi0.5, GR00T, pi0, X-VLA and SmolVLA;
 - the front ends tv, tvp and tvpb;
