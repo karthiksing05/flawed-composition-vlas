@@ -1,0 +1,18 @@
+STEER: what was seen before the prereg row (2026-11-16).  Predictions (steer_pred.txt) were committed (4cce0f4a) before any job and were NOT revised.
+No constant of any arm was fitted or changed.
+
+1. CPU jobs: py_compile of steer_text / steer_probe / steer_serve under python 3.8 and 3.11 and bash -n of steer_roll.sh passed (job 4757838).
+   Targets job 4757846 (steer_targets.py): every one of the 15 scene-1 policies' pooled N1-N6 success reproduces the number printed in the SR table
+   (pi05_tvp .837 against .838 printed; all others equal to three decimals).  96 cells.  Selection rule and cell list fixed in targets.json.
+2. Smoke (development states k0-1 of results/flawed/n2_states / s2 states, 2 per task, NOT among the 10 main states k4-13): pi05 arms I tv tvp tvpb (4757847),
+   groot I tv tvb (4757856), pi0 (4757857), smolvla (4757858), xvla (4757859), r0 (4757860), r1 r2 r2b r2w r2l (4758471-4758475), scene 2 pi05 I tvp (4757868) and
+   pi0 I (4757869).  Every client exited 0; K success of the 2 smoke states per task ranges .4-1.0 (r2b .4, r2w .6); X-VLA's absolute targets run.
+3. A first rung smoke (r1, r2: 4757861, 4757862) showed the absent / nonsense phrase override was never installed (steer_serve.py skipped the top node
+   when it was the RoleView itself); fixed (one condition removed) and r1 r2 r2b r2w r2l re-run as v2; the first outputs are kept in
+   results/flawed/steer_smoke_bug1.  In v2 the override hit 389 of 391 slot-matched side queries on r1 (2 misses: the server's per-query detector and the client's
+   per-step detector disagree on the phase of 2 queries; counted and logged).
+4. Smoke pooled values seen (read job 4758625, results/flawed/steer_smoke_read_2.json, 2 states per task: n.s. for any claim): mean g_s .36-.84, mean p_s .28-.61
+   per policy; the true-prompt chunk points nearer the swapped-in entity in about .22-.31 of queries (scene 2 pi0.5 intact .40, pi0 .45), higher than the
+   .15 I predicted (P8); the absent-word share nearer the trained entity is within .15 of the true prompt's for 3 of 4 wrapper-free policies in the smoke.
+   Nothing was changed after seeing this; the true-chunk steer is reported as a baseline rate of the angle rule.
+5. One empty `python3 -` heredoc was run on the login node by mistake before the first job (no code executed, no output).
