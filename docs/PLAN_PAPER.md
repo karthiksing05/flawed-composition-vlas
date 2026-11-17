@@ -31,6 +31,37 @@ The diagnosis in one line: the action expert picks its sub-goal from visual cues
 
 **Kill:** RAA must beat R0 on new pairings with no trained-task cost, and match or beat ReGuide without demo statistics at test time. If the lit check finds the same design published, drop RAA or narrow it to the part that is new.
 
+## 2b. Decision after the novelty check (2026-11-16; reports/novelty_raa.md, abstract level)
+
+No single RAA component is new:
+- object-frame actions: FOCI 2609.08743, TAX-Pose;
+- object slots with an address/content split: OA-WAM 2605.06481;
+- role-indexed object tokens: POT-VLA 2607.18016;
+- phase masking: AC-VLA, LiLo-VLA.
+
+No paper we found combines them, and none tests a combination on held-out pairings against a plain retrain at matched data. So the claim is the theory-driven decomposition:
+- the diagnosis predicts that the place step needs role-addressed geometry;
+- the ladder shows that input purity fixes the grasp (R2 grasps right .975) but not the place (.436 given a right grasp);
+- one added channel, the active role entity's position relative to the gripper, should close the place gap at matched data.
+
+**RAA-min, built from the R2 path (inventory: SR §34, §37; lifelong_ood/policy/l90c_config.py; experiments/c_train_pi05.py, sc_rv.py, sc_pu.py, sc_seg.py, pp_p_train.demo_sites):**
+- **Training.** Same backbone, data and recipe as R0/R2: pi05_base, action expert only, the 8 known tasks, 6,000 steps, one A40.
+- **Role channel.** Each frame gets the active role entity's position minus the end-effector position, in the robot base frame (3 numbers, plus 1 for the role id).
+  - In training the entity comes from the demo's own contact events: the grasp site g before the hold and the release site r during it (pp_p_train.demo_sites).
+  - It enters through the state input. That is the only architectural edit, and it adds no information.
+- **Test-time pointer.**
+  - Words: the contact-induced lexicon (parts_flow.role_lexicon / role_parse, LADDER_RESULTS §5).
+  - Location: learned masks (sc_seg) plus the sc_pu Estimator. Rendered depth and calibration are privileged, as for ReGuide-perc.
+  - The Estimator holds the last estimate when its entity is occluded, which gives F6 memory.
+- **Arms at matched data:**
+  - R0 and R2 already exist and are re-read on the same states;
+  - Rrel = R0 + role channel, testing whether geometry addressing alone suffices;
+  - RAA = R2 + role channel;
+  - frozen pi0.5 and rgp ReGuide as references.
+- **Primary contrast:** RAA − R2 on N1-N6, placed given a right grasp, and success.
+- **Secondary contrasts:** Rrel − R0, and RAA − rgp. The K1-K6 non-inferiority margin is −.05.
+- **Later:** scene 2, where position is the cue, and the F7/F6 tasks.
+
 ## 3. Order
 
 1. Novelty check of RAA (Sonnet, web) and an inventory of the retrain infrastructure (Sonnet, read-only), in parallel.
