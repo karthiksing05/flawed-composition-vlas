@@ -37,7 +37,7 @@ STATE_FILES = (["results/flawed/n2_states_rx/states.npy", "results/flawed/n2_sta
                + ["results/flawed/n2_states_rx/n2_goal_%d.npy" % t for t in TIDS]
                + ["results/flawed/n2_branches_rx.json", "results/flawed/n2_branches_main.json", "results/flawed/n2_tasks.json",
                   "results/flawed/rg_stats.json", "results/flawed/sc_pu_calib.json", "results/flawed/sc_rv_lex.json",
-                  "results/flawed/sc_lex.json", "results/flawed/sc_rv_g8v_rrel_manifest.json", "results/flawed/sc_rv_g8v_raa_manifest.json"])
+                  "results/flawed/sc_lex.json", "results/flawed/sc_rv_rrel_manifest.json", "results/flawed/sc_rv_raa_manifest.json"])
 CODE = ["experiments/raa.py", "experiments/raa_read.py", "experiments/fc_n2_rx.py", "experiments/sc_rv.py", "experiments/sc_pu.py",
         "experiments/sc_seg.py", "experiments/sc_t16.py", "experiments/fa1_common.py", "experiments/fc_n2_client.py",
         "experiments/libero_client.py", "experiments/rg.py", "experiments/rg_stats.py", "experiments/rg_roll.sh",
