@@ -1,0 +1,41 @@
+STEER (SR 74): predictions, written 2026-11-16 BEFORE any probe job (smoke or main).  Not revised after anything below.
+Source: docs/PLAN_PAPER.md 2c; reports/predictor_targets.md (Tables A, B, D, E).  Probabilities are mine, from the existing record only.
+
+Setup the predictions refer to: steerability probe by counterfactual instruction (side queries, never executed) inside closed-loop
+rollouts of the trained tasks K1-K4, K6 (scene 1; tids 0 2 4 6 10) and K1, K2 (scene 2); 10 states per task per policy.
+steer_q = 1 when the side chunk's summed xyz delta points nearer the swapped-in entity than the trained one.
+g_s(o) = mean steer over grasp-phase queries swapped to o; p_s(t) = mean over place-phase queries swapped to t; s_hat(o,t) = g_s(o) p_s(t).
+
+P1  Grasp steering is high for every policy that reads language at all.  Frozen pi0.5, GR00T, pi0 and SmolVLA: mean g_s over words
+    (cheese, wine bottle, bowl) >= .60 for pi0.5 (P .70), >= .55 for GR00T (P .55), >= .55 for pi0 (P .50), >= .55 for SmolVLA (P .40).
+    X-VLA (language-weak per SR 45.3): mean g_s < .60 (P .55).
+P2  Place steering is lower than grasp steering for every frozen wrapper-free policy (diagnosis: the held object picks the destination, F1):
+    mean p_s < mean g_s for pi0.5, GR00T, pi0 and SmolVLA (each P .75; all four P .45).  Frozen pi0.5 mean p_s in [.15, .50] (P .60).
+P3  Front ends raise place steering relative to intact: p_s(tv) > p_s(I) on pi0.5 (P .70) and on GR00T (P .55); p_s(tvp) >= p_s(tv)
+    on pi0.5 (P .55).  Ladder: p_s ordered R2 > R0 (P .70); R2b < R2 (P .60).
+P4  The product predicts per-task new-pairing success of the frozen wrapper-free policies only weakly.
+    T0 headline (wrapper-free cells: pi0.5, GR00T, pi0, SmolVLA; 24 cells): AUC point estimate >= .75 (P .35); AUC lower bound > .5 and
+    point >= .75 (the registered pass) P .15.  Reason: labels are almost all negative for pi0 and SmolVLA (new success .02), so the AUC rests on
+    pi0.5's six cells, and a joint bootstrap over 4 policies and 6 tasks has wide intervals.
+    T0 on the full scene-1 set (all policies with a target): pass P .40.  Spearman over cells >= .40 on the full set (P .55).
+P5  T1 (Spearman between policy-mean s_hat and policy-mean measured N1-N6 success over scene-1 policies with a target): rho >= .60 and
+    lower bound > 0: P .40.  Point rho in [.3, .8] (P .60).
+P6  T2 (leave-one-family-out, one-parameter calibration through the origin; families pi0.5-based, GR00T-based, pi0, SmolVLA): the calibrated
+    s_hat has lower pooled LOFO mean absolute error than the constant (other families' mean success) in at least 3 of the 4 held-out
+    families (P .35).  Within the pi0.5 family (12 policies x 6 tasks) cell-level Spearman >= .35 (P .55).
+P7  Baselines.  Trained-task success alone: AUC on the wrapper-free cells within .15 of .5 (P .65); Spearman not above the product's point
+    estimate (P .70).  Nonsense-word sensitivity (share of chunks whose direction changes by more than 30 degrees under a nonsense word,
+    policy-level): AUC below the product's point estimate (P .60).
+P8  Validity control.  For the absent-word query, the share of chunks pointing nearer the trained entity is within .15 of the true prompt's
+    share, for pi0.5 intact (P .55), GR00T intact (P .50), pi0 (P .50), SmolVLA (P .50).  For tv-type front ends (absent word -> every movable
+    object painted) it is not within .15 (P .60): the front end changes the image, not only the word.  True-prompt steer toward the swapped
+    entity is under .15 (P .85) for every policy.
+P9  Scene 2 (T3).  p_s(plate swap) on K1/K2 is <= .25 for frozen pi0.5 intact (P .65) and for frozen pi0 (P .65).  For pi0.5 tvp,
+    p_s <= .25 (P .45): the front end paints the instructed plate only, so a plate-word swap changes the image.  s_hat(N1), s_hat(N2) < .25 for
+    pi0.5 I (P .65); measured N1/N2 success of I and tvp is 0.000 (SR 50), so every scene-2 label is negative.
+P10 The negative-result prior.  The probe will not separate policies that have identical language reading but different failures: on the
+    frozen wrapper-free set, the rank of policies by mean s_hat will differ from the rank by measured success in at least one adjacent pair
+    (P .70).
+P11 The executed episodes are unchanged by the side queries (server counters and detector state restored; same noise): for the intact
+    frozen pi0.5 on K1-K4, K6 states 4-13 the trained-task success equals the existing atlas/tv_frozen rows for those states in at least
+    90% of episodes (P .60; the shared noise stream is the only thing I expect could differ).
