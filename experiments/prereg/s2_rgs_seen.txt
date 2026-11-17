@@ -1,0 +1,14 @@
+S2RGS: what was seen before the prereg row (2026-11-16).  Predictions (s2_rgs_pred.txt) were written and committed (0b4b2c0a) before any job and were NOT
+revised after anything below.  No constant of any arm was fitted or changed for this probe.
+
+1. Prep job 4755794: py_compile of experiments/s2rgs.py and bash -n of s2rgs_roll.sh passed; 60 new states (seeds 1000000 + k) written, none
+   equal to an SR 50-69 state (asserted against SR 50's states and the s2cue3-5, s2fix2-6, s2rg and s2rgt layouts O), plus main branches
+   (seed_base 49000000 + 1000 k).
+2. Smoke job 4755804 (frozen pi0.5; SR 68's smoke states, seeds 980000 + k, k 0-3, development, none in this probe's 60), arms I, rgp, rgo,
+   rgoH, rgoT, 4 states per task, plus the reference planner; read job 4755951 (summary + read selftest, passed).  Success (K1/K2/N1/N2 of 4):
+   I 4/4/0/0, rgp 4/4/2/4, rgo 4/4/3/4, rgoH 4/4/1/4, rgoT 4/4/2/4; reference planner 4/4/2/4.  Every client exited 0; every perceiving
+   arm registered the instructed mug and the target plate in all 16 episodes (inactive 0); onset held-mug identity 16 of 16.  The smoke only
+   checks that the arms run: n = 4 per cell, no contrast is read from it.  Seen in it: rgoH N1 1 of 4 against rgp 2 of 4 and rgo 3 of 4; in
+   rgoH the release logs carry est error 0.0 (the simulator's mug) beside the rigid perceived estimate's error 2.0-2.7 cm (3 releases).
+   Nothing was changed after seeing this; the predictions stand as written.
+3. SR 69's numbers are the starting point: rgp N1 .417, release error 5.65 cm; SR 68: rgo N1 .833.
