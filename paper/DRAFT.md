@@ -189,15 +189,86 @@ On pi0 the composite beats ReGuide on the SP family by +.375 and costs trained t
 
 In scene 2, N1 stays at .417-.500 under ReGuide's perceived poses, and it reaches .833-.900 under simulator poses (SR §68, §72). At the N1 release, the rigid held-mug estimate sits 5.65 cm off (SR §69). A box tracker did not shrink that error, at 5.71 cm. N1 moved by +.133 [-.033, +.283], NO CLEAR DIFFERENCE, and N2 fell by .583 (SR §69). SR §72 swaps one pose source at a time on pi0.5. The simulator's held-mug pose gives N1 .567 against .500, +.067 [-.067, +.200]. The simulator's target-plate pose gives .450, -.050 [-.183, +.084]. Both read NO CLEAR DIFFERENCE (SR §72). The oracle arm reaches .900, and the contrast with the held-mug swap is +.333 [+.183, +.467] (SR §72). That contrast also switches to the oracle interaction rule, so it is not pose-only. The registered held-mug account did not hold. The held-mug interval does not exclude an effect up to +.20 (SR §72). The remainder is consistent with how the hold and release events are read. SR §72 did not swap that rule, so we leave the reading untested.
 
-[SR §73 and §74 results pending. This section will add them.]
 
-## 6 [RAA] Role-addressed action
+## 6 An architectural repair: the role channel
 
-Design, matched-data test against R0, CRAFT-style data and ReGuide. To come, depending on the novelty check and the build.
+The atlas says that a VLA chooses its sub-goals by cues. Section 5 reports that every fix that works binds a role to an entity and moves the arm relative to that entity. This section builds that binding into the policy, trains it on the same demonstrations as a plain retrain, and tests whether it closes the place gap.
 
-## 7 Conclusion and limitations
+**Diagnosis.** A ladder of retrains on LIBERO-Goal's eight known tasks isolates the step that still fails. R0 retrains pi0.5's action expert on the whole instructions and frames. R2 restricts the input to the active role's entity, with role phrases and painted views. R2 fixes the grasp, with a right-grasp rate of .972 on the new pairings N1-N6. It places only .400 of those right grasps (SR §73). Input purity therefore repairs the grasp, and the place step still follows cues (§4.1).
+
+**The edit.** The theory predicts that the place step needs geometry addressed by role. We add one input, the position of the active role entity relative to the gripper. It has three numbers in whole centimetres and a role id. The entity is the object while the gripper is open and the target while it holds. The channel carries no information that the images lack (C3).
+
+In training, the entity comes from each demonstration's own contact events. The grasped entity is the one under the gripper at the close, and the target is the one under the held object at release. All 300 routed demonstrations had a hold event, and the contact sites equal the task definition's slots (SR §73).
+
+At test time, a contact-induced lexicon parses the instruction into the two roles. Learned masks and an estimator with rendered depth and calibration locate the entity, and the estimator holds its last estimate while the entity is occluded. The channel stays within 1 cm of the simulator for 69% of object-role queries and 89% of target-role queries, with medians of 0.30 cm and 0.06 cm (SR §73). The served pi0.5 reads no state input, so the channel enters as a short text suffix on the prompt. It adds no parameters.
+
+**Variants.** All four retrains share the 52,181 frames, the frozen VLM, the action expert, 6,001 steps and one seed (SR §73).
+- R0 uses whole instructions and frames.
+- R2 uses role phrases and painted views.
+- Rrel is R0 plus the channel. It tests whether geometry addressing suffices.
+- RAA is R2 plus the channel.
+
+ReGuide (rgp) serves as the external reference. The registered primary contrast is RAA minus R2 on N1-N6. A ledger row fixed the contrasts and the predictions, including 45% for SUPPORTED, before any main rollout (SR §73).
+
+**Table 2.** Matched-data results on 60 states per task in scene 1. The columns give success on the six new pairings N1-N6, the right-grasp rate, the share of right grasps that end placed, and success on the trained tasks K1-K6 (SR §73).
+
+| variant | N1-N6 | right grasp | placed given right grasp | K1-K6 |
+|---|---|---|---|---|
+| R0 | .042 | .417 | .100 | .853 |
+| R2 | .389 | .972 | .400 | .753 |
+| Rrel | .278 | .861 | .323 | .911 |
+| RAA | .656 | 1.000 | .656 | .839 |
+| rgp (ReGuide) | .897 | .989 | .907 | .950 |
+
+**V1: the channel closes part of the place gap.** RAA beats R2 on N1-N6 by +.267 [+.092, +.467] and on placed given right grasp by +.256 [+.077, +.461]. Its right-grasp rate rises by .028, so the place step supplies almost all of the gain. The registered verdict is SUPPORTED (SR §73). On the trained tasks, RAA exceeds R2 by +.086 [+.011, +.172], which meets the -.05 non-inferiority margin. The gain holds for the cheese pairings (+.322 [+.005, +.717]) and the bottle pairings (+.211 [+.078, +.367]).
+
+**V2: the channel needs pure input.** Rrel gains +.236 [-.006, +.553] over R0, and the interval includes 0. RAA beats Rrel by +.378 [+.133, +.658]. The channel therefore acts on top of the restricted input. On N4 and N6, Rrel grasps the right object on only .733 and .567 of episodes, so the bottle's grasp itself fails without the restriction (SR §73). The registered prediction of a clear Rrel gain (60%) missed.
+
+**V3: ReGuide still places better.** RAA trails rgp by -.242 [-.464, -.033], which misses the -.10 non-inferiority margin. Its placed-given-right-grasp rate of .656 compares with .907 for rgp (SR §73). ReGuide uses demonstration statistics at test time, and RAA uses none. The channel narrows the gap between the trained retrains and ReGuide without closing it.
+
+**Prior art.** Each component exists. FOCI predicts motion in an object-relative frame. OA-WAM and POT-VLA feed object tokens or role-indexed records to an action expert, and w2VLA injects a language-conditioned location through FiLM. AC-VLA and LiLo-VLA restrict the input by gripper phase (docs/NOVELTY.md; reports/novelty_raa.md). We checked those papers by abstract or by a summarised page read, and none by full text. We claim the decomposition that the theory derives, which pairs input restriction with one role-addressed geometry channel, and its test against a plain retrain at matched data on held-out pairings. We claim no priority for any single component.
+
+**Limits.** The test uses one scene, one backbone (pi0.5) and one seed per variant. The place gap shrinks and stays open. The channel enters through the prompt, and its depth and calibration inputs are privileged, as they are for ReGuide's perceived-pose runs. Scene 2, where position is the cue, and the F7 and F6 tasks remain to be run.
+
+## 7 Predicting new-pairing failure from trained tasks
+
+A practitioner who holds a new policy wants to know whether it will fail a new pairing without running one. The atlas suggests a route. A policy that follows the instruction's roles should switch its sub-goal when the instruction's object or target word changes. A trained task supplies the test, because its scene and success are known. This section builds that probe, reports its pre-registered failure, and reports a corrected score that a later, pre-registered test confirms on two new policies.
+
+**The probe.** At every query of a closed-loop rollout of a trained task, the client sends a side query on the same observation with one word swapped. In the grasp phase, before the first hold, the object word changes to another movable object in the scene. In the place phase, during the hold, the target word changes to another target. The side chunk is never executed. A query scores 1 when the first five steps of the chunk point nearer the swapped-in entity than the trained one. The grasp steerability g_s(o) and the place steerability p_s(t) average that score. The prediction is ŝ(o, t) = g_s(o) · p_s(t), with no fitted weight. The product form follows Okawa et al. (docs/NOVELTY.md). We probed 16 policies in scene 1 and 3 in scene 2 with 10 states per trained task (SR §74).
+
+**The pre-registered headline failed.** The headline set holds the wrapper-free policies, which are intact pi0.5, GR00T, pi0 and SmolVLA, on 24 cells. It gives AUC .550 [.000, 1.000] and Spearman .227 [-.440, .812], and the verdict is NOT SUPPORTED. Across 15 policies, the policy-level Spearman ρ with success on N1-N6 is .193 [-.424, .736], also NOT SUPPORTED (T1). On the four wrapper-free policies, trained-task success alone ranks better, with AUC .800. Scene 2's place-steerability test (T3) also failed its bar (SR §74).
+
+**Table 3.** Ranking of cells by measured new-pairing success, where a cell is a policy and a new pairing and the label is success of at least .5. AUC is the area under the ROC curve. Brackets give 95% intervals.
+
+| score | cells | AUC | stage |
+|---|---|---|---|
+| ŝ, wrapper-free policies | 24 | .550 [.000, 1.000] | registered headline |
+| ŝ, scene 1 | 90 | .742 [.526, .907] | registered, missed the .75 bar by .008 |
+| trained-task success alone | 90 | .645 [.419, .846] | baseline |
+| nonsense-word sensitivity | 90 | .462 [.240, .684] | baseline |
+| k × a (success times floor-corrected steering) | 90 | .787 | post hoc |
+| k × a, Rrel and RAA | 12 | .944 [.667, 1.000] | pre-registered, new policies |
+| k × a, all policies | 102 | .805 [.603, .940] | pre-registered, new policies |
+| trained-task success alone, Rrel and RAA | 12 | .500 | baseline |
+
+On all 90 scene-1 cells, ŝ passes the lower bound and beats both baselines (SR §74). That result carries no headline credit, because the registered rule named the wrapper-free set.
+
+**Two problems explain the failure.** First, the angle rule has a floor. Under the true prompt, the chunk points nearer the swapped-in entity on .22 to .28 of scene-1 queries, because swapped-in entities lie near the hand's path. A steerability of .5 therefore sits above chance. Intact policies also steer in the place phase at .33 to .55, so F1 does not appear as place steerability near 0. Second, the entity decides most of the score. Swaps toward the wine bottle score .13 to .47, and swaps to the bowl target score .00 to .46 on every policy. The product partly ranks pairings by geometry (SR §74).
+
+**Exploratory corrections.** After the failure, we explored variants on the stored probe outputs. These changes are post hoc, and the intervals of the registered score contain them. Subtracting the true-prompt floor raises the 90-cell AUC from .742 to .770. Multiplying the floor-corrected product by trained-task success, which we call k × a, reaches .787 and Spearman .579. Normalising by entity lowers the AUC to about .60 to .65, which indicates that the pooled signal is largely entity difficulty. On the wrapper-free four, no variant beats trained-task success at .800 (PLAN_PAPER §2c).
+
+**Confirmation.** We froze k × a in code and wrote a ledger row before probing two policies that did not exist when we chose the variant. These are Rrel and RAA from Section 6. Success on the 12 new cells is the label (SR §75). Trained-task success alone cannot separate them, because both policies have it at .94. The score ranks the 12 cells at AUC .944, which clears the .75 bar. The descriptive interval's lower end of .667 sits below the bar, so the pass is a point estimate. Pooled over 102 cells and 17 policies, the AUC is .805 [.603, .940] and Spearman is .575 [.254, .756]. The score ranks RAA above Rrel (mean .364 against .301), as their success does (.656 against .278). One cell fails clearly. Rrel on N1 scores .393 and succeeds on 0, because it grasps the right object and never places it.
+
+**Scope.** The confirmation covers two policies, six pairings and one scene, all pick-place tasks. Both policies descend from one base, so the evidence says that the score ranks variants of one base better than unrelated frozen models. Within the GR00T variants the cell-level Spearman is .922 over 18 cells, and the wrapper-free policies give no usable ranking (SR §74). Steerability tracks which entities a policy can be steered toward. A claim that it predicts which unrelated policies generalise has no support here. ReGuide, Hp and RC lie outside the probe, because their controllers take over the episode.
+
+**Prior art.** Okawa et al. state the multiplicative form for compositional skills. STAGE and LIBERO-PRO measure action sensitivity to instruction changes as a diagnostic, and none of them validates a forecast across policies. World-model evaluators such as the Veo simulator for Gemini Robotics policies rank policies, and they need closed-loop rollouts of the held-out condition in a learned simulator. Our probe needs only trained-task rollouts. We compare cost only (reports/novelty_predictor.md).
+
+## 8 Conclusion and limitations
 
 - Two LIBERO scenes.
 - GR00T below its floor in scene 2.
 - X-VLA has no fix.
 - The fixes still need depth and calibration.
+- The role channel is tested in one scene on pi0.5 with one seed, and the place gap stays open (Section 6).
+- The failure predictor is confirmed on two policies that descend from one base (Section 7).
+- [Related work for Sections 6 and 7: add the role-channel prior art (FOCI, OA-WAM, POT-VLA, w2VLA, AC-VLA) and the predictor prior art (Okawa et al., STAGE, LIBERO-PRO, world-model evaluators) to Section 2.]
