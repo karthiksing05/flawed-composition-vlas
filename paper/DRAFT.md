@@ -1,46 +1,65 @@
-# [Working title] Routed by Cues: Architecture-Rooted Failures of Vision-Language-Action Models and a Role-Addressed Fix
+# Routed by Cues: Why Vision-Language-Action Models Fail New Pairings of Known Parts, and a Role-Addressed Repair
 
-Skeleton, 2026-11-16. The previous draft (a different project) is at docs/history/DRAFT_2026-10-21_units.md. Plan: docs/PLAN_PAPER.md. Numbers come from docs/SCAFFOLD_RESULTS.md (SR), docs/ARCH_FAILURES.md and docs/ARCHITECTURE_PROPOSAL.md; each claim below names its sections. Prose follows the user's paper rules: active voice, no "X, not Y" constructions, one idea per paragraph, contributions written as a paragraph.
+<!-- Title alternatives:
+1. The Instruction's Roles Do Not Choose the Sub-Goal: Architecture-Rooted Failures of Vision-Language-Action Models
+2. Cues Choose the Sub-Goal: A Failure Atlas, a Failure Predictor and a Role Channel for Vision-Language-Action Models
+-->
 
-## Abstract (write last)
+Draft of 2026-11-17. Plan: docs/PLAN_PAPER.md. Numbers come from docs/SCAFFOLD_RESULTS.md (SR), docs/ARCH_FAILURES.md (AF) and docs/ARCHITECTURE_PROPOSAL.md; each claim names its sections. The previous draft (a different project) is at docs/history/DRAFT_2026-10-21_units.md. Prose follows docs/PAPER_STYLE.md of the diffusion-composition paper: active voice, one idea per paragraph, no hedged contrasts.
 
-The claim in one line: current VLAs choose their sub-goals by visual cues that covaried with those sub-goals in training. The instruction's roles do not choose them. This one routing defect explains five failures that persist across five models. A policy that addresses its actions by role removes them.
+## Abstract
+
+Vision-language-action models (VLAs) succeed on trained tasks and fail when a new instruction pairs a known object with a known target. We trace the failure to one routing defect. The action expert picks its sub-goal from visual cues that covaried with the role in training, and the instruction's roles do not pick it. We make three contributions. First, we build a failure atlas of architecture-rooted failures across five models: pi0.5, GR00T, pi0, X-VLA and SmolVLA. A failure is architecture-rooted when the input holds the needed information and a reference planner succeeds, when the failure persists across models, and when a structural change that adds no information removes it. Second, we build a steerability predictor of new-pairing failure from trained tasks alone. Its first form failed its pre-registered test. A corrected form, frozen in advance, ranked 12 policy-pairing cells at AUC .944 on two policies trained afterwards. Third, we repair the defect in the architecture. Role views plus a role channel (RAA) reach .656 success on held-out pairings against .389 for a retrain on the same data, with no trained-task cost. RAA trails a test-time wrapper, ReGuide, which reaches .897. All results come from LIBERO, two scenes and pick-place tasks.
 
 ## 1 Introduction
 
-- VLAs succeed on trained tasks and fail on new pairings of known parts (CRAFT, LIBERO-PRO, LIBERO-CF).
-- Prior work either names the failure or patches it. It does not say which part of the architecture causes it.
-- Criteria for "architecture-rooted":
-  - C1: the information is in the input, and a reference planner succeeds.
-  - C2: the failure persists across models.
-  - C3: a structural change that adds no information removes it.
-- Contributions paragraph:
-  - the failure account (F1, F1m, F2, F6, F7) on up to five CoRL-era VLAs and two scenes;
-  - the routing rule in scene 2 (pre-registered majority);
-  - the prediction that input-only fixes fail where the routing cue is task-relevant, confirmed;
-  - [RAA] a role-addressed architecture that removes the failures at matched data.
+A household robot that stacks a cup on a plate and a bowl on a shelf should also put the cup on the shelf. Instructions combine a small set of objects and targets in many ways, and a trained policy sees few of those combinations. Vision-language-action models (VLAs) inherit this problem. They reach .98 to 1.00 success on the tasks they trained on and fail on new pairings of the same objects and targets (CRAFT, LIBERO-PRO, LIBERO-CF).
+
+Prior work names this failure or patches it. Benchmarks show that VLAs follow habit and ignore language. Fixes add counterfactual data, wrap the frozen policy in a grounding module, or mask the camera view. None of them says which part of the architecture produces the failure, so none predicts where a given fix works or where it breaks.
+
+We give that account. A VLA picks its sub-goal from cues that covaried with the sub-goal in training. After a correct grasp, the held object's outline or the nearer plate steers the carry and the release, and the instruction's target role has little influence. In one scene, a pre-registered test on new layouts confirms a majority rule on pi0.5. The place goes to the plate backed by two of three cues: nearer, more salient, trained (.912 of 445 placements).
+
+The account needs a test that separates architecture from task difficulty. We call a failure architecture-rooted when three criteria hold.
+- C1. The input holds the information the task needs, and a reference planner succeeds on the same states.
+- C2. The failure persists across models.
+- C3. A structural change that adds no information removes the failure.
+
+A failure that misses C1 belongs to the task, and we report it as a limit. New layouts fall in that group, because every system fails there, including the reference planners.
+
+The criteria also predict where a fix works. An edit to the images or the prompt can remove a cue that the task does not need. It cannot remove a cue that the grasp or the carry needs. Our experiments confirm this: role views lift pi0.5 from .450 to .817 on new pairings in scene 1, and they give .000 in scene 2, where the cue is position.
+
+If cues route the sub-goal, a policy that addresses its actions by role should remove the failures, and trained tasks should reveal whether a policy follows roles. Both ideas lead to tests. A policy that follows roles should switch its sub-goal when a trained task's object or target word changes. A policy that addresses actions by role needs geometry addressed by role.
+
+**Contributions.**
+1. A failure atlas of five failures on five frozen VLAs (pi0.5, GR00T, pi0, X-VLA, SmolVLA) in two LIBERO scenes: the place follows a cue, the held outline picks the carry, the habitual object is grasped, relational language is ignored, and a hidden target leaves little trace. Each failure carries its C1, C2 and C3 evidence. We also report the fixes that work, and the cases where they fail.
+2. A steerability predictor of new-pairing failure that uses trained tasks only. Its first form failed its pre-registered test. A corrected form, frozen in code before we probed two new policies, ranks their 12 cells at AUC .944.
+3. An architectural repair. Role views plus a role channel (RAA), trained on the same demonstrations as a plain retrain, reach .656 on held-out pairings against .389, with no trained-task cost. A test-time wrapper, ReGuide, reaches .897, so RAA narrows the gap and leaves it open.
+
+**Scope.** All results come from LIBERO, two scenes (one kitchen scene with 11 tasks, one living-room scene with one trained task) and pick-place tasks. Each trained policy has one seed. The role channel is tested on one backbone (pi0.5) in one scene. The predictor is confirmed on two policies that descend from one base. GR00T misses the testability floor in scene 2, and X-VLA has no transport-level fix. The reference planners use simulator state or privileged depth and calibration, as do the perceived-pose runs of ReGuide. We make no claim about real robots or about tasks beyond pick-place.
 
 ## 2 Related work
 
-- Compositional generalisation in VLAs.
-- Test-time wrappers: ReGuide, Harness VLA, LiLo-VLA, VP-VLA.
-- Data fixes: CRAFT, ACT-VLA, AC-VLA.
-- Mechanistic studies: Grant et al.
-- Memory in VLAs: MEM, pi0.7.
+**Compositional generalisation in VLAs.** Benchmarks show that VLAs follow habit and ignore the instruction. LIBERO-PRO (2510.03827) reports collapse under perturbed objects and instructions, and LIBERO-CF (2602.17659) reports that pi0.5 completes 13.2% of faithful counterfactual tasks. LIBERO-Plus [cite?] also perturbs instructions and scenes. Robust Skills, Brittle Grounding (2602.24143) separates reliable skills from brittle grounding on held-out object-location pairings in SmolVLA and pi0.5. It stops at the grasp, and we extend the stage-wise view to the carry and the release across five models. CRAFT (2610.00524) reports 8.4%, 2.8% and 1.1% on held-out pairings for pi0.5, pi0 and GR00T after plain fine-tuning. Its authors fix the failure with counterfactual training pairs.
 
-Source: docs/NOVELTY.md.
+**Fixes for held-out pairings.** Data fixes retrain the model. CRAFT adds counterfactual pairs, ACT-VLA (2607.00351) augments demonstrations from the model's latent task representations, and AC-VLA (2607.15714) adds an LLM task decomposer and masks the wrist view while the gripper is closed. Test-time wrappers edit a frozen policy. ReGuide (2609.38616) grounds poses and steers the arm to a demonstration-supported pre-contact configuration before the policy resumes. LiLo-VLA (2602.21531) reaches with a planner and lets an object-centric wrist-only policy interact. Harness VLA (2607.08448) and VP-VLA (2603.22003) bind referents or switch the prompt at gripper events. w2VLA (2606.21496) splits the instruction into a skill string and an object string and reports 91.7 against 38.2 on unseen skill-object pairings for pi0.5. We reimplement ReGuide as our wrapper reference and claim no priority for hand-over, masking or phase switching. Our contribution is the criteria that tell which cue each fix can remove.
+
+**Object-centric and role-addressed architectures.** TAX-Pose (2211.09325) and SPOT (2411.00965) place actions in an object-relative frame, and FOCI (2609.08743) extends the idea to relative motion between task-relevant objects. OA-WAM (2605.06481) gives an action expert object slots with address and content vectors, and POT-VLA (2607.18016) feeds role-indexed 3D object records to an action expert. RAA combines an input restriction with one role-addressed geometry channel, and each part has a precedent here. We claim the decomposition that the failure account derives, and its test against a plain retrain at matched data. A reader of the full texts of w2VLA, FOCI, OA-WAM and POT-VLA may find narrower differences than the abstracts show [cite?].
+
+**Language sensitivity and mechanisms.** STAGE (2609.13458) and LIBERO-PRO measure how much actions change when the instruction changes. Encoded but Not in Control (2610.06235) reports that the instruction's target is linearly decodable and goes unused. Grant et al. (2603.19233) inject activations at action-expert layers and redirect pi0.5 in 99.6% of 1,968 episodes, which gives the strongest mechanistic evidence for goal selection in the action expert. Our evidence for the routing rule comes from behavioural tests, and Grant et al. supply the probe of the attention path. Wang et al. (2607.29687) state a coverage law for partner count in a small custom policy, and we did not reproduce it on frozen pi0.5 and GR00T.
+
+**Performance prediction.** Okawa et al. (2310.09336) show that composed-task performance rises multiplicatively with the performance on its constituents in diffusion models, and our predictor takes that product form. Agreement-on-the-Line (2404.01542) predicts out-of-distribution accuracy of classifiers from model agreement. World-model evaluators, such as the Veo simulator for Gemini Robotics policies (2512.10675), rank policies with closed-loop rollouts inside a learned simulator. Our probe needs only trained-task rollouts, and we compare cost and make no accuracy comparison.
 
 ## 3 Setting and criteria
 
 SR denotes docs/SCAFFOLD_RESULTS.md. AF denotes docs/ARCH_FAILURES.md. Section numbers after a number name the record that holds it. Intervals are 95% intervals.
 
-**Models.** We test five frozen VLAs trained on LIBERO's 40 tasks. They are pi0.5 (openpi pi05_libero), pi0 (pi0_libero), GR00T N1 (ar0s/groot_libero), X-VLA (xvla-libero) and SmolVLA (smolvla_libero) (SR §50, §65). We never retrain them in the atlas. Each model enters a read only where Section 4 says so. X-VLA enters the atlas and the F7 reads. It misses the transport reads because its server sends absolute end-effector targets and our ReGuide transports issue delta commands (SR §65).
+**Models.** We test five frozen VLAs trained on LIBERO's 40 tasks. They are pi0.5 (openpi pi05_libero), pi0 (pi0_libero), GR00T N1 (ar0s/groot_libero), X-VLA (xvla-libero) and SmolVLA (smolvla_libero) (SR §50, §65). We never retrain them in the atlas. Each model enters a read only where the atlas says so. X-VLA enters the atlas and the F7 reads. It misses the transport reads because its server sends absolute end-effector targets and our ReGuide transports issue delta commands (SR §65).
 
 **Scenes.** Scene 1 descends from LIBERO-Goal's kitchen and has 11 tasks (SR §55). Five are trained tasks that we call K1-K4 and K6. Six are new pairings, N1-N6, of the cheese or the wine bottle with the plate, stove, cabinet or bowl. Scene 1 has two layouts. The familiar layout keeps the trained start regions. The new layout shifts them. Scene 2 is LIBERO-10's LIVING_ROOM_SCENE5, which holds a white mug, a yellow-and-white mug, a red mug, a left plate and a right plate. Its one trained task puts the white mug on the left plate and the yellow-and-white mug on the right plate (SR §50). It is the only LIBERO-10 scene with two movable objects and two targets (SR §50).
 
 **Terms.** A trained task is an instruction the model saw in training. A role is the object role or the target role of an instruction. A new pairing combines an object role from one trained task with a target role from another. Its known partners are the trained tasks that share its object and its target. In scene 2 the partners K1 and K2 are the two halves of the trained compound, and the new pairings N1 and N2 re-pair the mugs and plates (SR §50). A cue is any visual feature that covaried with a sub-goal in training. The testability floor says that a model is testable on a scene only if it scores at least .70 on the trained tasks without any edit (SR §50, §65). Scene-2 GR00T misses the floor at .508 [.333, .667] (SR §50).
 
-**States.** Every read draws start states from LIBERO's sampler. Before it draws a new block, the rule reproduces the stored states exactly (SR §65). Scene 1 uses 20 development states, 20 fresh states and later blocks of 40 to 60 new states (SR §47, §65, §71). Scene 2 uses 60 states (SR §50).
+**States.** Every read draws start states from LIBERO's sampler. Before it draws a new set of states, the rule reproduces the stored states exactly (SR §65). Scene 1 uses 20 development states, 20 fresh states and later blocks of 40 to 60 new states (SR §47, §65, §71). Scene 2 uses 60 states (SR §50).
 
 **Reference planner.** A scripted planner reads simulator state. In scene 1 the parts policy U scores .894 on new pairings from simulator poses, .883 from camera poses and .881 from a learned segmenter (SR §38.1, §40.1). In scene 2 the planner fits its keypoints to the compound's raw demos and executes none. It scores .967 on N2 and .333 on N1, which pools to .65 [.25, 1.00] (SR §50).
 
@@ -87,7 +106,7 @@ The routing defect has one form. A VLA picks a sub-goal by a cue that covaried w
 
 The instruction is unresolved in every run (SR §61). The reference planner meets C1 on three layouts (.825-.838) and misses it on three others (.725-.788) (SR §61).
 
-**C3.** In scene 1, the front end tvpb lifts frozen pi0.5 from .454 to .938 with no trained-task cost (SR §55). The hand-over to a parts policy lifts GR00T from .17 to .84 and pi0.5 from .50 to .85 [+.017, +.675], which reads NOT SHOWN for pi0.5 (SR §44.1). In scene 2 a reimplemented ReGuide lifts pi0.5 to N1+N2 .708 [.650, .775] and pi0 to .700, with trained tasks held (SR §68). Section 5 covers these fixes.
+**C3.** In scene 1, the front end tvpb lifts frozen pi0.5 from .454 to .938 with no trained-task cost (SR §55). The hand-over to a parts policy lifts GR00T from .17 to .84 and pi0.5 from .50 to .85 [+.017, +.675], which reads NOT SHOWN for pi0.5 (SR §44.1). In scene 2 a reimplemented ReGuide lifts pi0.5 to N1+N2 .708 [.650, .775] and pi0 to .700, with trained tasks held (SR §68). The fixes appear below.
 
 **Scope.** The majority rule holds on pi0.5 only. pi0's labels are unresolved on two of the layouts, and GR00T matches the nearer-plate routing below its floor (SR §59, §60). The record tests consequences of the cue and has no probe of the attention path. Grant et al. hold the mechanistic evidence (docs/NOVELTY.md).
 
@@ -175,7 +194,7 @@ A transport-level fix sets the grasp target and the carry from perception and re
 
 The fix works on four models. In scene 1, our reimplementation on pi0.5 scores .929 against tvpb's .938. The difference is +.008 [-.083, +.092], EQUIVALENT (SR §55). On pi0 it reaches .608 and on SmolVLA .604, with trained tasks unchanged (SR §65). On GR00T it lifts N1-N6 from .212 to .838, +.625 [+.350, +.879], with trained tasks at .000 [-.035, +.035] (SR §71). In scene 2 it reaches N1+N2 .708 [.650, .775] on pi0.5 and .700 on pi0, with trained tasks held. It beats our hand-over by +.350 [+.242, +.458] on pi0.5 (SR §68). Without rendered depth, it keeps .700 [.633, .775] on pi0.5 and reaches .608 on pi0 (SR §69). X-VLA is untested.
 
-Our own hand-over binds only the place. It reaches .442 with simulator inputs and .450 with perception on pi0.5 (SR §62, §63). A scripted put-back does not lift N2 (SR §64), and the clear-away rule lowers it (SR §67). No hand-over arm of ours clears the .50 bar and holds the trained tasks. The hand-over idea has prior art in ReGuide, Harness VLA and LiLo-VLA, so we claim no priority for it (docs/NOVELTY.md).
+Our own hand-over binds only the place. It reaches .442 with simulator inputs and .450 with perception on pi0.5 (SR §62, §63). A scripted put-back does not lift N2 (SR §64), and the clear-away rule lowers it (SR §67). No hand-over variant of ours clears the .50 bar and holds the trained tasks. The hand-over idea has prior art in ReGuide, Harness VLA and LiLo-VLA, so we claim no priority for it (docs/NOVELTY.md).
 
 ### 5.3 The resolver and the memory slot
 
@@ -187,12 +206,12 @@ On pi0 the composite beats ReGuide on the SP family by +.375 and costs trained t
 
 ### 5.4 The N1 residual
 
-In scene 2, N1 stays at .417-.500 under ReGuide's perceived poses, and it reaches .833-.900 under simulator poses (SR §68, §72). At the N1 release, the rigid held-mug estimate sits 5.65 cm off (SR §69). A box tracker did not shrink that error, at 5.71 cm. N1 moved by +.133 [-.033, +.283], NO CLEAR DIFFERENCE, and N2 fell by .583 (SR §69). SR §72 swaps one pose source at a time on pi0.5. The simulator's held-mug pose gives N1 .567 against .500, +.067 [-.067, +.200]. The simulator's target-plate pose gives .450, -.050 [-.183, +.084]. Both read NO CLEAR DIFFERENCE (SR §72). The oracle arm reaches .900, and the contrast with the held-mug swap is +.333 [+.183, +.467] (SR §72). That contrast also switches to the oracle interaction rule, so it is not pose-only. The registered held-mug account did not hold. The held-mug interval does not exclude an effect up to +.20 (SR §72). The remainder is consistent with how the hold and release events are read. SR §72 did not swap that rule, so we leave the reading untested.
+In scene 2, N1 stays at .417-.500 under ReGuide's perceived poses, and it reaches .833-.900 under simulator poses (SR §68, §72). At the N1 release, the rigid held-mug estimate sits 5.65 cm off (SR §69). A box tracker did not shrink that error, at 5.71 cm. N1 moved by +.133 [-.033, +.283], NO CLEAR DIFFERENCE, and N2 fell by .583 (SR §69). SR §72 swaps one pose source at a time on pi0.5. The simulator's held-mug pose gives N1 .567 against .500, +.067 [-.067, +.200]. The simulator's target-plate pose gives .450, -.050 [-.183, +.084]. Both read NO CLEAR DIFFERENCE (SR §72). The oracle variant reaches .900, and the contrast with the held-mug swap is +.333 [+.183, +.467] (SR §72). That contrast also switches to the oracle interaction rule, so it is not pose-only. The registered held-mug account did not hold. The held-mug interval does not exclude an effect up to +.20 (SR §72). The remainder is consistent with how the hold and release events are read. SR §72 did not swap that rule, so we leave the reading untested.
 
 
 ## 6 An architectural repair: the role channel
 
-The atlas says that a VLA chooses its sub-goals by cues. Section 5 reports that every fix that works binds a role to an entity and moves the arm relative to that entity. This section builds that binding into the policy, trains it on the same demonstrations as a plain retrain, and tests whether it closes the place gap.
+The atlas says that a VLA chooses its sub-goals by cues. Every fix that works, as the previous section reports, binds a role to an entity and moves the arm relative to that entity. This section builds that binding into the policy, trains it on the same demonstrations as a plain retrain, and tests whether it closes the place gap.
 
 **Diagnosis.** A ladder of retrains on LIBERO-Goal's eight known tasks isolates the step that still fails. R0 retrains pi0.5's action expert on the whole instructions and frames. R2 restricts the input to the active role's entity, with role phrases and painted views. R2 fixes the grasp, with a right-grasp rate of .972 on the new pairings N1-N6. It places only .400 of those right grasps (SR §73). Input purity therefore repairs the grasp, and the place step still follows cues (§4.1).
 
@@ -257,7 +276,7 @@ On all 90 scene-1 cells, ŝ passes the lower bound and beats both baselines (SR 
 
 **Exploratory corrections.** After the failure, we explored variants on the stored probe outputs. These changes are post hoc, and the intervals of the registered score contain them. Subtracting the true-prompt floor raises the 90-cell AUC from .742 to .770. Multiplying the floor-corrected product by trained-task success, which we call k × a, reaches .787 and Spearman .579. Normalising by entity lowers the AUC to about .60 to .65, which indicates that the pooled signal is largely entity difficulty. On the wrapper-free four, no variant beats trained-task success at .800 (PLAN_PAPER §2c).
 
-**Confirmation.** We froze k × a in code and wrote a ledger row before probing two policies that did not exist when we chose the variant. These are Rrel and RAA from Section 6. Success on the 12 new cells is the label (SR §75). Trained-task success alone cannot separate them, because both policies have it at .94. The score ranks the 12 cells at AUC .944, which clears the .75 bar. The descriptive interval's lower end of .667 sits below the bar, so the pass is a point estimate. Pooled over 102 cells and 17 policies, the AUC is .805 [.603, .940] and Spearman is .575 [.254, .756]. The score ranks RAA above Rrel (mean .364 against .301), as their success does (.656 against .278). One cell fails clearly. Rrel on N1 scores .393 and succeeds on 0, because it grasps the right object and never places it.
+**Confirmation.** We froze k × a in code and wrote a ledger row before probing two policies that did not exist when we chose the variant. These are Rrel and RAA from the role-channel test. Success on the 12 new cells is the label (SR §75). Trained-task success alone cannot separate them, because both policies have it at .94. The score ranks the 12 cells at AUC .944, which clears the .75 bar. The descriptive interval's lower end of .667 sits below the bar, so the pass is a point estimate. Pooled over 102 cells and 17 policies, the AUC is .805 [.603, .940] and Spearman is .575 [.254, .756]. The score ranks RAA above Rrel (mean .364 against .301), as their success does (.656 against .278). One cell fails clearly. Rrel on N1 scores .393 and succeeds on 0, because it grasps the right object and never places it.
 
 **Scope.** The confirmation covers two policies, six pairings and one scene, all pick-place tasks. Both policies descend from one base, so the evidence says that the score ranks variants of one base better than unrelated frozen models. Within the GR00T variants the cell-level Spearman is .922 over 18 cells, and the wrapper-free policies give no usable ranking (SR §74). Steerability tracks which entities a policy can be steered toward. A claim that it predicts which unrelated policies generalise has no support here. ReGuide, Hp and RC lie outside the probe, because their controllers take over the episode.
 
@@ -269,6 +288,5 @@ On all 90 scene-1 cells, ŝ passes the lower bound and beats both baselines (SR 
 - GR00T below its floor in scene 2.
 - X-VLA has no fix.
 - The fixes still need depth and calibration.
-- The role channel is tested in one scene on pi0.5 with one seed, and the place gap stays open (Section 6).
-- The failure predictor is confirmed on two policies that descend from one base (Section 7).
-- [Related work for Sections 6 and 7: add the role-channel prior art (FOCI, OA-WAM, POT-VLA, w2VLA, AC-VLA) and the predictor prior art (Okawa et al., STAGE, LIBERO-PRO, world-model evaluators) to Section 2.]
+- The role channel is tested in one scene on pi0.5 with one seed, and the place gap stays open (the role-channel test).
+- The failure predictor is confirmed on two policies that descend from one base.
