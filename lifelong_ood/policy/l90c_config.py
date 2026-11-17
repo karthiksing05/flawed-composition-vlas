@@ -27,7 +27,7 @@ REPO_ID = "lol/libero_l90c"
 BASE_PARAMS = f"{CACHE}/pi05_base/params"
 NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
          "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae", "pi05_g8v_plain_ae", "pi05_g8v_rsup_ae", "pi05_g8v_rview_ae",
-         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae")
+         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae")
 # SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
 # the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
 AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
@@ -39,7 +39,9 @@ AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae":
       "pi05_g8v_rview_ae": ("pi05_g8v_rview", "lol/libero_g8v_rview"),
       "pi05_g8v_rview2_ae": ("pi05_g8v_rview2", "lol/libero_g8v_rview2"), "pi05_g8v_rbox_ae": ("pi05_g8v_rbox", "lol/libero_g8v_rbox"),
       # SCAFFOLD_RESULTS 73 (RAA-min): the same frames as plain / rview2, each routed frame with the role channel as a text suffix
-      "pi05_g8v_rrel_ae": ("pi05_g8v_rrel", "lol/libero_g8v_rrel"), "pi05_g8v_raa_ae": ("pi05_g8v_raa", "lol/libero_g8v_raa")}
+      "pi05_g8v_rrel_ae": ("pi05_g8v_rrel", "lol/libero_g8v_rrel"), "pi05_g8v_raa_ae": ("pi05_g8v_raa", "lol/libero_g8v_raa"),
+      # SCAFFOLD_RESULTS 76 (RAA-o): RAA with the target-role channel = target minus the held object (eef + in-hand offset fixed at the grasp event)
+      "pi05_g8v_raao_ae": ("pi05_g8v_raao", "lol/libero_g8v_raao")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
 ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)

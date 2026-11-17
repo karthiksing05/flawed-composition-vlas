@@ -35,7 +35,8 @@ ROOT = os.path.dirname(HERE)
 sys.path[:0] = [HERE, ROOT]
 OUT = os.path.join(ROOT, "results", "flawed")
 LEX = os.path.join(OUT, "sc_lex.json")
-ARMS = ("rrel", "raa")
+ARMS = ("rrel", "raa", "raao")                                       # raao = RAA-o (SR 76): the target role is measured from the held object
+PAINT = ("raa", "raao")
 
 
 def lexicon():
@@ -64,7 +65,7 @@ class RAAServer:
         self.RV, self.arm, self.diag = RV, arm, diag
         self.T16 = RV.t16()
         self.metadata = getattr(policy, "metadata", {})
-        self.rv = RV.RoleView(_Hook(policy, self), X, mode="rview2" if arm == "raa" else None, replan=replan)
+        self.rv = RV.RoleView(_Hook(policy, self), X, mode="rview2" if arm in PAINT else None, replan=replan)
         self.cur, self.n, self.noch = None, 0, 0
 
     def infer(self, obs):
@@ -78,21 +79,31 @@ class RAAServer:
         P = self.T16.given(c["text"])
         if P is not None:                                                   # routed: K1-K6, N1-N6
             on = str(o["prompt"]) == P[1]
-            base = str(o["prompt"]) if self.arm == "raa" else c["text"]
+            base = str(o["prompt"]) if self.arm in PAINT else c["text"]
             r = c["raa"]
             if r.get("ok"):
                 ee = np.asarray(o["observation/state"], np.float64)[:3]
                 role = "tgt" if on else "obj"
                 rel = np.asarray(r[role], np.float64) - ee
+                off = toff = np.zeros(3)
+                if self.arm == "raao" and on:                               # RAA-o: target minus the held object = target - eef - offset (fixed at the onset)
+                    if r.get("off_ok"):
+                        off, toff = np.asarray(r["off"], np.float64), np.asarray(r["toff"], np.float64)
+                    else:                                                   # server says held, client has no offset yet: eef-relative, counted
+                        self.nooff = getattr(self, "nooff", 0) + 1
+                        logging.warning(f"[raao] held but no offset at ep {c['ep']} t {c['t']}")
+                    rel = rel - off
                 o["prompt"] = self.RV.chan_text(base, rel, on)
                 self.n += 1
                 if self.diag and "t" + role in r:
-                    true = np.asarray(r["t" + role], np.float64) - ee
+                    true = np.asarray(r["t" + role], np.float64) - ee - toff
                     d = rel - true
                     rec = dict(ep=c["ep"], t=c["t"], text=c["text"], role="target" if on else "object", rel_cm=self.RV.chan_cm(rel),
                                true_cm=self.RV.chan_cm(true), err_cm=float(100 * np.linalg.norm(d)),
                                axis_err_cm=[float(100 * abs(v)) for v in d], src=str(r.get("src_" + role)),
-                               roles=r.get("roles"), prompt=o["prompt"])
+                               roles=r.get("roles"), prompt=o["prompt"],
+                               **({"off_cm": self.RV.chan_cm(off), "toff_cm": self.RV.chan_cm(toff), "off_ok": bool(r.get("off_ok"))}
+                                  if self.arm == "raao" else {}))
                     with open(self.diag, "a", encoding="utf-8") as fh:
                         fh.write(json.dumps(rec) + "\n")
             else:                                                           # the lexicon refused: no channel, the base prompt
@@ -116,7 +127,7 @@ def serve_cmd(a):
     pol = GuidedPolicy(bk, hooks=None, num_steps=10, seed=a.seed)
     warm(pol)
     srv = RAAServer(pol, X, a.arm, diag=a.chan_diag or None)
-    if a.arm == "raa":
+    if a.arm in PAINT:
         import sc_seg as SEG
         seg = SEG.load(a.seg_ckpt or None, "cuda")
         logging.info(f"[raa] learned masks {seg.path}")
@@ -147,7 +158,7 @@ def client_main():
     Cal = PU.load_calib()
     SEGM = SEG.load(os.environ.get("SC_SEG_CKPT") or None, "cuda")
     lex, PF = lexicon()
-    if arm == "raa":                                                        # the server paints from the client's raw renders (sc_rv.RoleView)
+    if arm in PAINT:                                                        # the server paints from the client's raw renders (sc_rv.RoleView)
         FN._seg_px()
     CACHE = {}
 
@@ -210,6 +221,7 @@ def client_main():
         if el.get("meta/episode_start") or S["det"] is None:
             S["roles"] = PF.role_parse(lex, text)
             S["det"], S["E"], S["first"] = ProprioHeld(X["tw"], X["lift"]), RV.entity_tables(raw), True
+            S["was"], S["off"], S["toff"] = False, None, None                   # RAA-o: the in-hand offset, fixed at each hold onset
             S["est"] = PU.Estimator(Cal, S["roles"][0]) if S["roles"] else None
             try:
                 given = FC.roles(text)
@@ -230,7 +242,17 @@ def client_main():
         oe, te = S["roles"]
         pos = S["est"].pos
         src = S["est"].src
-        return {"meta/raa_ok": True, "meta/raa_obj": pos[FC.ENT.index(oe)].tolist(), "meta/raa_tgt": pos[FC.ENT.index(te)].tolist(),
+        extra = {}
+        if arm == "raao":                                                   # SR 76: offset = the Estimator's object estimate minus the eef at the onset
+            if held and not S["was"]:                                       # (this query's estimate), then held fixed; truth only for the error log
+                S["off"] = (pos[FC.ENT.index(oe)] - ee).tolist()
+                S["toff"] = (truth(raw, oe) - ee).tolist()
+            if not held:
+                S["off"] = S["toff"] = None
+            S["was"] = held
+            extra = {"meta/raa_off_ok": S["off"] is not None, "meta/raa_off": S["off"] or [0.0, 0.0, 0.0],
+                     "meta/raa_toff": S["toff"] or [0.0, 0.0, 0.0]}
+        return {**extra, "meta/raa_ok": True, "meta/raa_obj": pos[FC.ENT.index(oe)].tolist(), "meta/raa_tgt": pos[FC.ENT.index(te)].tolist(),
                 "meta/raa_tobj": truth(raw, oe).tolist(), "meta/raa_ttgt": truth(raw, te).tolist(),
                 "meta/raa_src_obj": str(src.get(oe, "site")), "meta/raa_src_tgt": str(src.get(te, "site")),
                 "meta/raa_roles": [oe, te, S["agree"]]}

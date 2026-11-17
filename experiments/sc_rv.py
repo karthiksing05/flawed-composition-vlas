@@ -54,12 +54,12 @@ RV_ROOT = "/coc/flash10/ksingara3/robot/data/fa1/rv"
 OUT = os.path.join(ROOT, "results", "flawed")
 CHECK_DIR = os.path.join(OUT, "sc_rv_check")
 KNOWN = tuple("K%d" % i for i in range(1, 9))
-ARMS = ("plain", "rsup", "rview", "rview2", "rbox", "rrel", "raa")
-PAINTED = ("rview", "rview2", "rbox", "raa")
+ARMS = ("plain", "rsup", "rview", "rview2", "rbox", "rrel", "raa", "raao")
+PAINTED = ("rview", "rview2", "rbox", "raa", "raao")
 # SCAFFOLD_RESULTS 73 (RAA-min): the same frames as the base arm plus the role channel in the prompt text.  rrel = plain + channel
 # (Rrel = R0 + channel), raa = rview2 + channel (RAA = R2 + channel).  The channel is on exactly the frames the base arm routes
 # (sc_t16.given is not None: K1-K6); K7 and K8 stay whole with no channel.
-BASE = {"rrel": "plain", "raa": "rview2"}
+BASE = {"rrel": "plain", "raa": "rview2", "raao": "rview2"}          # raao (RAA-o, SR 76): raa with the target-role channel measured from the held object
 CHAN_ARMS = tuple(BASE)
 # rview2 / rbox (the second rule): only the four movable objects are paintable; on every routed frame every one of them is painted
 # except the active role's filler (before the hold the task's object; during it the task's target if movable, else none).
@@ -587,7 +587,29 @@ def demo_rel(z, c, f, a, X, T16, roles, info):
         g, r = s["g"], s["r"]
         info["g_ne_given"] += int(g != obj)
         info["r_ne_given"] += int(r != tgt)
-    return np.stack([pos[:, FC.ENT.index(g)] - ee, pos[:, FC.ENT.index(r)] - ee], axis=1)
+    gi, ri = FC.ENT.index(g), FC.ENT.index(r)
+    out = np.stack([pos[:, gi] - ee, pos[:, ri] - ee], axis=1)
+    if a.arm == "raao":                                                      # SR 76 (RAA-o): target role = target - HELD OBJECT, not - end effector
+        out[:, 1] = held_target_rel(pos[:, gi], pos[:, ri], ee, H > 0.5, info)
+    return out
+
+
+def held_target_rel(pg, pr, ee, held, info=None):
+    """SR 76 (RAA-o).  The target-role channel while held: target - (eef + in-hand offset), the offset = the grasped object's position
+    minus the eef at the hold's onset (the row where ProprioHeld turns on; recomputed at every onset), then held fixed to the hold's end.
+    pg, pr, ee [n, 3] metres (grasped object, release slot, end effector), held [n] bool.  -> [n, 3]: rows not held are target - eef
+    (unused: those frames carry the object role).  Reads only the demo's own slot positions and held rows, as demo_sites does."""
+    out = np.asarray(pr, np.float64) - np.asarray(ee, np.float64)
+    off, prev = None, False
+    for i in range(len(held)):
+        if held[i]:
+            if not prev:
+                off = np.asarray(pg[i], np.float64) - np.asarray(ee[i], np.float64)
+                if info is not None:
+                    info.setdefault("offset_cm", []).append([round(100.0 * float(v), 2) for v in off])
+            out[i] = np.asarray(pr[i], np.float64) - np.asarray(ee[i], np.float64) - off
+        prev = bool(held[i])
+    return out
 
 
 def convert(a):
