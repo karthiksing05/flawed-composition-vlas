@@ -1,0 +1,24 @@
+Predictions for GROOT-RG (SR 71), written 2026-11-16, BEFORE the states job, the smoke, or any rollout of any arm on k 500-539.  Known when written: SR 49 / 56 (GR00T: I .179 on N1-N6 on fresh4, gains sit in N2 / N3 once the views hide identity; N1, N4, N5, N6 near 0; K .975), SR 51 (GR00T carries high on 96% of grasped N4 / N6 episodes; 0 of 14 N6 episodes succeed even from above the bowl, a place gap), SR 56 (neither the held-object box nor a finger-qpos swap removes the carry; the hold detector fires on 98.9% of GR00T episodes with median onset 0 steps from the oracle), SR 52 / 55 (ReGuide on pi0.5: rgp .929 against I .454), SR 65 (pi0 / SmolVLA: rgp .608 / .604 against I .021, K cost +.020 / +.030, GRASP share .16 under rgp), SR 68-70 (ReGuide in scene 2 and in the composite).  I have NOT seen GR00T's trajectories under rg.py; the smoke has not run.
+
+Feasibility: GR00T's server (pp_serve_purify.py --model groot) returns LIBERO delta eef commands exactly as pi0.5's does, and rg.py's client and transports are model-agnostic (they read the observation and the chunk returned by the server, and issue delta commands).  No code change to rg.py.  The only new parts are the launcher and the read.
+
+Floor (I's K1-K4, K6 success >= .70): TESTABLE (97%); point K ~.97.
+
+Point estimates on N1-N6: I .18 (range .08-.30); rgp .60 (range .35-.85); rgo .65 (range .40-.90).
+Per task (rgp): N1 .65, N2 .90, N3 .90, N4 .45, N5 .65, N6 .30.  GR00T's I per task from SR 56: N1 .05, N2 .35, N3 .58, N4 .03, N5 .08, N6 .00.
+Mechanism expected: GR00T's new pairings fail at the grasp (F2, GRASP) and in the place (F1: wrong destination), and carry high (F1m) on N4 / N6.  ReGuide acts on all three: it rebinds the instructed object and steers to it, controls the carry's path between the grasp and the destination, and releases at the destination.  The carry transport hands back only at one step above release height inside the destination region, so the policy's own carry is replaced and I expect the high-carry share of N4 / N6 to fall well below GR00T's 1.00 under I.  The remaining risk is the hand-back: GR00T must grasp after a pre-contact hand-back (its grasp is the habitual one), and must read its own state in a way that continues from ReGuide's handed-back pose.
+
+Registered labels:
+- V1 rgp - I on N1-N6: REGUIDE HELPS (90%), point +.42 [lo > +.20 at 70%].
+- V2 rgp - I on K1-K4, K6: NON-INFERIOR (lo > -.05) 65%, NOT SHOWN 28%, COST 7%; point -.02.  (pi0: +.020, SmolVLA +.030; GR00T's K tasks include a cheese hold and a bottle hold that ReGuide's statistics came from, but GR00T's trained carry may react to the replaced carry as tvb's K4 did.)
+- V3 FIX label rgp: FIX WORKS 60%, PARTIAL 36%, FAILS 4%.
+- V4 BAR (rgp N1-N6 >= .50 AND dN lo > 0): MEETS BAR 65%.
+- V5 carry on N4 + N6: rgp success N4 + N6 point .38; CARRY CLEARED (>= .50 and lo > 0) 25%, CARRY REMAINS (< .50) 65%, UNRESOLVED 10%.  rgp's high-carry share of grasped N4 + N6 episodes <= .50 (65%) (I: 1.00).  rgp's N6 success > 0 (80%): ReGuide's own release replaces GR00T's place gap.
+- V6 rgp - rgo on N1-N6: EQUIVALENT 40%, NO CLEAR DIFFERENCE 40%, PERCEPTION COSTS 15%, RGP WINS 5%; point -.05.
+- rgo FIX label: FIX WORKS 60%, PARTIAL 36%.
+
+Descriptive:
+- rgp stage: GRASP share on new pairings under I >= .30 (70%); under rgp <= .20 (65%).
+- The atlas verdict for I: BOTH (70%) (SR 56: BOTH, within +.34, cross +.45); for rgp: WITHIN-CHUNK or NEITHER (60%).
+- ReGuide's hold detector (ProprioHeld, pi0.5-tuned) fires and the first onset equals the oracle's within 5 steps on >= .70 of rgp episodes (60%).
+- rgp K1-K4, K6 per-task minimum >= .85 (55%).
