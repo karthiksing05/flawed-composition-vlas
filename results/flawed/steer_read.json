@@ -1,0 +1,2857 @@
+{
+ "phase": "main",
+ "mapping": "SR 74: the steerability failure predictor, read (CPU, openpi venv, numpy only).  Registered mapping (fixed in the prereg row):\n\nPer probed query (experiments/steer_probe.py record): d = summed xyz delta of a chunk's first 5 steps (X-VLA: the 5th target minus the hand;\nthe first 8 steps as a descriptive variant), v_old = p_old - eef, v_new = p_new - eef (simulator positions of the trained and the swapped-in\nentity).  steer = 1 iff angle(d, v_new) < angle(d, v_old); queries with |d| < 1e-9 are dropped (counted).  Scored for the cf chunk (the\ncounterfactual instruction), the true chunk (sanity), the absent-word chunk (validity control) and the nonsense-word chunk.\n  g_s(o) = mean steer(cf) over grasp-phase queries whose swapped-in object is o;  p_s(t) = mean over place-phase queries whose swapped-in\n  target is t, per policy, pooled over trained tasks, states and queries.   s_hat(o, t) = g_s(o) * p_s(t).  No fitting.\nCells: (policy, new task), new tasks N1-N6 = (cheese, plate) (cheese, stove) (cheese, cabinet) (wine, plate) (wine, stove) (wine, bowl) in scene 1,\nS2N1 (white mug, right plate) and S2N2 (yellow-white mug, left plate) in scene 2.  Target = the canonical measured row of results/flawed/steer/\ntargets.json (steer_targets.py).  Policies without a target (X-VLA) are probed and excluded from T0-T2.  Wrapper-free subset (headline) =\nfrozen pi0.5, GR00T, pi0, SmolVLA intact.\nT0   label = cell success >= .5; AUC (ties .5) and Spearman (average ranks) of s_hat against label / success; bootstrap B = 2000, numpy\n     default_rng(0), tasks and policies drawn jointly with replacement, cells = the drawn (policy, task) pairs that exist; draws with one\n     class (AUC) or a constant vector (Spearman) are dropped and counted; CI = 2.5 / 97.5 percentiles.  PASS iff AUC >= .75 and CI lower > .5.\n     Headline: wrapper-free cells.  Also reported: all scene-1 policies; all cells of both scenes.\nT1   Spearman between policy-mean s_hat and policy-mean measured success over the 6 new tasks, across scene-1 policies; bootstrap over\n     policies and tasks jointly.  PASS iff rho >= .6 and CI lower > 0.\nT2   leave-one-family-out (families pi05 [front ends and ladder included], groot, pi0, smolvla): kappa = sum(y s) / sum(s^2) on the other\n     families' cells; prediction clip(kappa s, 0, 1); mean absolute error on the held-out family against the constant (the other families'\n     mean success).  PASS iff the calibrated s_hat beats the constant in at least 3 of the 4 families.  Within-family cell-level Spearman\n     (bootstrap over tasks and the family's policies) is reported alongside.\nT3   scene 2: p_s of the plate-word swap on K1, K2 (pooled and per plate), s_hat(S2N1, S2N2), against measured N1, N2.  SUPPORTS the diagnosis\n     iff every probed input-only policy has pooled p_s <= .25.\nBaselines (same cells, same bootstrap; policy-level scores): trained-task success alone (mean success of the probe's own K1-K4, K6 episodes);\nnonsense-word sensitivity = share of probed queries whose nonsense-word chunk differs in direction from the true chunk by more than 30 degrees.\nValidity: absent = share of absent-word chunks nearer p_old than p_new; true = the same for the true chunk; valid iff |absent - true| <= .15.",
+ "policies": {
+  "s1_groot_I": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.7445255474452555,
+      137
+     ],
+     "wine_bottle_1": [
+      0.2356687898089172,
+      157
+     ],
+     "plate_1": [
+      0.6595744680851063,
+      141
+     ],
+     "akita_black_bowl_1": [
+      0.6774193548387096,
+      31
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.5063291139240507,
+      79
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.7894736842105263,
+      57
+     ],
+     "wine_rack_1_top_region": [
+      0.4215686274509804,
+      102
+     ],
+     "plate_1": [
+      0.5555555555555556,
+      90
+     ],
+     "akita_black_bowl_1": [
+      0.047619047619047616,
+      21
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.7664233576642335,
+      137
+     ],
+     "wine_bottle_1": [
+      0.2802547770700637,
+      157
+     ],
+     "plate_1": [
+      0.6879432624113475,
+      141
+     ],
+     "akita_black_bowl_1": [
+      0.6774193548387096,
+      31
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.5316455696202531,
+      79
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8070175438596491,
+      57
+     ],
+     "wine_rack_1_top_region": [
+      0.4411764705882353,
+      102
+     ],
+     "plate_1": [
+      0.6222222222222222,
+      90
+     ],
+     "akita_black_bowl_1": [
+      0.047619047619047616,
+      21
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 466,
+     "cf_steer": 0.5429184549356223,
+     "absent_nearer_old": 0.5944206008583691,
+     "true_nearer_old": 0.6266094420600858,
+     "true_steer": 0.37339055793991416,
+     "absent_steer": 0.4055793991416309,
+     "nonsense_change30": 0.0536480686695279,
+     "nonsense_change15": 0.27896995708154504,
+     "nonsense_change60": 0.002145922746781116,
+     "valid": true
+    },
+    "place": {
+     "n": 349,
+     "cf_steer": 0.5128939828080229,
+     "absent_nearer_old": 0.7392550143266476,
+     "true_nearer_old": 0.8538681948424068,
+     "true_steer": 0.14613180515759314,
+     "absent_steer": 0.2607449856733524,
+     "nonsense_change30": 0.166189111747851,
+     "nonsense_change15": 0.34097421203438394,
+     "nonsense_change60": 0.07163323782234957,
+     "valid": true
+    },
+    "all": {
+     "n": 815,
+     "cf_steer": 0.5300613496932516,
+     "absent_nearer_old": 0.656441717791411,
+     "true_nearer_old": 0.7239263803680982,
+     "true_steer": 0.27607361963190186,
+     "absent_steer": 0.34355828220858897,
+     "nonsense_change30": 0.10184049079754601,
+     "nonsense_change15": 0.30552147239263805,
+     "nonsense_change60": 0.03190184049079755,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 1.0,
+    "n": 50
+   },
+   "n_queries": 815
+  },
+  "s1_groot_tv": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.8085106382978723,
+      141
+     ],
+     "wine_bottle_1": [
+      0.3227848101265823,
+      158
+     ],
+     "plate_1": [
+      0.6027397260273972,
+      146
+     ],
+     "akita_black_bowl_1": [
+      0.7142857142857143,
+      35
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.5747126436781609,
+      87
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8666666666666667,
+      60
+     ],
+     "wine_rack_1_top_region": [
+      0.5363636363636364,
+      110
+     ],
+     "plate_1": [
+      0.5368421052631579,
+      95
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      22
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.8297872340425532,
+      141
+     ],
+     "wine_bottle_1": [
+      0.4177215189873418,
+      158
+     ],
+     "plate_1": [
+      0.6301369863013698,
+      146
+     ],
+     "akita_black_bowl_1": [
+      0.7142857142857143,
+      35
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.5977011494252874,
+      87
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.85,
+      60
+     ],
+     "wine_rack_1_top_region": [
+      0.5272727272727272,
+      110
+     ],
+     "plate_1": [
+      0.6210526315789474,
+      95
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      22
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 480,
+     "cf_steer": 0.5791666666666667,
+     "absent_nearer_old": 0.5979166666666667,
+     "true_nearer_old": 0.6520833333333333,
+     "true_steer": 0.34791666666666665,
+     "absent_steer": 0.40208333333333335,
+     "nonsense_change30": 0.22916666666666666,
+     "nonsense_change15": 0.42916666666666664,
+     "nonsense_change60": 0.08333333333333333,
+     "valid": true
+    },
+    "place": {
+     "n": 374,
+     "cf_steer": 0.5668449197860963,
+     "absent_nearer_old": 0.6229946524064172,
+     "true_nearer_old": 0.8556149732620321,
+     "true_steer": 0.1443850267379679,
+     "absent_steer": 0.3770053475935829,
+     "nonsense_change30": 0.3502673796791444,
+     "nonsense_change15": 0.5828877005347594,
+     "nonsense_change60": 0.1711229946524064,
+     "valid": false
+    },
+    "all": {
+     "n": 854,
+     "cf_steer": 0.5737704918032787,
+     "absent_nearer_old": 0.6088992974238876,
+     "true_nearer_old": 0.7412177985948478,
+     "true_steer": 0.25878220140515223,
+     "absent_steer": 0.3911007025761124,
+     "nonsense_change30": 0.2822014051522248,
+     "nonsense_change15": 0.4964871194379391,
+     "nonsense_change60": 0.12177985948477751,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.96,
+    "n": 50
+   },
+   "n_queries": 854
+  },
+  "s1_groot_tvb": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.8085106382978723,
+      141
+     ],
+     "wine_bottle_1": [
+      0.3227848101265823,
+      158
+     ],
+     "plate_1": [
+      0.6027397260273972,
+      146
+     ],
+     "akita_black_bowl_1": [
+      0.7142857142857143,
+      35
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.7127659574468085,
+      94
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8305084745762712,
+      59
+     ],
+     "wine_rack_1_top_region": [
+      0.5384615384615384,
+      117
+     ],
+     "plate_1": [
+      0.44660194174757284,
+      103
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      20
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.8297872340425532,
+      141
+     ],
+     "wine_bottle_1": [
+      0.4177215189873418,
+      158
+     ],
+     "plate_1": [
+      0.6301369863013698,
+      146
+     ],
+     "akita_black_bowl_1": [
+      0.7142857142857143,
+      35
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.7127659574468085,
+      94
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8305084745762712,
+      59
+     ],
+     "wine_rack_1_top_region": [
+      0.5897435897435898,
+      117
+     ],
+     "plate_1": [
+      0.5048543689320388,
+      103
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      20
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 480,
+     "cf_steer": 0.5791666666666667,
+     "absent_nearer_old": 0.5979166666666667,
+     "true_nearer_old": 0.6520833333333333,
+     "true_steer": 0.34791666666666665,
+     "absent_steer": 0.40208333333333335,
+     "nonsense_change30": 0.22916666666666666,
+     "nonsense_change15": 0.42916666666666664,
+     "nonsense_change60": 0.08333333333333333,
+     "valid": true
+    },
+    "place": {
+     "n": 393,
+     "cf_steer": 0.5725190839694656,
+     "absent_nearer_old": 0.5826972010178118,
+     "true_nearer_old": 0.8447837150127226,
+     "true_steer": 0.15521628498727735,
+     "absent_steer": 0.4173027989821883,
+     "nonsense_change30": 0.4351145038167939,
+     "nonsense_change15": 0.6564885496183206,
+     "nonsense_change60": 0.23155216284987276,
+     "valid": false
+    },
+    "all": {
+     "n": 873,
+     "cf_steer": 0.5761741122565864,
+     "absent_nearer_old": 0.5910652920962199,
+     "true_nearer_old": 0.738831615120275,
+     "true_steer": 0.2611683848797251,
+     "absent_steer": 0.40893470790378006,
+     "nonsense_change30": 0.3218785796105384,
+     "nonsense_change15": 0.5315005727376861,
+     "nonsense_change60": 0.15005727376861397,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.88,
+    "n": 50
+   },
+   "n_queries": 873
+  },
+  "s1_pi05_I": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.5793103448275863,
+      145
+     ],
+     "wine_bottle_1": [
+      0.15384615384615385,
+      169
+     ],
+     "plate_1": [
+      0.5436241610738255,
+      149
+     ],
+     "akita_black_bowl_1": [
+      0.5625,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.3953488372093023,
+      86
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.6290322580645161,
+      62
+     ],
+     "wine_rack_1_top_region": [
+      0.25225225225225223,
+      111
+     ],
+     "plate_1": [
+      0.3763440860215054,
+      93
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      22
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.6068965517241379,
+      145
+     ],
+     "wine_bottle_1": [
+      0.1893491124260355,
+      169
+     ],
+     "plate_1": [
+      0.5570469798657718,
+      149
+     ],
+     "akita_black_bowl_1": [
+      0.5625,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.45348837209302323,
+      86
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.6290322580645161,
+      62
+     ],
+     "wine_rack_1_top_region": [
+      0.2702702702702703,
+      111
+     ],
+     "plate_1": [
+      0.5053763440860215,
+      93
+     ],
+     "akita_black_bowl_1": [
+      0.045454545454545456,
+      22
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 495,
+     "cf_steer": 0.4222222222222222,
+     "absent_nearer_old": 0.6444444444444444,
+     "true_nearer_old": 0.6747474747474748,
+     "true_steer": 0.32525252525252524,
+     "absent_steer": 0.35555555555555557,
+     "nonsense_change30": 0.06666666666666667,
+     "nonsense_change15": 0.16767676767676767,
+     "nonsense_change60": 0.010101010101010102,
+     "valid": true
+    },
+    "place": {
+     "n": 374,
+     "cf_steer": 0.36363636363636365,
+     "absent_nearer_old": 0.8128342245989305,
+     "true_nearer_old": 0.8689839572192514,
+     "true_steer": 0.13101604278074866,
+     "absent_steer": 0.18716577540106952,
+     "nonsense_change30": 0.0855614973262032,
+     "nonsense_change15": 0.21122994652406418,
+     "nonsense_change60": 0.03208556149732621,
+     "valid": true
+    },
+    "all": {
+     "n": 869,
+     "cf_steer": 0.3970080552359033,
+     "absent_nearer_old": 0.7169159953970081,
+     "true_nearer_old": 0.7583429228998849,
+     "true_steer": 0.24165707710011508,
+     "absent_steer": 0.28308400460299193,
+     "nonsense_change30": 0.07479861910241657,
+     "nonsense_change15": 0.18642117376294592,
+     "nonsense_change60": 0.019562715765247412,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 1.0,
+    "n": 50
+   },
+   "n_queries": 869
+  },
+  "s1_pi05_tv": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.7006802721088435,
+      147
+     ],
+     "wine_bottle_1": [
+      0.3411764705882353,
+      170
+     ],
+     "plate_1": [
+      0.581081081081081,
+      148
+     ],
+     "akita_black_bowl_1": [
+      0.53125,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6153846153846154,
+      91
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8484848484848485,
+      66
+     ],
+     "wine_rack_1_top_region": [
+      0.48739495798319327,
+      119
+     ],
+     "plate_1": [
+      0.5544554455445545,
+      101
+     ],
+     "akita_black_bowl_1": [
+      0.045454545454545456,
+      22
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.7482993197278912,
+      147
+     ],
+     "wine_bottle_1": [
+      0.3941176470588235,
+      170
+     ],
+     "plate_1": [
+      0.5540540540540541,
+      148
+     ],
+     "akita_black_bowl_1": [
+      0.53125,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6373626373626373,
+      91
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8484848484848485,
+      66
+     ],
+     "wine_rack_1_top_region": [
+      0.48739495798319327,
+      119
+     ],
+     "plate_1": [
+      0.6336633663366337,
+      101
+     ],
+     "akita_black_bowl_1": [
+      0.18181818181818182,
+      22
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 497,
+     "cf_steer": 0.5311871227364185,
+     "absent_nearer_old": 0.6398390342052314,
+     "true_nearer_old": 0.6639839034205232,
+     "true_steer": 0.33601609657947684,
+     "absent_steer": 0.36016096579476864,
+     "nonsense_change30": 0.13883299798792756,
+     "nonsense_change15": 0.3501006036217304,
+     "nonsense_change60": 0.028169014084507043,
+     "valid": true
+    },
+    "place": {
+     "n": 399,
+     "cf_steer": 0.568922305764411,
+     "absent_nearer_old": 0.6190476190476191,
+     "true_nearer_old": 0.837092731829574,
+     "true_steer": 0.16290726817042606,
+     "absent_steer": 0.38095238095238093,
+     "nonsense_change30": 0.19298245614035087,
+     "nonsense_change15": 0.3684210526315789,
+     "nonsense_change60": 0.07017543859649122,
+     "valid": false
+    },
+    "all": {
+     "n": 896,
+     "cf_steer": 0.5479910714285714,
+     "absent_nearer_old": 0.6305803571428572,
+     "true_nearer_old": 0.7410714285714286,
+     "true_steer": 0.25892857142857145,
+     "absent_steer": 0.36941964285714285,
+     "nonsense_change30": 0.16294642857142858,
+     "nonsense_change15": 0.35825892857142855,
+     "nonsense_change60": 0.046875,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.94,
+    "n": 50
+   },
+   "n_queries": 896
+  },
+  "s1_pi05_tvp": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.7466666666666667,
+      150
+     ],
+     "wine_bottle_1": [
+      0.36046511627906974,
+      172
+     ],
+     "plate_1": [
+      0.5816993464052288,
+      153
+     ],
+     "akita_black_bowl_1": [
+      0.53125,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6057692307692307,
+      104
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.7837837837837838,
+      74
+     ],
+     "wine_rack_1_top_region": [
+      0.48507462686567165,
+      134
+     ],
+     "plate_1": [
+      0.45454545454545453,
+      110
+     ],
+     "akita_black_bowl_1": [
+      0.08,
+      25
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.7733333333333333,
+      150
+     ],
+     "wine_bottle_1": [
+      0.38953488372093026,
+      172
+     ],
+     "plate_1": [
+      0.6143790849673203,
+      153
+     ],
+     "akita_black_bowl_1": [
+      0.5,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.5961538461538461,
+      104
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.7972972972972973,
+      74
+     ],
+     "wine_rack_1_top_region": [
+      0.4626865671641791,
+      134
+     ],
+     "plate_1": [
+      0.4909090909090909,
+      110
+     ],
+     "akita_black_bowl_1": [
+      0.08,
+      25
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 507,
+     "cf_steer": 0.5522682445759369,
+     "absent_nearer_old": 0.6074950690335306,
+     "true_nearer_old": 0.6607495069033531,
+     "true_steer": 0.33925049309664695,
+     "absent_steer": 0.39250493096646943,
+     "nonsense_change30": 0.14398422090729784,
+     "nonsense_change15": 0.4358974358974359,
+     "nonsense_change60": 0.007889546351084813,
+     "valid": true
+    },
+    "place": {
+     "n": 447,
+     "cf_steer": 0.5324384787472036,
+     "absent_nearer_old": 0.6062639821029083,
+     "true_nearer_old": 0.825503355704698,
+     "true_steer": 0.174496644295302,
+     "absent_steer": 0.39373601789709173,
+     "nonsense_change30": 0.1789709172259508,
+     "nonsense_change15": 0.29977628635346754,
+     "nonsense_change60": 0.1029082774049217,
+     "valid": false
+    },
+    "all": {
+     "n": 954,
+     "cf_steer": 0.5429769392033543,
+     "absent_nearer_old": 0.6069182389937107,
+     "true_nearer_old": 0.7379454926624738,
+     "true_steer": 0.2620545073375262,
+     "absent_steer": 0.39308176100628933,
+     "nonsense_change30": 0.16037735849056603,
+     "nonsense_change15": 0.3721174004192872,
+     "nonsense_change60": 0.05241090146750524,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 1.0,
+    "n": 50
+   },
+   "n_queries": 954
+  },
+  "s1_pi05_tvpb": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.7466666666666667,
+      150
+     ],
+     "wine_bottle_1": [
+      0.36046511627906974,
+      172
+     ],
+     "plate_1": [
+      0.5816993464052288,
+      153
+     ],
+     "akita_black_bowl_1": [
+      0.53125,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6116504854368932,
+      103
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.7777777777777778,
+      72
+     ],
+     "wine_rack_1_top_region": [
+      0.48484848484848486,
+      132
+     ],
+     "plate_1": [
+      0.6,
+      110
+     ],
+     "akita_black_bowl_1": [
+      0.041666666666666664,
+      24
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.7733333333333333,
+      150
+     ],
+     "wine_bottle_1": [
+      0.38953488372093026,
+      172
+     ],
+     "plate_1": [
+      0.6143790849673203,
+      153
+     ],
+     "akita_black_bowl_1": [
+      0.5,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6504854368932039,
+      103
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.7916666666666666,
+      72
+     ],
+     "wine_rack_1_top_region": [
+      0.4621212121212121,
+      132
+     ],
+     "plate_1": [
+      0.6818181818181818,
+      110
+     ],
+     "akita_black_bowl_1": [
+      0.16666666666666666,
+      24
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 507,
+     "cf_steer": 0.5522682445759369,
+     "absent_nearer_old": 0.6074950690335306,
+     "true_nearer_old": 0.6607495069033531,
+     "true_steer": 0.33925049309664695,
+     "absent_steer": 0.39250493096646943,
+     "nonsense_change30": 0.14398422090729784,
+     "nonsense_change15": 0.4358974358974359,
+     "nonsense_change60": 0.007889546351084813,
+     "valid": true
+    },
+    "place": {
+     "n": 441,
+     "cf_steer": 0.5668934240362812,
+     "absent_nearer_old": 0.5963718820861679,
+     "true_nearer_old": 0.8503401360544218,
+     "true_steer": 0.14965986394557823,
+     "absent_steer": 0.4036281179138322,
+     "nonsense_change30": 0.22675736961451248,
+     "nonsense_change15": 0.3378684807256236,
+     "nonsense_change60": 0.14285714285714285,
+     "valid": false
+    },
+    "all": {
+     "n": 948,
+     "cf_steer": 0.5590717299578059,
+     "absent_nearer_old": 0.6023206751054853,
+     "true_nearer_old": 0.748945147679325,
+     "true_steer": 0.2510548523206751,
+     "absent_steer": 0.39767932489451474,
+     "nonsense_change30": 0.18248945147679324,
+     "nonsense_change15": 0.39029535864978904,
+     "nonsense_change60": 0.07067510548523206,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 1.0,
+    "n": 50
+   },
+   "n_queries": 948
+  },
+  "s1_pi0_I": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.547945205479452,
+      146
+     ],
+     "wine_bottle_1": [
+      0.20710059171597633,
+      169
+     ],
+     "plate_1": [
+      0.44966442953020136,
+      149
+     ],
+     "akita_black_bowl_1": [
+      0.5,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6067415730337079,
+      89
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.6612903225806451,
+      62
+     ],
+     "wine_rack_1_top_region": [
+      0.4732142857142857,
+      112
+     ],
+     "plate_1": [
+      0.4166666666666667,
+      96
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      23
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.5753424657534246,
+      146
+     ],
+     "wine_bottle_1": [
+      0.1893491124260355,
+      169
+     ],
+     "plate_1": [
+      0.48322147651006714,
+      149
+     ],
+     "akita_black_bowl_1": [
+      0.53125,
+      32
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6404494382022472,
+      89
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.6451612903225806,
+      62
+     ],
+     "wine_rack_1_top_region": [
+      0.45535714285714285,
+      112
+     ],
+     "plate_1": [
+      0.4583333333333333,
+      96
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      23
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 496,
+     "cf_steer": 0.39919354838709675,
+     "absent_nearer_old": 0.6149193548387097,
+     "true_nearer_old": 0.6532258064516129,
+     "true_steer": 0.3467741935483871,
+     "absent_steer": 0.3850806451612903,
+     "nonsense_change30": 0.04233870967741935,
+     "nonsense_change15": 0.16532258064516128,
+     "nonsense_change60": 0.010080645161290322,
+     "valid": true
+    },
+    "place": {
+     "n": 382,
+     "cf_steer": 0.49214659685863876,
+     "absent_nearer_old": 0.7408376963350785,
+     "true_nearer_old": 0.8795811518324608,
+     "true_steer": 0.12041884816753927,
+     "absent_steer": 0.2591623036649215,
+     "nonsense_change30": 0.1806282722513089,
+     "nonsense_change15": 0.4869109947643979,
+     "nonsense_change60": 0.04712041884816754,
+     "valid": true
+    },
+    "all": {
+     "n": 878,
+     "cf_steer": 0.4396355353075171,
+     "absent_nearer_old": 0.6697038724373576,
+     "true_nearer_old": 0.7517084282460137,
+     "true_steer": 0.24829157175398633,
+     "absent_steer": 0.33029612756264237,
+     "nonsense_change30": 0.10250569476082004,
+     "nonsense_change15": 0.3052391799544419,
+     "nonsense_change60": 0.02619589977220957,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.96,
+    "n": 50
+   },
+   "n_queries": 878
+  },
+  "s1_r0": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.5668789808917197,
+      157
+     ],
+     "wine_bottle_1": [
+      0.24,
+      175
+     ],
+     "plate_1": [
+      0.49032258064516127,
+      155
+     ],
+     "akita_black_bowl_1": [
+      0.6756756756756757,
+      37
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.5656565656565656,
+      99
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.803030303030303,
+      66
+     ],
+     "wine_rack_1_top_region": [
+      0.5327868852459017,
+      122
+     ],
+     "plate_1": [
+      0.3564356435643564,
+      101
+     ],
+     "akita_black_bowl_1": [
+      0.37037037037037035,
+      27
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.5859872611464968,
+      157
+     ],
+     "wine_bottle_1": [
+      0.2742857142857143,
+      175
+     ],
+     "plate_1": [
+      0.47096774193548385,
+      155
+     ],
+     "akita_black_bowl_1": [
+      0.6486486486486487,
+      37
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.5656565656565656,
+      99
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8484848484848485,
+      66
+     ],
+     "wine_rack_1_top_region": [
+      0.5245901639344263,
+      122
+     ],
+     "plate_1": [
+      0.38613861386138615,
+      101
+     ],
+     "akita_black_bowl_1": [
+      0.4444444444444444,
+      27
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 524,
+     "cf_steer": 0.44274809160305345,
+     "absent_nearer_old": 0.6106870229007634,
+     "true_nearer_old": 0.6564885496183206,
+     "true_steer": 0.3435114503816794,
+     "absent_steer": 0.3893129770992366,
+     "nonsense_change30": 0.05152671755725191,
+     "nonsense_change15": 0.2862595419847328,
+     "nonsense_change60": 0.015267175572519083,
+     "valid": true
+    },
+    "place": {
+     "n": 415,
+     "cf_steer": 0.5301204819277109,
+     "absent_nearer_old": 0.6385542168674698,
+     "true_nearer_old": 0.8289156626506025,
+     "true_steer": 0.1710843373493976,
+     "absent_steer": 0.3614457831325301,
+     "nonsense_change30": 0.4867469879518072,
+     "nonsense_change15": 0.6337349397590362,
+     "nonsense_change60": 0.24819277108433735,
+     "valid": false
+    },
+    "all": {
+     "n": 939,
+     "cf_steer": 0.48136315228966986,
+     "absent_nearer_old": 0.6230031948881789,
+     "true_nearer_old": 0.7326943556975506,
+     "true_steer": 0.2673056443024494,
+     "absent_steer": 0.3769968051118211,
+     "nonsense_change30": 0.24387646432374868,
+     "nonsense_change15": 0.4398296059637913,
+     "nonsense_change60": 0.1182108626198083,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.88,
+    "n": 50
+   },
+   "n_queries": 939
+  },
+  "s1_r1": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.7574257425742574,
+      202
+     ],
+     "wine_bottle_1": [
+      0.36416184971098264,
+      173
+     ],
+     "plate_1": [
+      0.7009803921568627,
+      204
+     ],
+     "akita_black_bowl_1": [
+      0.7951807228915663,
+      83
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6494845360824743,
+      97
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8450704225352113,
+      71
+     ],
+     "wine_rack_1_top_region": [
+      0.4959349593495935,
+      123
+     ],
+     "plate_1": [
+      0.41,
+      100
+     ],
+     "akita_black_bowl_1": [
+      0.2,
+      25
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.7524752475247525,
+      202
+     ],
+     "wine_bottle_1": [
+      0.3699421965317919,
+      173
+     ],
+     "plate_1": [
+      0.696078431372549,
+      204
+     ],
+     "akita_black_bowl_1": [
+      0.7831325301204819,
+      83
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6597938144329897,
+      97
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9014084507042254,
+      71
+     ],
+     "wine_rack_1_top_region": [
+      0.5203252032520326,
+      123
+     ],
+     "plate_1": [
+      0.41,
+      100
+     ],
+     "akita_black_bowl_1": [
+      0.24,
+      25
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 662,
+     "cf_steer": 0.6419939577039275,
+     "absent_nearer_old": 0.5347432024169184,
+     "true_nearer_old": 0.6314199395770392,
+     "true_steer": 0.3685800604229607,
+     "absent_steer": 0.4652567975830816,
+     "nonsense_change30": 0.14501510574018128,
+     "nonsense_change15": 0.3564954682779456,
+     "nonsense_change60": 0.045317220543806644,
+     "valid": true
+    },
+    "place": {
+     "n": 416,
+     "cf_steer": 0.5528846153846154,
+     "absent_nearer_old": 0.6418269230769231,
+     "true_nearer_old": 0.8245192307692308,
+     "true_steer": 0.17548076923076922,
+     "absent_steer": 0.3581730769230769,
+     "nonsense_change30": 0.3918269230769231,
+     "nonsense_change15": 0.5889423076923077,
+     "nonsense_change60": 0.19471153846153846,
+     "valid": false
+    },
+    "all": {
+     "n": 1078,
+     "cf_steer": 0.6076066790352505,
+     "absent_nearer_old": 0.5760667903525046,
+     "true_nearer_old": 0.7059369202226344,
+     "true_steer": 0.2940630797773655,
+     "absent_steer": 0.42393320964749537,
+     "nonsense_change30": 0.24025974025974026,
+     "nonsense_change15": 0.4461966604823748,
+     "nonsense_change60": 0.10296846011131726,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.84,
+    "n": 50
+   },
+   "n_queries": 1078
+  },
+  "s1_r2": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.8284023668639053,
+      169
+     ],
+     "wine_bottle_1": [
+      0.39204545454545453,
+      176
+     ],
+     "plate_1": [
+      0.8203592814371258,
+      167
+     ],
+     "akita_black_bowl_1": [
+      0.9333333333333333,
+      45
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.7789473684210526,
+      95
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8939393939393939,
+      66
+     ],
+     "wine_rack_1_top_region": [
+      0.5916666666666667,
+      120
+     ],
+     "plate_1": [
+      0.3877551020408163,
+      98
+     ],
+     "akita_black_bowl_1": [
+      0.038461538461538464,
+      26
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.834319526627219,
+      169
+     ],
+     "wine_bottle_1": [
+      0.42045454545454547,
+      176
+     ],
+     "plate_1": [
+      0.8502994011976048,
+      167
+     ],
+     "akita_black_bowl_1": [
+      0.9555555555555556,
+      45
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.8210526315789474,
+      95
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9242424242424242,
+      66
+     ],
+     "wine_rack_1_top_region": [
+      0.6166666666666667,
+      120
+     ],
+     "plate_1": [
+      0.4387755102040816,
+      98
+     ],
+     "akita_black_bowl_1": [
+      0.19230769230769232,
+      26
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 557,
+     "cf_steer": 0.696588868940754,
+     "absent_nearer_old": 0.570915619389587,
+     "true_nearer_old": 0.6391382405745063,
+     "true_steer": 0.3608617594254937,
+     "absent_steer": 0.42908438061041293,
+     "nonsense_change30": 0.09156193895870736,
+     "nonsense_change15": 0.2118491921005386,
+     "nonsense_change60": 0.01436265709156194,
+     "valid": true
+    },
+    "place": {
+     "n": 405,
+     "cf_steer": 0.6,
+     "absent_nearer_old": 0.6444444444444444,
+     "true_nearer_old": 0.8518518518518519,
+     "true_steer": 0.14814814814814814,
+     "absent_steer": 0.35555555555555557,
+     "nonsense_change30": 0.49382716049382713,
+     "nonsense_change15": 0.6864197530864198,
+     "nonsense_change60": 0.2938271604938272,
+     "valid": false
+    },
+    "all": {
+     "n": 962,
+     "cf_steer": 0.6559251559251559,
+     "absent_nearer_old": 0.6018711018711018,
+     "true_nearer_old": 0.7286902286902287,
+     "true_steer": 0.2713097713097713,
+     "absent_steer": 0.3981288981288981,
+     "nonsense_change30": 0.2609147609147609,
+     "nonsense_change15": 0.41164241164241167,
+     "nonsense_change60": 0.13201663201663202,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.9,
+    "n": 50
+   },
+   "n_queries": 962
+  },
+  "s1_r2b": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.8972972972972973,
+      185
+     ],
+     "wine_bottle_1": [
+      0.46629213483146065,
+      178
+     ],
+     "plate_1": [
+      0.93048128342246,
+      187
+     ],
+     "akita_black_bowl_1": [
+      0.8064516129032258,
+      62
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.7796610169491526,
+      118
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8695652173913043,
+      69
+     ],
+     "wine_rack_1_top_region": [
+      0.6382978723404256,
+      141
+     ],
+     "plate_1": [
+      0.5172413793103449,
+      116
+     ],
+     "akita_black_bowl_1": [
+      0.20930232558139536,
+      43
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.9081081081081082,
+      185
+     ],
+     "wine_bottle_1": [
+      0.48314606741573035,
+      178
+     ],
+     "plate_1": [
+      0.9037433155080213,
+      187
+     ],
+     "akita_black_bowl_1": [
+      0.7741935483870968,
+      62
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.8050847457627118,
+      118
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.8840579710144928,
+      69
+     ],
+     "wine_rack_1_top_region": [
+      0.6382978723404256,
+      141
+     ],
+     "plate_1": [
+      0.5689655172413793,
+      116
+     ],
+     "akita_black_bowl_1": [
+      0.27906976744186046,
+      43
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 612,
+     "cf_steer": 0.7728758169934641,
+     "absent_nearer_old": 0.6356209150326797,
+     "true_nearer_old": 0.6797385620915033,
+     "true_steer": 0.3202614379084967,
+     "absent_steer": 0.36437908496732024,
+     "nonsense_change30": 0.06699346405228758,
+     "nonsense_change15": 0.20588235294117646,
+     "nonsense_change60": 0.021241830065359478,
+     "valid": true
+    },
+    "place": {
+     "n": 487,
+     "cf_steer": 0.6386036960985626,
+     "absent_nearer_old": 0.6160164271047228,
+     "true_nearer_old": 0.8213552361396304,
+     "true_steer": 0.17864476386036962,
+     "absent_steer": 0.3839835728952772,
+     "nonsense_change30": 0.4804928131416838,
+     "nonsense_change15": 0.6817248459958932,
+     "nonsense_change60": 0.24435318275154005,
+     "valid": false
+    },
+    "all": {
+     "n": 1099,
+     "cf_steer": 0.7133757961783439,
+     "absent_nearer_old": 0.626933575978162,
+     "true_nearer_old": 0.7424931756141947,
+     "true_steer": 0.2575068243858053,
+     "absent_steer": 0.37306642402183804,
+     "nonsense_change30": 0.2502274795268426,
+     "nonsense_change15": 0.4167424931756142,
+     "nonsense_change60": 0.12010919017288443,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.82,
+    "n": 50
+   },
+   "n_queries": 1099
+  },
+  "s1_r2l": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.875,
+      168
+     ],
+     "wine_bottle_1": [
+      0.3333333333333333,
+      177
+     ],
+     "plate_1": [
+      0.8117647058823529,
+      170
+     ],
+     "akita_black_bowl_1": [
+      0.8913043478260869,
+      46
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.8333333333333334,
+      96
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9027777777777778,
+      72
+     ],
+     "wine_rack_1_top_region": [
+      0.5691056910569106,
+      123
+     ],
+     "plate_1": [
+      0.45918367346938777,
+      98
+     ],
+     "akita_black_bowl_1": [
+      0.12,
+      25
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.8869047619047619,
+      168
+     ],
+     "wine_bottle_1": [
+      0.3559322033898305,
+      177
+     ],
+     "plate_1": [
+      0.8294117647058824,
+      170
+     ],
+     "akita_black_bowl_1": [
+      0.8695652173913043,
+      46
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.8854166666666666,
+      96
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9444444444444444,
+      72
+     ],
+     "wine_rack_1_top_region": [
+      0.6016260162601627,
+      123
+     ],
+     "plate_1": [
+      0.45918367346938777,
+      98
+     ],
+     "akita_black_bowl_1": [
+      0.16,
+      25
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 561,
+     "cf_steer": 0.6862745098039216,
+     "absent_nearer_old": 0.6114081996434937,
+     "true_nearer_old": 0.6559714795008913,
+     "true_steer": 0.34402852049910876,
+     "absent_steer": 0.38859180035650626,
+     "nonsense_change30": 0.09803921568627451,
+     "nonsense_change15": 0.21746880570409982,
+     "nonsense_change60": 0.0106951871657754,
+     "valid": true
+    },
+    "place": {
+     "n": 414,
+     "cf_steer": 0.6352657004830918,
+     "absent_nearer_old": 0.6376811594202898,
+     "true_nearer_old": 0.8381642512077294,
+     "true_steer": 0.16183574879227053,
+     "absent_steer": 0.36231884057971014,
+     "nonsense_change30": 0.45652173913043476,
+     "nonsense_change15": 0.6473429951690821,
+     "nonsense_change60": 0.2560386473429952,
+     "valid": false
+    },
+    "all": {
+     "n": 975,
+     "cf_steer": 0.6646153846153846,
+     "absent_nearer_old": 0.6225641025641026,
+     "true_nearer_old": 0.7333333333333334,
+     "true_steer": 0.26666666666666666,
+     "absent_steer": 0.37743589743589745,
+     "nonsense_change30": 0.25025641025641027,
+     "nonsense_change15": 0.4,
+     "nonsense_change60": 0.11487179487179487,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.9,
+    "n": 50
+   },
+   "n_queries": 975
+  },
+  "s1_r2w": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.7563451776649747,
+      197
+     ],
+     "wine_bottle_1": [
+      0.34972677595628415,
+      183
+     ],
+     "plate_1": [
+      0.6224489795918368,
+      196
+     ],
+     "akita_black_bowl_1": [
+      0.7536231884057971,
+      69
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6581196581196581,
+      117
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9863013698630136,
+      73
+     ],
+     "wine_rack_1_top_region": [
+      0.6549295774647887,
+      142
+     ],
+     "plate_1": [
+      0.543859649122807,
+      114
+     ],
+     "akita_black_bowl_1": [
+      0.4634146341463415,
+      41
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.7817258883248731,
+      197
+     ],
+     "wine_bottle_1": [
+      0.366120218579235,
+      183
+     ],
+     "plate_1": [
+      0.6479591836734694,
+      196
+     ],
+     "akita_black_bowl_1": [
+      0.7971014492753623,
+      69
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.7094017094017094,
+      117
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9863013698630136,
+      73
+     ],
+     "wine_rack_1_top_region": [
+      0.6549295774647887,
+      142
+     ],
+     "plate_1": [
+      0.5526315789473685,
+      114
+     ],
+     "akita_black_bowl_1": [
+      0.3902439024390244,
+      41
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 645,
+     "cf_steer": 0.6,
+     "absent_nearer_old": 0.5751937984496124,
+     "true_nearer_old": 0.6465116279069767,
+     "true_steer": 0.35348837209302325,
+     "absent_steer": 0.4248062015503876,
+     "nonsense_change30": 0.14263565891472868,
+     "nonsense_change15": 0.3302325581395349,
+     "nonsense_change60": 0.031007751937984496,
+     "valid": true
+    },
+    "place": {
+     "n": 487,
+     "cf_steer": 0.6632443531827515,
+     "absent_nearer_old": 0.5585215605749487,
+     "true_nearer_old": 0.8275154004106776,
+     "true_steer": 0.17248459958932238,
+     "absent_steer": 0.4414784394250513,
+     "nonsense_change30": 0.6776180698151951,
+     "nonsense_change15": 0.7946611909650924,
+     "nonsense_change60": 0.44763860369609854,
+     "valid": false
+    },
+    "all": {
+     "n": 1132,
+     "cf_steer": 0.627208480565371,
+     "absent_nearer_old": 0.5680212014134276,
+     "true_nearer_old": 0.7243816254416962,
+     "true_steer": 0.2756183745583039,
+     "absent_steer": 0.43197879858657245,
+     "nonsense_change30": 0.37279151943462896,
+     "nonsense_change15": 0.5300353356890459,
+     "nonsense_change60": 0.21024734982332155,
+     "valid": false
+    }
+   },
+   "k_success": {
+    "mean": 0.7,
+    "n": 50
+   },
+   "n_queries": 1132
+  },
+  "s1_smolvla_I": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.5704697986577181,
+      149
+     ],
+     "wine_bottle_1": [
+      0.13142857142857142,
+      175
+     ],
+     "plate_1": [
+      0.4444444444444444,
+      153
+     ],
+     "akita_black_bowl_1": [
+      0.6451612903225806,
+      31
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.76,
+      100
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9333333333333333,
+      75
+     ],
+     "wine_rack_1_top_region": [
+      0.4918032786885246,
+      122
+     ],
+     "plate_1": [
+      0.5833333333333334,
+      108
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      22
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.5570469798657718,
+      149
+     ],
+     "wine_bottle_1": [
+      0.13142857142857142,
+      175
+     ],
+     "plate_1": [
+      0.40522875816993464,
+      153
+     ],
+     "akita_black_bowl_1": [
+      0.6774193548387096,
+      31
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.81,
+      100
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9466666666666667,
+      75
+     ],
+     "wine_rack_1_top_region": [
+      0.4262295081967213,
+      122
+     ],
+     "plate_1": [
+      0.6203703703703703,
+      108
+     ],
+     "akita_black_bowl_1": [
+      0.0,
+      22
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 508,
+     "cf_steer": 0.3858267716535433,
+     "absent_nearer_old": 0.6259842519685039,
+     "true_nearer_old": 0.6456692913385826,
+     "true_steer": 0.3543307086614173,
+     "absent_steer": 0.37401574803149606,
+     "nonsense_change30": 0.021653543307086614,
+     "nonsense_change15": 0.21653543307086615,
+     "nonsense_change60": 0.001968503937007874,
+     "valid": true
+    },
+    "place": {
+     "n": 427,
+     "cf_steer": 0.629976580796253,
+     "absent_nearer_old": 0.585480093676815,
+     "true_nearer_old": 0.8149882903981265,
+     "true_steer": 0.18501170960187355,
+     "absent_steer": 0.41451990632318503,
+     "nonsense_change30": 0.4964871194379391,
+     "nonsense_change15": 0.7002341920374707,
+     "nonsense_change60": 0.30210772833723654,
+     "valid": false
+    },
+    "all": {
+     "n": 935,
+     "cf_steer": 0.49732620320855614,
+     "absent_nearer_old": 0.6074866310160427,
+     "true_nearer_old": 0.7229946524064171,
+     "true_steer": 0.27700534759358286,
+     "absent_steer": 0.3925133689839572,
+     "nonsense_change30": 0.23850267379679144,
+     "nonsense_change15": 0.4374331550802139,
+     "nonsense_change60": 0.13903743315508021,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.96,
+    "n": 50
+   },
+   "n_queries": 935
+  },
+  "s1_xvla_I": {
+   "d5": {
+    "g": {
+     "cream_cheese_1": [
+      0.8734177215189873,
+      158
+     ],
+     "wine_bottle_1": [
+      0.3891891891891892,
+      185
+     ],
+     "plate_1": [
+      0.7607361963190185,
+      163
+     ],
+     "akita_black_bowl_1": [
+      0.8857142857142857,
+      35
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.635593220338983,
+      118
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.975609756097561,
+      82
+     ],
+     "wine_rack_1_top_region": [
+      0.3181818181818182,
+      154
+     ],
+     "plate_1": [
+      0.6417910447761194,
+      134
+     ],
+     "akita_black_bowl_1": [
+      0.08823529411764706,
+      34
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "cream_cheese_1": [
+      0.879746835443038,
+      158
+     ],
+     "wine_bottle_1": [
+      0.4594594594594595,
+      185
+     ],
+     "plate_1": [
+      0.7484662576687117,
+      163
+     ],
+     "akita_black_bowl_1": [
+      0.9428571428571428,
+      35
+     ]
+    },
+    "p": {
+     "flat_stove_1_cook_region": [
+      0.6694915254237288,
+      118
+     ],
+     "wooden_cabinet_1_top_side": [
+      0.9878048780487805,
+      82
+     ],
+     "wine_rack_1_top_region": [
+      0.3051948051948052,
+      154
+     ],
+     "plate_1": [
+      0.6417910447761194,
+      134
+     ],
+     "akita_black_bowl_1": [
+      0.08823529411764706,
+      34
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 541,
+     "cf_steer": 0.6746765249537893,
+     "absent_nearer_old": 0.5914972273567467,
+     "true_nearer_old": 0.6506469500924215,
+     "true_steer": 0.34935304990757854,
+     "absent_steer": 0.40850277264325324,
+     "nonsense_change30": 0.17375231053604437,
+     "nonsense_change15": 0.41404805914972276,
+     "nonsense_change60": 0.027726432532347505,
+     "valid": true
+    },
+    "place": {
+     "n": 522,
+     "cf_steer": 0.5613026819923371,
+     "absent_nearer_old": 0.7298850574712643,
+     "true_nearer_old": 0.9080459770114943,
+     "true_steer": 0.09195402298850575,
+     "absent_steer": 0.27011494252873564,
+     "nonsense_change30": 0.24521072796934865,
+     "nonsense_change15": 0.4885057471264368,
+     "nonsense_change60": 0.12643678160919541,
+     "valid": false
+    },
+    "all": {
+     "n": 1063,
+     "cf_steer": 0.6190028222013171,
+     "absent_nearer_old": 0.6594543744120414,
+     "true_nearer_old": 0.7770460959548448,
+     "true_steer": 0.22295390404515522,
+     "absent_steer": 0.3405456255879586,
+     "nonsense_change30": 0.20884289746001883,
+     "nonsense_change15": 0.4506114769520226,
+     "nonsense_change60": 0.0761994355597366,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 1.0,
+    "n": 50
+   },
+   "n_queries": 1063
+  },
+  "s2_pi05_I": {
+   "d5": {
+    "g": {
+     "white_yellow_mug_1": [
+      0.1,
+      60
+     ],
+     "red_coffee_mug_1": [
+      0.42857142857142855,
+      119
+     ],
+     "porcelain_mug_1": [
+      0.9333333333333333,
+      60
+     ]
+    },
+    "p": {
+     "plate_2": [
+      0.03529411764705882,
+      85
+     ],
+     "plate_1": [
+      0.5,
+      176
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "white_yellow_mug_1": [
+      0.13333333333333333,
+      60
+     ],
+     "red_coffee_mug_1": [
+      0.4369747899159664,
+      119
+     ],
+     "porcelain_mug_1": [
+      0.8666666666666667,
+      60
+     ]
+    },
+    "p": {
+     "plate_2": [
+      0.047058823529411764,
+      85
+     ],
+     "plate_1": [
+      0.4943181818181818,
+      176
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 239,
+     "cf_steer": 0.47280334728033474,
+     "absent_nearer_old": 0.5188284518828452,
+     "true_nearer_old": 0.5230125523012552,
+     "true_steer": 0.4769874476987448,
+     "absent_steer": 0.4811715481171548,
+     "nonsense_change30": 0.016736401673640166,
+     "nonsense_change15": 0.08368200836820083,
+     "nonsense_change60": 0.0,
+     "valid": true
+    },
+    "place": {
+     "n": 261,
+     "cf_steer": 0.3486590038314176,
+     "absent_nearer_old": 0.6666666666666667,
+     "true_nearer_old": 0.6513409961685823,
+     "true_steer": 0.3486590038314176,
+     "absent_steer": 0.3333333333333333,
+     "nonsense_change30": 0.007662835249042145,
+     "nonsense_change15": 0.007662835249042145,
+     "nonsense_change60": 0.0,
+     "valid": true
+    },
+    "all": {
+     "n": 500,
+     "cf_steer": 0.408,
+     "absent_nearer_old": 0.596,
+     "true_nearer_old": 0.5900000000000001,
+     "true_steer": 0.41,
+     "absent_steer": 0.404,
+     "nonsense_change30": 0.012,
+     "nonsense_change15": 0.044,
+     "nonsense_change60": 0.0,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 1.0,
+    "n": 20
+   },
+   "n_queries": 500
+  },
+  "s2_pi05_tvp": {
+   "d5": {
+    "g": {
+     "white_yellow_mug_1": [
+      0.19298245614035087,
+      57
+     ],
+     "red_coffee_mug_1": [
+      0.3135593220338983,
+      118
+     ],
+     "porcelain_mug_1": [
+      0.7580645161290323,
+      62
+     ]
+    },
+    "p": {
+     "plate_2": [
+      0.391304347826087,
+      92
+     ],
+     "plate_1": [
+      0.8345864661654135,
+      266
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "white_yellow_mug_1": [
+      0.21052631578947367,
+      57
+     ],
+     "red_coffee_mug_1": [
+      0.3474576271186441,
+      118
+     ],
+     "porcelain_mug_1": [
+      0.7419354838709677,
+      62
+     ]
+    },
+    "p": {
+     "plate_2": [
+      0.33695652173913043,
+      92
+     ],
+     "plate_1": [
+      0.8345864661654135,
+      266
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 237,
+     "cf_steer": 0.4008438818565401,
+     "absent_nearer_old": 0.6244725738396624,
+     "true_nearer_old": 0.7215189873417722,
+     "true_steer": 0.27848101265822783,
+     "absent_steer": 0.3755274261603376,
+     "nonsense_change30": 0.23628691983122363,
+     "nonsense_change15": 0.4008438818565401,
+     "nonsense_change60": 0.10970464135021098,
+     "valid": true
+    },
+    "place": {
+     "n": 358,
+     "cf_steer": 0.7206703910614525,
+     "absent_nearer_old": 0.5167597765363128,
+     "true_nearer_old": 0.6061452513966481,
+     "true_steer": 0.39385474860335196,
+     "absent_steer": 0.48324022346368717,
+     "nonsense_change30": 0.22625698324022347,
+     "nonsense_change15": 0.3324022346368715,
+     "nonsense_change60": 0.1871508379888268,
+     "valid": true
+    },
+    "all": {
+     "n": 595,
+     "cf_steer": 0.5932773109243697,
+     "absent_nearer_old": 0.5596638655462185,
+     "true_nearer_old": 0.6521008403361345,
+     "true_steer": 0.34789915966386553,
+     "absent_steer": 0.4403361344537815,
+     "nonsense_change30": 0.23025210084033612,
+     "nonsense_change15": 0.3596638655462185,
+     "nonsense_change60": 0.15630252100840336,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.9,
+    "n": 20
+   },
+   "n_queries": 595
+  },
+  "s2_pi0_I": {
+   "d5": {
+    "g": {
+     "white_yellow_mug_1": [
+      0.04477611940298507,
+      67
+     ],
+     "red_coffee_mug_1": [
+      0.4246575342465753,
+      146
+     ],
+     "porcelain_mug_1": [
+      0.925,
+      80
+     ]
+    },
+    "p": {
+     "plate_2": [
+      0.2196969696969697,
+      132
+     ],
+     "plate_1": [
+      0.5330396475770925,
+      227
+     ]
+    },
+    "dropped": 0
+   },
+   "d8": {
+    "g": {
+     "white_yellow_mug_1": [
+      0.07462686567164178,
+      67
+     ],
+     "red_coffee_mug_1": [
+      0.4452054794520548,
+      146
+     ],
+     "porcelain_mug_1": [
+      0.9,
+      80
+     ]
+    },
+    "p": {
+     "plate_2": [
+      0.21212121212121213,
+      132
+     ],
+     "plate_1": [
+      0.5418502202643172,
+      227
+     ]
+    },
+    "dropped": 0
+   },
+   "validity": {
+    "grasp": {
+     "n": 293,
+     "cf_steer": 0.47440273037542663,
+     "absent_nearer_old": 0.5187713310580204,
+     "true_nearer_old": 0.515358361774744,
+     "true_steer": 0.48464163822525597,
+     "absent_steer": 0.4812286689419795,
+     "nonsense_change30": 0.023890784982935155,
+     "nonsense_change15": 0.15017064846416384,
+     "nonsense_change60": 0.0034129692832764505,
+     "valid": true
+    },
+    "place": {
+     "n": 359,
+     "cf_steer": 0.4178272980501393,
+     "absent_nearer_old": 0.5821727019498607,
+     "true_nearer_old": 0.5682451253481895,
+     "true_steer": 0.43175487465181056,
+     "absent_steer": 0.4178272980501393,
+     "nonsense_change30": 0.10863509749303621,
+     "nonsense_change15": 0.24233983286908078,
+     "nonsense_change60": 0.03899721448467967,
+     "valid": true
+    },
+    "all": {
+     "n": 652,
+     "cf_steer": 0.4432515337423313,
+     "absent_nearer_old": 0.553680981595092,
+     "true_nearer_old": 0.544478527607362,
+     "true_steer": 0.455521472392638,
+     "absent_steer": 0.44631901840490795,
+     "nonsense_change30": 0.0705521472392638,
+     "nonsense_change15": 0.200920245398773,
+     "nonsense_change60": 0.023006134969325152,
+     "valid": true
+    }
+   },
+   "k_success": {
+    "mean": 0.8,
+    "n": 20
+   },
+   "n_queries": 652
+  }
+ },
+ "scene2": {
+  "pi05_I": {
+   "p_s_pooled": 0.3486590038314176,
+   "n_place": 261,
+   "p_s_by_plate": {
+    "plate_2": 0.03529411764705882,
+    "plate_1": 0.5
+   },
+   "g_s": {
+    "white_yellow_mug_1": 0.1,
+    "red_coffee_mug_1": 0.42857142857142855,
+    "porcelain_mug_1": 0.9333333333333333
+   },
+   "s_hat": {
+    "S2N1": 0.03294117647058824,
+    "S2N2": 0.05
+   },
+   "measured": {
+    "S2N1": 0.0,
+    "S2N2": 0.0
+   }
+  },
+  "pi05_tvp": {
+   "p_s_pooled": 0.7206703910614525,
+   "n_place": 358,
+   "p_s_by_plate": {
+    "plate_2": 0.391304347826087,
+    "plate_1": 0.8345864661654135
+   },
+   "g_s": {
+    "white_yellow_mug_1": 0.19298245614035087,
+    "red_coffee_mug_1": 0.3135593220338983,
+    "porcelain_mug_1": 0.7580645161290323
+   },
+   "s_hat": {
+    "S2N1": 0.2966339410939692,
+    "S2N2": 0.16106054610209733
+   },
+   "measured": {
+    "S2N1": 0.0,
+    "S2N2": 0.0
+   }
+  },
+  "pi0_I": {
+   "p_s_pooled": 0.4178272980501393,
+   "n_place": 359,
+   "p_s_by_plate": {
+    "plate_2": 0.2196969696969697,
+    "plate_1": 0.5330396475770925
+   },
+   "g_s": {
+    "white_yellow_mug_1": 0.04477611940298507,
+    "red_coffee_mug_1": 0.4246575342465753,
+    "porcelain_mug_1": 0.925
+   },
+   "s_hat": {
+    "S2N1": 0.20321969696969697,
+    "S2N2": 0.023867446906436978
+   },
+   "measured": {
+    "S2N1": 0.0,
+    "S2N2": 0.0
+   }
+  }
+ },
+ "scene1_policies": [
+  "groot_I",
+  "groot_tv",
+  "groot_tvb",
+  "pi05_I",
+  "pi05_tv",
+  "pi05_tvp",
+  "pi05_tvpb",
+  "pi0_I",
+  "r0",
+  "r1",
+  "r2",
+  "r2b",
+  "r2l",
+  "r2w",
+  "smolvla_I"
+ ],
+ "T0": {
+  "wrapper_free": {
+   "prod": {
+    "n_cells": 24,
+    "n_policies": 4,
+    "n_pos": 4,
+    "auc": 0.55,
+    "auc_ci": [
+     0.0,
+     1.0
+    ],
+    "auc_dropped": 316,
+    "rho": 0.22739992563939435,
+    "rho_ci": [
+     -0.440267369975669,
+     0.8122948873798478
+    ],
+    "rho_dropped": 5,
+    "pass": false
+   },
+   "g": {
+    "n_cells": 24,
+    "n_policies": 4,
+    "n_pos": 4,
+    "auc": 0.5375,
+    "auc_ci": [
+     0.0,
+     0.9782608695652174
+    ],
+    "auc_dropped": 316,
+    "rho": 0.37526727928319714,
+    "rho_ci": [
+     -0.4635177144480927,
+     0.8788036142890226
+    ],
+    "rho_dropped": 6,
+    "pass": false
+   },
+   "p": {
+    "n_cells": 24,
+    "n_policies": 4,
+    "n_pos": 4,
+    "auc": 0.5625,
+    "auc_ci": [
+     0.08333333333333333,
+     1.0
+    ],
+    "auc_dropped": 316,
+    "rho": -0.09804787052254979,
+    "rho_ci": [
+     -0.7142148373539436,
+     0.6051937888910607
+    ],
+    "rho_dropped": 5,
+    "pass": false
+   },
+   "mean": {
+    "n_cells": 24,
+    "n_policies": 4,
+    "n_pos": 4,
+    "auc": 0.5375,
+    "auc_ci": [
+     0.0,
+     1.0
+    ],
+    "auc_dropped": 316,
+    "rho": 0.20687586886794251,
+    "rho_ci": [
+     -0.5068894719537869,
+     0.811002099242474
+    ],
+    "rho_dropped": 5,
+    "pass": false
+   },
+   "ktrain": {
+    "n_cells": 24,
+    "n_policies": 4,
+    "n_pos": 4,
+    "auc": 0.8,
+    "auc_ci": [
+     0.5,
+     0.95
+    ],
+    "auc_dropped": 316,
+    "rho": 0.6566091813866012,
+    "rho_ci": [
+     0.09971529572309167,
+     0.9313806308475995
+    ],
+    "rho_dropped": 240,
+    "pass": false
+   },
+   "nonsense": {
+    "n_cells": 24,
+    "n_policies": 4,
+    "n_pos": 4,
+    "auc": 0.125,
+    "auc_ci": [
+     0.05,
+     0.40403508771929747
+    ],
+    "auc_dropped": 316,
+    "rho": -0.7215266155649142,
+    "rho_ci": [
+     -0.9149914219956279,
+     0.0
+    ],
+    "rho_dropped": 26,
+    "pass": false
+   }
+  },
+  "scene1_all": {
+   "prod": {
+    "n_cells": 90,
+    "n_policies": 15,
+    "n_pos": 33,
+    "auc": 0.7421584263689527,
+    "auc_ci": [
+     0.5261725092840457,
+     0.9065681818181818
+    ],
+    "auc_dropped": 0,
+    "rho": 0.4420670409791001,
+    "rho_ci": [
+     0.12480509058518553,
+     0.6418551261640084
+    ],
+    "rho_dropped": 0,
+    "pass": false
+   },
+   "g": {
+    "n_cells": 90,
+    "n_policies": 15,
+    "n_pos": 33,
+    "auc": 0.6993620414673046,
+    "auc_ci": [
+     0.46216934180083824,
+     0.9003561298598062
+    ],
+    "auc_dropped": 0,
+    "rho": 0.4191528448318027,
+    "rho_ci": [
+     0.044179102182374023,
+     0.6861320189358442
+    ],
+    "rho_dropped": 0,
+    "pass": false
+   },
+   "p": {
+    "n_cells": 90,
+    "n_policies": 15,
+    "n_pos": 33,
+    "auc": 0.7307283359914939,
+    "auc_ci": [
+     0.5093122459934054,
+     0.8843647161661867
+    ],
+    "auc_dropped": 0,
+    "rho": 0.3475987415931686,
+    "rho_ci": [
+     -0.013529705481272226,
+     0.5590045049022471
+    ],
+    "rho_dropped": 0,
+    "pass": false
+   },
+   "mean": {
+    "n_cells": 90,
+    "n_policies": 15,
+    "n_pos": 33,
+    "auc": 0.7474747474747475,
+    "auc_ci": [
+     0.5316641414141414,
+     0.907785334815913
+    ],
+    "auc_dropped": 0,
+    "rho": 0.44258813115971707,
+    "rho_ci": [
+     0.1306735423497764,
+     0.6353321930678263
+    ],
+    "rho_dropped": 0,
+    "pass": false
+   },
+   "ktrain": {
+    "n_cells": 90,
+    "n_policies": 15,
+    "n_pos": 33,
+    "auc": 0.6451355661881978,
+    "auc_ci": [
+     0.41930547811291496,
+     0.845752265327737
+    ],
+    "auc_dropped": 0,
+    "rho": 0.2896643637507086,
+    "rho_ci": [
+     -0.14189311382920192,
+     0.6372061910497393
+    ],
+    "rho_dropped": 0,
+    "pass": false
+   },
+   "nonsense": {
+    "n_cells": 90,
+    "n_policies": 15,
+    "n_pos": 33,
+    "auc": 0.46172248803827753,
+    "auc_ci": [
+     0.24032115384615385,
+     0.6836034063038778
+    ],
+    "auc_dropped": 0,
+    "rho": -0.07844291733268645,
+    "rho_ci": [
+     -0.4571865741621215,
+     0.31539174780150236
+    ],
+    "rho_dropped": 0,
+    "pass": false
+   }
+  },
+  "both_scenes_prod": {
+   "n_cells": 96,
+   "n_policies": 15,
+   "n_pos": 33,
+   "auc": 0.757094757094757,
+   "auc_ci": [
+    0.556024531024531,
+    0.9151518029295808
+   ],
+   "auc_dropped": 0,
+   "rho": 0.4733007750767719,
+   "rho_ci": [
+    0.19170127040486853,
+    0.6694935322010005
+   ],
+   "rho_dropped": 0,
+   "pass": true
+  }
+ },
+ "T1": {
+  "scene1_all": {
+   "prod": {
+    "n_policies": 15,
+    "rho": 0.19302956769521099,
+    "ci": [
+     -0.4237278162415543,
+     0.7356096194669389
+    ],
+    "dropped": 0,
+    "passed": false
+   },
+   "ktrain": {
+    "n_policies": 15,
+    "rho": 0.37718809874266357,
+    "ci": [
+     -0.17777714436115413,
+     0.7922495699024039
+    ],
+    "dropped": 0,
+    "passed": false
+   },
+   "nonsense": {
+    "n_policies": 15,
+    "rho": -0.07506705410369317,
+    "ci": [
+     -0.5785685767719431,
+     0.49681549229367883
+    ],
+    "dropped": 0,
+    "passed": false
+   }
+  },
+  "wrapper_free": {
+   "prod": {
+    "n_policies": 4,
+    "rho": -0.316227766016838,
+    "ci": [
+     -1.0,
+     1.0
+    ],
+    "dropped": 37,
+    "passed": false
+   },
+   "ktrain": {
+    "n_policies": 4,
+    "rho": 0.9428090415820634,
+    "ci": [
+     0.8164965809277261,
+     1.0
+    ],
+    "dropped": 240,
+    "passed": true
+   },
+   "nonsense": {
+    "n_policies": 4,
+    "rho": -0.9486832980505139,
+    "ci": [
+     -1.0,
+     1.0
+    ],
+    "dropped": 37,
+    "passed": false
+   }
+  }
+ },
+ "T2": {
+  "families": {
+   "pi05": {
+    "kappa": 0.9286821415703997,
+    "mae_calibrated": 0.3275170809074199,
+    "mae_constant": 0.3394166666666667,
+    "mae_ktrain_calibrated": 0.335901056149558,
+    "beats_constant": true,
+    "n_cells": 60,
+    "within_family_rho": 0.26354205848209744,
+    "within_family_rho_ci": [
+     -0.16003640324358817,
+     0.5261002288757949
+    ],
+    "within_dropped": 0
+   },
+   "groot": {
+    "kappa": 0.9653531281331859,
+    "mae_calibrated": 0.170809120157516,
+    "mae_constant": 0.34780092592592593,
+    "mae_ktrain_calibrated": 0.3566518506653853,
+    "beats_constant": true,
+    "n_cells": 18,
+    "within_family_rho": 0.9219807549889278,
+    "within_family_rho_ci": [
+     0.5151515151515151,
+     1.0
+    ],
+    "within_dropped": 0
+   },
+   "pi0": {
+    "kappa": 1.043082126776662,
+    "mae_calibrated": 0.17649537042312513,
+    "mae_constant": 0.3678571428571428,
+    "mae_ktrain_calibrated": 0.39650376302039064,
+    "beats_constant": true,
+    "n_cells": 6,
+    "within_family_rho": 0.06172133998483677,
+    "within_family_rho_ci": [
+     -0.894427190999916,
+     1.0
+    ],
+    "within_dropped": 30
+   },
+   "smolvla": {
+    "kappa": 1.0652618655128496,
+    "mae_calibrated": 0.24110070316172016,
+    "mae_constant": 0.3678571428571429,
+    "mae_ktrain_calibrated": 0.3965037630203907,
+    "beats_constant": true,
+    "n_cells": 6,
+    "within_family_rho": 0.39279220242478635,
+    "within_family_rho_ci": [
+     -0.14142135623730953,
+     0.9486832980505139
+    ],
+    "within_dropped": 712
+   }
+  },
+  "passed": true,
+  "n_families": 4
+ },
+ "T3": {
+  "input_only_probed": [
+   "pi05_I",
+   "pi0_I",
+   "pi05_tvp"
+  ],
+  "supports_diagnosis": false
+ }
+}

@@ -106,6 +106,8 @@ Goal, 2026-11-16: "Want to establish a failure atlas, design a failure predictor
 
 That is about 15-20 policies, with roughly 5 model families. Fewer servable policies narrow T1; the prereg fixes the list before any probe runs.
 
+**Result (SR §74, m3_prereg steer, 2026-11-17).** The probe ran on 16 scene-1 and 3 scene-2 policy arms (10 trained-task states per task; the wrappers rgp, Hp, RC were not probed because their controllers take over the episode; X-VLA has no target; Rrel, RAA later). T0 headline on the wrapper-free subset (24 cells, 4 policies): AUC .550 [.000, 1.000], Spearman .227 [-.440, .812], NOT SUPPORTED. On all 90 scene-1 cells: AUC .742 [.526, .907], Spearman .442 [.125, .642], under the .75 bar by .008, and above trained-task success alone (.645) and a nonsense-word score (.462). T1 across 15 policies rho .193 [-.424, .736], NOT SUPPORTED. T2 leave-one-family-out beats the constant in 4 of 4 families, by .011 MAE on the pi0.5 family. T3: pooled plate steering .35 / .42 / .72 for pi0.5 I / pi0 I / tvp, not <= .25, NOT SUPPORTED. Intact policies are steerable in the place phase (.33-.55), so F1 is not visible as p_s near 0; the absent-word control is within .15 of the true prompt for all intact policies, and the angle rule has a .22-.28 floor on the true prompt. g_s and p_s depend heavily on which entity is swapped in. Consistent with a predictor that ranks front-end and rung variants of one base, not one that ranks unrelated frozen models from four systems.
+
 **Why it is new (to check):** no prior paper predicts held-out-pairing success across many VLA systems from a trained-task probe. Grant et al. steer activations, and LIBERO-PRO perturbs language, but neither predicts. Novelty check queued.
 
 ## 3. Order
