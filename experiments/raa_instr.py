@@ -108,11 +108,17 @@ def install(arm, tid, outdir, branches):
                 path = os.path.join(outdir, "instr_%s_%d_t%d.npz" % (arm, tid, trial))
                 d = {k: np.stack(self._rows[k]).astype(np.float64) for k in KEYS}
                 np.savez_compressed(path + ".tmp.npz", trial=trial, tid=tid, arm=arm, oe=OE, te=TE, errs=COUNT["err"],
-                                    site=getattr(E_state(self._e, TE), "object_state_type", "") == "site", **d)
+                                    site=getattr(E_state(self._e, TE), "object_state_type", "") == "site", site_size=site_size(self._e), **d)
                 os.replace(path + ".tmp.npz", path)
                 print("[instr] wrote %s (%d rows, snapshot errors so far %d)" % (path, len(d["n"]), COUNT["err"]), flush=True)
             self._rows = None
             self._e.close()
+
+    def site_size(env):
+        try:
+            return np.array(env.env.object_sites_dict[TE].size, np.float64)
+        except Exception:                                                   # noqa: BLE001
+            return np.full(3, float("nan"))
 
     def E_state(env, name):
         return env.env.object_states_dict[name]
