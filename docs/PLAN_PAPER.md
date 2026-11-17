@@ -62,6 +62,36 @@ No paper we found combines them, and none tests a combination on held-out pairin
 - **Secondary contrasts:** Rrel − R0, and RAA − rgp. The K1-K6 non-inferiority margin is −.05.
 - **Later:** scene 2, where position is the cue, and the F7/F6 tasks.
 
+## 2c. The novelty pillar: predicting new-pairing failure from trained tasks (user choice, 2026-11-16)
+
+After the full-text reads the user picked a failure predictor to carry the novelty. RAA-min stays as an ablation: restriction alone (R2), offset alone (Rrel), and both (RAA), at matched data.
+
+**Idea.** The diagnosis says that a policy fails a new pairing when its sub-goal follows a trained cue instead of the instruction's role. Measure that on trained tasks only, with no new-pairing rollout, and predict held-out success across every policy we have.
+
+**Probe: steerability by counterfactual instruction.** The probe is open-loop. It is a side query that is never executed, inside closed-loop rollouts of trained tasks K.
+- **Grasp steerability g_s.** Take each query before the first hold. Re-query with the instruction's object word swapped to another movable object present in the scene. Score the share of the action chunk's endpoint displacement that moves toward the swapped object, against the trained one: a signed projection in [−1, 1], mapped to [0, 1].
+- **Place steerability p_s.** Take each query during the hold, before release. Swap the target word to another target present in the scene, and score the same way toward the new target.
+- The probe passes through any front end or wrapper the policy uses: a resolver, role views, or ReGuide. So it scores the whole system as deployed.
+- **Prediction with no fitting:** ŝ = g_s × p_s. This is the theory's product form s(o, t) = g(o) · p(t), with "competence" read as following the role.
+
+**Registered tests.**
+- **T1.** Spearman ρ between ŝ and measured new-pairing success across all policies in scene 1. The probe is run fresh on K tasks; success is re-read or taken from existing sections on the same task set. Pass if ρ ≥ .6 and the bootstrap lower bound is > 0.
+- **T2.** Leave-one-model-family-out. Fit a one-parameter calibration on the other families and check its error on the held-out family.
+- **T3.** Scene 2, where the cue is position. Use p_s from the plate-word swap on K1/K2 against N1/N2 success. The diagnosis predicts p_s ≈ 0 for every input-only front end, and p_s high for ReGuide and Hp.
+- **Baselines for the predictor:**
+  - trained-task success alone, which the diagnosis predicts does not rank new-pairing success;
+  - a language-sensitivity score that swaps to a nonsense word (LIBERO-PRO style).
+
+**Policies:**
+- frozen pi0.5, GR00T, pi0, X-VLA and SmolVLA;
+- the front ends tv, tvp and tvpb;
+- the ladder: R0, R1, R2, R2b, R2w and r2l, then Rrel and RAA when trained;
+- the wrappers: ReGuide rgp, Hp, and RC.
+
+That is about 15-20 policies, with roughly 5 model families. Fewer servable policies narrow T1; the prereg fixes the list before any probe runs.
+
+**Why it is new (to check):** no prior paper predicts held-out-pairing success across many VLA systems from a trained-task probe. Grant et al. steer activations, and LIBERO-PRO perturbs language, but neither predicts. Novelty check queued.
+
 ## 3. Order
 
 1. Novelty check of RAA (Sonnet, web) and an inventory of the retrain infrastructure (Sonnet, read-only), in parallel.
