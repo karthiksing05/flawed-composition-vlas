@@ -61,6 +61,7 @@ No paper we found combines them, and none tests a combination on held-out pairin
 - **Primary contrast:** RAA − R2 on N1-N6, placed given a right grasp, and success.
 - **Secondary contrasts:** Rrel − R0, and RAA − rgp. The K1-K6 non-inferiority margin is −.05.
 - **Result (SR §73 phase 2, 2026-11-17): SUPPORTED.** RAA − R2 on N1-N6: success +.267 [+.092, +.467], placed given right grasp +.256 [+.077, +.461] (RAA .656 vs R2 .400; right grasp 1.000 vs .972). Rrel − R0 +.236 [−.006, +.553] (NO CLEAR DIFFERENCE); RAA − Rrel +.378 [+.133, +.658]. RAA − rgp −.242 [−.464, −.033] (rgp .897; not non-inferior). K1-K6: RAA − R2 +.086 [+.011, +.172] non-inferior; Rrel − R0 not shown. The place gap shrinks, it does not close.
+- **Follow-up (SR §76, 2026-11-18): RAA-o (target channel measured from the held object) NOT SUPPORTED.** RAA-o − RAA on N1-N6: success −.061 [−.264, +.108], placed given right grasp −.054 [−.261, +.114]; RAA-o .594 vs RAA .656 vs rgp .897 (RAA-o − rgp −.303 [−.481, −.111]); K1-K6 non-inferiority not shown (+.042 [−.067, +.175]). Exploratory: the failed-release error no longer correlates with the in-hand offset (N4 r .14 vs .57) but is as large (median 6.5 cm).
 - **Later:** scene 2, where position is the cue, and the F7/F6 tasks.
 
 ## 2c. The novelty pillar: predicting new-pairing failure from trained tasks (user choice, 2026-11-16)

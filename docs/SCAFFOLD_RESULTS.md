@@ -5645,3 +5645,64 @@ New-cell scores (score / success): RAA N1 .324 / .683, N2 .707 / .850, N3 .517 /
 **Predictions (docs/notes/steer_conf_predictions.md) scored.** P1 both classes present (.85): HELD. P2 C1 PASS .38 / FAIL .47 / NOT TESTABLE .15: PASS (the less likely outcome); conditional AUC >= .75 .45: occurred. P3 C2 PASS (.70): HELD; pooled AUC in [.70, .82] (.65): HELD (.805); pooled AUC below the old .787 (.60): MISSED (.805 is above). P4 C3 PASS (.62): HELD. P5 C1 and C2 both PASS (.27): occurred. P6 measured: RAA > Rrel success: HELD (.656 vs .278); RAA >= .40 (.50): HELD; Rrel >= .25 (.40): HELD (.278); both K1-K6 success >= .85 (.70): HELD on the probe's K (.94 each; on the 60 read states RAA is .839); mean k x a RAA > Rrel (.65): HELD. P7 K alone AUC within .15 of .5 (.70): HELD (.50). P8 grasp-phase a above the 90-cell median for both (.55): not evaluated.
 
 **Deviations (all plumbing, logged before the main probe; nothing changed after any probe output or label was seen).** (1) `steer_probe.py` got arm RA (+ `--ra-arm`) and the new `steer_conf_serve.py` wraps `steer_serve.py` (CHILD extended with "rv", so the chain RAAServer -> RoleView -> GuidedPolicy restores its counters and hold detector after side queries; Override keeps the channel suffix; Rrel's whole-instruction word swap travels as meta/side_text). `steer_serve.py` itself is unchanged; its STATE needed no change for RAAServer.cur (overwritten by every query before use, side queries run first). (2) The client computes the side-query channel from copies of raa.py's detector and Estimator (read from the closure of `channel`), so side queries never step the Estimator; ra_check found a maximum difference of 0.0 m. (3) Two failed smoke attempts (4766183: client-side suffix hit sc_t16.given KeyError; 4766471: side queries skipped the --seg payload layer) were fixed in plumbing and re-smoked (4766250, 4766485); the failed runs' files remain in results/flawed/steer_smoke. Smoke executed episodes equal the unprobed raa.py client's on the same states (Rrel 78 / 81 steps, 2 of 2; RAA 300-step failure and 72-step success, both runs). The Rrel smoke ran before the second fix, which does not touch Rrel's path. (4) The main probes ran from `steer_conf_roll.sh` (a copy of steer_roll.sh with rrel / raa; steer_roll.sh untouched) at the registered branches file; the Rrel smoke used 2 states and K1 only. (5) Raa_read's dict-key bug (SR 73 deviation 3) was fixed before the labels were read; steer_conf_read.py recomputes labels from the rollout files and agreed with raa_read.json to every digit.
+
+## 76. RAA-o: RAA with the target-role channel measured from the held object (m3_prereg raao, ledger row m3_prereg__libero_goal__raao__s0__22a0adb5.json, written before any training job or rollout; plan and predictions docs/notes/raao_plan.md, commits 4e1386cd, 22a0adb5, 2812b0c4; training chains: overcap 4771490-95 (4771492-95 still pending, cancelled), tail-lab 4771496-4771501 (4771498 reached step 6,000, exit 0, 2026-11-18 00:29; 4771499-4771501 cancelled); export job 4779664 (pi05_g8v_raao_ae_tl6000); smoke 4779667; main rollouts 4779702-05; selftest 4780575; read 4780582 -> results/flawed/raao_read.json, rollouts results/flawed/raa/raao_{main,rx}_<tid>.json; exploratory mechanism checks 4780602-03, read 4780780 -> results/flawed/raao_instr.json)
+
+**Question.** SR 73's diagnostic (docs/notes/raa_instr_results.md) found RAA's remaining failures are release imprecision, and the target channel is target minus end effector while a held bottle sits 6-10 cm off the gripper. RAA-o changes only that: while held the channel is target minus (eef + o), o = the grasped object's position minus the eef at the hold's onset, fixed until the hold ends. Everything else (frames, role views, recipe, 6,001 steps, one seed, text-suffix format) is RAA's.
+
+**Run.** Chain job 4771498 (tail-lab) reached step 6,000 first; the redundant overcap chain (4771492-95) and the tail-lab dependents 4771499-4771501 were cancelled after its exit 0. Smoke (4 episodes, K1 and N4 on smoke states 0-1): 3 of 4 succeeded; plumbing check: all 43 held-role queries carried the offset (off_ok), channel error vs simulator under .2 cm. Main: the same 60 states per task as SR 73 (dev trials 4-23 + new k 540-579), 12 tasks, 720 episodes; RAA, rgp, R0, R2 rows reused from SR 73 unchanged. Selftest (job 4780575) reproduced SR 73's V1a +.267 [+.092, +.467] and V1b +.256 [+.077, +.461]. Fit gate: R0 on K1-K6 .853 (>= .80, passes).
+
+**Pooled (60 states per task):**
+
+| arm | N1-N6 success | right grasp | placed given right grasp | K1-K6 |
+|---|---|---|---|---|
+| RAA-o | .594 | .989 | .601 | .881 |
+| RAA | .656 | 1.000 | .656 | .839 |
+| rgp | .897 | .989 | .907 | .950 |
+| R2 | .389 | .972 | .400 | .753 |
+
+Per task N1..N6 success: RAA-o .850 .783 .950 .300 .417 .267; RAA .683 .850 1.000 .217 .933 .250; rgp .967 1.000 .917 .867 .933 .700. K1..K6: RAA-o .883 .983 .967 .817 .683 .950; RAA .850 .967 .983 .950 .383 .900; rgp 1.000 1.000 .983 .983 .733 1.000. Cheese N1-N3: RAA-o .861, RAA .844. Bottle N4-N6: RAA-o .328, RAA .467.
+
+**Registered verdicts (paired bootstrap, B = 2000, rng 0, tasks and states):**
+
+| contrast | delta | 95% CI | label |
+|---|---|---|---|
+| W1a RAA-o - RAA, N1-N6 success | -.061 | [-.264, +.108] | NO CLEAR DIFFERENCE |
+| W1b RAA-o - RAA, placed given right grasp | -.054 | [-.261, +.114] | NO CLEAR DIFFERENCE |
+| **W1 primary** | | | **NOT SUPPORTED** (neither lower bound > 0) |
+| W2a RAA-o - rgp, N1-N6 success (non-inferiority -.10) | -.303 | [-.481, -.111] | COST (not non-inferior) |
+| W2b RAA-o - rgp (beats) | -.303 | [-.481, -.111] | rgp beats RAA-o |
+| WK RAA-o - RAA, K1-K6 (non-inferiority -.05) | +.042 | [-.067, +.175] | NOT SHOWN (lower bound -.067 <= -.05) |
+| X1 RAA-o - R2, N1-N6 (no label) | +.206 | [.000, +.422] | none |
+| X2 cheese N1-N3, RAA-o - RAA | +.017 | [-.117, +.183] | no clear difference |
+| X3 bottle N4-N6, RAA-o - RAA | -.139 | [-.517, +.133] | no clear difference |
+| X4 RAA-o - R0, K1-K6 | +.028 | [-.075, +.133] | not shown |
+
+Overall: NOT SUPPORTED. The N5 cell dropped (.933 to .417) while N1 and K5 rose (.683 to .850; .383 to .683); no per-task contrast was registered.
+
+**Channel error at test** (24,379 logged queries; simulator values read only for the log): object role median .34 cm (p90 6.2 cm); target channel while held median 1.15 cm (p90 4.5 cm), n = 9,144; held-offset estimate error vs simulator median 1.41 cm (p90 4.1 cm; the offset is whole-cm quantised in the prompt).
+
+**Prediction scorecard (docs/notes/raao_plan.md).**
+1. W1 SUPPORTED 45 / PARTIAL 12 / NOT SUPPORTED 43: NOT SUPPORTED occurred (the second most likely bucket); W1a point about +.10 (range .62-.88 for RAA-o N1-N6): MISSED (-.061, N1-N6 .594); X3 > X2 point estimate (70%): MISSED (X3 -.139 < X2 +.017).
+2. D1, N4 failed-release correlation of xy error with hand offset below .2 in absolute value (45%): HELD (r = .14, n = 25; RAA .57, n = 17). See the caveat below.
+3. D2, median failed-release xy error at most 2.5 cm on N1 and N4 (40%): MISSED (N1 3.3 cm with n = 4; N4 6.5 cm with n = 25).
+4. RAA-o N1-N6 >= .78 with N4 >= .55 (35%): MISSED (.594; N4 .300).
+5. K5 success stays <= .5 (60%): MISSED (.683 on 60 states; RAA .383).
+6. WK non-inferior at -.05 (65%): MISSED (lower bound -.067).
+7. W2 NON-INFERIOR 20%, beats 2%: not non-inferior (80% side), does not beat: HELD.
+8. Channel error: offset estimate median under 2 cm, held target channel under 3 cm: HELD (1.41 cm, 1.15 cm).
+Held: 2, 7, 8. Missed: 1 (point estimates), 3, 4, 5, 6.
+"What would count against the claim": W1a lower bound <= 0 occurred, but the stated companion condition (failed-release error still correlated with the hand offset, |r| >= .4) did not (r = .14): so neither stated reading applies cleanly; the in-hand offset correlation is gone and the success did not follow.
+
+**Exploratory mechanism checks (NOT registered contrasts; run after the read; same instrumentation, tasks N1, N4, N6, K5, trials 24-43 = the same 20 states as the RAA/rgp diagnostic; experiments/raa_instr.py, raao_instr_read.py; RAA and rgp rows are results/flawed/raa_instr.json, not re-rolled).** Identity: the logged RAA-o runs equal the unlogged record in steps and success in 80 of 80 episodes; the recomputed on-terms equal the simulator's in all 80, 0 snapshot errors. Success of 20: RAA-o N1 16, N4 4, N6 7, K5 13 (RAA 11, 5, 6, 7; rgp 19, 18, 16, 14).
+
+| task | arm | failed-episode releases (n) | median release xy error, failed (cm) | Pearson r(xy error, in-hand offset), failed releases | releases per episode | eps with a release |
+|---|---|---|---|---|---|---|
+| N1 | RAA-o / RAA / rgp | 4 / 10 / 3 | 3.3 / 3.7 / 12.3 | .78 / .32 / n.a. | .55 / .80 / 1.10 | 11 / 15 / 20 |
+| N4 | RAA-o / RAA / rgp | 25 / 17 / 2 | 6.5 / 7.0 / 2.7 | .14 / .57 / n.a. | 1.35 / .90 / .45 | 18 / 16 / 9 |
+| N6 | RAA-o / RAA / rgp | 14 / 11 / 4 | 7.0 / 7.9 / 9.7 | .03 / .51 / .88 | 1.10 / .70 / .90 | 14 / 13 / 17 |
+| K5 | RAA-o / RAA / rgp | 6 / 15 / 3 | 18.5 / 17.1 / 5.4 | -.06 / -.19 / n.a. | .85 / 1.00 / .65 | 17 / 18 / 10 |
+
+Reading (exploratory, descriptive): on N4 and N6 the failed-release xy error no longer tracks the in-hand offset (r .14 and .03 against .57 and .51) but its size is unchanged (N4 median 6.5 cm against 7.0, N6 7.0 against 7.9), and N4 now has more releases per episode (1.35 against .90, so more re-picks) and 25 failed-episode releases against 17. N4 failures end OFF_XY 15, NO_CONTACT 1; 7 of 16 N4 failures are held to the episode end. The failed-release hand offset on N4 is 5.0 cm median (RAA 6.6). The offset term therefore stopped explaining the error without making releases more precise: what remains is the aim or the policy's use of 1 cm digits in a text prompt. The N1 correlation (r .78) rests on 4 releases and N6 rgp's on 4; correlations with n under 15 are noise-level.
+
+**Deviations.** (1) Rollouts used raa_roll.sh unchanged, with CONFIG left to the default as RAA's (the smoke passed CONFIG=pi05_g8v_raao_ae explicitly; the server log of the main run shows the same config). The export used the existing t16_export.sh with the full exclude list passed on the command line (the script's own list is shorter). (2) The smoke was 4 episodes on K1 and N4 (smoke states 0-1) rather than a task list of its own. (3) raa_instr_read.py has no raao arm and was not edited; the new experiments/raao_instr_read.py imports its functions and reads RAA and rgp rows from raa_instr.json. (4) "Re-pick counts" are reported as releases per episode and episodes with a release (the logged quantity), not a separate re-grasp count. (5) The held-offset error is per query while held, not only at onset (the offset is constant within a hold). (6) Mechanism checks ran after the read, as registered. (7) The first selftest submission (4780574) passed CMD with '~' separators by mistake and was cancelled before running; it was resubmitted as 4780575. (8) No registered quantity, state, bootstrap setting or label rule was changed.
