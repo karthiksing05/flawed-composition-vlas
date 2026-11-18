@@ -1,0 +1,24 @@
+WA (SR 79): module-removal (double dissociation) test of the WHERE architecture on the EXISTING RAA checkpoint (pi05_g8v_raa_ae_tl6000, SR 73), no
+training.  Written 2026-11-18 BEFORE the prereg row and any main rollout.  Known when written: SR 70 (rg_comp: frozen pi0.5 I / rgp / rc on these states),
+SR 73 (RAA N1-N6 .656, K1-K6 .839), and the SMOKE (4 smoke states per cell, results outside results/, jobs 4790728, 4790729, 4790846): full succeeded
+K2t 4/4, K1t 4/4, F7 neg 4/4, uniR 1/4 and 0/4 on relL, relR, pos, uniL, uniP, F6_a and F6_b; noR neg 2/4, noR relL, relR, pos 0/4; noM neg 4/4, others 0/4.
+Resolver correct 16/16 on the four templates; noR's largest-component rule found the referent in 5 of the 10 episodes with two bowl components (the plate bowl merges with the
+plate's region in pos and neg: 6 of 8 pos / neg episodes had one component, where noR is RAA as is).  Smoke omission shares (noM, queries whose active role entity
+had a held estimate): F6_b target role 82 of 82, F6_b object role 33 of 158; F7 object role 16-88 of 185-240 (the arm's partial occlusion, src occl).
+Diagnosis from the smoke: RAA fails the displaced-plate (F6_a, plate ~20 cm off the trained spot) and most F7 layouts even with one visible bowl (uniL, uniP),
+so the executor, not the WHERE modules, may set a floor.  Gates (descriptive labels, the primary rule is not changed): floor = full's K >= .70; F7 = full's
+unique-name controls (tids 4-6) mean >= .50; F6 = full's F6_a >= .50.
+
+Predictions (probabilities are mine).
+1. Gates: floor TESTABLE 95%; F7 unique-name controls NOT TESTABLE (mean < .50) 85%; F6_a NOT TESTABLE 95%.
+2. D1 (full - noR, F7 pool): SUPPORTED 50% (the signal is the neg task, point about +.10 to +.15 pooled), NOT SUPPORTED 48%, REVERSED 2%.
+   Pooled F7 full about .20 (range .10-.35), noR about .10 (range .03-.25).  F7 neg: full > noR in the point estimate 80%.
+3. D2 (full - noM, F6_b): SUPPORTED 4% (full F6_b about .03, range 0-.15, at the executor's floor), NOT SUPPORTED 95%.  F6_b full - F6_a: no clear difference 90%.
+4. D3a (noR - full, F6_b; a replicate, R not engaged): EQUIVALENT 90%.
+5. D3b (noM - full, F7 pool): EQUIVALENT 45%; the omission on F7 is the occlusion hold's (a fifth to a half of object-role queries), so noM below full by more than .10 is the
+   alternative (35%); noM above full by more than .10 10%.
+6. DK (full - noR, K1t + K2t; replicate): NON-INFERIOR 85%.  K1t about .85-1.00, K2t about .95-1.00.
+7. Primary: NOT SHOWN 90% (D2 cannot be supported at the floor), PARTIAL 1%, DISSOCIATION SHOWN 1%; the remaining 8% is MISSING cells.
+8. noMe (descriptive): F6_b noMe - full within +-.05 (the plate's hold in F6_b is the occlusion rule's: src occl 134 of 134 in the smoke, so noMe withholds nothing there) 85%.
+9. Descriptive full vs rc (SR 70 frozen pi0.5: F7 pool .96, F6_b .80): full is below rc on the F7 pool by more than .30 90%, on F6_b by more than .50 95%.
+10. Channel error (full, resolved instance, object role): median under 2 cm 80%; noR's object channel error on pos / neg above 5 cm (the averaged or wrong bowl) 70%.
