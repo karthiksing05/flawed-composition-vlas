@@ -69,3 +69,16 @@ What would count against the claim: S1a lower bound <= 0 together with a failed-
 lower bound > 0 with a median failed-release xy error below 5 cm on N4.  A gain with unchanged release error would mean the servo helps for another reason (for example it
 shortens transit).  A loss on K1-K6 with a gain on N1-N6 would be a trade, not a fix.  A K1-K6 result near RAA-c's (.81) with N1-N6 near RAA-c's (.50) would say the state
 token, not the head, dominates.
+
+LAUNCH AND WAITER PLAN (written after the prereg row 2cf74b5e and the launch; nothing below changes a registered quantity).
+Training: two redundant 6 x 4 h afterany chains of /coc/flash10/ksingara3/.claude_tmp/pp/raas_train.sh (RAA-c's script, log name changed), launched by raas_chain.sh:
+overcap exp main jobs 4790861-4790866 (raas_main1-6), tail-lab exp tl jobs 4790867-4790872 (raas_tl1-6); args --g8v raas --steps 6001 --batch 32 --save-interval 250
+--keep-period 1000; checkpoints /coc/flash10/ksingara3/robot/checkpoints_l90c/jax/pi05_g8v_raas_ae/{main,tl}/<step>.  Expected: RAA-c's chains needed about 5.5-6 h of A40
+time over 2-3 jobs; RAA-s is the same model plus a few elementwise ops, so about 6-10 h wall from the start (2026-11-18 15:31 submission), i.e. step 6000 between
+about 22:00 and 02:00 depending on the queue and the bad-node requeues of the RAA-c run.
+Waiter (one background waiter, capped with `timeout`, re-armed on notification, stopped before the session ends): poll `ls .../pi05_g8v_raas_ae/main/6000 .../tl/6000`; on the
+first to appear (1) scancel the other chain (jobs named raas_main* / raas_tl* still pending or running), (2) export with t16_export.sh, ARGS
+`--g8v~raas~--exp~<main|tl>~--export~--step~6000~--tag~<main|tl>6000` -> .../pytorch/pi05_g8v_raas_ae_<main|tl>6000, (3) rollouts exactly as RAA-c (raa_roll.sh with
+ARM=raac CONFIG=pi05_g8v_raas_ae NAME=raas, CKPT the export, the main states / branches and the rx states / branches, 12 tasks, 20 + 40 states, the overcap full exclude list),
+(4) `python experiments/raas_read.py selftest` then `read` (sbatch; never on the login node), (5) the exploratory release-error check (raa_instr.py on N1 / N4 / N6 / K5 x 20
+states, trials 24-43), (6) write SR 78 only after the read, and score the predictions above as written.  An exported checkpoint below step 6000 is not read.
