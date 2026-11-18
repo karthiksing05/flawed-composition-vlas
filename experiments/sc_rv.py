@@ -54,12 +54,12 @@ RV_ROOT = "/coc/flash10/ksingara3/robot/data/fa1/rv"
 OUT = os.path.join(ROOT, "results", "flawed")
 CHECK_DIR = os.path.join(OUT, "sc_rv_check")
 KNOWN = tuple("K%d" % i for i in range(1, 9))
-ARMS = ("plain", "rsup", "rview", "rview2", "rbox", "rrel", "raa", "raao")
-PAINTED = ("rview", "rview2", "rbox", "raa", "raao")
+ARMS = ("plain", "rsup", "rview", "rview2", "rbox", "rrel", "raa", "raao", "raac")
+PAINTED = ("rview", "rview2", "rbox", "raa", "raao", "raac")
 # SCAFFOLD_RESULTS 73 (RAA-min): the same frames as the base arm plus the role channel in the prompt text.  rrel = plain + channel
 # (Rrel = R0 + channel), raa = rview2 + channel (RAA = R2 + channel).  The channel is on exactly the frames the base arm routes
 # (sc_t16.given is not None: K1-K6); K7 and K8 stay whole with no channel.
-BASE = {"rrel": "plain", "raa": "rview2", "raao": "rview2"}          # raao (RAA-o, SR 76): raa with the target-role channel measured from the held object
+BASE = {"rrel": "plain", "raa": "rview2", "raao": "rview2", "raac": "rview2"}          # raao (RAA-o, SR 76): raa with the target-role channel measured from the held object
 CHAN_ARMS = tuple(BASE)
 # rview2 / rbox (the second rule): only the four movable objects are paintable; on every routed frame every one of them is painted
 # except the active role's filler (before the hold the task's object; during it the task's target if movable, else none).
@@ -128,6 +128,18 @@ def chan_text(base, rel, on):
     metres; on = ProprioHeld (role target while held, else role object).  Used by training (convert) and by the test-time server."""
     c = chan_cm(rel)
     return "%s. rel: %+d %+d %+d cm, role %s" % (base, c[0], c[1], c[2], "target" if on else "object")
+
+
+CHAN_DIM = 4
+
+
+def chan_state(rel, on, routed=True):
+    """SR 77 (RAA-c): the role channel as the model's continuous state vector [dx, dy, dz in metres (float, NOT rounded to the text's 1 cm),
+    role id], role id 1 = object, 2 = target (while held); [0, 0, 0, 0] on a frame with no channel (K7 / K8 / N7 / N8, or the lexicon
+    refused).  The eef state is NOT in it (RAA-o's text channel did not carry it either).  Used by training (convert) and the server."""
+    if not routed or rel is None:
+        return np.zeros(CHAN_DIM, np.float32)
+    return np.asarray([float(rel[0]), float(rel[1]), float(rel[2]), 2.0 if on else 1.0], np.float32)
 
 
 def paint(img, seg, idx):
@@ -503,7 +515,7 @@ def frames_of(z, c, arm, X, T16, roles, rel=None):
     for i in range(len(z["actions"])):
         h = bool(H[i])
         task = text if (base_arm == "plain" or P is None) else P[int(h)]
-        if rel is not None and P is not None:
+        if rel is not None and P is not None and arm != "raac":      # raac: no text suffix, the channel is the state token (chan_state)
             task = chan_text(task, rel[i, int(h)], h)
         img, wimg = z["image"][i], z["wrist"][i]
         na = nw = 0
@@ -589,7 +601,7 @@ def demo_rel(z, c, f, a, X, T16, roles, info):
         info["r_ne_given"] += int(r != tgt)
     gi, ri = FC.ENT.index(g), FC.ENT.index(r)
     out = np.stack([pos[:, gi] - ee, pos[:, ri] - ee], axis=1)
-    if a.arm == "raao":                                                      # SR 76 (RAA-o): target role = target - HELD OBJECT, not - end effector
+    if a.arm in ("raao", "raac"):  # raac (SR 77): the same channel values, entering as a continuous state token                                                      # SR 76 (RAA-o): target role = target - HELD OBJECT, not - end effector
         out[:, 1] = held_target_rel(pos[:, gi], pos[:, ri], ee, H > 0.5, info)
     return out
 
@@ -632,7 +644,7 @@ def convert(a):
         assert all(len(files[c]) > 0 for c in KNOWN), "a task has no rendered demos"
     features = {"image": {"dtype": "image", "shape": (256, 256, 3), "names": ["height", "width", "channel"]},
                 "wrist_image": {"dtype": "image", "shape": (256, 256, 3), "names": ["height", "width", "channel"]},
-                "state": {"dtype": "float32", "shape": (8,), "names": ["state"]},
+                "state": {"dtype": "float32", "shape": (CHAN_DIM if a.arm == "raac" else 8,), "names": ["state"]},
                 "actions": {"dtype": "float32", "shape": (7,), "names": ["actions"]}}
     ds = LeRobotDataset.create(repo_id=repo, root=root, robot_type="panda", fps=10, features=features, image_writer_threads=8,
                                image_writer_processes=4)
@@ -653,7 +665,7 @@ def convert(a):
                 s["wrist_px"] += nw
                 s["agent_empty"] += int(na == 0)
                 s["wrist_empty"] += int(nw == 0)
-                ds.add_frame({"image": np.asarray(img), "wrist_image": np.asarray(wimg), "state": np.asarray(z["state"][i], np.float32),
+                ds.add_frame({"image": np.asarray(img), "wrist_image": np.asarray(wimg), "state": (chan_state(rel[i, int(h)], h, routed) if a.arm == "raac" else np.asarray(z["state"][i], np.float32)),
                               "actions": np.asarray(z["actions"][i], np.float32), "task": task})
             ds.save_episode()
             per_task[c] = per_task.get(c, 0) + 1

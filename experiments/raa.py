@@ -35,8 +35,8 @@ ROOT = os.path.dirname(HERE)
 sys.path[:0] = [HERE, ROOT]
 OUT = os.path.join(ROOT, "results", "flawed")
 LEX = os.path.join(OUT, "sc_lex.json")
-ARMS = ("rrel", "raa", "raao")                                       # raao = RAA-o (SR 76): the target role is measured from the held object
-PAINT = ("raa", "raao")
+ARMS = ("rrel", "raa", "raao", "raac")                                       # raao = RAA-o (SR 76): the target role is measured from the held object   # raac = RAA-c (SR 77): raao's channel as a continuous state token, no text suffix
+PAINT = ("raa", "raao", "raac")
 
 
 def lexicon():
@@ -86,14 +86,18 @@ class RAAServer:
                 role = "tgt" if on else "obj"
                 rel = np.asarray(r[role], np.float64) - ee
                 off = toff = np.zeros(3)
-                if self.arm == "raao" and on:                               # RAA-o: target minus the held object = target - eef - offset (fixed at the onset)
+                if self.arm in ("raao", "raac") and on:                               # RAA-o: target minus the held object = target - eef - offset (fixed at the onset)
                     if r.get("off_ok"):
                         off, toff = np.asarray(r["off"], np.float64), np.asarray(r["toff"], np.float64)
                     else:                                                   # server says held, client has no offset yet: eef-relative, counted
                         self.nooff = getattr(self, "nooff", 0) + 1
                         logging.warning(f"[raao] held but no offset at ep {c['ep']} t {c['t']}")
                     rel = rel - off
-                o["prompt"] = self.RV.chan_text(base, rel, on)
+                if self.arm == "raac":                                      # SR 77: the channel is the continuous state token, the prompt stays the role phrase
+                    o["prompt"] = base
+                    o["observation/state"] = self.RV.chan_state(rel, on)
+                else:
+                    o["prompt"] = self.RV.chan_text(base, rel, on)
                 self.n += 1
                 if self.diag and "t" + role in r:
                     true = np.asarray(r["t" + role], np.float64) - ee - toff
@@ -103,14 +107,16 @@ class RAAServer:
                                axis_err_cm=[float(100 * abs(v)) for v in d], src=str(r.get("src_" + role)),
                                roles=r.get("roles"), prompt=o["prompt"],
                                **({"off_cm": self.RV.chan_cm(off), "toff_cm": self.RV.chan_cm(toff), "off_ok": bool(r.get("off_ok"))}
-                                  if self.arm == "raao" else {}))
+                                  if self.arm in ("raao", "raac") else {}))
                     with open(self.diag, "a", encoding="utf-8") as fh:
                         fh.write(json.dumps(rec) + "\n")
             else:                                                           # the lexicon refused: no channel, the base prompt
                 o["prompt"] = base
                 self.noch += 1
                 logging.warning(f"[raa] no channel at ep {c['ep']} t {c['t']}: {r.get('why')}")
-        logging.info(f"[raa] ep={c['ep']} t={c['t']} prompt={o['prompt']!r}")
+        if self.arm == "raac" and np.asarray(o["observation/state"]).shape[-1] != self.RV.CHAN_DIM:   # unrouted (K7, K8, ...) or no channel: zeros, never the 8-dim eef state
+            o["observation/state"] = self.RV.chan_state(None, False, False)
+        logging.info(f"[raa] ep={c['ep']} t={c['t']} prompt={o['prompt']!r}" + (f" state={np.round(np.asarray(o['observation/state']), 4).tolist()}" if self.arm == "raac" else ""))
         return pol.infer(o)
 
 
@@ -125,7 +131,14 @@ def serve_cmd(a):
     logging.info(f"[raa] serve arm {a.arm} config {name} ckpt {a.ckpt} tw {X['tw']:.6f} lift {X['lift']} chan_diag {a.chan_diag}")
     bk = PolicyBackbone(name, checkpoint_dir=a.ckpt, device="cuda")
     pol = GuidedPolicy(bk, hooks=None, num_steps=10, seed=a.seed)
-    warm(pol)
+    if a.arm == "raac":                                                      # the norm stats are 4-dim: warm up with a 4-dim state, not openpi's 8-dim example
+        from openpi.policies import libero_policy
+        for _ in range(2):
+            ex = libero_policy.make_libero_example()
+            ex["observation/state"] = np.zeros(RV.CHAN_DIM, np.float32)
+            pol.infer(ex)
+    else:
+        warm(pol)
     srv = RAAServer(pol, X, a.arm, diag=a.chan_diag or None)
     if a.arm in PAINT:
         import sc_seg as SEG
@@ -243,7 +256,7 @@ def client_main():
         pos = S["est"].pos
         src = S["est"].src
         extra = {}
-        if arm == "raao":                                                   # SR 76: offset = the Estimator's object estimate minus the eef at the onset
+        if arm in ("raao", "raac"):                                                   # SR 76: offset = the Estimator's object estimate minus the eef at the onset
             if held and not S["was"]:                                       # (this query's estimate), then held fixed; truth only for the error log
                 S["off"] = (pos[FC.ENT.index(oe)] - ee).tolist()
                 S["toff"] = (truth(raw, oe) - ee).tolist()

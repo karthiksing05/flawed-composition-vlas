@@ -27,7 +27,7 @@ REPO_ID = "lol/libero_l90c"
 BASE_PARAMS = f"{CACHE}/pi05_base/params"
 NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
          "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae", "pi05_g8v_plain_ae", "pi05_g8v_rsup_ae", "pi05_g8v_rview_ae",
-         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae")
+         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae")
 # SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
 # the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
 AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
@@ -41,7 +41,9 @@ AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae":
       # SCAFFOLD_RESULTS 73 (RAA-min): the same frames as plain / rview2, each routed frame with the role channel as a text suffix
       "pi05_g8v_rrel_ae": ("pi05_g8v_rrel", "lol/libero_g8v_rrel"), "pi05_g8v_raa_ae": ("pi05_g8v_raa", "lol/libero_g8v_raa"),
       # SCAFFOLD_RESULTS 76 (RAA-o): RAA with the target-role channel = target minus the held object (eef + in-hand offset fixed at the grasp event)
-      "pi05_g8v_raao_ae": ("pi05_g8v_raao", "lol/libero_g8v_raao")}
+      "pi05_g8v_raao_ae": ("pi05_g8v_raao", "lol/libero_g8v_raao"),
+      # SCAFFOLD_RESULTS 77 (RAA-c): RAA-o's frames and channel, the channel as a CONTINUOUS state token (raac_model.py), no text suffix
+      "pi05_g8v_raac_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
 ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)
@@ -77,6 +79,12 @@ def train_config(name, **over):
                          nnx.All(nnx_utils.PathRegex(".*llm.*"), nnx.Not(nnx_utils.PathRegex(".*llm.*_1.*"))))
         data = dataclasses.replace(base.data, repo_id=repo,
                                    assets=C.AssetsConfig(assets_dir=os.path.join(L90C, "assets", full), asset_id=repo))
+        if name == "pi05_g8v_raac_ae":                          # SR 77: + one state_proj (the channel token); base weights, state_proj random init
+            from . import raac_model as RM
+            m = base.model
+            model = RM.Pi0ConfigC(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False)
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
+                                       weight_loader=RM.RaacLoader(BASE_PARAMS), **over)
         return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, **over)
     if name == "pi05_goal8":                                    # pi05_l90c's recipe on the eight known tasks, its own norm stats
         base = train_config("pi05_l90c")
