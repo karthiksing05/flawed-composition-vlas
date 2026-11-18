@@ -128,7 +128,7 @@ def export(a):
     dst = LC.pytorch_dir(name) + ("" if a.step is None and not a.tag else f"_{a.tag or step}")
     cmd = [sys.executable, OPENPI + "/examples/convert_jax_model_to_pytorch.py", "--checkpoint_dir", src,
            "--config_name", "pi05_libero", "--output_path", dst]
-    if getattr(a, "g8v", None) == "raac":                  # SR 77: the same conversion plus the one new tensor, state_proj
+    if getattr(a, "g8v", None) in ("raac", "raas"):     # SR 77 / 78: the same conversion plus the one new tensor, state_proj (raas: the servo constants live in the config)
         cmd = [sys.executable, os.path.join(ROOT, "experiments", "raac_export.py"), "--checkpoint_dir", src, "--output_path", dst]
     print("[c_train]", " ".join(cmd), flush=True)
     rc = subprocess.call(cmd, cwd=OPENPI)
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     ap.add_argument("--roles", action="store_true", help="pi05_goal8_roles: the same frames with per-frame role prompts (docs/SCAFFOLD_RESULTS.md 33)")
     ap.add_argument("--rsup", action="store_true", help="pi05_goal8_rsup: supervised stage, given role phrases (docs/SCAFFOLD_RESULTS.md 33.1)")
     ap.add_argument("--ae", action="store_true", help="with --goal8/--rsup/--roles: the '_ae' config, frozen VLM and trainable action expert (docs/SCAFFOLD_RESULTS.md 34)")
-    ap.add_argument("--g8v", default=None, choices=("plain", "rsup", "rview", "rview2", "rbox", "rrel", "raa", "raao", "raac"), help="pi05_g8v_<arm>_ae: the ladder's "
+    ap.add_argument("--g8v", default=None, choices=("plain", "rsup", "rview", "rview2", "rbox", "rrel", "raa", "raao", "raac", "raas"), help="pi05_g8v_<arm>_ae: the ladder's "
                     "re-rendered K1-K8 frames, R0 plain / R1 role phrases / R2 role views (rview: first rule; rview2, rbox: second rule, "
                     "masks / boxes) (experiments/sc_rv.py); implies the _ae recipe")
     ap.add_argument("--init", default=None, help="a NEW run starts from this JAX params dir (default: the config's loader)")
