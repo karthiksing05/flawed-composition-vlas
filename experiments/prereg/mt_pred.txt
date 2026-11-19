@@ -1,0 +1,20 @@
+MT (SR 81) predictions, written 2026-11-18 BEFORE the prereg row and any main rollout.  Rules and definitions: experiments/mt_read.py docstring; plan: docs/notes/mt_plan.md.
+
+Known when written: SR 70 (frozen pi0.5 I on F6_a, the displaced plate (ring .14-.30 m) uncovered: .967 on 60 states; pi0 .017); SR 73 (R2 K1-K6 .753, RAA .839, rgp .950;
+RAA N1-N6 .656); the build's states and render check; the 4-state smoke per arm per cell (jobs 4795016-4795019, read job 4795141, outputs outside results/) was run for plumbing, but mt_read's printed table showed its n=4 outcomes: I and rgp succeed in every T cell; r2 released at the trained plate spot in 3 of 4 T_far smoke episodes (share .75, success 0 of 4) and raa in 0 of 4; r2 and raa are at .5 on the in-range cells.  The numbers below were written before the smoke and are not changed by it.
+The prior from SR 70 cuts against the claim: pi0.5 already follows a displaced plate, so the claim's most likely outcome for I is NOT SUPPORTED.
+
+Numbers (40 states per cell):
+  I   K1_in success .95 (80% in [.85, 1.0]); T_near .95; T_far .90 (80% in [.75, 1.0]); trained-release share_all on T_far .02 (90% < .10; 70% <= .05).
+  raa T_far success .80 (70% in [.55, .95]); share_all .03.   r2 T_far success .65 (wide: 50% in [.35, .85]); share_all .05.   rgp T_far .93, share ~0.
+  Object moved: I O1_far .85 (60% >= .80); O2_far .85; r2 / raa lower than I by .05-.20 at far.  Reach "trained attempts" <= 5% for every arm (80%).
+
+Registered labels (probabilities):
+  M1 (I far share - in-range share; in-range is 0 by construction):  NOT SUPPORTED 85%, SUPPORTED 12%, REVERSED 3% (REVERSED cannot occur: the in-range share is 0).
+      It is SUPPORTED iff about 4 of 40 far-out episodes release at the trained spot.
+  M2 (RAA - I success on T_far):  NOT SUPPORTED 60%, REVERSED 35% (I is a stronger executor than RAA), SUPPORTED 5%.  Testable (I <= .85) with probability 35%.
+  M3 (RAA - I share on T_far):    NOT SUPPORTED 92% (both near 0), SUPPORTED 6%, REVERSED 2%.  Testable (I's share > .10) with probability 10%.
+  MK (in-range success >= .70, K1_in and K2_in): I FIT 95%; raa FIT 80%; r2 FIT 60%; rgp FIT 95%.
+Overall: P(the claim "the arm still goes to the trained coordinates" holds for frozen pi0.5, i.e. M1 SUPPORTED) = 12%.  P(at least one retrained arm, r2 or raa, shows a trained-release
+share_all >= .10 on T_far) = 30% (descriptive).  Expected reading: the trained-coordinate account is mostly wrong for I; the failures that remain at displaced targets are misses near the actual
+target, not releases at the trained spot.

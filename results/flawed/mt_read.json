@@ -1,0 +1,1105 @@
+{
+ "phase": "main",
+ "B": 2000,
+ "mapping": "MT read (SR 81; docs/notes/mt_plan.md; m3_prereg tag mt).  Numpy only (any venv; run on a compute node).\n\nCells (results/flawed/mt: experiments/mt_tasks.py; 40 main states each, trial = state; the 4 smoke states are never read):\n  K1_in K2_in (nothing moved), T_near T_far (K1, PLATE moved), O1_near O1_far (K1, BOWL moved), O2_near O2_far (K2, BOWL moved).\nArms: I (frozen pi0.5), r2 (R2), raa (RAA), rgp (ReGuide-perc); rollouts results/flawed/mt_roll/<arm>_<cell>_main.json + _track.npz.\n\nENDPOINT ATTRIBUTION (target moved; T cells and K1_in), from the track (pp_atlas.Rec: held flag, the object's, the target's and the eef's positions):\n  carry          the object was held for >= 5 steps.  The release is the LAST held step L (the end of the carry).\n  d_act          xy distance of the held object at L to the target's actual position at L (the plate's own track);\n  d_tr           the same to the target's trained position (n2_tasks.json training.centre, the mean of the stored sampler states = the mode);\n  TRAINED RELEASE  d_act - d_tr > 0.03 m  (closer to the trained position than to the actual one by more than 3 cm).\n  share_all      mean over ALL states of the indicator (an episode without a carry counts 0);  share_carry = over carry episodes only.\n  lam            ((rel - act) . (tr - act)) / |tr - act|^2 at L: 0 = at the actual target, 1 = at the trained one (descriptive).\n  Property of the rule: a displacement of d <= 3 cm cannot give a trained release, so in-range cells have share 0 by construction; M1 therefore\n  reads as \"the far-out share is > 0\".  (n2's demo range: spread .0273 m; the 50 official init states of K1 lie within .018 m of the centre.)\nREACH ATTRIBUTION (object moved; O cells and the in-range cells, descriptive): the first step with the gripper commanded closed (a6 > 0) while the eef\n  is within 10 cm above the object's start height; attempt at the eef xy: trained attempt iff |ee - object_start| - |ee - trained object position| > 0.03 m.\n\nREGISTERED CONTRASTS (paired by state within a bin; bootstrap B = 2000, numpy default_rng(0), percentile 2.5 / 97.5, states resampled; M1's two bins are different states\nand are resampled independently in the same draw)\n  M1  I: share_all(T_far) - share_all(K1_in)         SUPPORTED iff lower bound > 0  (REVERSED iff upper bound < 0, else NOT SUPPORTED).\n  M2  RAA - I success on T_far                        SUPPORTED iff lower bound > 0  (REVERSED iff upper < 0, else NOT SUPPORTED).\n  M3  RAA - I share_all on T_far                      SUPPORTED iff upper bound < 0  (REVERSED iff lower > 0, else NOT SUPPORTED).\n  MK  every arm's in-range success (K1_in, K2_in): FIT iff the point >= .70, else BELOW FLOOR.\n  Testability annotations (the label is kept): M1 needs I's K1_in success >= .70; M2 needs I's T_far success <= .85 (room to improve); M3 needs\n  I's T_far share_all > .10 (room to reduce).  Descriptive: rgp, r2, every arm x cell, the O cells, lam, release error to the actual target.\n\n    python experiments/mt_read.py read --phase smoke|main [--roll DIR] --out X.json\n    python experiments/mt_read.py selftest\n",
+ "cells": {
+  "I": {
+   "K1_in": {
+    "n": 40,
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_carry": 0.0,
+    "n_trained_release": 0,
+    "lam_median": -0.022832690720264184,
+    "release_err_to_actual_cm_median": 1.01680069822465,
+    "failed_with_trained_release": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0
+   },
+   "T_near": {
+    "n": 40,
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_carry": 0.0,
+    "n_trained_release": 0,
+    "lam_median": 0.11869803809589305,
+    "release_err_to_actual_cm_median": 1.1987677592322918,
+    "failed_with_trained_release": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     4.0008165498005335,
+     6.876887215672074
+    ],
+    "identity_bad": 0
+   },
+   "T_far": {
+    "n": 40,
+    "success": [
+     0.975,
+     0.925,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_carry": 0.0,
+    "n_trained_release": 0,
+    "lam_median": 0.08575375318365311,
+    "release_err_to_actual_cm_median": 1.9649604785417398,
+    "failed_with_trained_release": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     14.053095027746561,
+     28.90733655791724
+    ],
+    "identity_bad": 0
+   },
+   "O1_near": {
+    "n": 40,
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.25,
+     0.125,
+     0.4
+    ],
+    "share_attempt_trained_of_attempts": 0.25,
+    "moved_dist_cm_range": [
+     4.181629581488699,
+     6.923857854617226
+    ],
+    "identity_bad": 0
+   },
+   "O1_far": {
+    "n": 40,
+    "success": [
+     0.375,
+     0.225,
+     0.525
+    ],
+    "carry": 0.45,
+    "attempt": 0.975,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.4,
+     0.25,
+     0.55
+    ],
+    "share_attempt_trained_of_attempts": 0.41025641025641024,
+    "moved_dist_cm_range": [
+     14.62629642759398,
+     29.676746959214128
+    ],
+    "identity_bad": 0
+   },
+   "K2_in": {
+    "n": 40,
+    "success": [
+     0.975,
+     0.925,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0
+   },
+   "O2_near": {
+    "n": 40,
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.15,
+     0.05,
+     0.275
+    ],
+    "share_attempt_trained_of_attempts": 0.15,
+    "moved_dist_cm_range": [
+     4.051048483374257,
+     6.9114065794019
+    ],
+    "identity_bad": 0
+   },
+   "O2_far": {
+    "n": 40,
+    "success": [
+     0.4,
+     0.25,
+     0.55
+    ],
+    "carry": 0.675,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.15,
+     0.05,
+     0.275
+    ],
+    "share_attempt_trained_of_attempts": 0.15,
+    "moved_dist_cm_range": [
+     14.454235751057906,
+     29.57449763997823
+    ],
+    "identity_bad": 0
+   }
+  },
+  "r2": {
+   "K1_in": {
+    "n": 40,
+    "success": [
+     0.675,
+     0.525,
+     0.825
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_carry": 0.0,
+    "n_trained_release": 0,
+    "lam_median": 0.6188584031264242,
+    "release_err_to_actual_cm_median": 2.651196391127758,
+    "failed_with_trained_release": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0
+   },
+   "T_near": {
+    "n": 40,
+    "success": [
+     0.525,
+     0.375,
+     0.675
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.1,
+     0.025,
+     0.2
+    ],
+    "share_carry": 0.1,
+    "n_trained_release": 4,
+    "lam_median": 0.23058967880837922,
+    "release_err_to_actual_cm_median": 3.4052192428502077,
+    "failed_with_trained_release": 4,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     4.0008165498005335,
+     6.876887215672074
+    ],
+    "identity_bad": 0
+   },
+   "T_far": {
+    "n": 40,
+    "success": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "carry": 0.825,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.775,
+     0.625,
+     0.9
+    ],
+    "share_carry": 0.9393939393939394,
+    "n_trained_release": 31,
+    "lam_median": 0.943895380923536,
+    "release_err_to_actual_cm_median": 20.22663085384147,
+    "failed_with_trained_release": 31,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     14.053095027746561,
+     28.90733655791724
+    ],
+    "identity_bad": 0
+   },
+   "O1_near": {
+    "n": 40,
+    "success": [
+     0.425,
+     0.275,
+     0.575
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.3,
+     0.175,
+     0.45
+    ],
+    "share_attempt_trained_of_attempts": 0.3,
+    "moved_dist_cm_range": [
+     4.181629581488699,
+     6.923857854617226
+    ],
+    "identity_bad": 0
+   },
+   "O1_far": {
+    "n": 40,
+    "success": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "carry": 0.125,
+    "attempt": 0.925,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.675,
+     0.525,
+     0.8006249999999966
+    ],
+    "share_attempt_trained_of_attempts": 0.7297297297297297,
+    "moved_dist_cm_range": [
+     14.62629642759398,
+     29.676746959214128
+    ],
+    "identity_bad": 0
+   },
+   "K2_in": {
+    "n": 40,
+    "success": [
+     0.95,
+     0.875,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0
+   },
+   "O2_near": {
+    "n": 40,
+    "success": [
+     0.775,
+     0.65,
+     0.9
+    ],
+    "carry": 0.975,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.225,
+     0.1,
+     0.35
+    ],
+    "share_attempt_trained_of_attempts": 0.225,
+    "moved_dist_cm_range": [
+     4.051048483374257,
+     6.9114065794019
+    ],
+    "identity_bad": 0
+   },
+   "O2_far": {
+    "n": 40,
+    "success": [
+     0.075,
+     0.0,
+     0.175
+    ],
+    "carry": 0.15,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.65,
+     0.5,
+     0.775
+    ],
+    "share_attempt_trained_of_attempts": 0.65,
+    "moved_dist_cm_range": [
+     14.454235751057906,
+     29.57449763997823
+    ],
+    "identity_bad": 0
+   }
+  },
+  "raa": {
+   "K1_in": {
+    "n": 40,
+    "success": [
+     0.925,
+     0.825,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_carry": 0.0,
+    "n_trained_release": 0,
+    "lam_median": 0.24975146411386673,
+    "release_err_to_actual_cm_median": 2.2002280345673046,
+    "failed_with_trained_release": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0
+   },
+   "T_near": {
+    "n": 40,
+    "success": [
+     0.85,
+     0.725,
+     0.95
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.05,
+     0.0,
+     0.125
+    ],
+    "share_carry": 0.05,
+    "n_trained_release": 2,
+    "lam_median": 0.11125815083641795,
+    "release_err_to_actual_cm_median": 2.5124076201548924,
+    "failed_with_trained_release": 2,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     4.0008165498005335,
+     6.876887215672074
+    ],
+    "identity_bad": 0
+   },
+   "T_far": {
+    "n": 40,
+    "success": [
+     0.1,
+     0.025,
+     0.2
+    ],
+    "carry": 0.675,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.025,
+     0.0,
+     0.075
+    ],
+    "share_carry": 0.037037037037037035,
+    "n_trained_release": 1,
+    "lam_median": 0.20934553304578638,
+    "release_err_to_actual_cm_median": 6.00038563842421,
+    "failed_with_trained_release": 1,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     14.053095027746561,
+     28.90733655791724
+    ],
+    "identity_bad": 0
+   },
+   "O1_near": {
+    "n": 40,
+    "success": [
+     0.75,
+     0.6,
+     0.875
+    ],
+    "carry": 0.975,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.3,
+     0.17437500000000003,
+     0.45
+    ],
+    "share_attempt_trained_of_attempts": 0.3,
+    "moved_dist_cm_range": [
+     4.181629581488699,
+     6.923857854617226
+    ],
+    "identity_bad": 0
+   },
+   "O1_far": {
+    "n": 40,
+    "success": [
+     0.125,
+     0.025,
+     0.225
+    ],
+    "carry": 0.575,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.35,
+     0.2,
+     0.5
+    ],
+    "share_attempt_trained_of_attempts": 0.35,
+    "moved_dist_cm_range": [
+     14.62629642759398,
+     29.676746959214128
+    ],
+    "identity_bad": 0
+   },
+   "K2_in": {
+    "n": 40,
+    "success": [
+     0.975,
+     0.925,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0
+   },
+   "O2_near": {
+    "n": 40,
+    "success": [
+     0.9,
+     0.8,
+     0.975
+    ],
+    "carry": 0.95,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.225,
+     0.1,
+     0.35
+    ],
+    "share_attempt_trained_of_attempts": 0.225,
+    "moved_dist_cm_range": [
+     4.051048483374257,
+     6.9114065794019
+    ],
+    "identity_bad": 0
+   },
+   "O2_far": {
+    "n": 40,
+    "success": [
+     0.05,
+     0.0,
+     0.125
+    ],
+    "carry": 0.5,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.35,
+     0.2,
+     0.5
+    ],
+    "share_attempt_trained_of_attempts": 0.35,
+    "moved_dist_cm_range": [
+     14.454235751057906,
+     29.57449763997823
+    ],
+    "identity_bad": 0
+   }
+  },
+  "rgp": {
+   "K1_in": {
+    "n": 40,
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_carry": 0.0,
+    "n_trained_release": 0,
+    "lam_median": -0.013095794106923343,
+    "release_err_to_actual_cm_median": 1.002252306987399,
+    "failed_with_trained_release": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0
+   },
+   "T_near": {
+    "n": 40,
+    "success": [
+     0.975,
+     0.925,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.025,
+     0.0,
+     0.075
+    ],
+    "share_carry": 0.025,
+    "n_trained_release": 1,
+    "lam_median": 0.13494244848518822,
+    "release_err_to_actual_cm_median": 1.2203946890772044,
+    "failed_with_trained_release": 1,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     4.0008165498005335,
+     6.876887215672074
+    ],
+    "identity_bad": 0
+   },
+   "T_far": {
+    "n": 40,
+    "success": [
+     0.95,
+     0.875,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_all": [
+     0.05,
+     0.0,
+     0.125
+    ],
+    "share_carry": 0.05,
+    "n_trained_release": 2,
+    "lam_median": 0.08353583416013909,
+    "release_err_to_actual_cm_median": 1.9705124355498989,
+    "failed_with_trained_release": 2,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     14.053095027746561,
+     28.90733655791724
+    ],
+    "identity_bad": 0
+   },
+   "O1_near": {
+    "n": 40,
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.275,
+     0.15,
+     0.425
+    ],
+    "share_attempt_trained_of_attempts": 0.275,
+    "moved_dist_cm_range": [
+     4.181629581488699,
+     6.923857854617226
+    ],
+    "identity_bad": 0
+   },
+   "O1_far": {
+    "n": 40,
+    "success": [
+     0.85,
+     0.725,
+     0.95
+    ],
+    "carry": 0.9,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.075,
+     0.0,
+     0.175
+    ],
+    "share_attempt_trained_of_attempts": 0.075,
+    "moved_dist_cm_range": [
+     14.62629642759398,
+     29.676746959214128
+    ],
+    "identity_bad": 0
+   },
+   "K2_in": {
+    "n": 40,
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0
+   },
+   "O2_near": {
+    "n": 40,
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "carry": 1.0,
+    "attempt": 1.0,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.15,
+     0.05,
+     0.275
+    ],
+    "share_attempt_trained_of_attempts": 0.15,
+    "moved_dist_cm_range": [
+     4.051048483374257,
+     6.9114065794019
+    ],
+    "identity_bad": 0
+   },
+   "O2_far": {
+    "n": 40,
+    "success": [
+     0.925,
+     0.825,
+     1.0
+    ],
+    "carry": 0.975,
+    "attempt": 0.975,
+    "n_errors": 0,
+    "share_attempt_trained_all": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "share_attempt_trained_of_attempts": 0.0,
+    "moved_dist_cm_range": [
+     14.454235751057906,
+     29.57449763997823
+    ],
+    "identity_bad": 0
+   }
+  }
+ },
+ "contrasts": {
+  "M1": {
+   "ci": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "label": "NOT SUPPORTED",
+   "testable": true,
+   "I_K1_in_success": 1.0,
+   "I_T_far_share": 0.0,
+   "I_K1_in_share": 0.0
+  },
+  "M2": {
+   "ci": [
+    -0.875,
+    -0.975,
+    -0.75
+   ],
+   "label": "REVERSED",
+   "testable": false,
+   "I_T_far_success": 0.975,
+   "RAA_T_far_success": 0.1
+  },
+  "M3": {
+   "ci": [
+    0.025,
+    0.0,
+    0.075
+   ],
+   "label": "NOT SUPPORTED",
+   "testable": false,
+   "I_share": 0.0,
+   "RAA_share": 0.025
+  },
+  "MK": {
+   "I/K1_in": {
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "label": "FIT"
+   },
+   "I/K2_in": {
+    "success": [
+     0.975,
+     0.925,
+     1.0
+    ],
+    "label": "FIT"
+   },
+   "r2/K1_in": {
+    "success": [
+     0.675,
+     0.525,
+     0.825
+    ],
+    "label": "BELOW FLOOR"
+   },
+   "r2/K2_in": {
+    "success": [
+     0.95,
+     0.875,
+     1.0
+    ],
+    "label": "FIT"
+   },
+   "raa/K1_in": {
+    "success": [
+     0.925,
+     0.825,
+     1.0
+    ],
+    "label": "FIT"
+   },
+   "raa/K2_in": {
+    "success": [
+     0.975,
+     0.925,
+     1.0
+    ],
+    "label": "FIT"
+   },
+   "rgp/K1_in": {
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "label": "FIT"
+   },
+   "rgp/K2_in": {
+    "success": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "label": "FIT"
+   }
+  },
+  "descriptive": {
+   "raa-I/K1_in": {
+    "success_diff": [
+     -0.07499999999999996,
+     -0.17500000000000004,
+     0.0
+    ]
+   },
+   "raa-I/T_near": {
+    "success_diff": [
+     -0.15000000000000002,
+     -0.275,
+     -0.050000000000000044
+    ],
+    "share_diff": [
+     0.05,
+     0.0,
+     0.125
+    ]
+   },
+   "raa-I/T_far": {
+    "success_diff": [
+     -0.875,
+     -0.975,
+     -0.75
+    ],
+    "share_diff": [
+     0.025,
+     0.0,
+     0.075
+    ]
+   },
+   "raa-I/O1_near": {
+    "success_diff": [
+     -0.25,
+     -0.4,
+     -0.125
+    ]
+   },
+   "raa-I/O1_far": {
+    "success_diff": [
+     -0.25,
+     -0.425,
+     -0.07500000000000001
+    ]
+   },
+   "raa-I/K2_in": {
+    "success_diff": [
+     0.0,
+     -0.07499999999999996,
+     0.07499999999999996
+    ]
+   },
+   "raa-I/O2_near": {
+    "success_diff": [
+     -0.09999999999999998,
+     -0.19999999999999996,
+     -0.025000000000000022
+    ]
+   },
+   "raa-I/O2_far": {
+    "success_diff": [
+     -0.35000000000000003,
+     -0.5,
+     -0.22499999999999998
+    ]
+   },
+   "r2-I/K1_in": {
+    "success_diff": [
+     -0.32499999999999996,
+     -0.475,
+     -0.17500000000000004
+    ]
+   },
+   "r2-I/T_near": {
+    "success_diff": [
+     -0.475,
+     -0.625,
+     -0.32499999999999996
+    ],
+    "share_diff": [
+     0.1,
+     0.025,
+     0.2
+    ]
+   },
+   "r2-I/T_far": {
+    "success_diff": [
+     -0.975,
+     -1.0,
+     -0.925
+    ],
+    "share_diff": [
+     0.775,
+     0.625,
+     0.9
+    ]
+   },
+   "r2-I/O1_near": {
+    "success_diff": [
+     -0.575,
+     -0.725,
+     -0.42500000000000004
+    ]
+   },
+   "r2-I/O1_far": {
+    "success_diff": [
+     -0.375,
+     -0.525,
+     -0.225
+    ]
+   },
+   "r2-I/K2_in": {
+    "success_diff": [
+     -0.025000000000000022,
+     -0.09999999999999998,
+     0.050000000000000044
+    ]
+   },
+   "r2-I/O2_near": {
+    "success_diff": [
+     -0.22499999999999998,
+     -0.35,
+     -0.09999999999999998
+    ]
+   },
+   "r2-I/O2_far": {
+    "success_diff": [
+     -0.325,
+     -0.5,
+     -0.15
+    ]
+   },
+   "rgp-I/K1_in": {
+    "success_diff": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "rgp-I/T_near": {
+    "success_diff": [
+     -0.025000000000000022,
+     -0.07499999999999996,
+     0.0
+    ],
+    "share_diff": [
+     0.025,
+     0.0,
+     0.075
+    ]
+   },
+   "rgp-I/T_far": {
+    "success_diff": [
+     -0.025000000000000022,
+     -0.125,
+     0.050000000000000044
+    ],
+    "share_diff": [
+     0.05,
+     0.0,
+     0.125
+    ]
+   },
+   "rgp-I/O1_near": {
+    "success_diff": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "rgp-I/O1_far": {
+    "success_diff": [
+     0.475,
+     0.275,
+     0.65
+    ]
+   },
+   "rgp-I/K2_in": {
+    "success_diff": [
+     0.025000000000000022,
+     0.0,
+     0.07499999999999996
+    ]
+   },
+   "rgp-I/O2_near": {
+    "success_diff": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "rgp-I/O2_far": {
+    "success_diff": [
+     0.525,
+     0.375,
+     0.675
+    ]
+   }
+  }
+ },
+ "identity": {
+  "n_bad": 0,
+  "detail": []
+ }
+}
