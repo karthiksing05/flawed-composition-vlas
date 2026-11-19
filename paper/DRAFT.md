@@ -1,4 +1,4 @@
-# Routed by Cues: Why Vision-Language-Action Models Fail New Pairings of Known Parts, and a Role-Addressed Repair
+# Routed by Cues: Why Vision-Language-Action Models Fail New Pairings of Known Parts, and Where in the Architecture They Sit
 
 <!-- Title alternatives:
 1. The Instruction's Roles Do Not Choose the Sub-Goal: Architecture-Rooted Failures of Vision-Language-Action Models
