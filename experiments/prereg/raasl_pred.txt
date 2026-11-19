@@ -1,0 +1,35 @@
+RAA-sL (SR 82): the RAA-s recipe (servo residual action head, RAA-c continuous state token, config pi05_g8v_raas_ae) initialised from the LIBERO-fine-tuned pi0.5
+(openpi pi05_libero params) instead of pi05_base, exactly as RAA-L (SR 80) did for RAA.
+Written 2026-11-19 BEFORE the prereg row, any main training job of RAA-sL and any RAA-sL rollout.  Known when written: SR 78b (RAA-s served with its servo: N1-N6 .717,
+K1-K6 .844, bottle N4-N6 .589, cheese .844, S1 PARTIAL; rgp .897 / .950; RAA .656 / .839; RAA-c .503 / .814), SR 80 (RAA-L: N1-N6 .575, K1-K6 .831, bottle .333, cheese .817,
+K4 .583, L1 NOT SUPPORTED; Phase B gates all TESTABLE: F6_a .967, unique-name controls .558, K floor .958; D1 +.263 SUPPORTED, D2 +.117 [-.017, +.250] NOT SUPPORTED, D3a / D3b
+EQUIVALENT, DK NI; primary NOT SHOWN; full F6_b .333 vs frozen I .517, rgp .633, rc .800).  Smoke (20 steps, job 4801501, tail-lab): state_proj random-initialised, loads;
+step-0 loss .0556 against RAA-s's smoke .0991 and RAA-L's .0421.
+
+Hypothesis (one).  The servo fixes release aim (RAA-s: failed bottle releases 3.8-6.5 cm from the target against RAA-c's 11-12) and the broad init keeps out-of-suite
+competence (RAA-L: F6_a .967, controls .558), so the two compose: RAA-sL should keep RAA-s's bottle gains and add RAA-L's out-of-suite competence.  Against that: RAA-L's
+broad init LOWERED N1-N6 (-.081, bottle pairings -.133), the servo's constants K, M were fit to the demos of the pi05_base-initialised expert's residual, and the init's
+expert was trained on LIBERO's own action statistics (not the RAA-c quantile stats) so its first steps start off the servo-subtracted target.  The honest prior is that the
+broad init does not help the servo arm on the held-out pairings and is about neutral on K1-K6; its value is Phase B.  RAA-sL - RAA-s mixes a better init with 40 LIBERO
+tasks' exposure (N1-N8 are in no suite, SR 80 leakage check); stated with the result.
+
+Predictions (probabilities are mine).
+1. P1 PRIMARY (RAA-sL - RAA-s(78b), N1-N6 success): SUPPORTED (lower bound > 0) 12%, REVERSED (upper < 0) 10%, NOT SUPPORTED 78%.  Point estimate RAA-sL N1-N6 about .68
+   (range .50-.84; RAA-s(78b) .717).  Why not higher: RAA-L lost .08 on the same pairings against its pi05_base twin, and an interval needs about +.14 to clear zero at 60 states per task.
+2. P2 (RAA-sL - RAA-L, N1-N6, RAA-L .575): SUPPORTED 55%; the servo is the larger effect (+.214 over RAA-c in SR 78b), the bottle pairings are where RAA-L is at the floor (N4 .133,
+   N6 .083); bottle pairings RAA-sL above RAA-L's .333 in the point estimate 75%.
+3. P3 vs rgp (.897): P3a NON-INFERIOR (lower bound > -.10) 3%; P3b beats rgp 0.5%.
+4. PK (RAA-sL - RAA-s(78b), K1-K6 non-inferior at -.05): 14%.  K1-K6 point about .84 (.72-.94); K4 and K5 are the cells that moved in RAA-L (K4 .583, K5 .450) and the servo
+   was already a K5 problem in RAA-s (.367); fit gate (R0 on K1-K6 >= .80, SR 73's rollouts) holds, 99%.
+5. Plumbing at test: held-target channel median under 2 cm (the same estimator as SR 78b: 1.04 cm) and no served state line outside role ids 0 / 1 / 2: 90%.  Phase B serves through
+   wa_s.py (a copy of wa.py with the channel as the state token and the offset rule of raa.py; wa.py itself carries the channel as text and cannot serve RAA-s); a smoke of wa_s.py
+   on the SR 78 RAA-s checkpoint (outside results/, before the row) is its plumbing check.  No registered quantity depends on it.
+6. Phase B gates (full on RAA-sL): F6_a >= .50 TESTABLE 85% (RAA-L .967); unique-name controls (tids 4-6) mean >= .50 TESTABLE 60% (RAA-L .558, point .55, range .25-.80); K floor
+   (K1t + K2t >= .70) 90%.
+7. D1 (full - noR, F7 pool) SUPPORTED 70% (RAA-L +.263; given the controls gate holds 80%).  D2 (full - noM, F6_b) SUPPORTED 25% (RAA-L +.117, lower -.017).  D3a EQUIVALENT 70%
+   (noR is a replicate of full on F6_b; RAA-L: identical on all 60 states).  D3b EQUIVALENT 40% (RAA-L -.031 [-.069, +.006]).  DK NON-INFERIOR 80%.
+8. PRIMARY gated (same rule as SR 80): DISSOCIATION SHOWN 8%, PARTIAL 22%, NOT SHOWN 52%, UNTESTABLE 18%.
+9. Descriptive: full F6_b about .35 (.10-.65) and below frozen I (.517): 70%; full F7 pool above frozen I (.350): 65%; full below rc (F7 .963, F6_b .800): 95%; full F6_b above
+   RAA-L's .333 in the point estimate 50%.
+What would count against "the init and the servo compose": P1 REVERSED, or N4 / N6 success under .30 (RAA-L's floor) with the servo on, which would say the broad init removes the servo's gain
+(the expert's residual is mis-specified at that init).  What would count for it: P1 SUPPORTED or P2 SUPPORTED with the bottle pairings above .55 and F6_a and the controls TESTABLE.
