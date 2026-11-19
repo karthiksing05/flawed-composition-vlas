@@ -72,3 +72,8 @@ WAITER PLAN (one background waiter, capped with `timeout`, re-armed on notificat
 6. Reads (sbatch, openpi venv, each once, no overwrite): `python experiments/raasl_read.py selftest`, then `read` (phase A, results/flawed/raasl_read.json) and `readb` (phase B, raasl_wa_read.json +
    raasl_wa_gated.json).
 7. Write SR 82 only after the reads, scoring raasl_pred.txt as written.  An exported checkpoint below step 6000 is not read.  Report the backbone.py sha1 at launch as SR 80 did.
+
+LAUNCH RECORD (2026-11-19 ~09:25).  Prereg row ledger/m3_prereg/m3_prereg__libero_goal__raasl__s0__b36aa184.json (job 4801560, commit c6c285a8; dirty=true from foreign uncommitted edits in the tree, as earlier rows).
+Training smoke 4801501 (tail-lab) ok, checkpoint jax/pi05_g8v_raas_l_ae/smoke/19 (this smoke ran before the row, as RAA-L's, because the row asserts only a smoke dir exists).  wa_s.py smoke 4801514 on the SR 78
+RAA-s checkpoint (outside results/): full 0 and noM 0 ran end to end, state lines carry role 1 / 2 with the channel in metres, noM skipped queries carry the zero state.  Chains (raasl_chain.sh): overcap exp main
+jobs 4801561-4801566 (raasl_main1-6), tail-lab exp tl jobs 4801567-4801572 (raasl_tl1-6).  RAA-L's and RAA-s's own scripts and chains are untouched.
