@@ -66,6 +66,10 @@ class PolicyBackbone:
     def __init__(self, config_name="pi05_libero", checkpoint_dir=None, device="cuda", num_steps=10, compile=False):
         _config, _policy_config, _model = _import_openpi()
         ck = checkpoint_dir or f"/coc/flash10/ksingara3/robot/openpi_cache/openpi-assets/checkpoints/{config_name}_pytorch"
+        from . import l90c_config                          # LIBERO-90-C configs (pi05_l90c, pi05_base_libero): registered at runtime
+        if config_name in l90c_config.NAMES:
+            l90c_config.register()
+            ck = checkpoint_dir or l90c_config.pytorch_dir(config_name)
         self.train_config = _config.get_config(config_name)
         if getattr(self.train_config.model, "pytorch_compile_mode", None) is not None and not compile:
             # openpi wraps sample_actions in torch.compile(mode="max-autotune"): minutes of autotuning on the
@@ -289,6 +293,14 @@ class PolicyBackbone:
                 vt = (e - x) / (1.0 - t)
             x = x + dt * vt
             t = t + dt
+        if float(getattr(self.model.config, "servo_k", 0.0) or 0.0) != 0.0:
+            # RAA-s (SR 78b): the model returns the flow RESIDUAL; PI0PytorchS.sample_actions adds the fixed servo, this loop must too.
+            # Same term, same normalised space, every step of the chunk, dims 0-2 only.  Configs without a nonzero servo_k never reach here.
+            from .raas_model import servo_norm_torch
+            sv = servo_norm_torch(self.model.config, prefix.state, self.A)[..., :3]          # [b, 1, 3]
+            x = x.reshape(n, self.H, self.A).clone()
+            x[:, :, :3] = x[:, :, :3] + sv.to(x.dtype)
+            x = x.reshape(n, self.dim_full)
         out = x if full else x[:, self.real]
         return out.float().cpu().numpy()
 

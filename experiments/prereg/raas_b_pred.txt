@@ -1,0 +1,28 @@
+RAA-s re-serve (SR 78b): the SAME RAA-s checkpoint (pi05_g8v_raas_ae_tl6000, no retraining) served WITH its servo term.  Written 2026-11-19 BEFORE the prereg row and
+any SR 78b rollout.  Known when written: SR 78's read (RAA-s as served WITHOUT servo: N1-N6 .028, K1-K6 .092, NOT SUPPORTED; the registered SR 78 read stands as
+"RAA-s served without servo" and is not overwritten); the SR 78 diagnosis (PolicyBackbone.sample never added servo_norm_torch, which only PI0PytorchS.sample_actions adds);
+the offline served-path check on 15 held-target demo frames (mean |xyz - demo| over the chunk: RAA-s served without servo .297, RAA-s plus servo .176, RAA-c served .167);
+SR 77 (RAA-c N1-N6 .503, K1-K6 .814, failed-release xy median 11.8 / 11.0 cm on N4 / N6), SR 76 (RAA-o .594, RAA .656, rgp .897; K1-K6 RAA-o .881).  No SR 78b rollout, no
+smoke and no selftest of the fix had run.
+
+The change since SR 78 (serving only, same checkpoint, same states, same arm raac client): PolicyBackbone.sample adds servo_norm_torch(model.config, state, action_dim)
+to dims 0-2 of every step of the normalised chunk, only when the config has a nonzero servo_k (lifelong_ood/policy/backbone.py).  Every other config is bit-identical
+(experiments/raas_b_test.py); for raas the served chunk equals PI0PytorchS.sample_actions on the same noise.  Hypothesis, contrasts, labels, states, bootstrap, margins and
+analysis are SR 78's (experiments/prereg/raas_pred.txt, docs/notes/raas_plan.md), unchanged.  One unlabelled row is added: X7 = RAA-s (78b) - RAA-s (78, served without servo).
+
+Predictions (probabilities are mine; they differ from SR 78's because the offline check says the expert plus servo sits at RAA-c's offline level, and RAA-c itself was .503).
+1. S1 primary: SUPPORTED 7%, PARTIAL 8%, NOT SUPPORTED 85%.  Point estimate of S1a about -.07 (RAA-s 78b N1-N6 about .52, 80% range .38-.68).  Why near RAA-c: the offline
+   chunk error equals RAA-c's (.176 vs .167) and the servo explains only about a third of the held-phase translation variance; the expert was trained on a residual and the
+   release decision, not the commanded translation, may set where the object lands (SR 77).  Why not lower: the servo is exact in the channel and the training objective
+   matched this serving.
+2. S1a lower bound > 0 alone: 5%.  X3 > X2 (bottle gains more than cheese relative to RAA-o) in the point estimate: 50%.
+3. S2 (RAA-s beats RAA, lower bound > 0): 4%.
+4. S3: NON-INFERIOR to rgp (lower bound > -.10) 1%; beats rgp < 1%.
+5. SK: RAA-s non-inferior to RAA-o on K1-K6 (lower bound > -.05): 12% (RAA-c was .814 against RAA-o .881).  K1-K6 success at least .80: 55%.  R0 fit gate (.85) holds: 99%.
+6. Against RAA-c (X5 / X6, unlabelled): N1-N6 point estimate above RAA-c's .503: 50%; its 95% interval excludes 0 in either direction: 15%.  K1-K6 point above RAA-c's .814: 40%.
+7. X7, 78b minus 78: positive on N1-N6 with lower bound > 0: 99% (the served path was broken by exactly the dropped term).
+8. Plumbing: no routed query reached the model with an all-zero state in a held-target query, held-target channel median at test under 2 cm, and a bit-identical served chunk
+   to PI0PytorchS.sample_actions on the same noise (shown offline before the rollouts): 90%.
+9. Exploratory mechanism (labelled): median failed-release xy error on N4 at most 4.5 cm: 10%; on N1 and N4 both at most 2.5 cm: 2%; N4 and N6 not below RAA-o's (6.5 and 7.0 cm): 75%.
+What would count against the claim: S1a lower bound <= 0 with N4 and N6 failed-release error not below RAA-o's.  What would count for it: S1a lower bound > 0 with N4 median failed-release
+error below 5 cm.  A K1-K6 loss with an N1-N6 gain would be a trade, not a fix.  A result near RAA-c's (N1-N6 .50, K1-K6 .81) would say the state token, not the head, dominates.
