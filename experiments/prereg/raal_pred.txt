@@ -1,0 +1,28 @@
+RAA-L (SR 80): the RAA recipe initialised from the LIBERO-fine-tuned pi0.5 (openpi pi05_libero, the frozen "I" / pi05 of SR 45 / 52 / 70) instead of pi05_base.
+Written 2026-11-18 BEFORE the prereg row, any main training job of RAA-L and any RAA-L rollout.  Known when written: SR 73 (RAA N1-N6 .656, K1-K6 ~.88), SR 76 / 77
+(RAA-o .594, RAA-c .503), SR 78 (RAA-s training, unread), SR 79 (RAA full F6_b .050, F6_a .083, unique-name F7 controls .108, K1t + K2t .888; frozen I F6_a .967,
+F6_b .517, F7 pool .350; D1 +.213 SUPPORTED, D2 NOT SUPPORTED, D3b not equivalent; primary NOT SHOWN, F6_a and F7 controls NOT TESTABLE).  Smoke (20 steps, job 4793814,
+tail-lab): step-0 loss .0421 against RAA's .103 (RAA smoke / main logs), so the init helps the flow loss on the RAA training frames before any step.
+
+Hypothesis (one).  RAA fails out-of-suite scenes (F6_a, unique-name bowls) because the action expert it trains is initialised from pi05_base and sees only 8 tasks for
+6000 steps.  Initialising the same recipe from the LIBERO-fine-tuned pi0.5 keeps the broad LIBERO competence of the action expert and the frozen VLM, so the executor reaches
+the gates (F6_a, unique controls >= .50), the WHERE module removals become testable, and the held-out pairings improve too.  What it does NOT claim: nothing about N-task
+learning from demonstrations (N1-N6 are in no LIBERO suite, checked by exact instruction match, docs/notes/raal_plan.md); the init contains 40 LIBERO tasks' demos
+(including the 8 known ones), so RAA-L - RAA mixes a better init with more exposure; that is the point of the arm and is stated with the result.
+
+Predictions (probabilities are mine).
+1. Phase A L1 (RAA-L - RAA, N1-N6): SUPPORTED 40%.  Point estimate N1-N6 about .72 (range .55-.88); RAA .656.  Why not higher: the role views and text channel still have to
+   be used by an expert re-fit for 6000 steps on 8 tasks; the painted views are off-distribution for the frozen VLM that the LIBERO fine-tune adapted to plain frames.
+2. L2a RAA-L NON-INFERIOR to rgp (lower bound > -.10, rgp ~.897): 12%; L2b beats rgp: 2%.
+3. LK (K1-K6 non-inferior to RAA at -.05): 88%.  K1-K6 point about .90 (.82-.97); the init saw these tasks' demos.
+4. Fit gate (R0 on K1-K6 >= .80, SR 73's rollouts): holds (it is not RAA-L's).
+5. Phase B gates, full on RAA-L: F6_a >= .50 TESTABLE 55% (point .55, range .10-.95; frozen I .967 vs RAA .083); unique-name controls mean >= .50 TESTABLE 45%
+   (point .45, range .08-.85); K floor (K1t + K2t >= .70) 92%.
+6. D1 (full - noR, F7 pool) SUPPORTED 60% (RAA +.213; the resolver effect does not need the executor to be better, only to be able to do the task: if the control gate fails
+   the label is still reported and marked).  D2 (full - noM, F6_b) SUPPORTED 25% (M lifts F6_b only if F6_a-like placing works and the plate hides; if F6_a gate holds, 40%).
+   D3a EQUIVALENT 75% (noR is a replicate of full on F6_b).  D3b (noM - full, F7) EQUIVALENT 35% (SR 79: -.075 [-.144, -.006]; the occlusion hold of M also serves F7).
+   DK NON-INFERIOR 85%.
+7. PRIMARY gated: DISSOCIATION SHOWN 6%; PARTIAL 20%; NOT SHOWN 60%; UNTESTABLE 14% (the label pattern passes with a gate failing).
+8. Descriptive: full on F6_b about .25 (.03-.65), below frozen I (.517): 70%; full F7 pool above frozen I (.350): 55%; full below rc (F7 .963, F6_b .800): 90%.
+What would count against the init explanation: F6_a and the unique-name controls both still below .30 (the same floor as RAA), which would put the floor in the 6000-step
+re-fit or the role views, not in the init.
