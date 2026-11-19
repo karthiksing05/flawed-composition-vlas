@@ -66,3 +66,22 @@ before the read.
 Training: two redundant 6 x 4 h afterany chains of raal_train.sh (raas_train.sh with the log name changed), launched by raal_chain.sh, `--g8v raa_l --steps 6001 --batch 32
 --save-interval 250 --keep-period 1000`; overcap exp main (raal_main1-6), tail-lab exp tl (raal_tl1-6); checkpoints
 /coc/flash10/ksingara3/robot/checkpoints_l90c/jax/pi05_g8v_raa_l_ae/{main,tl}/<step>.
+
+LAUNCH RECORD (2026-11-18 ~20:00).  Prereg row ledger/m3_prereg/m3_prereg__libero_goal__raal__s0__cae04558.json (job 4793879; the row carries dirty=true from foreign uncommitted
+doc edits in the tree, as earlier rows).  Smoke 4793814 (tail-lab) ok, checkpoint jax/pi05_g8v_raa_l_ae/smoke/19.  Chains (raal_chain.sh): overcap exp main jobs 4793899-4793904
+(raal_main1-6), tail-lab exp tl jobs 4793905-4793910 (raal_tl1-6).  tail-lab holds this user's raas_tl and sb100k jobs (per-user 4-GPU cap): with raal_tl running that is 3 GPUs,
+so both chains are on their registered partitions.  RAA-s's chains (raas_main / raas_tl) are untouched.  Expected: RAA-c / RAA-s needed 6-10 h wall from submission, about
+5.4 s/step in the smoke (includes the first compile), so 6,001 steps ~ 6-9 h of A40 time over 2-3 jobs; step 6000 about 04:00-08:00 on 2026-11-19 depending on the queue.
+
+WAITER PLAN (one background waiter, capped with `timeout`, re-armed on notification, stopped before the session ends; no python on the login node; all python through sbatch):
+1. Poll `ls /coc/flash10/ksingara3/robot/checkpoints_l90c/jax/pi05_g8v_raa_l_ae/{main,tl}/6000`.  On the first to appear: scancel the other chain (jobs named raal_main* / raal_tl*).
+2. Export: sbatch t16_export.sh with ARGS `--g8v~raa_l~--exp~<main|tl>~--export~--step~6000~--tag~<main|tl>6000` -> .../checkpoints_l90c/pytorch/pi05_g8v_raa_l_ae_<main|tl>6000
+   (standard conversion, as raa; assets copied from the JAX checkpoint).
+3. Phase A rollouts: raa_roll.sh ARM=raa NAME=raal CONFIG=pi05_g8v_raa_l_ae CKPT=<export> OUTD=results/flawed/raa, once with the main states / branches (PHASE main; FRESH
+   results/flawed/n2_states, BR results/flawed/n2_branches_main.json) and once with the rx states (PHASE rx; FRESH results/flawed/n2_states_rx, BR n2_branches_rx.json), TIDS
+   0+2+4+6+8+10+16+18+20+22+24+26 (as the raac rollouts: 4789144-4789147, split in two jobs per phase), overcap full exclude list.
+4. Phase B rollouts: wal_roll.sh (CKPT=<export>) in the SR 79 split: full:0-3, full:4-7, full:8+9+10 + noR:7, noR:0-3, noM:0-3, noR:8+10 + noM:8 (noMe is not rolled), PHASE=main,
+   OUTD default results/flawed/wal.  Check every cell exists with n_episodes = number of states.
+5. Reads (sbatch, openpi venv): `python experiments/raal_read.py selftest`, then `read` (phase A, results/flawed/raal_read.json) and `readb` (phase B, raal_wa_read.json +
+   raal_wa_gated.json), each once, no overwrite.
+6. Write SR 80 only after the reads and score raal_pred.txt as written.  An exported checkpoint below step 6000 is not read.
