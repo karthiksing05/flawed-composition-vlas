@@ -5,6 +5,8 @@
 2. Cues Choose the Sub-Goal: A Failure Atlas, a Failure Predictor and a Role Channel for Vision-Language-Action Models
 -->
 
+Bibliography: paper/refs.bib
+
 Draft of 2026-11-19. Plan: docs/PLAN_PAPER.md. Numbers come from docs/SCAFFOLD_RESULTS.md (SR), docs/ARCH_FAILURES.md (AF) and docs/ARCHITECTURE_PROPOSAL.md; each claim names its sections. The previous draft (a different project) is at docs/history/DRAFT_2026-10-21_units.md. Prose follows docs/PAPER_STYLE.md of the diffusion-composition paper: active voice, one idea per paragraph, no hedged contrasts.
 
 ## Abstract
