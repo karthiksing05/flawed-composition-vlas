@@ -1,0 +1,25 @@
+RAA-sL-W3 / W4 (SR 85): test-time-only variants of RAA-sL (checkpoint pi05_g8v_raas_l_ae main/6000; no training).  W3: while a target is held AND the held object is at least CLEAR = 3 cm above the target's
+reference height (c = -dz >= 0.03 m, the channel's own z), the action's xy come only from the saturating servo (W1's controller, K_w = 46.875 per m); otherwise RAA-sL's chunk is unchanged.  W4 = W3 + SR 84's release gate
+(while held and |rel_xy| > 2 cm an open gripper command is replaced by closed), everywhere.
+Written 2026-11-20 BEFORE the prereg row and any main rollout of W3 / W4.  Known when written: SR 82, SR 84 (W1 / W2 tables: F6_b .817 / .900, K1-K6 .528 / .542, K3 0, K4 .283, K5 0, N3 .333, N1-N6 .833 / .856, F7 pool .656,
+controls .458) and the SR 85 diagnostic (W1 on K3 / K5: 0 / 20 each, object 10 cm below the target's reference when it has moved 3 cm sideways, contact + stall; RAA-sL: 20 / 20, 16 / 20) plus the demo clearances (elevated targets: demos begin xy transport at
+c median -7.5 cm and release at c median -0.4 cm, p90 +1.3 cm; flat targets: release at c median +2.4, p90 +7.9 cm).  RAA-sL references: N1-N6 .878, K1-K6 .936, F6_b .017, F7 pool .744, controls .600, K floor .9625; rgp N1-N6 .897; frozen I F6_b .517.
+Mechanism I expect: on elevated targets the expert's own carry rarely reaches c >= 3 cm before the release approach (the demos never do on average), so W3 is RAA-sL there (the K cells recover);  on flat targets (plate, stove) c >= 3 cm for most of the carry, so the module owns
+the long horizontal part and the last 3 cm of descent returns to the expert; whether the F6_b stall (expert xy opposing the servo near the covered plate) is cured depends on how much of the final approach is at c >= 3 cm.
+
+Predictions (probabilities are mine; W3 / W4 where two numbers).
+1. Phase A primary-A (W - RAA-sL, N1-N6): SUPPORTED W3 5% / W4 5%; REVERSED W3 12% / W4 15%; NOT SUPPORTED the rest.  Point N1-N6: W3 .86 (.68-.94), W4 .85 (.65-.94).
+2. W vs rgp (.897), N1-N6: NON-INFERIOR (lower > -.10) W3 18% / W4 16%; beats rgp 1% / 1%.
+3. AK (W - RAA-sL, K1-K6, NON-INFERIOR at -.05): W3 30% / W4 22%; COST (upper < -.05) W3 22% / W4 30%.  K1-K6 point: W3 .84 (.55-.96), W4 .81 (.45-.96).
+   Per cell, success: K3 W3 .70 (.0-.98), W4 .55; K4 W3 .80 (.28-.99), W4 .65; K5 W3 .50 (0-.75), W4 .35; N3 W3 .75 (.33-.92), W4 .65.  Share of the four elevated cells (K3, K4, K5, N3) with W3 above W1's value by more than .10: 3 or more of 4 at 75%.
+4. Fit gate R0 (K1-K6 >= .80): holds 99%.
+5. Phase B (full arm).  F6_b point: W3 .55 (.10-.88), W4 .65 (.15-.93).  B1 (full_W - RAA-sL .017, F6_b): SUPPORTED W3 90% / W4 92%.  Above frozen I (.517) with lower bound > 0: W3 15% / W4 22%.  W4 above W3 on F6_b in the point 60%.
+   F6_b under W3 above W1's .817: 8%.
+6. D2' (full_W - noM_W, F6_b): SUPPORTED W3 65% / W4 72%; REVERSED W3 3% / W4 2%.  noM replication of SR 82's noM (identical states >= 90% of 60): 70% (m = 0 path; SR 84 got 60 / 60).
+7. D1' (full_W - noR_W, F7 pool): SUPPORTED W3 65% / W4 62%.  D3a (noR - full, F6_b): EQUIVALENT W3 50% / W4 45%.  D3b (noM - full, F7): EQUIVALENT W3 55% / W4 50%.  DK (full - noR, K1t + K2t): NON-INFERIOR W3 75% / W4 72%.
+8. Gates (full_W): F6_a >= .50 TESTABLE W3 90% / W4 90%; unique-name controls >= .50 TESTABLE W3 55% / W4 50% (point .52); K floor >= .70 TESTABLE W3 88% / W4 85%.
+9. Gated PRIMARY (SR 80 / 82 rule): DISSOCIATION SHOWN W3 12% / W4 12%; PARTIAL W3 10% / W4 10%; NOT SHOWN W3 38% / W4 38%; UNTESTABLE the rest (40%).
+10. F7 pool full_W: W3 .70 (.50-.80), W4 .68 (.48-.80); above frozen I (.350) 92% / 90%; above W1's .656 in the point: W3 65% / W4 55%.
+11. W4 - W3 (no label): K1-K6 W4 below W3 in the point 70%; N1-N6 within +-.05 60%.
+Counter-evidence for the principle (stated now): K1-K6 under W3 still COST (upper < -.05) AND K3 / K5 each below .40; or F6_b under W3 below .15 (the fix reverts F6_b to RAA-sL).
+Evidence for: B1 SUPPORTED with F6_b above .35 AND primary-A not REVERSED AND AK NON-INFERIOR.  Evidence for a partial result: B1 SUPPORTED with F6_b above .35 AND K1-K6 point above W1's .528 + .15.

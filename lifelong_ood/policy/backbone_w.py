@@ -27,6 +27,7 @@ from .raas_model import EPS, NORM, ROLE_TARGET
 
 D_SAT = 0.02            # m: distance at which the saturating controller reaches max_step
 REL_RELEASE = 0.02      # m: W2 blocks a release while |rel_xy| exceeds this
+CLEAR = 0.03            # m: SR 85 (W3 / W4): the module owns xy only once the held object is >= CLEAR above the target's reference height (docs/notes/raasw3_plan.md)
 
 
 def k_w(servo_max):
@@ -41,7 +42,7 @@ def _grip_norm():
 def where_own_apply(x, state, cfg, mode, gq, A, H, kw=None, return_info=False):
     """x [n, H * A] float tensor = PolicyBackbone.sample(full=True) output; state [b, 32] normalised prefix state (b = 1 or n);
     cfg the servo config (st_q01 .., act_q01 .., servo_max); mode 1 | 2; gq = (q01, q99) of action dim 6.  -> new x (same shape), info dict."""
-    assert mode in (1, 2), mode
+    assert mode in (1, 2, 3, 4), mode
     kw = k_w(cfg.servo_max) if kw is None else float(kw)
     dev = x.device
     q01, q99 = (torch.tensor(v, dtype=torch.float32, device=dev) for v in (cfg.st_q01, cfg.st_q99))
@@ -54,17 +55,19 @@ def where_own_apply(x, state, cfg, mode, gq, A, H, kw=None, return_info=False):
     y = x.reshape(n, H, A).clone()
     mm = m.reshape(-1, 1, 1).expand(n, 1, 1) if m.numel() in (1, n) else None
     assert mm is not None, (m.shape, n)
-    y[:, :, :2] = torch.where(mm, sn.reshape(-1, 1, 2).expand(n, H, 2).to(y.dtype), y[:, :, :2])
+    clear = (-raw[..., 2]) >= CLEAR                                                      # [b] SR 85: the held object is >= CLEAR above the target's reference height (channel dz = target - object)
+    own = (m & clear).reshape(-1, 1, 1).expand(n, 1, 1) if mode in (3, 4) else mm      # who owns xy: modes 1, 2 = whenever held (SR 84, unchanged); modes 3, 4 = held AND clear
+    y[:, :, :2] = torch.where(own, sn.reshape(-1, 1, 2).expand(n, H, 2).to(y.dtype), y[:, :, :2])
     relxy = torch.linalg.norm(raw[..., :2], dim=-1)                                      # [b] metres
     fired = torch.zeros((), dtype=torch.bool, device=dev)
-    if mode == 2:
+    if mode in (2, 4):                                                                   # mode 4's gate is mode 2's gate, unchanged (held and |rel_xy| > 2 cm), also where the expert owns xy
         g01, g99 = gq
         graw = (y[:, :, 6] + 1.0) / 2.0 * (g99 - g01 + EPS) + g01
         closed = (1.0 - g01) / (g99 - g01 + EPS) * 2.0 - 1.0                              # normalised value of the raw closed command +1 (demos: held-frame gripper mean .94-.96)
         gate = mm[:, :, 0] & (relxy.reshape(-1, 1).expand(n, 1) > REL_RELEASE) & (graw < 0.0)
         fired = gate.any()
         y[:, :, 6] = torch.where(gate, torch.full_like(y[:, :, 6], closed), y[:, :, 6])
-    info = dict(m=bool(m.any()), rel_xy=float(relxy[0]), gate=bool(fired))
+    info = dict(m=bool(m.any()), rel_xy=float(relxy[0]), gate=bool(fired), c=float(-raw[0, 2]), own=bool(own.reshape(-1)[0]))
     out = y.reshape(n, H * A)
     return (out, info) if return_info else out
 
@@ -74,7 +77,7 @@ class PolicyBackboneW(PolicyBackbone):
 
     def __init__(self, *a, where_own=1, log_path=None, **kw):
         super().__init__(*a, **kw)
-        assert where_own in (1, 2), where_own
+        assert where_own in (1, 2, 3, 4), where_own
         assert float(getattr(self.model.config, "servo_k", 0.0) or 0.0) != 0.0, "where_own needs a servo config (RAA-s family)"
         self.where_own = int(where_own)
         self.log_path = log_path
