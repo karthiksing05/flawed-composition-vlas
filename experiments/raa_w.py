@@ -356,7 +356,7 @@ if __name__ == "__main__":
         ap.add_argument("--seg-ckpt", dest="seg_ckpt", default="")
         ap.add_argument("--diag", default="", help="raa: the learned masks' IoU log (sc_seg.LearnedMasks)")
         ap.add_argument("--chan-diag", dest="chan_diag", default="", help="per-query channel error vs simulator truth (jsonl)")
-        ap.add_argument("--where_own", type=int, default=0, choices=(0, 1, 2, 3, 4), help="SR 84 / 85: 0 = plain PolicyBackbone (unchanged path); 1 = W1 (xy owned by the module); 2 = W2 (W1 + release gate); 3 = W3 (xy owned once the object is >= CLEAR above the target); 4 = W4 (W3 + release gate)")
+        ap.add_argument("--where_own", type=int, default=0, choices=(0, 1, 2, 3, 4, 5, 6, 7), help="SR 84 / 85 / 87: 0 = plain PolicyBackbone (unchanged path); 1 = W1; 2 = W2; 3 = W3; 4 = W4; 5 = W5 (W4 + C1 release-point aim + C2 handoff radius); 6 = W5c2 (W4 + C2 only); 7 = W5c1 (W4 + C1 only)")
         ap.add_argument("--where_log", default="", help="per-sample jsonl of the SR 84 branch")
         serve_cmd(ap.parse_args())
     else:

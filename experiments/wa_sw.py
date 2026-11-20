@@ -593,7 +593,7 @@ if __name__ == "__main__":
         ap.add_argument("--seg-ckpt", dest="seg_ckpt", default="")
         ap.add_argument("--diag", default="")
         ap.add_argument("--chan-diag", dest="chan_diag", default="")
-        ap.add_argument("--where_own", type=int, default=0, choices=(0, 1, 2, 3, 4), help="SR 84 / 85: 0 = plain PolicyBackbone (unchanged path); 1 = W1; 2 = W2; 3 = W3; 4 = W4")
+        ap.add_argument("--where_own", type=int, default=0, choices=(0, 1, 2, 3, 4, 5, 6, 7), help="SR 84 / 85 / 87: 0 = plain PolicyBackbone (unchanged path); 1 = W1; 2 = W2; 3 = W3; 4 = W4; 5 = W5; 6 = W5c2; 7 = W5c1")
         ap.add_argument("--where_log", default="", help="per-sample jsonl of the SR 84 branch")
         serve_cmd(ap.parse_args())
     else:

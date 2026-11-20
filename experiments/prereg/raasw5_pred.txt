@@ -1,0 +1,23 @@
+RAA-sL-W5 / W5c2 / W5c1 (SR 87): test-time-only variants of the RAA-sL checkpoint (pi05_g8v_raas_l_ae main/6000; no training), confirmatory run on FRESH start states (Phase A: n2 familiar states k = 580-639, harness trials 0-59; Phase B: rg_comp_x
+fresh F7 k = 380+, F6 k = 500+, 60 main states per cell).  W5 = W4's module (own xy while held and c >= 3 cm; open -> closed gate) + C1 (aim at mu_class, the training demos' median release point of the target class, instead of the target reference) + C2
+(own xy only while |rel - mu| > R = 3 cm; the release gate measured from mu with radius R = 3 cm).  W5c2 = W4 + C2 (mu = 0), W5c1 = W4 + C1 (no R, gate 2 cm).
+Written 2026-11-20 BEFORE the prereg row and any W5 / W5c2 / W5c1 / fresh-state baseline rollout.  Known when written: SR 82 / 84 / 85 results (on the old states: RAA-sL N1-N6 .878, K1-K6 .936, K5 .683, controls .600, F6_a .983, F7 pool .744, F6_b .017; W4 N1-N6 .928, K1-K6 .819,
+K5 .067, controls .467, F6_a .900, F7 pool .669, F6_b .867; rgp N1-N6 .897; frozen I F6_b .517) and the SR 86 diagnostic (exploratory, 20 K5 states; Q2 flip tables).  mu table = SR 86's table (computed from the training demos only).  Fresh states differ from the old ones: baselines are
+re-rolled, so levels below are for the fresh states and carry the sampling noise of 60 states (about +-.04 on a cell near .9, +-.10 near .5).
+
+Predictions (probabilities are mine).
+1. Phase A, N1-N6 (W5; RAA-sL re-rolled; the cells are near ceiling, C1 / C2 should not move them).  Point W5 .90 (.80-.96); RAA-sL .88 (.80-.94).  A1 W5 - RAA-sL: SUPPORTED 12%, REVERSED 3%, NOT SUPPORTED 85%.
+2. A2a W5 - rgp NON-INFERIOR (lower > -.10) 82%; A2b W5 beats rgp (lower > 0) 5%.
+3. K cells.  K5 (rack): W5 .50 (.05-.80), W5c2 .07 (0-.35: aiming at the reference with the module only until 3 cm from it still parks the wrist on the rack), W5c1 .40 (0-.75), W4 .07 (0-.35), RAA-sL .68 (.50-.85).  K3 W5 .93, K4 W5 .95, K1 .95, K2 1.0, K6 .95 (each within .08 of RAA-sL).
+   K1-K6: W5 .89 (.70-.97), W5c2 .81, W5c1 .86, W4 .82, RAA-sL .94.  AK W5 - RAA-sL: NON-INFERIOR (lower > -.05) 33%, COST (upper < 0) 5%, NOT SHOWN 62%.  (With K5 at -.18 vs RAA-sL, the task-resampled interval reaches about -.08: NI needs K5 above ~.60.)
+   A3 W5 - W4, K1-K6: SUPPORTED 25% (power: K5 is absent from a third of the draws), NOT SUPPORTED 73%, REVERSED 2%.  K5 alone W5 - W4 (X2, unlabelled): lower bound > 0 with probability 82%.  W5 K5 above W5c2 K5 by more than .20: 80%.
+4. N cells: N3 (cabinet top) W5 .85 (.70-.95); N1, N2, N5 >= .95 each; N4 .85; N6 .85.  W5 - W4 on N1-N6 within +-.05: 85%.
+5. Phase B, full arm.  F6_b: W5 .80 (.55-.93), W4 .85, RAA-sL .05 (0-.25), frozen I .50 (.35-.65).  B1 (W5 - RAA-sL, F6_b) SUPPORTED 95%.  B2 (W5 - I, F6_b) SUPPORTED 50%, REVERSED 3%.  F6_b W5 below W4's old .867 in the point: 55%.
+6. D2' (full - noM, F6_b) SUPPORTED 75%, REVERSED 2%.  D1' (full - noR, F7 pool) SUPPORTED 95%.  D3a (noR - full, F6_b) EQUIVALENT 55%.  D3b (noM - full, F7 pool) EQUIVALENT 55%.  DK (full - noR, K1t + K2t) NON-INFERIOR 85%.
+7. Gates (full W5): F6_a >= .50 TESTABLE 97% (point .93, .82-.98); unique-name controls >= .50 TESTABLE 65% (point .55, .38-.65; RAA-sL .60, W4 .47); K floor >= .70 TESTABLE 95%.
+8. Gated PRIMARY (W5): DISSOCIATION SHOWN 18%, UNTESTABLE 12%, PARTIAL 48%, NOT SHOWN 22%.
+9. C2 attribution (W5c2 - W4; descriptive): unique-name controls above W4 in the point 80%, F6_a above W4 in the point 70%, F7 pool above W4 in the point 70%; F6_b W5c2 below W4 in the point 55%.  C1 attribution: W5 above W5c2 on K5 by > .20 80%; W5 above W5c2 on the controls in the point 50%.
+   W5 vs RAA-sL on controls / F6_a / F7 pool: W5 closer to RAA-sL than W4 is on each in the point: 70% / 65% / 65%.  F7 pool W5 .72 (.60-.80), RAA-sL .74, W4 .67; I .35.
+10. Overall: the fix is judged by AK (non-inferior on K1-K6 without losing A1 / B1): both AK NON-INFERIOR and B1 SUPPORTED and A1 not REVERSED 31%; K5 W5 >= .40 (the K5 stall resolved at least half-way) 68%; controls TESTABLE 65%.
+Counter-evidence (stated now): W5 K5 below .20 (C1 does not resolve the K5 stall) or W5 controls below .45 (C2 does not resolve the F7 losses) or F6_b W5 below .30 (the fix reverts).  Evidence for: AK NON-INFERIOR and B1 SUPPORTED and A1 not REVERSED and controls TESTABLE.
+Evidence for a partial result: K5 W5 - W4 lower > 0 (X2) AND controls W5c2 above W4 in the point AND B1 SUPPORTED, with AK not NON-INFERIOR.
