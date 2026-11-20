@@ -53,7 +53,7 @@ def selftest(a):
     d = RR.diff(G["raasl"], G["raasb"], "mean")
     w = want["P1 RAA-sL - RAA-s(78b), success, N1-N6"]
     assert abs(d["delta"] - w["delta"]) < 1e-9 and np.allclose(d["ci"], w["ci"]), "does not reproduce SR 82's P1"
-    G1 = RR.grid(meta, "raasw1", RR.NEW, trials, "succ")
+    G1 = (RR.grid(meta, "raasw1", RR.NEW, trials, "succ"), RR.grid(meta, "raasw1", RR.NEW, trials, "bound"))
     d = RR.diff(G1, G["raasl"], "mean")
     w = json.load(open(os.path.join(OUT, "raasw_read.json"), encoding="utf-8"))["verdicts"]["A1 PRIMARY-A W1 - RAA-sL, success, N1-N6"]
     assert abs(d["delta"] - w["delta"]) < 1e-9 and np.allclose(d["ci"], w["ci"]), "does not reproduce SR 84's A1 (W1)"
