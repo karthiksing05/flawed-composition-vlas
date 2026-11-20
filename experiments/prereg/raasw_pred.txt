@@ -1,0 +1,35 @@
+RAA-sL-W (SR 84): a test-time-only variant of RAA-sL (checkpoint pi05_g8v_raas_l_ae main/6000, SR 82; no training) in which the WHERE of transport is owned entirely by the
+role module: while a target is held (role id 2) the action's xy come only from a saturating servo toward target_rel (the flow expert's xy is dropped); the expert keeps z, rotation,
+gripper.  W1 = xy only; W2 = W1 + a release gate (an open gripper command is replaced by closed while |rel_xy| > 2 cm).
+Written 2026-11-19 BEFORE the prereg row and any main rollout of W1 / W2.  Known when written: SR 82 (RAA-sL N1-N6 .878, K1-K6 .936, bottle .883; per cell N1 .817 N2 .967 N3 .833 N4 .883
+N5 1.000 N6 .767 K5 .683; Phase B full F7 .744, F6_b .017, F6_a .983, controls .600, K floor .9625; noM F6_b .383; rgp N1-N6 .897; frozen I F6_b .517), and the SR 82 diagnostic: on F6_b
+the channel is right (median 1.3 cm), the expert's xy opposes the servo near the target (cos -.6 to -.9) and releases 3-6 cm short because the cover hides the plate; K = 2.85/m
+gives .09 at 3.5 cm.  The controller constant K_w = servo_max / 0.02 m = .9375 / .02 = 46.875 per m is fixed in docs/notes/raasw_plan.md before any read (not tuned on any cell).
+
+Hypothesis (one).  F6_b fails because the expert, not the channel, owns the last centimetres.  Removing the expert's xy while a target is held (W1) and, separately, removing its
+power to release early (W2) should recover F6_b.  Against that, and the reason Phase A is registered as a risk: the same removal takes the expert's xy shaping away on EVERY cell:
+the demos move the held object up before they move it sideways (z is the expert's, but the xy now starts at once and at up to the demos' p99 speed, .94 of full scale from 2 cm out),
+obstacles are avoided by the expert's xy and not by the servo, and a saturating servo in an open-loop 5-step replan chunk can overshoot a 2 cm target (a step at the clip moves the
+object several cm).  RAA-sL is already .878 on N1-N6 (ceiling .12), so a gain on Phase A is small even if the idea is right, and the losses can be large.
+
+Predictions (probabilities are mine; W1 / W2 where two numbers).
+1. Phase A primary-A (W - RAA-sL, N1-N6 success): SUPPORTED (lower > 0) W1 5% / W2 6%; REVERSED (upper < 0) W1 40% / W2 38%; NOT SUPPORTED the rest (W1 55% / W2 56%).
+   Point estimate N1-N6: W1 .76 (range .45-.90), W2 .75 (.45-.90).  Dragging the held object sideways at once and overshooting are the failure paths.
+2. W vs rgp (.897): NON-INFERIOR (lower > -.10) W1 22% / W2 22%; beats rgp 1% / 1%.
+3. WK (W - RAA-sL on K1-K6, non-inferior at -.05): W1 30% / W2 30%.  K1-K6 point W1 .85 (.55-.96).  K5 (release far from target, .683 now) is the cell where W could help, 35% of a point above .683.
+4. Fit gate R0 (K1-K6 >= .80, an old read): holds 99%.
+5. Phase B (full arm).  F6_b point: W1 .15 (0-.50), W2 .30 (.02-.65).  B1 (full_W - full RAA-sL .017, F6_b): SUPPORTED W1 60% / W2 75%.  Against frozen I (.517): full_W F6_b above I with a
+   lower bound > 0: W1 4% / W2 9%.  W2 above W1 on F6_b in the point 70%.  The expert may still release on its own schedule under W1 (the release is the gripper dim, which is still
+   the expert's), which is why I expect W2 > W1.
+6. D2' (full_W - noM_W on F6_b): noM never engages the module (zero state, m = 0), so noM_W is the same code path as SR 82's noM (.383) and should replicate it state by state
+   (identical in at least 90% of the 60 states: 70%).  D2' SUPPORTED needs full_W above about .50: W1 10% / W2 18%; REVERSED (noM above full, as SR 82's -.367) W1 55% / W2 40%.
+7. D1' (full_W - noR_W on F7 pool): SUPPORTED W1 70% / W2 68% (SR 82 +.319).  D3a (noR - full, F6_b): EQUIVALENT W1 55% / W2 45% (SR 82: identical, R not engaged; under W both arms
+   run the same path, so identical states are likely, but F6_b is no longer at the floor and a single changed state moves the CI).  D3b (noM - full, F7): EQUIVALENT W1 45% / W2 40%.
+   DK (full_W - noR_W, K1t + K2t): NON-INFERIOR 75% / 72%.
+8. Gates (full_W only): F6_a >= .50 TESTABLE W1 88% / W2 88% (F6_a point .90, range .60-1.00); unique-name controls >= .50 W1 50% / W2 50% (point .50, .25-.70); K floor >= .70 W1 80% / W2 80%.
+9. Gated PRIMARY (SR 80 rule): DISSOCIATION SHOWN W1 2% / W2 5%; PARTIAL W1 6% / W2 9%; NOT SHOWN W1 70% / W2 66%; UNTESTABLE the rest.
+10. F7 pool full_W: W1 .62 (.35-.78), W2 .64 (.35-.78); above frozen I (.350) 80% / 80%.
+11. Exploratory (no label): F6_b release xy error median (last held query before the release) under W2 below 3 cm 55%, under W1 40%; N4 / N6 release error not worse than SR 82 (4.95 / 2.60 cm
+    on 1 / 3 failed releases, uninformative) is not predicted.
+Counter-evidence for the hypothesis (stated now): F6_b under W2 still below .15, or Phase A N1-N6 REVERSED with F6_b above RAA-sL (the remedy is local but its Phase A cost makes it unusable).
+Evidence for: B1 SUPPORTED with F6_b above .35 AND primary-A not REVERSED AND WK non-inferior.
