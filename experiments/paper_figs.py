@@ -3,7 +3,7 @@
 Reads only committed result JSONs under results/flawed/ and numbers that exist only
 in doc tables (Table 1 of paper/DRAFT.md, which cites docs/ARCH_FAILURES.md and
 docs/SCAFFOLD_RESULTS.md).  Every hard-coded number carries its source in a comment.
-Run on a compute node:  python experiments/paper_figs.py   (numpy + matplotlib only).
+Run on a compute node:  python experiments/paper_figs.py   (numpy + matplotlib; fig_arms reads per-episode rollouts via raa_read machinery).
 """
 import json
 import math
@@ -181,6 +181,31 @@ def fig_arms():
     N = ["N1", "N2", "N3", "N4", "N5", "N6"]
     K = ["K1", "K2", "K3", "K4", "K5", "K6"]
     cache = {}
+    # Per-episode rollouts: results/flawed/raa/<stem>_{main,rx}_<tid>.json, loaded through the
+    # registered read machinery (experiments/raa_read.py grid(); raasl_read registers every arm).
+    import raasl_read as RSL  # noqa: E402  (registers raao, raac, raasb, raal, raasl in RR.ARMS)
+    RR = RSL.RR
+    meta = RR.n2()
+    trials = RR.DEV + RR.NEWS
+    B = 2000
+
+    def cboot(g, seed=0):
+        """g [tasks, states] of 0/1.  Cluster bootstrap, B draws, rng seed 0: resample tasks,
+        then states within each drawn task.  Returns pooled (mean, lo, hi) and per-task
+        (mean, lo, hi) (per-task = states resampled within the task)."""
+        rng = np.random.default_rng(seed)
+        nt, ns = g.shape
+        ts = rng.integers(0, nt, (B, nt))
+        ss = rng.integers(0, ns, (B, nt, ns))
+        pool = g[ts[:, :, None], ss].mean(axis=(1, 2))
+        sp = rng.integers(0, ns, (B, nt, ns))
+        per = g[np.arange(nt)[None, :, None], sp].mean(axis=2)  # [B, nt]
+        q = lambda a, ax=0: (np.percentile(a, 2.5, axis=ax), np.percentile(a, 97.5, axis=ax))
+        pl, ph = q(pool)
+        tl, th = q(per)
+        return (float(g.mean()), float(pl), float(ph)), [(float(g[k].mean()), float(tl[k]), float(th[k]))
+                                                         for k in range(nt)]
+
     fig, axes = plt.subplots(2, 1, figsize=(7.4, 5.4), sharey=True)
     fig.subplots_adjust(hspace=0.4)
     for ax, tasks, pool, title in ((axes[0], N, "N", "New pairings N1-N6"),
@@ -194,12 +219,16 @@ def fig_arms():
             if fn not in cache:
                 cache[fn] = jload(fn)
             d = cache[fn]
-            n = len(d["states"]["dev"]) + len(d["states"]["new"])
-            vals = [d["per_task"]["%s|%s" % (key, t)]["success"] for t in tasks]
-            pooled = d["success"]["%s|%s" % (key, pool)]
-            vals.append(pooled)
-            ns = [n] * len(tasks) + [n * len(tasks)]
-            lo, hi = zip(*[wilson(v * m, m) for v, m in zip(vals, ns)])
+            g = RR.grid(meta, key, tasks, trials, "succ")
+            (pv, plo, phi), per = cboot(g)
+            # the episode grid must reproduce the registered point estimates
+            for t, (v, _, _) in zip(tasks, per):
+                assert abs(v - d["per_task"]["%s|%s" % (key, t)]["success"]) < 1e-9, (arm, t)
+            assert abs(pv - d["success"]["%s|%s" % (key, pool)]) < 1e-9, (arm, pool)
+            vals = [p[0] for p in per] + [pv]
+            lo = [p[1] for p in per] + [plo]
+            hi = [p[2] for p in per] + [phi]
+            print("fig_arms", arm, pool, "pooled %.3f [%.3f, %.3f]" % (pv, plo, phi), "states", g.shape[1], flush=True)
             lab, col, mk, filled = ARM[arm]
             xx = xs + (i - (na - 1) / 2) * w
             ax.errorbar(xx, vals, yerr=[np.array(vals) - np.array(lo), np.array(hi) - np.array(vals)],
@@ -218,35 +247,54 @@ def fig_arms():
 
 # =================================================================== fig 3
 def fig_removal():
+    from matplotlib.patches import Patch
+    from matplotlib.lines import Line2D
     files = [("SR 80  RAA-L", "raal_wa_read.json", ARM["raal"][1]),
              ("SR 82  RAA-sL", "raasl_wa_read.json", ARM["raasl"][1])]
     data = [(lab, jload(fn), col) for lab, fn, col in files]
-    panels = [("D1  F7 relational: full vs noR", "F7", "noR", "remove resolver R"),
-              ("D2  F6 hidden target: full vs noM", "F6_b", "noM", "remove pose memory M")]
-    fig, axes = plt.subplots(1, 2, figsize=(6.6, 2.7), sharey=True)
-    for ax, (title, cell, rem, rem_lab) in zip(axes, panels):
-        for gi, (lab, d, col) in enumerate(data):
+    # SR 87 fresh states: RAA-sL-W5 (results/flawed/raasw5_wa_read_w5.json; the registered gated
+    # primary in raasw5_wa_gated.json must agree).
+    w5 = jload("raasw5_wa_read_w5.json")
+    gated = jload("raasw5_wa_gated.json")["W5"]
+    assert w5["primary"] == gated["primary_gated"] == "DISSOCIATION SHOWN"
+    fresh = [("SR 87  RAA-sL-W5", w5, ARM["raasl"][1])]
+    # (title, cell name in SR 80/82 reads, cell name in SR 87 read, removed arm, label)
+    panels = [("D1  F7 relational: full vs noR", "F7", "F7", "noR", "remove resolver R"),
+              ("D2  F6 hidden target: full vs noM", "F6_b", "F6_b", "noM", "remove pose memory M")]
+    fig, axes = plt.subplots(2, 2, figsize=(6.6, 5.0), sharey=True,
+                             gridspec_kw={"width_ratios": [1, 1], "hspace": 0.55})
+
+    def draw(ax, grp, cell, rem, title):
+        for gi, (lab, d, col) in enumerate(grp):
             for j, (arm, hatch, alpha) in enumerate((("full", None, 1.0), (rem, "////", 0.55))):
                 v, lo, hi = d["success"]["%s|%s" % (arm, cell)]
                 x = gi + (j - 0.5) * 0.36
-                ax.bar(x, v, width=0.34, color=col, alpha=alpha, hatch=hatch, edgecolor="white" if hatch is None else col,
-                       linewidth=0.5)
+                ax.bar(x, v, width=0.34, color=col, alpha=alpha, hatch=hatch,
+                       edgecolor="white" if hatch is None else col, linewidth=0.5)
                 ax.errorbar(x, v, yerr=[[v - lo], [hi - v]], color="k", capsize=2, lw=0.9)
-        # frozen pi0.5 reference (the I arm in the same read)
-        ref = data[0][1]["success"]["I|%s" % cell]
+        ref = grp[0][1]["success"]["I|%s" % cell]  # frozen pi0.5 (the I arm in the same read)
         ax.axhline(ref[0], color=GREY, lw=1.4, ls="--")
         ax.axhspan(ref[1], ref[2], color=GREY, alpha=0.15, lw=0)
-        ax.set_xticks([0, 1])
-        ax.set_xticklabels([l for l, _, _ in data])
-        ax.set_xlim(-0.55, 1.65)
+        ax.set_xticks(range(len(grp)))
+        ax.set_xticklabels([l for l, _, _ in grp])
+        ax.set_xlim(-0.55, len(grp) - 0.35)
         ax.set_title(title, loc="left")
         ax.set_ylim(0, 1.0)
-        ax.bar([], [], color="#555555", label="full")
-        ax.bar([], [], color="#555555", alpha=0.55, hatch="////", label=rem_lab)
-        ax.plot([], [], color=GREY, lw=1.4, ls="--", label="frozen pi0.5")
-        ax.legend(loc="upper right", frameon=False, handlelength=1.4, fontsize=7)
-    axes[0].set_ylabel("success")
-    # sanity: both reads must carry the same frozen reference
+
+    for ax, (title, cell, cell5, rem, rem_lab) in zip(axes[0], panels):
+        draw(ax, data, cell, rem, title)
+    for ax, (title, cell, cell5, rem, rem_lab) in zip(axes[1], panels):
+        draw(ax, fresh, cell5, rem, title.replace("  ", "'  ", 1).replace(" full vs", "") + " (fresh)")
+    sw = [Patch(facecolor="#555555", edgecolor="white", label="full"),
+          Patch(facecolor="#555555", alpha=0.55, hatch="////", edgecolor="#555555",
+                label="remove module (R in D1, M in D2)"),
+          Line2D([], [], color=GREY, lw=1.4, ls="--", label="frozen pi0.5")]
+    fig.legend(handles=sw, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.03))
+    axes[0][0].set_ylabel("success")
+    axes[1][0].set_ylabel("success")
+    fig.text(0.5, 0.485, "Fresh states (SR 87): RAA-sL-W5, registered 95% intervals", ha="center", fontsize=8,
+             fontweight="bold")
+    # sanity: both registered reads must carry the same frozen reference
     for cell in ("F7", "F6_b"):
         a = data[0][1]["success"]["I|%s" % cell][0]
         b = data[1][1]["success"]["I|%s" % cell][0]
