@@ -1,0 +1,37 @@
+A2 distributedness probe (SR 83; docs/PLAN_PAPER.md W2 / A2; docs/notes/a2_plan.md).  Open-loop activation patching and band ablation on recorded model inputs of
+frozen pi0.5 (pi05_libero) and RAA-sL (pi05_g8v_raas_l_ae main6000), F7 / N / K sets, no training.
+Written 2026-11-19 BEFORE the prereg row, any main capture and any main probe.
+
+Known when written: SR 74 (intact policies steer in the place phase at .33-.55 on the angle rule, the angle rule has a .22-.28 floor), SR 70 / 79 / 82 (frozen pi0.5 F7 relL .85 / relR 0;
+RAA-sL F7 pool .744, noR .425, noM .738), SR 82 channel logs (the object / target role is within 1 / 2 cm), the replay checks of the smoke (the open-loop replay of the served chunk
+differs by .002-.006 in chunk units = bf16 / batch noise; identity patches differ by .001-.004), the smoke capture of 4 episodes per model per route and a probe smoke of 5 observations per
+model (plumbing numbers only; one smoke jsonl record of K1_fam trial 4 (pi0.5) with the d5 values of the true and three counterfactual chunks was printed once in a head of the file).
+Not known: any effect share, any ablation drop, any set size beyond the smoke.
+
+Claim under test (one).  In frozen pi0.5 the computation that binds the instruction's role word to a scene entity is DISTRIBUTED over many components (no single component carries it,
+band ablations are unselective across F7 / N / K).  In RAA-sL the same binding is LOCALISED in the role channel (the 4-dim state token and the servo input).
+
+Registered statistics (docs/notes/a2_plan.md; experiments/a2_read.py).  On the 72 layer writes U1 (vlm and expert x 18 layers x attn / mlp, all positions): e_c = mean effect on the
+steering score toward the counterfactual entity, e+ = max(e_c, 0); PR = (sum e+)^2 / sum e+^2, PRn = PR / 72; top1, top3 share of sum e+; coverage = sum e+ / T.  RAA-sL: chan_share =
+effect of patching the state token + servo input from the counterfactual run / T.  Selectivity: sel(b, s) = drop(b, s) - drop(b, K), drop = relative loss of the correct-target
+displacement; SELECTIVE if the CI lower bound > .2.  Gate: the total effect T has CI lower bound > 0, else UNTESTABLE for that set.  Paired bootstrap B = 2000, rng 0, CIs 95%.
+
+Predictions (probability of the registered label).
+ 1. Gate.  Pooled T lower bound > 0 for pi0.5: 85%.  For RAA-sL: 90%.  F7 alone for pi0.5 (the model largely ignores left / right: relR 0): T lower bound > 0: 35%.  F7 alone for RAA-sL: 75%.
+ 2. pi0.5 distributed (registered form of 'PR high, top-1 < .3'), pooled.  top1 CI upper bound < .3: 40%.  top1 point < .3: 55%.  PRn CI lower bound >= .2: 35%.  Both: 28%.
+    top1 CI lower bound >= .5 (localised, the claim REVERSED): 12%.  My expectation for the point: top1 about .25 (.10-.55), PRn about .22 (.06-.45), coverage (sum e+ / T) about .8 (.3-2.0):
+    the largest single layer write sits in the late expert or late VLM layers.
+ 3. pi0.5 mass: the share of sum e+ in the action expert is above the VLM's: 55%.
+ 4. RAA-sL channel (pooled).  chan_share CI lower bound >= .7: 40%; point >= .7: 55%; point about .7 (.3-1.0).  Held-phase sets (N, K) higher than F7: 85% (the servo term is zero before the hold, so F7
+    rests on the token alone); F7 alone chan_share lower bound >= .7: 12%.
+ 5. RAA-sL top1 in U1 (the channel is outside U1): top1 CI upper < .3: 35%; RAA-sL PRn lower than pi0.5's: 45% (no registered label).
+ 6. Selectivity matrices.  pi0.5: zero SELECTIVE cells among the informative (band x {F7, N}) cells (the registered 'distributed' form): 60%; at least 3 SELECTIVE cells: 15%.  The F7 intact cell for
+    pi0.5 is informative (intact correct-target displacement CI lower bound > 0): 45%; the N cell: 55%.
+    RAA-sL: abl.chan SELECTIVE for N (sel lower bound > .2): 35%; for F7: 20%; both: 12%; abl.chan INVERSE (hits K more than N or F7): 12%.  abl.servo SELECTIVE for N: 30%.
+ 7. Overall.  The claim as stated (pi0.5 distributed on both top1 and PRn, no selective band, AND RAA-sL chan_share lower bound >= .7): 8%.  Either half alone as registered: pi0.5 half 22%,
+    RAA-sL half 30%.
+ 8. Plumbing (not scored as science): replay of the served chunk within .01 on every observation 95%; identity patches within .01 of the reference 95%; at least 40 observations per set
+    after the equal-token-length filter for N and K (12 per task x 4 tasks = 48): 65%; F7 40 observations: 90%.
+
+Evidence for the claim: pi0.5 top1 CI upper < .3 and PRn lower >= .2 with a zero SELECTIVE-cell matrix, and RAA-sL chan_share lower >= .7 with abl.chan SELECTIVE for N.  Counter-evidence: a
+single pi0.5 component with top1 CI lower >= .5, or RAA-sL chan_share CI upper < .3.  Anything else is reported as NOT SUPPORTED for the half it concerns.
