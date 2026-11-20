@@ -1,0 +1,26 @@
+RAA-sL-W6 / W6nl (SR 90): test-time-only variants of the RAA-sL checkpoint (pi05_g8v_raas_l_ae main/6000; no training), confirmatory run on the THIRD fresh start-state set (Phase A: n2 familiar states k = 640-699, harness trials 0-59;
+Phase B: rg_comp_y fresh F7 candidates k = 520-599, F6 candidates k = 620-699, first 4 accepted smoke / unused, next 60 main per cell).  W6 = W5c1 (C1: servo and gate measured from mu_class; W4's CLEAR) + envelope hand-off (the module owns xy
+and the release gate while the held object is OUTSIDE the class's demo release envelope: c > h_class OR |rel_xy - mu| > r_class; inside, RAA-sL's chunk) + target latch (the target estimate is latched at carry start; a later estimate is accepted
+only if it moves <= tau = the p99 5-step change of the target pose over the training demos; else the latched value stays).  W6nl = W6 without the latch.  Constants (lifelong_ood/policy/raasw6_env.json, training demos only, committed before any rollout):
+h_class (cm): bowl 9.21, cabinet 1.51, plate 1.38, rack 0.36, stove 3.99;  r_class (cm): bowl 2.67, cabinet 4.44, plate 1.64, rack 4.42, stove 2.82;  tau 0.437 cm.  NOT implemented (future): SR 88 change 2 (demo speed profile).
+Written 2026-11-20 BEFORE the prereg row and any W6 / W6nl / third-fresh-state rollout.  Known when written: SR 82 / 84 / 85 / 87 results, the SR 88 diagnostic (instrumented replays of SR 87 episodes: development states), the constants above.
+Reference levels (SR 87 second-fresh states, one seed): W5 N1-N6 .892, RAA-sL .875, rgp .914; K1-K6 W5 .947, RAA-sL .939; N4 W5 .717 / W4 .850 / W5c1 .700; N6 W5 .767 / W5c1 .850; K6 W5 .833 / W5c1 .933 / RAA-sL 1.0; K1 W5 .917;
+K5 W5 .950 / W5c1 .800 / RAA-sL .650; F6_b W5 .650 / W5c1 .783 / W4 .750 / I .667 / RAA-sL .067; controls W5 .572 (RAA-sL .667); F6_a W5 .900.  New states carry the sampling noise of 60 states (about +-.04 near .9, +-.10 near .5).
+Mechanical facts used (not predictions): for plate / cabinet / rack / stove h_class < 4 cm, so with W4's CLEAR (c >= 3 cm) W6's ownership equals W5c1's for the plate (1.4), cabinet (1.5) and rack (0.4) and differs only for the stove (3.99: owns up to c = 3.99 + ...) and the bowl (h 9.2 cm: the module hands off at c <= 9.2 cm, SR 87 hand-offs were at 9-10 cm);
+the release gate is the envelope for every class (blocks open commands while c > h_class or |rel - mu| > r_class), unlike W5c1's 2 cm xy gate.
+
+Predictions (probabilities are mine).
+1. Phase A, N1-N6.  W6 .89 (.80-.95), RAA-sL .88 (.80-.94), W5 .89, rgp .91.  A1 W6 - RAA-sL: SUPPORTED 12%, REVERSED 6%, NOT SUPPORTED 82%.
+2. A2a W6 - rgp NON-INFERIOR (lower > -.10) 65% (W5 failed it at -.114); A2b W6 beats rgp (lower > 0) 4%.
+3. K cells.  K1-K6: W6 .93 (.82-.98), W5 .93, W5c1 .91, RAA-sL .94.  AK W6 - RAA-sL: NON-INFERIOR (lower > -.05) 22%, COST (upper < 0) 8%, NOT SHOWN 70%.
+   Per cell: K5 W6 .82 (.55-.97; W5c1 .80, W5 .95, RAA-sL .65); K6 W6 .90 (.75-.97); K1 W6 .93 (.83-1.0).
+4. A4 W6 - W5 on N1-N6: SUPPORTED 25%, REVERSED 3%, NOT SUPPORTED 72%.  N4 W6 .78 (.58-.90) above W5 in the point 70%; N6 W6 .82 (.65-.93) above W5 in the point 65%.
+5. L W6 - W6nl on N1-N6 (the latch): SUPPORTED 12%, REVERSED 5%, NOT SUPPORTED 83%; N6 W6 above W6nl in the point 60%.
+6. Phase B, full arm.  F6_b: W6 .70 (.45-.88), W5 .65, W5c1 .78, RAA-sL .07 (0-.25), I .65 (.50-.80).  B1 (W6 - RAA-sL, F6_b) SUPPORTED 93%.  B2 (W6 - I, F6_b) SUPPORTED 30%, REVERSED 5%.
+7. D2' (full - noM, F6_b) SUPPORTED 70%.  D1' (full - noR, F7 pool) SUPPORTED 95%.  D3a (noR - full, F6_b) EQUIVALENT 50%.  D3b (noM - full, F7 pool) EQUIVALENT 55%.  DK (full - noR, K1t + K2t) NON-INFERIOR 85%.
+8. Gates (full W6): F6_a >= .50 TESTABLE 96% (point .90); unique-name controls >= .50 TESTABLE 68% (point .58; W5 .57 in SR 87); K floor >= .70 TESTABLE 95%.
+9. Gated PRIMARY (W6): DISSOCIATION SHOWN 20%, UNTESTABLE 12%, PARTIAL 45%, NOT SHOWN 23%.
+10. Attribution (descriptive): W6 - W5c1 (envelope) on N1-N6 within +-.05 in the point 70%; W6 - W5c1 on F6_b below 0 in the point 45%; W6 - W5 on unique-name controls above 0 in the point 55%; W6 above W5c1 on N4 in the point 60%.
+11. Overall: the fix is judged by AK (non-inferior on K1-K6) and A2a (non-inferior to rgp on N1-N6) without losing B1: AK NON-INFERIOR and A2a NON-INFERIOR and B1 SUPPORTED 15%; A2a NON-INFERIOR and B1 SUPPORTED 60%; A4 not REVERSED 97%.
+Counter-evidence (stated now): W6 N4 below .60, or W6 K5 below .50 (the envelope gate stalls releases), or W6 controls below .45, or W6 F6_b below .30.  Evidence for: A2a NON-INFERIOR and AK NON-INFERIOR and B1 SUPPORTED and A1 not REVERSED.
+Evidence for a partial result: A2a NON-INFERIOR (the SR 87 failure repaired) and B1 SUPPORTED with AK not NON-INFERIOR.

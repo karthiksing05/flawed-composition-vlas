@@ -1,0 +1,82 @@
+{
+ "mu_m": {
+  "target: the bowl": [
+   0.002946743741631508,
+   -0.00027838911046274006
+  ],
+  "target: the cabinet": [
+   0.04232020676136017,
+   -0.03230189345777035
+  ],
+  "target: the plate": [
+   -0.004727402701973915,
+   -0.0015363243874162436
+  ],
+  "target: the rack": [
+   -0.08938724547624588,
+   0.08134441450238228
+  ],
+  "target: the stove": [
+   -0.03309576213359833,
+   -0.008172942325472832
+  ]
+ },
+ "c_med_m": {
+  "target: the bowl": 0.0691656768321991,
+  "target: the cabinet": -6.943941116333008e-05,
+  "target: the plate": -0.0009134113788604736,
+  "target: the rack": -0.021700799465179443,
+  "target: the stove": 0.02318379282951355
+ },
+ "c_dev_p90_m": {
+  "target: the bowl": 0.022896248102188113,
+  "target: the cabinet": 0.015168678760528574,
+  "target: the plate": 0.014729475975036625,
+  "target: the rack": 0.025252032279968264,
+  "target: the stove": 0.01666648983955384
+ },
+ "h_class_m": {
+  "target: the bowl": 0.09206192493438721,
+  "target: the cabinet": 0.015099239349365244,
+  "target: the plate": 0.013816064596176151,
+  "target: the rack": 0.003551232814788821,
+  "target: the stove": 0.039850282669067386
+ },
+ "r_class_m": {
+  "target: the bowl": 0.026715889038318903,
+  "target: the cabinet": 0.044424333733247695,
+  "target: the plate": 0.016356449826358813,
+  "target: the rack": 0.044219134595428505,
+  "target: the stove": 0.028244054436164737
+ },
+ "n_demos": {
+  "target: the bowl": 50,
+  "target: the cabinet": 100,
+  "target: the plate": 50,
+  "target: the rack": 50,
+  "target: the stove": 50
+ },
+ "skipped_episodes": 0,
+ "tau_target_m": 0.004373182534033498,
+ "tau_stats": {
+  "n": 32846,
+  "p50": 0.0,
+  "p90": 0.0,
+  "p99": 0.004373182534033498,
+  "max": 0.03583661380105334,
+  "stride": 5,
+  "max_per_task": {
+   "K1": 0.015412648859368407,
+   "K2": 0.0,
+   "K3": 0.0,
+   "K4": 0.0,
+   "K5": 0.0,
+   "K6": 0.03583661380105334
+  },
+  "demos": 300
+ },
+ "dataset": "/coc/flash10/ksingara3/robot/data/hf/lerobot/lol/libero_g8v_raac",
+ "chan_root": "/coc/flash10/ksingara3/robot/data/fa1/rv",
+ "written_by": "experiments/raasw6_env.py",
+ "definition": "h_class = median(c_rel) + p90|c_rel - median|, c_rel = -dz of the channel at the first open command while the role id = target; r_class = p90 |rel_xy - mu| at the same frame; tau = p99 of the 5-step change of the target slot position over the K1-K6 training demos; unknown phrase -> W4 behaviour"
+}

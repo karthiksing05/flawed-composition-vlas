@@ -30,6 +30,7 @@ REL_RELEASE = 0.02      # m: W2 blocks a release while |rel_xy| exceeds this
 CLEAR = 0.03            # m: SR 85 (W3 / W4): the module owns xy only once the held object is >= CLEAR above the target's reference height (docs/notes/raasw3_plan.md)
 HAND_R = 0.03          # m: SR 87 (W5 / W5c2): the module owns xy only while |rel_xy - mu| > HAND_R (C2, the handoff radius), and W5 / W5c2 gate a release at the same radius (docs/notes/raasw5_plan.md)
 MU_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), "raasw5_mu.json")   # SR 87: the training demos' release point per target class (computed once, committed before any read)
+ENV_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), "raasw6_env.json")   # SR 90 (modes 8 / 9): the demos' release envelope per target class (h_class, r_class), computed once from the training demos and committed before any rollout
 
 
 def k_w(servo_max):
@@ -41,17 +42,20 @@ def _grip_norm():
     return float(ns["q01"][6]), float(ns["q99"][6])
 
 
-def where_own_apply(x, state, cfg, mode, gq, A, H, kw=None, return_info=False, mu=None):
+def where_own_apply(x, state, cfg, mode, gq, A, H, kw=None, return_info=False, mu=None, env=None):
     """x [n, H * A] float tensor = PolicyBackbone.sample(full=True) output; state [b, 32] normalised prefix state (b = 1 or n);
     cfg the servo config (st_q01 .., act_q01 .., servo_max); mode 1 | 2; gq = (q01, q99) of action dim 6.  -> new x (same shape), info dict."""
-    assert mode in (1, 2, 3, 4, 5, 6, 7), mode
+    assert mode in (1, 2, 3, 4, 5, 6, 7, 8, 9), mode
+    w6 = mode in (8, 9)                                                                  # SR 90: W6 (8) and W6nl (9) share this chunk rule (the latch is in the server, mode 8 only); an unknown class (env None) is exactly mode 4
+    if w6 and env is None:
+        mode, w6, mu = 4, False, None
     kw = k_w(cfg.servo_max) if kw is None else float(kw)
     dev = x.device
     q01, q99 = (torch.tensor(v, dtype=torch.float32, device=dev) for v in (cfg.st_q01, cfg.st_q99))
     raw = (state[..., :4].float().to(dev) + 1.0) / 2.0 * (q99 - q01 + EPS) + q01          # [b, 4]: dx, dy, dz (m), role id
     m = (raw[..., 3] > ROLE_TARGET)                                                     # [b]
     aq01, aq99 = (torch.tensor(v, dtype=torch.float32, device=dev) for v in (cfg.act_q01, cfg.act_q99))
-    if mode in (5, 7) and mu is not None:                                                # SR 87 C1: the servo input and the gate are measured from the class's release point (mu, metres, base-frame xy of target minus object at the demos' release)
+    if (mode in (5, 7) or w6) and mu is not None:                                                # SR 87 C1: the servo input and the gate are measured from the class's release point (mu, metres, base-frame xy of target minus object at the demos' release)
         e = raw[..., :2] - torch.as_tensor(mu, dtype=torch.float32, device=dev).reshape(-1, 2)
     else:                                                                                # modes 1-4, W5c2 (mode 6) and an unknown class: the channel's rel_xy itself (bit-identical to SR 85)
         e = raw[..., :2]
@@ -62,21 +66,29 @@ def where_own_apply(x, state, cfg, mode, gq, A, H, kw=None, return_info=False, m
     mm = m.reshape(-1, 1, 1).expand(n, 1, 1) if m.numel() in (1, n) else None
     assert mm is not None, (m.shape, n)
     clear = (-raw[..., 2]) >= CLEAR                                                      # [b] SR 85: the held object is >= CLEAR above the target's reference height (channel dz = target - object)
-    own = (m & clear).reshape(-1, 1, 1).expand(n, 1, 1) if mode in (3, 4, 7) else mm   # who owns xy: modes 1, 2 = whenever held (SR 84, unchanged); modes 3, 4, 7 = held AND clear
+    own = (m & clear).reshape(-1, 1, 1).expand(n, 1, 1) if (mode in (3, 4, 7) or w6) else mm   # who owns xy: modes 1, 2 = whenever held (SR 84, unchanged); modes 3, 4, 7 = held AND clear
     relxy = torch.linalg.norm(raw[..., :2], dim=-1)                                      # [b] metres (the channel's own rel_xy)
     exy = torch.linalg.norm(e, dim=-1)                                                   # [b] metres: distance to the aim point (= relxy when e = rel_xy)
     if mode in (5, 6):                                                                   # SR 87 C2: the module owns xy only while it is farther than HAND_R from the aim point; inside, the chunk is RAA-sL's
         own = (m & clear & (exy > HAND_R)).reshape(-1, 1, 1).expand(n, 1, 1)
+    outside = torch.zeros_like(m)
+    if w6:                                                                               # SR 90 envelope hand-off: the module owns xy while c > h_class OR |rel - mu| > r_class (and held, c >= CLEAR); inside, the chunk is RAA-sL's
+        hcl, rcl = float(env[0]), float(env[1])
+        outside = ((-raw[..., 2]) > hcl) | (exy > rcl)
+        own = (m & clear & outside).reshape(-1, 1, 1).expand(n, 1, 1)
     y[:, :, :2] = torch.where(own, sn.reshape(-1, 1, 2).expand(n, H, 2).to(y.dtype), y[:, :, :2])
     fired = torch.zeros((), dtype=torch.bool, device=dev)
-    if mode in (2, 4, 5, 6, 7):                                                                   # mode 4's gate is mode 2's gate, unchanged (held and |rel_xy| > 2 cm), also where the expert owns xy
+    if mode in (2, 4, 5, 6, 7) or w6:                                                                   # mode 4's gate is mode 2's gate, unchanged (held and |rel_xy| > 2 cm), also where the expert owns xy
         g01, g99 = gq
         graw = (y[:, :, 6] + 1.0) / 2.0 * (g99 - g01 + EPS) + g01
         closed = (1.0 - g01) / (g99 - g01 + EPS) * 2.0 - 1.0                              # normalised value of the raw closed command +1 (demos: held-frame gripper mean .94-.96)
-        gate = mm[:, :, 0] & (exy.reshape(-1, 1).expand(n, 1) > (HAND_R if mode in (5, 6) else REL_RELEASE)) & (graw < 0.0)
+        thr_viol = exy.reshape(-1, 1).expand(n, 1) > (HAND_R if mode in (5, 6) else REL_RELEASE)
+        if w6:                                                                           # SR 90: the gate is the envelope: a release is blocked while the object is outside the class's demo release envelope (height or xy)
+            thr_viol = outside.reshape(-1, 1).expand(n, 1)
+        gate = mm[:, :, 0] & thr_viol & (graw < 0.0)
         fired = gate.any()
         y[:, :, 6] = torch.where(gate, torch.full_like(y[:, :, 6], closed), y[:, :, 6])
-    info = dict(m=bool(m.any()), rel_xy=float(relxy[0]), e_xy=float(exy[0]), gate=bool(fired), c=float(-raw[0, 2]), own=bool(own.reshape(-1)[0]))
+    info = dict(m=bool(m.any()), rel_xy=float(relxy[0]), e_xy=float(exy[0]), gate=bool(fired), c=float(-raw[0, 2]), own=bool(own.reshape(-1)[0]), outside=bool(outside.reshape(-1)[0]))
     out = y.reshape(n, H * A)
     return (out, info) if return_info else out
 
@@ -86,7 +98,7 @@ class PolicyBackboneW(PolicyBackbone):
 
     def __init__(self, *a, where_own=1, log_path=None, **kw):
         super().__init__(*a, **kw)
-        assert where_own in (1, 2, 3, 4, 5, 6, 7), where_own
+        assert where_own in (1, 2, 3, 4, 5, 6, 7, 8, 9), where_own
         assert float(getattr(self.model.config, "servo_k", 0.0) or 0.0) != 0.0, "where_own needs a servo config (RAA-s family)"
         self.where_own = int(where_own)
         self.log_path = log_path
@@ -94,6 +106,12 @@ class PolicyBackboneW(PolicyBackbone):
         self._mu_table = None                                      # SR 87 (modes 5, 7): target phrase -> release point (m); the table is computed once from the training demos and committed (raasw5_mu.json)
         self._mu = None                                            # this query's class mu (None = unknown class or not a target phrase -> 0)
         self._mu_cls = None
+        self._env_table, self._env = None, None                     # SR 90 (modes 8, 9): target phrase -> (h_class, r_class) metres, from raasw6_env.json
+        if self.where_own in (8, 9):
+            et = json.load(open(ENV_JSON, encoding="utf-8"))
+            self._env_table = {k: (float(et["h_class_m"][k]), float(et["r_class_m"][k])) for k in et["h_class_m"]}
+            tab = et["mu_m"]
+            self._mu_table = {k: [float(v[0]), float(v[1])] for k, v in tab.items()}
         if self.where_own in (5, 7):
             tab = json.load(open(MU_JSON, encoding="utf-8"))["mu_m"]
             self._mu_table = {k: [float(v[0]), float(v[1])] for k, v in tab.items()}
@@ -106,6 +124,8 @@ class PolicyBackboneW(PolicyBackbone):
             ph = str(obs_dict.get("prompt", "")).split(". rel:")[0].strip()
             self._mu_cls = ph if ph in self._mu_table else None
             self._mu = self._mu_table.get(ph)
+            if self._env_table is not None:
+                self._env = self._env_table.get(ph)
         return super().observation(obs_dict)
 
     @torch.no_grad()
@@ -113,7 +133,7 @@ class PolicyBackboneW(PolicyBackbone):
         x = super().sample(n, prefix, seed=seed, num_steps=num_steps, guide=guide, step_gate=step_gate, noise=noise, full=True, start=start)
         xt = torch.as_tensor(x, dtype=torch.float32, device=self.device)
         yt, info = where_own_apply(xt, prefix.state, self.model.config, self.where_own, self._gq, self.A, self.H, return_info=True,
-                                    mu=self._mu if self.where_own in (5, 7) else None)
+                                    mu=self._mu if self.where_own in (5, 7, 8, 9) else None, env=self._env if self.where_own in (8, 9) else None)
         y = yt.cpu().numpy().astype(x.dtype)
         if self.log_path:
             yy = y.reshape(-1, self.H, self.A)[0]
