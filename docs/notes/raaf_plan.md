@@ -424,3 +424,11 @@ follow SR 83's caveats (super-additive expert patches, bf16 noise .002-.007).  T
 - Config pi05_g8v_raac_lf_ae, `--g8v raac_lf` (additive).  Smoke (job 4818884, tail-lab, exp smoke, 20 steps): step-0 loss .0529 (limit 2 x .0556), state_proj present.
 - Prereg row tag raaf: ledger/m3_prereg/m3_prereg__libero_goal__raaf__s0__16fc469f.json (job 4818948), predictions experiments/prereg/raaf_pred.txt, written before the chains.
 - Chains (raaf_chain.sh, copies of raasl_*): main1-6 on overcap = 4818954-4818959; tl1-6 on tail-lab = 4818960-4818965 (user's tail-lab GPUs running at launch: ctx_full.sh, raasls2_tl2; with the tl chain 3 of 4).  Cancel the second chain when one reaches step 6000.
+
+## ORCHESTRATOR CLARIFICATION OF THE PROBE PASS RULE (2026-11-20, written after the pipeline smoke on RAA-sL and a 20-step B smoke, BEFORE any probe of a trained route checkpoint)
+1. Route B: the module's signal is the joint patch `in.tokcrop` (token + crop patched together). The single-patch sum is descriptive only.
+2. Route B: the crop image carries the module's target, so the "visual share falls" half of the pass rule uses `in.prefix_nocrop`, the scene and wrist cameras with the crop left clean, against RAA-sL's `in.prefix` .089 (N+K pool). The literal `in.prefix` (crop included) is reported as `pass_literal`, descriptive only. Reason: counting the module's own channel as visual input would fail B by construction, which is not the purpose of the rule.
+3. in.crop patches the input crop image (third image block, prefix positions 512-767). Counterfactual side queries carry `meta/raa_crop_uv_*`.
+4. All captures for the selection probes run on A40 nodes (`--gres=gpu:a40:1`), as SR 83 did. The B smoke ran on an L40S (replay vs server .012-.020, against .003-.006 on the A40).
+Reference values from the pipeline validation (a730dbd9, 2f03d3a8): RAA-sL in.tok -.007 [-.008, -.006]; in.prefix .132 on all rows and .089 on the N+K pool; T 4.475 on the N+K pool.
+5. Mapping onto experiments/raaf_probe_read.py (unchanged): for Route B the selection PASS is its `pass_alt_nocrop` field; its `PASS` field is the literal reading (descriptive). For A / A0 / A+ the selection PASS is `PASS`.
