@@ -1,0 +1,65 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: RAA-F A+0 (docs/notes/raaf_plan.md 3): A+ exactly (RAA-sL token, planner table-spot data lol/libero_g8v_raacp, pi05_libero weights) with servo_k = 0 (servo_fields(k=0.0)); post-hoc addition to the selection set",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4827537",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "cd9eaff29a6e7eacf49d197d1d496e162ba62918",
+  "short": "cd9eaff2"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "A+0 pi05_g8v_raac_lp_ae (data lol/libero_g8v_raacp, RAA-c norm stats, servo_k 0, 6,001 steps, batch 32, lr 5e-5, frozen VLM), exp main / tl",
+  "deviation_notes": "added after A+ probe and dev read were seen; confirmatory test = 5th fresh set only; A0 is the servo-matched prefix reference (registered .089 kept and reported alongside)",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/raafp0_chain.sh": "c1b3e9e9d8c205eb0a59c399101bfa188f9a4caea873ab8c471fa97cf18d267f",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/raafp0_train.sh": "566b1d0ab4c6f402bf309b4a7f49c00fe4bfe949d22dd0a7c50a3b06529d39a2",
+   "/coc/flash10/ksingara3/robot/checkpoints_l90c/assets/pi05_g8v_raac/lol/libero_g8v_raac/norm_stats.json": "3d13a766b388152ec7531dbc6ab0abb175f97b00dcad279e41be320fcd761570",
+   "docs/notes/raaf_plan.md": "f27935b281c3af9460d5ca487f01ef292b05f99bc42b1cdf9c2e365a926031ff",
+   "docs/notes/raaf_sel.md": "425ab78a18b2f96a4c1f7a207eca89faff8fdd8d90e5af4615275c86047f58c9",
+   "docs/notes/raafp_diag.md": "362112c894750faa609595329de1a4960a30ee62979a81d7bb7055bc865e64ea",
+   "experiments/c_train_pi05.py": "5dd8fcc4592260c7e4ca3b47d40c70b0350e14e6f7a606efc0f8ac38db0300e0",
+   "experiments/prereg/raafp0_pred.txt": "b34aaf1adad71d6877a10efbbb6aba3782e596127f8b3234347df45156f4fd99",
+   "lifelong_ood/policy/l90c_config.py": "739d8de6a1e1ee3798ca39d9a657708f535c50090e4c25a34294cd7856e78aa1",
+   "lifelong_ood/policy/raac_model.py": "df500c3a5fde7c640c77c865b4ce8d12d8c579477b0c60819a515d60720b400c",
+   "lifelong_ood/policy/raas_model.py": "4990cfd28bd7ea7670866aa97d731074ea54b9db993f941c3f615a03dc40a636",
+   "results/flawed/raaf/raafp_rv_manifest_raac.json": "ac2867f3bd6996760191caf495777d8f2d4d4f86976e2a007935af35a534ecc1"
+  },
+  "mapping": "docs/notes/raaf_plan.md sections 3, 6-7; docs/notes/raaf_sel.md",
+  "prediction": "RAA-F A+0 (docs/notes/raaf_plan.md 3; docs/notes/raafp_diag.md): the servo-free A+.  Principle: with the servo kept, the servo supplies the where-correction from outside the network, so the network need not read the state token; A+0 removes that outside supplier while keeping the large dose.\nThe four routes so far form a 2x2 grid with one empty cell (in.tok where-share):\n  dose none,  servo kept: RAA-sL -.007 | dose none,  servo off: A0 -.001 | dose small (in-support relabel 1-9 cm), servo off: A .274 | dose large (planner table-spot demos 19-38 cm), servo kept: A+ -.007.\nA+0 fills the empty cell: large dose, servo off.  A+0 = pi05_g8v_raac_lp_ae = A+ (pi05_g8v_raas_lp_ae) exactly, with RS.servo_fields(k=0.0) as Routes A, A0 and B use.  Nothing else changes: data lol/libero_g8v_raacp, weights from pi05_libero, RAA-c norm stats and assets, 6,001 steps, batch 32, lr 5e-5, frozen VLM, chain shape (6 x 4 h afterany).\nSTATUS (post-hoc addition): A+0 was added AFTER A+'s probe and dev read were seen.  It is a post-hoc addition to the selection set.  It is scored by the same registered probe pass rule and section 6.3 eligibility.  If it is eligible, its only confirmatory test is the still-unbuilt 5th fresh set (N/K k 760-819, F7 860-939, F6 940-1019).  Its development reads are descriptive only.\nPrefix half of the rule: A0 is the servo-matched reference for A+0.  The registered .089 is kept as written and reported alongside.\nPredictions (probabilities are the orchestrator's):\n (p1) A+0 pooled in.tok where-share: point .40, plausible range .10-.75.\n (p2) A+0 passes the probe (share CI lower bound >= .70): 15%.\n (p3) A+0 share > A's .274 (point): 60%.\n (p4) A+0 - A0 share CI lower bound > 0: 85%.\n (p5) A+0 dev N within +-.10 of RAA-sL's .878: 45%.\n (p6) A+0 dev K >= .886: 50%.\n (p7) A+0 F6_b > .30, as the servo-free models A, B and A0 all were: 70%.\n (p8) A+0 F6_a >= .50 (A+ had an unexplained .417): 70%.\nKill (k1): training loss NaN, or the smoke run shows no role token in the server log.\n",
+  "seen": "Written 2026-11-21 AFTER A+'s probe and dev read were seen (docs/notes/raafp_diag.md, docs/notes/raaf_sel.md A+ section): in.tok where-share RAA-sL -.007, A0 -.001, A .274, A+ -.007; A+ dev F6_a .417.  No A+0 checkpoint, probe or rollout exists.  The config differs from pi05_g8v_raas_lp_ae only in RS.servo_fields(k=0.0).  Post-hoc addition to the selection set; only confirmatory test = the unbuilt 5th fresh set (N/K k 760-819, F7 860-939, F6 940-1019).",
+  "status": "PRE-REGISTERED RAA-F A+0 (post-hoc addition)",
+  "written_before": "any A+0 training job (exp smoke / main / tl), probe and rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__raafp0__s0__cd9eaff2",
+ "schema": 1,
+ "script": "experiments/prereg/raafp0.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-21T19:18:44+00:00",
+ "stream": null,
+ "tag": "raafp0"
+}

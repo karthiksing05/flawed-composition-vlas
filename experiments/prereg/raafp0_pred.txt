@@ -1,0 +1,16 @@
+RAA-F A+0 (docs/notes/raaf_plan.md 3; docs/notes/raafp_diag.md): the servo-free A+.  Principle: with the servo kept, the servo supplies the where-correction from outside the network, so the network need not read the state token; A+0 removes that outside supplier while keeping the large dose.
+The four routes so far form a 2x2 grid with one empty cell (in.tok where-share):
+  dose none,  servo kept: RAA-sL -.007 | dose none,  servo off: A0 -.001 | dose small (in-support relabel 1-9 cm), servo off: A .274 | dose large (planner table-spot demos 19-38 cm), servo kept: A+ -.007.
+A+0 fills the empty cell: large dose, servo off.  A+0 = pi05_g8v_raac_lp_ae = A+ (pi05_g8v_raas_lp_ae) exactly, with RS.servo_fields(k=0.0) as Routes A, A0 and B use.  Nothing else changes: data lol/libero_g8v_raacp, weights from pi05_libero, RAA-c norm stats and assets, 6,001 steps, batch 32, lr 5e-5, frozen VLM, chain shape (6 x 4 h afterany).
+STATUS (post-hoc addition): A+0 was added AFTER A+'s probe and dev read were seen.  It is a post-hoc addition to the selection set.  It is scored by the same registered probe pass rule and section 6.3 eligibility.  If it is eligible, its only confirmatory test is the still-unbuilt 5th fresh set (N/K k 760-819, F7 860-939, F6 940-1019).  Its development reads are descriptive only.
+Prefix half of the rule: A0 is the servo-matched reference for A+0.  The registered .089 is kept as written and reported alongside.
+Predictions (probabilities are the orchestrator's):
+ (p1) A+0 pooled in.tok where-share: point .40, plausible range .10-.75.
+ (p2) A+0 passes the probe (share CI lower bound >= .70): 15%.
+ (p3) A+0 share > A's .274 (point): 60%.
+ (p4) A+0 - A0 share CI lower bound > 0: 85%.
+ (p5) A+0 dev N within +-.10 of RAA-sL's .878: 45%.
+ (p6) A+0 dev K >= .886: 50%.
+ (p7) A+0 F6_b > .30, as the servo-free models A, B and A0 all were: 70%.
+ (p8) A+0 F6_a >= .50 (A+ had an unexplained .417): 70%.
+Kill (k1): training loss NaN, or the smoke run shows no role token in the server log.

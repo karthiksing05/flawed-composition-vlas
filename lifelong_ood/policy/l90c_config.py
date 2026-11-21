@@ -33,7 +33,7 @@ BASE_PARAMS = f"{CACHE}/pi05_base/params"
 LIBERO_PARAMS = f"{CACHE}/pi05_libero/params"                  # openpi pi05_libero (the frozen "I" / pi05 of SR 45 / 52 / 70): RAA-L (SR 80) initialises from it
 NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
          "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae", "pi05_g8v_plain_ae", "pi05_g8v_rsup_ae", "pi05_g8v_rview_ae",
-         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_l_ae", "pi05_g8v_raac_lb_ae", "pi05_g8v_raas_lp_ae", "pi05_g8v_rview2_lp_ae")
+         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_l_ae", "pi05_g8v_raac_lb_ae", "pi05_g8v_raas_lp_ae", "pi05_g8v_raac_lp_ae", "pi05_g8v_rview2_lp_ae")
 # SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
 # the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
 AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
@@ -66,6 +66,7 @@ AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae":
       "pi05_g8v_raac_lb_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
       # RAA-F Route A+ / A+ctrl (docs/notes/raaf_plan.md 3): RAA-c / rview2 norm stats and assets, only the data repos differ
       "pi05_g8v_raas_lp_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
+      "pi05_g8v_raac_lp_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),            # RAA-F A+0: A+ exactly; ONLY servo_k = 0
       "pi05_g8v_rview2_lp_ae": ("pi05_g8v_rview2", "lol/libero_g8v_rview2")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
@@ -178,6 +179,14 @@ def train_config(name, **over):
             from . import raas_model as RS
             m = base.model
             model = RS.Pi0ConfigS(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False, **RS.servo_fields())
+            data = dataclasses.replace(data, repo_id=RAAFP_REPO)
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
+                                       weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
+        if name == "pi05_g8v_raac_lp_ae":                       # RAA-F A+0 (docs/notes/raafp_diag.md): pi05_g8v_raas_lp_ae exactly (A+ data, RAA-c norm stats / assets, weights from pi05_libero); ONLY servo_k = 0 (servo_fields(k=0.0), as Routes A, A0, B)
+            from . import raac_model as RM
+            from . import raas_model as RS
+            m = base.model
+            model = RS.Pi0ConfigS(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False, **RS.servo_fields(k=0.0))
             data = dataclasses.replace(data, repo_id=RAAFP_REPO)
             return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
                                        weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
