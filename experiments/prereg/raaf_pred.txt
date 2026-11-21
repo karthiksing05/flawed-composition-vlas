@@ -1,0 +1,16 @@
+RAA-F Route A (docs/notes/raaf_plan.md, commit 6a0ee159): the shortcut diagnosis. Principle: a where-signal is used by the learned network iff the training data make it necessary.
+Route A = RAA-c's model (state token, servo_k = 0) from pi05_libero, trained on lol/libero_g8v_raacf = the RAA-c episodes + 2 relabelled copies per eligible K1-K6 held carry
+(actions xyz + K delta, token rel + delta, delta from the success-predicate geometry).  Config pi05_g8v_raac_lf_ae, RAA-c norm stats kept.
+Written 2026-11-20 BEFORE this row, any main training job of Route A and any rollout or probe.  Known when written: Step 0 (eligible held rows 90.6%, K delta variance share 3.36%,
+clip drops 0.7%, servo-null S0-4 passed to 2e-16, physics validation with class margins bowl / rack raised to 2 cm), the 2.4 quantile STOP and its resolution (see notes).
+Predictions (probabilities are mine; copied from plan section 8):
+1. A passes the probe (learned where-share CI lower >= .70, prefix share below RAA-sL's, gate T lower > 0): 18%.  Point share about .35 (range .05-.80); K share above N share 65%.
+2. A+ passes: 32%, point .55.  3. B passes: 6%.  4. A0 (if trained) passes: 5%.  5. No route passes: 52%.
+6. A (servo-free) dev N1-N6 below RAA-sL (.878): 75% (point .74; RAA-c .50, RAA-L .58).  A dev K1-K6 >= .70: 85%.
+7-9. concern A+ / B / A+ctrl (not trained under this row).
+10-13. Confirmatory (conditional on a winner, 48%): C1 NI 50%, C2 NI 30%, C3 SUPPORTED 22%, C4 NI 45%; gated dissociation SHOWN 35%; joint repairs-by-learning about 22% unconditional.
+Kill criteria for A (plan 9): k3 more than 5% copies dropped; k4 smoke step-0 loss NaN or > 2x .0556, or no state_proj; k5 probe share CI upper < .30 closes A (A0 not trained).
+NOTES / DEVIATION (orchestrator decision 2026-11-20): the plan's 2% quantile STOP (2.4) was read as the EXCESS over the demos' own baseline on the same rows.  Relabelled action rows 18.0% outside
+q01 / q99 vs 18.5% for the originals on the same rows (excess -0.5%), so it clears; the baseline itself is 18.5% (z dim 13.3%, unchanged by the xy shift).  The state token widens (x dim 7.9% -> 25.2% outside
+state q01 / q99, any dim 16.0% -> 30.9%); accepted: openpi quantile Normalize does not clip, state_proj is linear, test-time wrong-target channels are larger.  RAA-c norm stats are kept, not recomputed.
+Normalised max |value| of the shifted state tokens (dims dx dy dz, rows h0..e-1): originals 1.45 / 1.33 / 1.14, copies 2.15 / 1.53 / 1.14 (99.9th pct copies 1.99 / 1.44 / 1.12); no clip.
