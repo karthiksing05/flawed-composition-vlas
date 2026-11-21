@@ -302,6 +302,8 @@ def dry(a):
         tgt = t["target"]
         rows = []
         for k in range(a.n):
+            if a.keep and sum(1 for r_ in rows if r_["success"]) >= a.keep:
+                break
             j, rej = 0, []
             while True:
                 r = attempt(n2, kps[task], bddl, lay_env, oe, tgt, k, oix, a.rule, a.states_dir, name, j)
@@ -332,9 +334,12 @@ if __name__ == "__main__":
     ap.add_argument("--rule", default="orig", choices=tuple(list(RULES) + ["ktarget"]))
     ap.add_argument("--n", type=int, default=30)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--keep", type=int, default=0)
+    ap.add_argument("--base", type=int, default=93_000_000)
     ap.add_argument("--states-dir", default=None)
     ap.add_argument("--grid", action="store_true")
     ap.add_argument("--objs", default="bowl,cream_cheese,wine_bottle")
     a = ap.parse_args()
+    BASE = a.base
     assert not os.path.exists(a.out), a.out
     area(a) if a.mode == "area" else dry(a)

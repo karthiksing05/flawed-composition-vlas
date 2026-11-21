@@ -7,6 +7,8 @@ Seeds are the plan's (93_000_000 + 1000 obj + k), so every rule sees the same 30
 
 **PROPOSED deviation from docs/notes/raaf_plan.md 3.2 / 3.4.  Needs orchestrator approval before any use.**
 
+**APPROVED 2026-11-20 by the orchestrator (rule h_j), attributed to the orchestrator.  Reasons recorded for the launch record: (1) the plan's clearance (12 cm beyond other footprints) was unsatisfiable: free area 0.03-0.2% of the layout box, a spot in 10-27% of layouts, S0-5 yield 1/30; (2) the release keypoint bug: the K-task release offset (hand relative to the target site) put the object 3-18 cm off the spot or released it in the air; (3) the 40-step transit cap was too short for 30-45 cm carries.  The wine bottle is dropped by the plan's own k1 rule (yield 23% < 30%), leaving bowl + cheese: A+ as registered with 2 objects.**
+
 ## 1. Verdict
 
 Two independent defects, both in how Route A+ was specified, neither in the planner:

@@ -27,11 +27,13 @@ REPO_ID = "lol/libero_l90c"
 S2_REPO = "lol/libero_g8v_raacs2"                          # SR 89: kitchen raac + scene-2 cycles (experiments/s2_rv.py convert)
 RAAF_REPO = "lol/libero_g8v_raacf"                          # RAA-F (docs/notes/raaf_plan.md): kitchen raac + relabelled held copies (experiments/raaf_rv.py)
 RAAFB_REPO = "lol/libero_g8v_raacb"                          # RAA-F Route B (experiments/raafb_rv.py): kitchen raac + the target crop (crop_image -> right_wrist_0_rgb)
+RAAFP_REPO = "lol/libero_g8v_raacp"                          # RAA-F Route A+ (experiments/raafp_rv.py): RAA-c episodes + planner table-spot demos (held prompt "target: the table")
+RAAFP2_REPO = "lol/libero_g8v_rview2p"                       # RAA-F A+ctrl: the same frames and prompts in the rview2 format (no token)
 BASE_PARAMS = f"{CACHE}/pi05_base/params"
 LIBERO_PARAMS = f"{CACHE}/pi05_libero/params"                  # openpi pi05_libero (the frozen "I" / pi05 of SR 45 / 52 / 70): RAA-L (SR 80) initialises from it
 NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
          "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae", "pi05_g8v_plain_ae", "pi05_g8v_rsup_ae", "pi05_g8v_rview_ae",
-         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_lb_ae")
+         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_lb_ae", "pi05_g8v_raas_lp_ae", "pi05_g8v_rview2_lp_ae")
 # SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
 # the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
 AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
@@ -59,7 +61,10 @@ AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae":
       # RAA-F Route A (docs/notes/raaf_plan.md 1): RAA-c exactly (state token, servo_k = 0) from pi05_libero; RAA-c norm stats / assets, data repo = RAAF_REPO
       "pi05_g8v_raac_lf_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
       # RAA-F Route B (docs/notes/raafb_build.md): Route A's model (servo_k = 0) on the raac frames + the crop in the third image slot; RAA-c norm stats / assets
-      "pi05_g8v_raac_lb_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
+      "pi05_g8v_raac_lb_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
+      # RAA-F Route A+ / A+ctrl (docs/notes/raaf_plan.md 3): RAA-c / rview2 norm stats and assets, only the data repos differ
+      "pi05_g8v_raas_lp_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
+      "pi05_g8v_rview2_lp_ae": ("pi05_g8v_rview2", "lol/libero_g8v_rview2")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
 ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)
@@ -158,6 +163,18 @@ def train_config(name, **over):
             data = _crop_data(C, dataclasses.replace(data, repo_id=RAAFB_REPO))
             return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
                                        weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
+        if name == "pi05_g8v_raas_lp_ae":                       # RAA-F Route A+ (docs/notes/raaf_plan.md 3): pi05_g8v_raas_l_ae exactly (RAA-sL model, servo constants, RAA-c norm stats / assets, weights from pi05_libero); ONLY the data repo differs (RAA-c episodes + planner table-spot demos)
+            from . import raac_model as RM
+            from . import raas_model as RS
+            m = base.model
+            model = RS.Pi0ConfigS(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False, **RS.servo_fields())
+            data = dataclasses.replace(data, repo_id=RAAFP_REPO)
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
+                                       weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
+        if name == "pi05_g8v_rview2_lp_ae":                     # RAA-F A+ctrl: the rview2 model (no token, no servo) from pi05_libero, rview2 norm stats; data repo = the same frames and prompts in the rview2 format
+            data = dataclasses.replace(data, repo_id=RAAFP2_REPO)
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data,
+                                       weight_loader=W.CheckpointWeightLoader(LIBERO_PARAMS), **over)
         if name == "pi05_g8v_raa_l_ae":                         # SR 80: RAA's config exactly (pi05_g8v_raa_ae), weights from pi05_libero's params
             return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data,
                                        weight_loader=W.CheckpointWeightLoader(LIBERO_PARAMS), **over)
