@@ -432,3 +432,10 @@ follow SR 83's caveats (super-additive expert patches, bf16 noise .002-.007).  T
 4. All captures for the selection probes run on A40 nodes (`--gres=gpu:a40:1`), as SR 83 did. The B smoke ran on an L40S (replay vs server .012-.020, against .003-.006 on the A40).
 Reference values from the pipeline validation (a730dbd9, 2f03d3a8): RAA-sL in.tok -.007 [-.008, -.006]; in.prefix .132 on all rows and .089 on the N+K pool; T 4.475 on the N+K pool.
 5. Mapping onto experiments/raaf_probe_read.py (unchanged): for Route B the selection PASS is its `pass_alt_nocrop` field; its `PASS` field is the literal reading (descriptive). For A / A0 / A+ the selection PASS is `PASS`.
+
+## ORCHESTRATOR ERROR AND CORRECTION: Route B's servo (2026-11-21 early, before any Route B checkpoint beyond step 1000 exists, before any probe or rollout of B)
+The plan (section 1 table) registers B as `pi05_g8v_raas_lb_ae`: RAA-sL's model (token + servo) plus the crop, so that the crop is the only change.  The orchestrator's resume message to the B builder wrongly said "Route B's base is RAA-c-from-libero with the servo off, as in the plan".  B was built and launched as `pi05_g8v_raac_lb_ae`, servo OFF (a4712e75).  B therefore differs from RAA-sL by the crop AND the servo removal.
+Correction, chosen to keep B's training (no result seen):
+1. A0 (servo-free, base data lol/libero_g8v_raac, pi05_libero init, otherwise Route A's config) is trained NOW, unconditionally, rather than only if A passes.  A0 is B's servo-matched comparator (B - A0 isolates the crop) and A's (A - A0 isolates the relabel).
+2. B's selection probe is unchanged (the probe excludes the servo; the clarified pass rule above applies).  B's behaviour on dev states is reported against both RAA-sL (registered comparator) and A0 (matched comparator); the winner rule uses the registered comparator as written.
+3. The probe is also run on A0.  If A0's in.tok share passes the rule by itself, then removing the servo, not the data or the crop, is what moved the share, and A / B passing does not count as evidence for the data principle.
