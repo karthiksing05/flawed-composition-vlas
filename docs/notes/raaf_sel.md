@@ -96,3 +96,40 @@ A: export 4823926; capture K 4823934, N 4823935; probe K 4823962, N 4823963; rea
 B: export 4824395; capture 4824428-29; probe 4824432-33; read 4824567; Phase A 4824481-84; Phase B 4824485-87.
 A0: export 4824862; capture 4824885-86; probe 4824887-88; read 4824889; Phase A 4824953-56; Phase B 4824957-59.
 Contrasts 4825308 (A - A0), 4825309 (B - A0).  Final dev read 4825516.
+
+---
+
+# A+ (appended 2026-11-21; Route A+ = pi05_g8v_raas_lp_ae, servo kept, planner table-spot demos)
+
+Checkpoint: the overcap `main` run, jax/pi05_g8v_raas_lp_ae/main/6000, exported to pytorch/pi05_g8v_raas_lp_ae_main6000 (job 4827061; no pre-existing dir).  Registered config, prereg tag raafp (experiments/prereg/raafp_pred.txt; deviations: spot rule h_j, bottle dropped, 2 objects / 100 demos; nothing in the row changes the probe or read rules).  Captures on A40, same sets, B = 2000, rng 0.  A+ctrl is not run (still training).
+
+## Outcome: **no route passes the probe; A+ is NOT eligible; PROVISIONAL only for A+ctrl, which is not a route.**  No winner, no 5th set, no confirmatory read.
+| | where-input | pooled share [CI] | N | K | in.prefix pooled (RAA-sL .089, matched: A+ keeps the servo) | T [CI] | label |
+|---|---|---|---|---|---|---|---|
+| A+ | in.tok | **-.007 [-.013, -.000]** | -.005 [-.016, .007] | -.009 [-.013, -.005] | .143 (N .129 [.069, .191], K .159 [.098, .214]) | 4.742 [4.372, 5.123] | FAILED (CI upper < .30) |
+Gate T lower > 0 holds.  top1 .092 [.070, .135], PRn .313 [.258, .352]; abl.tok drop N -.030 [-.043, -.015], K -.036 [-.043, -.030] (ablating the token changes nothing or slightly helps).  A+ is the RAA-sL pattern again: the token is not read (RAA-sL -.007), and the prefix half (.143 vs .089) is also not below, though here it is a matched comparison.  Kill k4 (CI upper < .30) is triggered.
+Contrasts (results/flawed/raaf/a2/contrast_Aplus_A.json, contrast_Aplus_A0.json; clustered bootstrap, 94 common clusters): **A+ - A = -.282 [-.322, -.247]**; **A+ - A0 = -.006 [-.012, +.001]**; in.prefix A+ - A -.607 [-.657, -.553], A+ - A0 -.858 [-.904, -.815].  The large planner dose (19-38 cm shifts on 100 table-spot demos, 1/12 of frames) did not raise the token share at all; the small-dose servo-free relabel (A) did (+.27).  Possible reasons, not tested: the kept servo supplies the where-effect on the table frames (the label a - K rel depends on the spot through rel, which the servo computes outside the network), and the table-spot frames use a new prompt phrase.  The planned "if" direction of the principle (large dose => learned use) is therefore NOT supported at this dose with the servo present; plan 9 plan-level rule: A and A+ both fail, but A's dose is below the S0 thresholds' meaning of "large" and A+ keeps the servo, so the plan-level falsification is not claimed here.
+
+## Dev behaviour (results/flawed/raaf/raaf_dev_read_v2.json; same readers and states as before; smoke 4827139 / 4827140 showed roles 1 and 2 before the main rollouts)
+| arm | N1-N6 | K1-K6 | cheese | bottle | F7 pool | F6_b | F6_a | K floor | unique |
+|---|---|---|---|---|---|---|---|---|---|
+| A+ | .828 | .947 | .861 | .794 | .688 [.638, .731] | .033 [.000, .083] | .417 | 1.000 | .567 |
+| RAA-sL | .878 | .936 | .872 | .883 | .744 | .017 | .983 | .962 | .600 |
+A+ - RAA-sL: N -.050 [-.192, +.061] (NOT SUPPORTED); K +.011 [-.028, +.067] (NON-INFERIOR at -.05); cheese -.011 [-.150, .106]; bottle -.089 [-.300, .078]; F7 pool -.056 [-.106, -.013] (REVERSED); F6_b +.017 [-.033, .083] (NOT SUPPORTED).
+A+ - A: N +.050 [-.097, +.211]; K -.047 [-.136, +.003]; cheese +.017; bottle +.083 [-.167, .350]; F7 pool -.019 [-.069, .031]; **F6_b -.400 [-.533, -.267] (REVERSED)**.  A+ - A0: N +.142 [-.017, .350]; K +.117 [-.006, .283]; bottle +.278 [.039, .567]; F7 -.012; F6_b -.350 [-.483, -.200] (REVERSED).
+Reading: A+ behaves like RAA-sL (servo kept): N and K near it, F6_b near zero (the F6 memory cell is only rescued by the servo-free models A, B, A0).  F6_a (the F6 gate, .417 < .50) is poor for A+, new relative to RAA-sL (.983); the table-spot data may have shifted F6_a behaviour.  Dissociation labels are not used (noR / noM not rolled on dev).
+
+## 6.3 with A, B, A0, A+
+No route has PASS (A .274 NOT PASSED, B / A0 / A+ FAILED), so none is eligible even though A+ meets the two behaviour conditions (dev K .947 >= .70; K - RAA-sL +.011 >= -.05).  Rule 5: no winner; 5th fresh set unbuilt; no confirmatory read.  Reportable line: "the shortcut survives the data at these doses": shares A .274, A+ -.007, B .022, A0 -.001; RAA-sL -.007.
+
+## Labels vs raafp predictions
+- Item 2 A+ passes (28%): NO.  Point share about .50 (range .10-.90): observed -.007, far below the range.
+- Item 5 no route passes (52%): YES (all four).
+- Item 7 A+ dev N within +-.05 of RAA-sL (55%): at the edge (point -.050, CI [-.19, .06]; counts as within by CI, outside by a rounding of the point -.0500000000000000044); above by > .05 (15%): NO.  A+ dev K >= .886 (70%): YES (.947).
+- Counter-evidence rule (probe passes but dev N > .10 below): not applicable, probe failed.
+- Item 9 and "A+ fails while A+ctrl - RAA-sL on dev N >= 0": pending A+ctrl.
+- Kill k4: triggered.
+
+## Deviations / notes (A+)
+Export tag main6000 (overcap main run), probe via `--model Aplus --config pi05_g8v_raas_lp_ae --ckpt <dir>`.  raaf_dev_read.py edited (untracked-then-committed new file, my own): added the A+ - A and A+ - A0 pairs; the earlier output files are unchanged and the new read is a new file (raaf_dev_read_v2.json).  One of my commands contained a stray `python3 -c 1` login-node line; the permission layer denied it and nothing ran.
+Jobs: export 4827061; capture 4827132-33; probes 4827134-35; read 4827136; contrasts 4827137-38; smokes 4827139-40; Phase A 4827161-64; Phase B 4827165-67; dev read v2 4827520.
