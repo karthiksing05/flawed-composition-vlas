@@ -103,7 +103,7 @@ def phaseB(arms, pairs):
                 res["success"]["%s|%s" % (arm, name)] = f([np.arange(n)])
                 res["ci"]["%s|%s" % (arm, name)] = WR.bootm(f, [n])
     for a, b in pairs:
-        for name in ("F7pool", "F6_b"):
+        for name in ("F7pool", "F6_b", "F6_a"):
             fa, fb = fn(a, cells[name]), fn(b, cells[name])
             if fa is None or fb is None:
                 res["contrasts"]["%s - %s | %s" % (a, b, name)] = "MISSING"
@@ -120,7 +120,7 @@ def read(a):
     routes = a.routes.replace("+", ",").split(",")
     arms = ["raasl"] + routes
     pairs = [(r, "raasl") for r in routes] + ([("B", "A0"), ("A", "A0")] if "A0" in routes else [])
-    pairs += [("Aplus", "A"), ("Aplus", "A0")]
+    pairs += [("Aplus", "A"), ("Aplus", "A0"), ("Actrl", "raasl"), ("Actrl", "Aplus")]
     pairs = [p for p in pairs if p[0] in arms and p[1] in arms]
     res = dict(B=RR.B, routes=routes, phaseA=phaseA(arms, pairs), phaseB=phaseB(arms, pairs))
     print("[raaf-dev-read]", json.dumps(res), flush=True)

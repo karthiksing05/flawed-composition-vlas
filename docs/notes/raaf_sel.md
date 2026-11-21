@@ -133,3 +133,35 @@ No route has PASS (A .274 NOT PASSED, B / A0 / A+ FAILED), so none is eligible e
 ## Deviations / notes (A+)
 Export tag main6000 (overcap main run), probe via `--model Aplus --config pi05_g8v_raas_lp_ae --ckpt <dir>`.  raaf_dev_read.py edited (untracked-then-committed new file, my own): added the A+ - A and A+ - A0 pairs; the earlier output files are unchanged and the new read is a new file (raaf_dev_read_v2.json).  One of my commands contained a stray `python3 -c 1` login-node line; the permission layer denied it and nothing ran.
 Jobs: export 4827061; capture 4827132-33; probes 4827134-35; read 4827136; contrasts 4827137-38; smokes 4827139-40; Phase A 4827161-64; Phase B 4827165-67; dev read v2 4827520.
+
+---
+
+# A+ctrl (appended 2026-11-21; pi05_g8v_rview2_lp_ae: rview2 format, no token, no servo; same frames / prompts / views as A+)
+
+Not a route and not probed (no where-input).  Checkpoint jax/pi05_g8v_rview2_lp_ae/main/6000, exported to pytorch/pi05_g8v_rview2_lp_ae_main6000 (job 4828331; no pre-existing dir).  Dev read: results/flawed/raaf/raaf_dev_read_v3.json (new file; v1 / v2 untouched; job 4828975); reader extended with the pairs A+ctrl - RAA-sL, A+ctrl - A+ and an F6_a contrast.  The plan names no matched rview2 arm (an R2-from-pi05_libero model is not trained), so A+ctrl is compared descriptively with RAA-L (.575 N / .831 K in raasl_read.json) and R2 (.389 N / .753 K, a different base model).
+
+## Serving paths (deviation to note)
+- Phase A: plan path, sc_rv.py serve --arm rview2 with `--config pi05_g8v_rview2_lp_ae` (the R2 path: exact masks, client --seg), through a copy of raa_ref_roll.sh (.claude_tmp/pp/raaf_ref.sh, adds --config), same 60 states / seeds as A+ (main n2_states + rx).  Smoke 4828344 ran before (role prompts, config confirmed in the server log).
+- Phase B: the plan names no path.  I used a NEW copy of wa_s.py, experiments/wa_s_ctrl.py (the only change: the observation state is replaced by 8 zeros, since the rview2 norm stats are 8-dim and the model reads no state), full arm tids 0-10 with learned masks, the same pipeline as A+.  Smoke 4828345 (state all zeros, role prompts).  Caveat: Phase A uses exact masks, Phase B learned masks, so the two phases are not the same perception.
+Jobs: Phase A 4828365-68, Phase B 4828369-71, dev read 4828975.
+
+## Dev results (A+ctrl vs RAA-sL [N .878, K .936, bottle .883, cheese .872, F7 .744, F6_b .017, F6_a .983] and vs A+ [N .828, K .947, bottle .794, cheese .861, F7 .688, F6_b .033, F6_a .417])
+| A+ctrl | value | - RAA-sL [CI] | - A+ [CI] |
+|---|---|---|---|
+| N1-N6 | .631 | -.247 [-.483, -.030] REVERSED | -.197 [-.431, +.017] |
+| K1-K6 | .814 | -.122 [-.328, +.006] NOT SHOWN | -.133 [-.361, +.006] |
+| cheese | .689 | -.183 [-.617, .111] | -.172 [-.600, .122] |
+| bottle | .572 | -.311 [-.528, -.033] | -.222 [-.483, -.011] |
+| F7 pool | .413 [.356, .469] | -.331 [-.388, -.269] REVERSED | -.275 [-.338, -.213] REVERSED |
+| F6_b | .000 | -.017 [-.050, .000] | -.033 [-.083, .000] |
+| F6_a | **.000** | -.983 [-1.0, -.950] REVERSED | -.417 [-.533, -.300] REVERSED |
+Other cells: K1t .933, K2t .975 (K floor .962), unique-name controls .183.  Per task K5 .083, N2 .35, N4 .45, N6 .30.
+
+## Pending raafp items
+- Item 9, A+ctrl dev N above R2-type levels (> .70) (40%): **NO** (.631; above R2 .389 and about RAA-L .575).
+- "A+ fails while A+ctrl - RAA-sL on dev N >= 0 (data help without the channel)" (20%): **NO** (A+ failed the probe; A+ctrl - RAA-sL is -.247 [-.483, -.030], so the planner data alone do not help; A+ - A+ctrl N is +.197 [-.017, .431], in favour of keeping the servo and channel, though the CI includes 0).
+
+## F6_a: is A+ctrl's low like A+'s .417?  Yes, lower (.000), and the numbers point to the table-spot data, not the servo
+F6_a (tid 9, 60 states): RAA-sL .983 (servo, token), A .933 (no servo), A0 1.000 (no servo, base data), B .950 (no servo), A+ .417 (servo kept, planner data), A+ctrl .000 (no servo, planner data).  The servo-free base-data models (A0, A, B) are high, and the servo-kept base-data model (RAA-sL) is high, so neither presence nor absence of the servo explains the drop; the two models trained on the planner table-spot data are the only low ones, and the one without a servo / token is lower still.  Most likely cause: the table-spot demos (a new "target: the table" phrase, 5,306 held frames, 100 demos) degrade F6_a, the cell where the plate is the target and the bowl is the object; the servo / token partly protect it (A+ .417 vs A+ctrl .000).  Caveats: one seed per model, A+ctrl has no matched base-data twin from the same init (the A0 is the servo-free token twin but is not an rview2 model), and the Phase B path for A+ctrl is a new copy (wa_s_ctrl.py).  K1t / K2t are .93 / .98 so the pipeline itself works; unique-name controls (.18) and F7 (.41) are also low, so A+ctrl's Phase B weakness is not confined to F6_a.
+
+Outcome of selection is unchanged: no route passes the probe, no winner, no 5th set, no confirmatory read.
