@@ -95,4 +95,12 @@ A first.  A PASS: train A0.  A FAILED (CI upper < .30): A closed (kill k5), A0 n
 * If A+ changes the lexicon / channel, check that `raa.py serve --arm raac` still produces its data's state token before capturing.
 
 ## Validation done (existing checkpoints only; outputs in /coc/flash10/ksingara3/.claude_tmp/raaf/probe_smoke/, never results/)
-See the results block appended at the bottom by the preparing agent.
+1. `raaf_probe_read.py selftest` (synthetic observations: PASS / prefix-not-below / FAILED / straddle / B joint + alt rule, overwrite refusal): passed.
+2. SR 83 reproduction on the existing RAA-sL export (a2_probe_f.py --model raasl --rows inputs on the 136 stored captures: F7 40, N 48, K 48; replay-vs-server max|diff| .003-.006 as in SR 83):
+   pooled ALL T 3.311 [3.030, 3.585] (SR 83: 3.311 [3.027, 3.585]); in.tok share -.007 [-.008, -.006] (SR 83: -.007 [-.008, -.006]); in.prefix .132 (SR 83: .132).
+   N + K pooled (the plan's pool): T 4.475, in.tok -.007 [-.008, -.006], in.prefix point .089 (the RAA-sL prefix reference of the pass rule).  Outputs: probe_smoke/probe_raasl_inputs, read_raasl_ALL.json, read_raasl_NK.json.
+3. Route B smoke (jax/pi05_g8v_raac_lb_ae/smoke/19, scratch export probe_smoke/export_B_smoke; a2f_capture.sh smoke with raa_b.py + a2f_cap_client.py on K4 trial 4, N1 trial 5, 10 npz each with a 224 x 224 x 3 crop, cf crops differ per swapped-in entity):
+   a2_probe_f.py --model B --rows full --ident ran on both observations (244 rows each).  in.crop computes: N .615, K .664 of T; in.tokcrop .633 pooled; in.tok .01; sum(in.tok + in.crop) .645 ~ joint .633;
+   in.prefix 1.00, in.prefix_nocrop .31.  The numbers are of a 20-step checkpoint and mean nothing for selection; they show the crop patch moves the chunk and the read handles B.
+   Replay-vs-server max|diff| .012-.020 (L40S, 20-step model; SR 83's A40 runs were .003-.006): not a defect of the patch machinery, but compare on the A40 when the real captures exist.
+Node note: the GPU jobs of the validation ran on an L40S (`--gres=gpu:l40s:1` on the sbatch line) because the A40 queue was long; the scripts default to `gpu:a40:1`.
