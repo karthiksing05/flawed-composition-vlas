@@ -160,3 +160,40 @@ probe patch group `in.crop`: the crop's 256 prefix tokens are the third image bl
 3. Training draws the crop from GT; at serving the centre inherits the Estimator error (0.6 cm = about 2 px, the jitter sigma used).  The jitter is per frame
    and independent; no per-chunk consistency is imposed.
 4. K7 / K8 and no-channel / noM queries use an all-zero crop with the mask True; the training set contains zero crops only for K7 / K8.
+
+## 8. DEVIATIONS (orchestrator decisions, 2026-11-20, after section 2's literal kill) and the S-B1 re-check
+
+**(a) Reference change (orchestrator decision).**  The crop is centred on the entity's VISIBLE GEOM CENTRE, not its body origin.  Reason: the body origin sits at the object's base
+(the segmentation centroid is at the silhouette centre), and the camera model matches robosuite to 1e-13 px (section 2), so the 9.54 px median was a reference mismatch.  The offset is
+a fixed per-class 3D offset read from the simulator's own geoms at the task's reset state (experiments/raafb_lift.py, job 4818969, nothing fitted to the check): bowl (+0.0003, +0.0004, +0.0284) m,
+cheese ~0, bottle (0, +0.0065, +0.0769), plate (0, 0, +0.0083); identical in all 6 task envs (spread 0.0000).  Fixture sites keep the site (offset 0).  Applied in raafb_rv.py (training) and
+raafb_crop.client_uv (serving: Estimator position + class offset); stored in results/flawed/raafb_lift.json.
+
+**(b) Base model (orchestrator decision).**  Servo off: RAA-c-from-libero exactly as Route A (config pi05_g8v_raac_lb_ae, `RS.servo_fields(k=0.0)`), instead of the plan's RAA-sL model
+(pi05_g8v_raas_lb_ae).  The only change vs Route A's model is the data repo and the crop.  wa_sb.py / raa_b.py default config renamed to pi05_g8v_raac_lb_ae.  Section 6.2's snippet is
+superseded by the applied edit (config name, `k=0.0`).
+
+**S-B1 re-check (job 4818984, 1,200 rows, same frames as section 2).**  Movable roles, reference = class-offset geom centre: **median 3.71 px, p90 8.35 px, KILL: no** (origin reference:
+9.54 / 16.5).  By slot (median / p90): bowl 3.71 / 5.81 (was 9.54 / 10.0), cheese 1.80 / 5.99, plate 1.01 / 6.66 (was 2.69 / 5.05), bottle 6.49 / 23.0 (was 15.8 / 22.8; the p90 is the bottle tilting
+in the carry, a constant world offset does not follow it).  Movable object role 3.74 / 10.6, movable target role 3.17 / 5.64.  Fixture sites unchanged and still not like-for-like (stove 4.2,
+rack 18.4, cabinet 32.9; visual check only).  Files: results/flawed/raafb_s_b1.json.  Re-built 3-demo test set and smoke test (jobs 4819022, 4819023): ALL OK, mask-centroid offset in crop px
+median 6.5 (was 17.5), max 24.4; PNGs re-viewed (K4 pre: bottle mid-body at the crop centre; K6 held: bowl centred horizontally, slightly high under the gripper).
+
+## 9. LAUNCH RECORD (2026-11-20)
+
+Applied (additive) edits: lifelong_ood/policy/raafb_inputs.py (new: LiberoInputsB), lifelong_ood/policy/l90c_config.py (RAAFB_REPO, `_crop_data`, NAMES / AE entry and the
+`pi05_g8v_raac_lb_ae` block: Route A's model, servo_k = 0, weights from pi05_libero, RAA-c norm stats, data lol/libero_g8v_raacb), experiments/c_train_pi05.py (`raac_lb` in the export tuple and
+the --g8v choices).  The committed copies of these two shared files also carry the Route A agent's still-uncommitted `raac_lf` lines.
+
+- Dataset lol/libero_g8v_raacb (job 4819195, second attempt; the first, 4819021, died at K7 on a missing K / E key and was fixed): 400 episodes, 52,181 frames (= lol/libero_g8v_raac).
+  Checker raafb_check.py: PASS (state / actions / prompts row-for-row equal to raac, crop_image 224 x 224 x 3, 0 all-zero crops on 3,471 decoded routed frames, 0 non-zero crops on
+  1,716 decoded unrouted frames).  Manifest results/flawed/raafb_rv_manifest.json.  Per-phase mask-centroid offsets (median px, class-offset centre): K1 pre 3.6, K6 held 3.7 (more in the manifest).
+- Real-pipeline check (job 4819196, raafb_batch_check.py): repack + LiberoInputsB + normalise on 200 frames: `image_mask["right_wrist_0_rgb"]` True on all, crop non-zero on 131 routed frames,
+  zero on 69 unrouted.  (plan k2: slot unmasked: PASS)
+- 20-step smoke (exp smoke, tail-lab job 4819374 after a long overcap queue wait; overcap job 4819197 cancelled): step-0 loss **.0403** (RAA-sL .0556; k2 limit .1112), state_proj in the
+  parameter list, RAA-c norm stats loaded, exit 0.
+- Prereg row (before any main job): ledger/m3_prereg/m3_prereg__libero_goal__raafb__s0__ac741443.json, tag **raafb**, experiments/prereg/raafb.py + raafb_pred.txt (job 4819395).
+- Chains (copies raafb_train.sh / raafb_chain.sh in .claude_tmp/pp; ids in raafb_chain_ids.txt): overcap exp `main` jobs 4819403-4819408 (6 x 4 h, afterany); tail-lab exp `tl` jobs
+  4819409-4819414.  tail-lab held 2 running of this user's jobs at launch (raasls2_tl3, raaf_tl1), so the tl chain makes 3 (cap 4).  Both chains write
+  /coc/flash10/ksingara3/robot/checkpoints_l90c/jax/pi05_g8v_raac_lb_ae/{main,tl}; cancel the second chain when the first reaches step 6000 (as for RAA-sL).
+- Open: kill k3 (dev K) and k4 (probe) are read after training; the probe's `in.crop` patch group (a2_probe_f.py) is not written yet.

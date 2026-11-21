@@ -65,12 +65,12 @@ def t2(a):
                 m = RV.clean_mask(np.asarray(z["seg"][t]) == ei)
                 if m.sum() < 20 or slot not in FC.MOVABLE:
                     continue
-                est = pos[t, si] + rng.normal(0, 0.006 / np.sqrt(3), 3)                # ~0.6 cm Estimator error
+                est = pos[t, si] + CR.lift_of(slot) + rng.normal(0, 0.006 / np.sqrt(3), 3)                # ~0.6 cm Estimator error
                 raa = {"crop_uv_obj": CR.project_client(est, K, E).tolist(), "crop_uv_tgt": CR.project_client(est, K, E).tolist()}
                 o = {}
                 used = CR.attach_crop(o, z["image"][t], raa, on=(role == "target"))
                 assert used is not None
-                uv_true = CR.project_client(pos[t, si], K, E)
+                uv_true = CR.project_client(pos[t, si] + CR.lift_of(slot), K, E)
                 p = CR.crop_centre_px(used, uv_true)
                 d_true = float(np.hypot(p[0] - CEN, p[1] - CEN))
                 mk = np.repeat(m[..., None].astype(np.uint8) * 255, 3, 2)
@@ -116,7 +116,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--cam", required=True)
     ap.add_argument("--root", default="/coc/flash10/ksingara3/robot/data/fa1/rv")
+    ap.add_argument("--lift", default="")
     a = ap.parse_args()
+    if a.lift:
+        CR.LIFT_PATH = a.lift
     t1()
     t2(a)
     t3_t4()

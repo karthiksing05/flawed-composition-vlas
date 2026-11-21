@@ -4,7 +4,7 @@ target-centred crop for pi0.5's third image slot.  Changes against wa_s.py (sear
           raafb_crop.client_uv; K / E from robosuite) and meta/raa_crop_tuv_* from simulator truth (error log only);
   server  WARoleView.infer crops CROP px of the PAINTED 256 agentview around the active role's uv (target while held, else object), resizes to 224 and
           sets observation/crop_image (raafb_crop.attach_crop); the noM skip gives an all-zero crop; the warm-up example carries a zero crop;
-  serve   default config pi05_g8v_raas_lb_ae.
+  serve   default config pi05_g8v_raac_lb_ae.
 Original docstring (WA-s, SR 82) follows.
 
 WA-s (SR 82, docs/notes/raasl_plan.md; m3_prereg tag raasl): a COPY of wa.py (SR 79 / 80, unchanged) for the RAA-s family (RAA-sL = pi05_g8v_raas_l_ae).
@@ -252,7 +252,7 @@ def serve_cmd(a):
     from lifelong_ood.policy.serve import GuidedPolicy, serve, warm
     import sc_seg as SEG
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-    name = a.config or "pi05_g8v_raas_lb_ae"                                # RAA-F B (docs/notes/raafb_build.md)
+    name = a.config or "pi05_g8v_raac_lb_ae"                                # RAA-F B (docs/notes/raafb_build.md)
     X = json.load(open(RV.lex_path(""), encoding="utf-8"))
     logging.info(f"[wa-s] serve (RAA-s family, SR 82; state-token channel) config {name} ckpt {a.ckpt} tw {X['tw']:.6f} lift {X['lift']} chan_diag {a.chan_diag}")
     bk = PolicyBackbone(name, checkpoint_dir=a.ckpt, device="cuda")
@@ -540,7 +540,7 @@ def client_main():
         dm = (fr.dm if fr is not None and fr.mode == "resolver" else {})
         z = np.zeros((PU.SIZE, PU.SIZE), np.uint8)
         import raafb_crop as CR                                             # RAA-F B: crop centres from the Estimator's estimates (truth for the log)
-        uvx = CR.client_uv(raw, pos[o_i], pos[t_i], tobj, ttgt)
+        uvx = CR.client_uv(raw, pos[o_i], pos[t_i], tobj, ttgt, oe, te)
         return {**uvx, **offx, "meta/raa_ok": True, "meta/raa_obj": pos[o_i].tolist(), "meta/raa_tgt": pos[t_i].tolist(),
                 "meta/raa_tobj": tobj.tolist(), "meta/raa_ttgt": ttgt.tolist(),
                 "meta/raa_src_obj": str(src.get(oe, "site")), "meta/raa_src_tgt": str(src.get(te, "site")), "meta/raa_roles": [oe, te, None],

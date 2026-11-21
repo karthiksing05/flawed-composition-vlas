@@ -1,7 +1,7 @@
 """RAA-F Route B (docs/notes/raaf_plan.md 4): a COPY of raa.py (unchanged) that adds the target-centred crop as observation/crop_image (the model's
 third image).  Changes (search "RAA-F B"): the client sends meta/raa_crop_uv_{obj,tgt} (raafb_crop.client_uv); the server captures the painted 256
 agentview and sets the crop in final() (raafb_crop.attach_crop); zero crop when unrouted / no centre; warm-up carries a zero crop; default config
-pi05_g8v_raas_lb_ae.  Use with --arm raac.  Original docstring follows.
+pi05_g8v_raac_lb_ae.  Use with --arm raac.  Original docstring follows.
 
 RAA-min (docs/SCAFFOLD_RESULTS.md 73; docs/PLAN_PAPER.md 2b): the test-time half of the two role-channel arms.
 
@@ -148,7 +148,7 @@ def serve_cmd(a):
     from lifelong_ood.policy.backbone import PolicyBackbone
     from lifelong_ood.policy.serve import GuidedPolicy, serve, warm
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-    name = a.config or "pi05_g8v_raas_lb_ae"                                # RAA-F B (docs/notes/raafb_build.md); --arm raac
+    name = a.config or "pi05_g8v_raac_lb_ae"                                # RAA-F B (docs/notes/raafb_build.md); --arm raac
     X = json.load(open(RV.lex_path(a.suffix), encoding="utf-8"))
     logging.info(f"[raa] serve arm {a.arm} config {name} ckpt {a.ckpt} tw {X['tw']:.6f} lift {X['lift']} chan_diag {a.chan_diag}")
     bk = PolicyBackbone(name, checkpoint_dir=a.ckpt, device="cuda")
@@ -289,7 +289,7 @@ def client_main():
             extra = {"meta/raa_off_ok": S["off"] is not None, "meta/raa_off": S["off"] or [0.0, 0.0, 0.0],
                      "meta/raa_toff": S["toff"] or [0.0, 0.0, 0.0]}
         import raafb_crop as CR                                             # RAA-F B: crop centres (Estimator estimate; truth for the log)
-        uvx = CR.client_uv(raw, pos[FC.ENT.index(oe)], pos[FC.ENT.index(te)], truth(raw, oe), truth(raw, te))
+        uvx = CR.client_uv(raw, pos[FC.ENT.index(oe)], pos[FC.ENT.index(te)], truth(raw, oe), truth(raw, te), oe, te)
         return {**uvx, **extra, "meta/raa_ok": True, "meta/raa_obj": pos[FC.ENT.index(oe)].tolist(), "meta/raa_tgt": pos[FC.ENT.index(te)].tolist(),
                 "meta/raa_tobj": truth(raw, oe).tolist(), "meta/raa_ttgt": truth(raw, te).tolist(),
                 "meta/raa_src_obj": str(src.get(oe, "site")), "meta/raa_src_tgt": str(src.get(te, "site")),

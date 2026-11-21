@@ -8,6 +8,8 @@ Conventions (checked by raafb_proj.py against the rendered segmentation):
   crop          CROP px square of the client image centred on (row, col) (rounded to the pixel), zero-padded outside the image,
                 resized bilinear to OUT x OUT (= openpi's resize_with_pad for a square input).
 """
+import os
+
 import numpy as np
 
 PIX = 256
@@ -58,7 +60,7 @@ def crop_centre_px(crop_rc, rc_true, crop=CROP, out=OUT):
 
 
 # ---------------------------------------------------------------- client / server glue (Route B serving)
-def client_uv(raw_env, pos_obj, pos_tgt, true_obj=None, true_tgt=None, cache={}):
+def client_uv(raw_env, pos_obj, pos_tgt, true_obj=None, true_tgt=None, oe=None, te=None, cache={}):
     """CLIENT (LIBERO venv): the crop centres (row, col, client 256 px) of the Estimator's object / target estimates, and of the
     simulator-truth positions for the error log.  K / E of the fixed agentview are read from the sim once per task and cached by sim id.
     -> dict of meta/raa_crop_uv_{obj,tgt} and meta/raa_crop_tuv_{obj,tgt} (lists of 2 floats)."""
@@ -69,10 +71,11 @@ def client_uv(raw_env, pos_obj, pos_tgt, true_obj=None, true_tgt=None, cache={})
         cache.clear()
         cache[key] = (CU.get_camera_intrinsic_matrix(sim, "agentview", PIX, PIX), CU.get_camera_extrinsic_matrix(sim, "agentview"))
     K, E = cache[key]
-    out = {"meta/raa_crop_uv_obj": project_client(pos_obj, K, E).tolist(), "meta/raa_crop_uv_tgt": project_client(pos_tgt, K, E).tolist()}
+    lo, lt = lift_of(oe), lift_of(te)                                       # the crop centre is the visible geom centre: Estimator position + class offset
+    out = {"meta/raa_crop_uv_obj": project_client(np.asarray(pos_obj) + lo, K, E).tolist(), "meta/raa_crop_uv_tgt": project_client(np.asarray(pos_tgt) + lt, K, E).tolist()}
     if true_obj is not None:
-        out["meta/raa_crop_tuv_obj"] = project_client(true_obj, K, E).tolist()
-        out["meta/raa_crop_tuv_tgt"] = project_client(true_tgt, K, E).tolist()
+        out["meta/raa_crop_tuv_obj"] = project_client(np.asarray(true_obj) + lo, K, E).tolist()
+        out["meta/raa_crop_tuv_tgt"] = project_client(np.asarray(true_tgt) + lt, K, E).tolist()
     return out
 
 
@@ -87,3 +90,17 @@ def attach_crop(o, painted_agent256, raa, on, skip=False, crop=CROP, out=OUT):
         return None
     o["observation/crop_image"] = make_crop(painted_agent256, uv, crop, out)
     return np.asarray(uv, np.float64)
+
+
+# ---------------------------------------------------------------- per-class centre offset (orchestrator deviation, docs/notes/raafb_build.md section 8)
+LIFT_PATH = os.environ.get("RAAFB_LIFT", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results", "flawed", "raafb_lift.json"))
+_LIFT = {}
+
+
+def lift_of(slot):
+    """Fixed world-axes offset (m) from a movable entity's body origin to the mean of its visible geom centres (raafb_lift.py, read from the simulator's
+    geoms at reset); zeros for fixture sites and unknown slots."""
+    if not _LIFT:
+        import json
+        _LIFT.update({k: np.asarray(v, np.float64) for k, v in json.load(open(LIFT_PATH, encoding="utf-8"))["lift"].items()})
+    return _LIFT.get(slot, np.zeros(3))

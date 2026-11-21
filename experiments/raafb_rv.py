@@ -59,8 +59,11 @@ def main():
     ap.add_argument("--jitter_px", type=float, default=2.0)
     ap.add_argument("--seed", type=int, default=93)
     ap.add_argument("--png_dir", default="")
+    ap.add_argument("--lift", default="", help="raafb_lift.json (default results/flawed/raafb_lift.json)")
     ap.add_argument("--png_n", type=int, default=6, help="PNG frames per demo, evenly spaced")
     a = ap.parse_args()
+    if a.lift:
+        CR.LIFT_PATH = a.lift
     os.environ["HF_LEROBOT_HOME"] = RV.LEROBOT_HOME
     RV._openpi()
     from lerobot.common.datasets.lerobot_dataset import LeRobotDataset
@@ -93,7 +96,7 @@ def main():
     chan_info = dict(demos=0, fallback=[], g_ne_given=0, r_ne_given=0)
     stats, per_task, k = {}, {}, 0
     for c in tasks:
-        K, E = KE["K_" + c], KE["E_" + c]
+        K, E = (KE["K_" + c], KE["E_" + c]) if "K_" + c in KE.files else (None, None)         # K7 / K8: unrouted, zero crop
         for f in files[c]:
             z = dict(np.load(f))
             assert str(z["task"]) == c
@@ -105,6 +108,7 @@ def main():
                 raw = RV.demo_rel(z, c, f, ka_raw, X, T16, by_c, dict(demos=0, fallback=[], g_ne_given=0, r_ne_given=0))
                 ee = np.asarray(np.load(RV.chan_path(a.root, c, j))["ee"], np.float64)
                 p_obj, p_tgt = raw[:, 0] + ee, raw[:, 1] + ee               # the slots' world positions (token = these minus eef (minus the in-hand offset))
+                p_obj, p_tgt = p_obj + CR.lift_of(by_c[c][0]), p_tgt + CR.lift_of(by_c[c][1])     # crop centre = visible geom centre (class offset; fixture sites: 0)
             else:
                 rel = np.zeros((n, 2, 3))
             rng = np.random.default_rng(a.seed * 100000 + 1000 * int(c[1:]) + j)

@@ -26,12 +26,15 @@ def main():
     ap.add_argument("--nd", type=int, default=5)
     ap.add_argument("--nf", type=int, default=20)
     ap.add_argument("--min_px", type=int, default=20)
+    ap.add_argument("--lift", default="", help="raafb_lift.py json: the crop centre = slot position + the class offset (fixtures: 0); empty = body origin")
     a = ap.parse_args()
     import fa1_common as FC
     import sc_pu as PU
     import sc_rv as RV
     from f0b_firstframes_seg import CU                                       # robosuite.utils.camera_utils inlined (it imports h5py, absent from the LIBERO venv)
     import raafb_crop as CR
+    if a.lift:
+        CR.LIFT_PATH = a.lift
     os.makedirs(a.out, exist_ok=True)
     by_c, _ = RV.roles_of()
     allrows, KE = [], {}
@@ -72,13 +75,14 @@ def main():
                     gs = [g for g in np.flatnonzero(Et["geom_ent"] == ei) if g not in set(Et["hide"].tolist())]
                     gm = np.mean(np.asarray(env.env.sim.data.geom_xpos)[gs], 0) if gs else pos[t, si]
                     pg = CR.project_client(gm, K, E)
-                    pr = CR.project_client(pos[t, si], K, E)
+                    pr0 = CR.project_client(pos[t, si], K, E)                  # body origin (the first S-B1 reference)
+                    pr = CR.project_client(pos[t, si] + (CR.lift_of(slot) if a.lift else 0.0), K, E)   # the crop centre actually used
                     r2, c2 = PU.project(pos[t, si], f, Rc, cp)                # upright convention -> client: col mirrored
                     pr2 = np.array([r2, (RV.SIZE - 1) - c2])
                     rr, cc = int(round(pr[0])), int(round(pr[1]))
                     inside = 0 <= rr < 256 and 0 <= cc < 256
                     allrows.append(dict(task=c, demo=j, t=int(t), role=role, slot=slot, movable=slot in FC.MOVABLE, npx=int(len(ys)),
-                                        err=float(np.linalg.norm(pr - ref)), err_dr=float(pr[0] - ref[0]), err_dc=float(pr[1] - ref[1]),
+                                        err=float(np.linalg.norm(pr - ref)), err_origin=float(np.linalg.norm(pr0 - ref)), err_dr=float(pr[0] - ref[0]), err_dc=float(pr[1] - ref[1]),
                                         hit=bool(inside and m[rr, cc]), pu_vs_ke=float(np.linalg.norm(pr - pr2)),
                                         proj=pr.tolist(), ref=ref.tolist(), err_geom=float(np.linalg.norm(pg - ref)),
                                         off3=(gm - pos[t, si]).tolist(), pos3=pos[t, si].tolist()))
@@ -101,9 +105,10 @@ def main():
             return dict(name=name, n=0)
         e = np.array([r["err"] for r in rows])
         g = np.array([r["err_geom"] for r in rows])
+        o0 = np.array([r["err_origin"] for r in rows])
         lf = np.array([r["err_lift"] for r in rows])
         return dict(name=name, n=len(rows), median=float(np.median(e)), p90=float(np.percentile(e, 90)), mean=float(e.mean()), max=float(e.max()),
-                    geom_median=float(np.median(g)), geom_p90=float(np.percentile(g, 90)), lift_median=float(np.median(lf)),
+                    origin_median=float(np.median(o0)), origin_p90=float(np.percentile(o0, 90)), geom_median=float(np.median(g)), geom_p90=float(np.percentile(g, 90)), lift_median=float(np.median(lf)),
                     lift_p90=float(np.percentile(lf, 90)),
                     hit=float(np.mean([r["hit"] for r in rows])), mean_dr=float(np.mean([r["err_dr"] for r in rows])),
                     mean_dc=float(np.mean([r["err_dc"] for r in rows])), pu_vs_ke_max=float(max(r["pu_vs_ke"] for r in rows)))
@@ -116,6 +121,7 @@ def main():
     for s in S:
         print("[sb1] " + json.dumps(s), flush=True)
     mv = S[1]
+    print("[sb1] reference: %s" % ("body origin + class offset (movables)" if a.lift else "body origin"), flush=True)
     print("[sb1] KILL (median > 8 px on movable roles): %s" % ("YES" if mv.get("n", 0) and mv["median"] > 8.0 else "no"), flush=True)
 
 

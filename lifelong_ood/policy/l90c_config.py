@@ -26,11 +26,12 @@ L90C = "/coc/flash10/ksingara3/robot/checkpoints_l90c"          # our checkpoint
 REPO_ID = "lol/libero_l90c"
 S2_REPO = "lol/libero_g8v_raacs2"                          # SR 89: kitchen raac + scene-2 cycles (experiments/s2_rv.py convert)
 RAAF_REPO = "lol/libero_g8v_raacf"                          # RAA-F (docs/notes/raaf_plan.md): kitchen raac + relabelled held copies (experiments/raaf_rv.py)
+RAAFB_REPO = "lol/libero_g8v_raacb"                          # RAA-F Route B (experiments/raafb_rv.py): kitchen raac + the target crop (crop_image -> right_wrist_0_rgb)
 BASE_PARAMS = f"{CACHE}/pi05_base/params"
 LIBERO_PARAMS = f"{CACHE}/pi05_libero/params"                  # openpi pi05_libero (the frozen "I" / pi05 of SR 45 / 52 / 70): RAA-L (SR 80) initialises from it
 NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
          "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae", "pi05_g8v_plain_ae", "pi05_g8v_rsup_ae", "pi05_g8v_rview_ae",
-         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae")
+         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_lb_ae")
 # SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
 # the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
 AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
@@ -56,7 +57,9 @@ AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae":
       # SCAFFOLD_RESULTS 89 (RAA-sL-S2): RAA-sL exactly; assets (norm stats, servo constants) stay RAA-c's, only the data repo differs (kitchen raac + the scene-2 K1 / K2 cycles, experiments/s2_rv.py)
       "pi05_g8v_raas_ls2_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
       # RAA-F Route A (docs/notes/raaf_plan.md 1): RAA-c exactly (state token, servo_k = 0) from pi05_libero; RAA-c norm stats / assets, data repo = RAAF_REPO
-      "pi05_g8v_raac_lf_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
+      "pi05_g8v_raac_lf_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
+      # RAA-F Route B (docs/notes/raafb_build.md): Route A's model (servo_k = 0) on the raac frames + the crop in the third image slot; RAA-c norm stats / assets
+      "pi05_g8v_raac_lb_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
 ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)
@@ -70,6 +73,25 @@ def _openpi():
         sys.path.insert(0, OPENPI + "/src")
     import openpi.training.config as C
     return C
+
+
+def _crop_data(C, data):
+    """RAA-F Route B: data (a LeRobotLiberoDataConfig) -> the same config whose repack also maps crop_image and whose LiberoInputs is raafb_inputs.LiberoInputsB."""
+    import openpi.transforms as T
+    from openpi.policies import libero_policy
+    from . import raafb_inputs as RI
+
+    @dataclasses.dataclass(frozen=True)
+    class CropLiberoDataConfig(C.LeRobotLiberoDataConfig):
+        def create(self, assets_dirs, model_config):
+            dc = super().create(assets_dirs, model_config)
+            repack = T.Group(inputs=[T.RepackTransform({"observation/image": "image", "observation/wrist_image": "wrist_image",
+                                                        "observation/crop_image": "crop_image", "observation/state": "state",
+                                                        "actions": "actions", "prompt": "prompt"})])
+            ins = [RI.LiberoInputsB(model_type=model_config.model_type) if isinstance(t, libero_policy.LiberoInputs) else t for t in dc.data_transforms.inputs]
+            assert any(isinstance(t, RI.LiberoInputsB) for t in ins)
+            return dataclasses.replace(dc, repack_transforms=repack, data_transforms=T.Group(inputs=ins, outputs=dc.data_transforms.outputs))
+    return CropLiberoDataConfig(**{f.name: getattr(data, f.name) for f in dataclasses.fields(data)})
 
 
 def train_config(name, **over):
@@ -126,6 +148,14 @@ def train_config(name, **over):
             m = base.model
             model = RS.Pi0ConfigS(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False, **RS.servo_fields(k=0.0))
             data = dataclasses.replace(data, repo_id=RAAF_REPO)
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
+                                       weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
+        if name == "pi05_g8v_raac_lb_ae":                       # RAA-F Route B: Route A's model (RAA-c state token, servo_k = 0), weights from pi05_libero, RAA-c norm stats; data = lol/libero_g8v_raacb; ONLY change vs RAA-c-from-libero: the crop in the third image slot
+            from . import raac_model as RM
+            from . import raas_model as RS
+            m = base.model
+            model = RS.Pi0ConfigS(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False, **RS.servo_fields(k=0.0))
+            data = _crop_data(C, dataclasses.replace(data, repo_id=RAAFB_REPO))
             return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
                                        weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
         if name == "pi05_g8v_raa_l_ae":                         # SR 80: RAA's config exactly (pi05_g8v_raa_ae), weights from pi05_libero's params

@@ -1,0 +1,17 @@
+RAA-F Route B (docs/notes/raaf_plan.md section 4; docs/notes/raafb_build.md): the target-centred crop in pi0.5's third image slot right_wrist_0_rgb.  Principle: a where-signal is used by the learned
+network iff the training data make it necessary.  Route B has dose 0 (the crop is centred on the target in every training frame, no label changes), so it is the test of the "only if" direction.
+Model = RAA-c's state-token model (servo_k = 0) from pi05_libero, config pi05_g8v_raac_lb_ae, RAA-c norm stats / assets, data lol/libero_g8v_raacb = the RAA-c frames (rview2 painted views, role-phrase
+prompts, 4-dim state token) + crop_image (96 px of the painted agentview, centred on the active role's visible geom centre, N(0, 2 px) jitter, resized to 224; K7 / K8: zeros).  Recipe of RAA-sL
+(6,001 steps, batch 32, lr 5e-5, 1,000 warmup, frozen VLM, no EMA).  Written 2026-11-20 BEFORE this row, any main training job of Route B and any rollout or probe.
+Known when written: S-B1 projection check on rendered demos (see notes), the 3-demo test build, the full-dataset build + checker, the 20-step smoke (plumbing only).
+Predictions (probabilities are mine; copied from plan section 8 items 3 and 8, restated for the servo-free base):
+1. B passes the probe (learned where-share = in.tok + in.crop, CI lower >= .70, prefix share below RAA-sL's, gate T lower > 0): 6%.  B's crop + token share point < .30: 80%.
+2. B dev K1-K6 point >= RAA-sL (.936) - .05: 45% (input-shift risk, 55% in the plan for the servo model; lower here since the servo is off).  B dev K1-K6 >= .70: 80%.
+3. B dev N1-N6 within +-.05 of RAA-sL (.878): 20% (servo-free models lost release aim: RAA-c .50, RAA-L .58); B dev N below RAA-sL by > .05: 70%.
+4. Step-0 loss (smoke) <= 2x RAA-sL's .0556: 85%.
+Kill criteria for B (plan 9): k1 S-B1 median > 8 px; k2 smoke step-0 loss > 2x .0556, or the crop slot not unmasked in the batch; k3 dev K point below RAA-sL - .10; k4 probe share CI upper < .30.
+NOTES / DEVIATIONS (orchestrator decisions 2026-11-20):
+(a) S-B1 reference: the crop is centred on the entity's visible geom centre, not its body origin (movables: a fixed per-class 3D offset read from the simulator's geoms at reset, raafb_lift.py; fixture sites keep
+the site).  Reason: the body origin sits at the object's base, the segmentation centroid at the silhouette centre; with the body origin the median was 9.54 px (kill 8), while sc_pu.cam_model / project and
+robosuite K / E agree to 1e-13 px.  The offset is applied identically in training (raafb_rv.py) and serving (raafb_crop.client_uv).
+(b) Base model: servo off (RAA-c-from-libero, matches Route A), instead of the plan's RAA-sL model with the servo (table in plan section 1: pi05_g8v_raas_lb_ae).  Config name pi05_g8v_raac_lb_ae.
