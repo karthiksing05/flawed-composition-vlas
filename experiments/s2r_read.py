@@ -115,6 +115,9 @@ def read(a):
         if a_ in S and b_ in S:
             d = bt.delta(S, a_, b_, ts)
             d["label"] = rule(d)
+            bad = [x for x in (a_, b_) if x in ("w5", "raasls2") and R["cells"][x]["K1+K2"]["rate"] < 0.70]      # the FIT gate (pred file): an arm below .70 on K1+K2 is UNTESTABLE
+            if bad and not name.startswith("desc"):
+                d["label"] = "UNTESTABLE (fit gate: %s K1+K2 < .70); raw label: %s" % (bad, d["label"])
             C[name] = d
         else:
             C[name] = dict(label="NOT RUN (missing %s)" % [x for x in (a_, b_) if x not in S])

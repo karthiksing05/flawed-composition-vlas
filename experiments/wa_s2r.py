@@ -6,7 +6,8 @@ ADDED here (everything else is wa_s2.py's client / server):
         (rgp's "largest component" rule); the prompt stays the instruction's role phrase.
   M-S2  the pose-memory analogue.  The estimator's hold rule (occluded mask: the last estimate seen with >= half of its first mask; src hold / none) is the memory.  noM = the channel is withheld
         (all-zero state) whenever the ACTIVE role entity's estimate is a held one (the view paint of that query is NOT removed: the images come from the shared Front; deviation from wa.py's noM).
-  --chan maskoff (registered primary): mask + depth positions with the hold rule (as --chan mask), but the in-hand offset at the hold's onset is the simulator's (PRIVILEGED, the value the training labels
+  --chan sim (PRIVILEGED positions and in-hand offset = the training labels; the mask estimator still runs, its hold state is the M-S2 src)
+  --chan maskoff (NOT primary: failed the fit gate on the probe states): mask + depth positions with the hold rule (as --chan mask), but the in-hand offset at the hold's onset is the simulator's (PRIVILEGED, the value the training labels
         carry), because the unprivileged onset rule gave 3-4 cm held-target channel error in the SR 89 probe (docs/notes/sr89_build.md).  --chan mask / sim as wa_s2.py.
   serve --mu_json F   the W5 release-point table of the scene-2 plates (lifelong_ood/policy/raasls2_mu.json) replaces the kitchen table of PolicyBackboneW (backbone_w.py untouched).
 Arms (client --arm): full, noR, noM, noC (noC = prompt + views + all-zero state).  RAA-sL-S2 = served with --where_own 0, W5-S2 = --where_own 5 --mu_json, step-0 = the kitchen checkpoint with --where_own 0.
@@ -254,8 +255,6 @@ def client_main():
             return np.array(inner.sim.data.body_xpos[inner.obj_body_id[n]], np.float64)
 
         def step(self):
-            if chan_mode == "sim":
-                return {OE: self.truth(OE), S["te"]: self.truth(S["te"])}, {OE: "sim", S["te"]: "sim"}
             A, _ = PU.measure(self.env, self.E, PU.AGENT, [OE, S["te"]])
             out = {}
             for k, n in enumerate((OE, S["te"])):
@@ -273,6 +272,8 @@ def client_main():
                 else:
                     p, src = None, "none"
                 out[n], self.src[n] = (None if p is None else np.asarray(p, np.float64)), src
+            if chan_mode == "sim":                                           # SR 89 step 2: PRIVILEGED positions (simulator bodies); src stays the mask estimator's hold state (M-S2 withholding and the engagement gate read it)
+                out = {n: self.truth(n) for n in out}
             return out, dict(self.src)
 
     class WEnv(s2.Rec2):
@@ -339,7 +340,7 @@ def client_main():
         if on and not S["was"]:                                              # the hold's onset: the offset = the object estimate before the hold minus the eef (mask); maskoff / sim: the simulator's
             S["off"] = None if S["pre"] is None else (S["pre"] - ee)
             S["toff"] = tobj - ee
-            if chan_mode == "maskoff":
+            if chan_mode in ("maskoff", "sim"):
                 S["off"] = S["toff"].copy()
         if not on:
             S["off"] = S["toff"] = None

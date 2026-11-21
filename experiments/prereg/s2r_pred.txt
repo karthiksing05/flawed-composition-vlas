@@ -1,8 +1,11 @@
 SR 89 STEP 2 (scene 2, LIVING_ROOM_SCENE5) PREDICTIONS, written before any registered rollout (docs/notes/scene2_plan.md section 3).
 Arms (label: what is served / run):  raasls2 = RAA-sL-S2 (pi05_g8v_raas_ls2_ae tl/6000, where_own 0, arm full);  w5 = W5-S2 (same checkpoint, where_own 5 with the scene-2 plate mu table lifelong_ood/policy/raasls2_mu.json, arm full);
   w5_noR / w5_noM / w5_noC = W5-S2 with arm noR / noM / noC (wa_s2r.py);  step0 = the KITCHEN RAA-sL (pi05_g8v_raas_l_ae main6000, where_own 0, arm full);  I = frozen pi0.5 (s2.py arm I);  rgp = ReGuide-perc (s2rg.py arm rgp).
-Cells K1 K2 (trained pairings), N1 N2 (new pairings); 60 fresh states (seed 1,100,000 + k, k 4-63; k 0-3 smoke), one trial per state, one seed.  Channel = --chan maskoff (mask + depth + calibration positions with the hold rule; the in-hand offset at the
-hold's onset is the SIMULATOR's: PRIVILEGED; chosen because the unprivileged onset rule gave 3-4 cm held-target error in the SR 89 probe).  Role views use simulator masks (privileged, as SR 50 / 66).
+Cells K1 K2 (trained pairings), N1 N2 (new pairings); 60 fresh states (seed 1,100,000 + k, k 4-63; k 0-3 smoke), one trial per state, one seed.
+CHANNEL = wa_s2r.py --chan sim (PRIMARY, PRIVILEGED): the channel's positions are the simulator's body positions and the in-hand offset at the hold's onset is the simulator's (the value the training labels carry), so the channel error is 0 by construction
+(the plan's 2 cm channel gate is met trivially).  Reason, measured on the 20 SR 89 probe states (K1 / K2, RAA-sL-S2 + W5-S2, not the registered range): the unprivileged mask + depth + calibration channel (--chan mask, SR 89 probe estimator) gave K1+K2 25/40 = .625 (RAA-sL-S2),
+and with the exact onset offset (--chan maskoff) 26/40 = .65 (RAA-sL-S2) and 19/40 = .475 (W5-S2), below the .70 floor; with --chan sim K1+K2 = 28/40 = .70 (W5-S2).  So the trained checkpoint tolerates a 1-3 cm perception error poorly, and the registered
+rows measure the module-supplied where with perfect perception.  The mask estimator still runs: its hold state (src hold / none: the mask is under half of its first mask, the last good estimate stands) is the pose-memory analogue's trigger (wa_s2r.py).  Role views use simulator masks (privileged, as SR 50 / 66).
 Estimator: paired bootstrap over STATES only (tasks fixed), B = 2000, rng 0, CI 2.5 / 97.5.  Labels:
  A1 PRIMARY  W5-S2 - RAA-sL-S2 on N1+N2: SUPPORTED iff lower > 0, REVERSED iff upper < 0, else INCONCLUSIVE.
  A2a W5-S2 - rgp on N1+N2: NON-INFERIOR iff lower > -.10;  A2b beats iff lower > 0.
@@ -12,20 +15,20 @@ Estimator: paired bootstrap over STATES only (tasks fixed), B = 2000, rng 0, CI 
  D1' W5-S2 - noR on N1+N2 (resolver analogue): SUPPORTED iff lower > 0.   D2' W5-S2 - noM on N1+N2 (pose-memory analogue): SUPPORTED iff lower > 0.   DK W5-S2 - noR on K1+K2 and DKM W5-S2 - noM on K1+K2: NON-INFERIOR iff lower > -.05.
  D3a noR - W5-S2 on the episodes (all four tasks, paired by state) in which noR chose the parsed plate; D3b noM - W5-S2 on the episodes in which noM withheld no query: EQUIVALENT iff the CI is inside +-.10 (UNTESTABLE if fewer than 20 episodes).
  GATED DISSOCIATION: SHOWN iff D1' and D2' SUPPORTED, D3a and D3b EQUIVALENT and all gates pass; PARTIAL iff one of D1' / D2' SUPPORTED; NOT SHOWN otherwise; UNTESTABLE if a gate fails.
-Gates (on W5-S2 full): K1+K2 success >= .70;  M engaged: share of target-phase queries whose active-role estimate is a held one (src hold / none) >= .20 in at least one task, else D2' UNTESTABLE;
- R engaged: the noR plate differs from the parsed plate in >= .30 of N1+N2 episodes, else D1' is trivially empty;  channel at test: the pooled per-episode median held-target channel error < 2 cm.
-D1' and D2' are CONSTRUCTED ANALOGUES of the kitchen modules (the plates are named by position; the memory is the plate / mug mask hold), never atlas cells.
-NOT in this row (not rolled): rgo, KC / NC, the OWLv2 variant, F6_b / F7 analogues.  noM does not remove the view paint (wa.py's noM does); the paint of the active filler stays.
+Gates (on W5-S2 full): K1+K2 success >= .70 (the FIT gate; if it fails for an arm, every label that involves that arm is reported as UNTESTABLE for the arm, as GR00T in SR 50: the raw numbers stay in the table);
+ M engaged: share of target-phase queries whose active-role mask estimate is a held one (src hold / none) >= .20 in at least one task, else D2' UNTESTABLE;
+ R engaged: the noR plate differs from the parsed plate in >= .30 of N1+N2 episodes, else D1' is trivially empty;  channel at test: the pooled per-episode median held-target channel error < 2 cm (0 under --chan sim).
+D1' and D2' are CONSTRUCTED ANALOGUES of the kitchen modules (the plates are named by position; the memory is the mask hold, and under the privileged channel `full` has the true position where noM has none), never atlas cells.  D2' therefore tests whether the channel is needed at the occluded queries, not whether a memory is accurate.
+NOT in this row (not rolled): rgo, KC / NC, the OWLv2 variant, F6_b / F7 analogues.  noM does not remove the view paint (wa.py's noM does); the paint of the active filler stays.  noR chooses the plate with the larger agentview mask (ties plate_1): in the smoke it chose the left plate in 3 of 4 N1 episodes.
 
 PREDICTIONS (success rates on 60 states per cell; point guesses with a rough range):
- Fit:  RAA-sL-S2 and W5-S2 K1+K2 about .90 (.75-1.00); the gate K1+K2 >= .70 passes.  (The kitchen RAA-sL zero-shot probe had .775 on 20 other states, with K2 .55.)
- RAA-sL-S2 N1+N2 about .60 (.35-.80).  I N1+N2 about .05 (SR 50: views-free pi0.5 fails at the handoff).  rgp N1+N2 about .70 (SR 68: .708).  step0 N1+N2 about .50 (probe .525).
- A1: W5-S2 - RAA-sL-S2 about +.03 (the plate mu is within 1 cm of zero and the probe showed W5 = RAA-sL within one point in 40): INCONCLUSIVE.
- A2a: W5-S2 - rgp about -.10 (-.25 to +.10): not decided in advance (point on the margin);  A2b: beats rgp NOT supported.
- V1: RAA-sL-S2 and W5-S2 both FIX WORKS (N1+N2 lower > 0 vs I; K1+K2 lower > -.05).   AK: NON-INFERIOR.
- L1: W5-S2 - noC SUPPORTED (noC N1+N2 about .15, K1+K2 about .40);  L2: noC - I EQUIVALENT is NOT predicted (noC at an untrained all-zero state may leave the model's own habit: about +.10).
- D1': SUPPORTED (noR picks the larger plate in about half the episodes: N1+N2 about .30 against about .60).  DK: NOT non-inferior (K1+K2 about .50 against .90).  R engaged: passes (about .50).
- D2': SUPPORTED with a drop of about -.20 (the channel is withheld while the mug hides the plate and while the gripper hides the mug).  M engaged: passes (target-phase held share about .40).  DKM: NOT non-inferior.
- D3a, D3b: EQUIVALENT is predicted only by construction (same inputs on the retained episodes; the subset is selected by module state, not by outcome); GATED DISSOCIATION: SHOWN is predicted with low confidence (.4), the likeliest failure being a failed
-   channel gate (the plate estimate's own error is about 1 cm in the probe) or D3b not equivalent.
- Channel gate: pooled held-target channel median about 1.2 cm (passes).
+ Fit:  RAA-sL-S2 and W5-S2 K1+K2 about .70 (.55-.85): K1 about .90, K2 about .50 (K2 starts from the home pose are not in the training cycles).  The gate is a coin flip (p .5 that W5-S2 K1+K2 >= .70).  (Probe: W5-S2 K1 18/20, K2 10/20.)
+ RAA-sL-S2 N1+N2 about .45 (.25-.65).  I N1+N2 about .05 (SR 50: views-free pi0.5 fails at the handoff).  rgp N1+N2 about .70 (SR 68: .708).  step0 N1+N2 about .50 (probe .525).
+ A1: W5-S2 - RAA-sL-S2 about 0 (+-.10; the plate mu is within 1 cm of zero and the probe showed W5 = RAA-sL within one point in 40): INCONCLUSIVE.
+ A2a: W5-S2 - rgp about -.25 (-.45 to -.05): NOT non-inferior;  A2b: beats rgp NOT supported.
+ V1: both arms PARTIAL or FAILS on the K1+K2 side (the K2 weakness: K1+K2 lower vs I about -.30, against the -.05 margin) and FIX WORKS on the N1+N2 side (lower > 0 vs I).   AK: NON-INFERIOR.
+ L1: W5-S2 - noC SUPPORTED (noC N1+N2 about .10, K1+K2 about .30);  L2: noC - I EQUIVALENT is NOT predicted (noC may keep the model's own habit: about +.10).
+ D1': SUPPORTED (noR sends the mug to the left plate in about 3 of 4 episodes: N1 about 0, N2 about the full arm; N1+N2 about .25 against about .45).  DK: NOT non-inferior (K2 fails: K1+K2 about .40 against .70).  R engaged: passes (about .50).
+ D2': SUPPORTED with a drop of about -.15 (the channel is withheld while the mug hides the plate and while the gripper hides the mug).  M engaged: passes, from the smoke (held-estimate share .09 of all queries, higher in the target phase), about .30.  DKM: NOT non-inferior.
+ D3a, D3b: EQUIVALENT is predicted only by construction (same inputs on the retained episodes; the subset is selected by module state, not by outcome).  GATED DISSOCIATION: SHOWN with low confidence (.3), the likeliest failures being the fit gate (K1+K2 < .70) or D3b not equivalent.
+ Channel gate: passes (0 cm).

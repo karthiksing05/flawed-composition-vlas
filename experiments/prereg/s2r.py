@@ -33,9 +33,9 @@ CODE = ["experiments/wa_s2.py", "experiments/wa_s2r.py", "experiments/s2r_prep.p
         "docs/notes/scene2_plan.md", "docs/notes/sr89_build.md", "results/flawed/sr89/plate_axis.json", "results/flawed/sr89/probe/calib.json", "results/flawed/sr89/main/branches_main.json", "results/flawed/sr89/main/O/s2_living_0.npy",
         PP + "sr89r_roll.sh", PP + "s2r_prereg.sh"]
 PRED = open(os.path.join(ROOT, "experiments", "prereg", "s2r_pred.txt"), encoding="utf-8").read()
-SEEN = ("Written 2026-11-20.  Known when written: SR 50 / 66 / 68 / 69 / 72 (scene-2 results on other states), the SR 89 step-0 probe (20 states, seed 1,090,000 + k: kitchen RAA-sL .775 K / .525 N) and the SR 89 K fit check of RAA-sL-S2 "
+SEEN = ("Written 2026-11-20.  Known when written: SR 50 / 66 / 68 / 69 / 72 (scene-2 results on other states), the SR 89 step-0 probe (20 states, seed 1,090,000 + k: kitchen RAA-sL .775 K / .525 N) and the SR 89 K fit check of RAA-sL-S2 (channels mask, maskoff, sim; W5-S2 and RAA-sL-S2) "
         "on those 20 probe states (not on the registered range), the 100 training cycles' release points (raasls2_mu.json, computed once before any rollout).  The registered states (seed 1,100,000 + k) were drawn and checked unequal to every earlier "
-        "scene-2 state (results/flawed/sr89/main); k 0-3 are the smoke (plumbing, not read).  Channel: maskoff (privileged onset offset).")
+        "scene-2 state (results/flawed/sr89/main); k 0-3 are the smoke (plumbing, not read).  Channel: --chan sim (privileged positions + onset offset), chosen after the probe-state fit check (maskoff K1+K2 .65 / .475 < .70; sim .70), see experiments/prereg/s2r_pred.txt.")
 Z = dict(experts=0, tree=0, codes=0, samples=0, teacher_copies=0, total=0)
 print(ledger.record("m3_prereg", bench="libero_10", tag="s2r", seed=0,
                     command="pre-registration: SR 89 step 2, scene 2: RAA-sL-S2 / W5-S2 / noR / noM / noC / kitchen RAA-sL zero-shot / I / rgp on FRESH scene-2 states (docs/notes/scene2_plan.md section 3)",
