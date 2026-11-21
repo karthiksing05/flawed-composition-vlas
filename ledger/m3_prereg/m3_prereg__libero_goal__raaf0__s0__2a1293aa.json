@@ -1,0 +1,62 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: RAA-F A0 (docs/notes/raaf_plan.md): Route A's model and config (state token, servo_k = 0, pi05_libero init, RAA-c norm stats) on the base data lol/libero_g8v_raac; servo-matched comparator for A and B",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "neo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4820157",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "2a1293aa5c5d1cfbcf1eb3b7367e88c6b7cd04e3",
+  "short": "2a1293aa"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "pi05_g8v_raac_l_ae: RAA-c model, weights from pi05_libero, RAA-c norm stats / assets, data lol/libero_g8v_raac, recipe of Route A (6,001 steps, batch 32, lr 5e-5, 1,000 warmup, no EMA, frozen VLM, one seed), exp main / tl",
+  "deviation_notes": "ORCHESTRATOR ERROR: the plan registered B as RAA-sL's model (token + servo) plus the crop; the resume message to the B builder said servo off, so B (pi05_g8v_raac_lb_ae) differs from RAA-sL by crop AND servo removal.  A0 is therefore trained unconditionally (plan section 1 had it conditional on A passing) as the servo-matched comparator: B - A0 isolates the crop, A - A0 the relabel.",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/raaf0_chain.sh": "d15eafd0307db3c1f0e821bc5bfc829d6c5baff46241ccc942391e32330016f1",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/raaf0_train.sh": "5eb3f1b3619dd5c89724d86e92f7d0e45ea748948d36ccb0499eee0b7fe33243",
+   "/coc/flash10/ksingara3/robot/checkpoints_l90c/assets/pi05_g8v_raac/lol/libero_g8v_raac/norm_stats.json": "3d13a766b388152ec7531dbc6ab0abb175f97b00dcad279e41be320fcd761570",
+   "docs/notes/raaf_plan.md": "545b9596b068f610291c22eb3cb6e3838e1cade1745aaa7f39de58c6df8aa394",
+   "experiments/c_train_pi05.py": "1163067b28fface70c6e49a16027043b075dbd9131b45030ca3372e7eea0978d",
+   "experiments/prereg/raaf0_pred.txt": "1bb394daff15cec82559450b0e5fff22e2a1d33e7f6e8378766cd1f5f5553d21",
+   "lifelong_ood/policy/l90c_config.py": "bfeba9d73b058ae8b2fc577178461e32c0d35eda148783fb43bb48d970f74b44",
+   "lifelong_ood/policy/raac_model.py": "df500c3a5fde7c640c77c865b4ce8d12d8c579477b0c60819a515d60720b400c",
+   "lifelong_ood/policy/raas_model.py": "4990cfd28bd7ea7670866aa97d731074ea54b9db993f941c3f615a03dc40a636"
+  },
+  "mapping": "docs/notes/raaf_plan.md sections 1, 6.1 and the correction section",
+  "prediction": "RAA-F A0 (docs/notes/raaf_plan.md, section 1 table and \"ORCHESTRATOR ERROR AND CORRECTION: Route B's servo\"): Route A's model and config with exactly one change: the data is the base lol/libero_g8v_raac instead of lol/libero_g8v_raacf.\nConfig pi05_g8v_raac_l_ae (--g8v raac_l): RAA-c state-token model, servo_k = 0, weights from pi05_libero, RAA-c norm stats / assets, RaacLoader, 6,001 steps, batch 32, lr 5e-5, 1,000 warmup, no EMA, one seed, exp main / tl.\nWritten 2026-11-21 BEFORE this row, any main A0 training job, and any A0 probe or rollout.  Known when written: the 20-step A0 smoke only (plumbing); Route A (raaf) and Route B (raafb) are training, no probe or rollout of any route checkpoint exists.\nReason A0 is trained now and unconditionally (orchestrator error, plan correction section): the plan registered B as RAA-sL's model plus the crop (token + servo), but the orchestrator's resume message told the B builder \"servo off\", so B was launched as pi05_g8v_raac_lb_ae (servo OFF).  B differs from RAA-sL by the crop AND the servo removal.  A0 (servo-free, base data) is B's servo-matched comparator (B - A0 isolates the crop) and A's (A - A0 isolates the relabel).  The plan's section 1 had A0 conditional on A passing the probe; that condition is dropped.\nPredictions (probabilities are mine):\n1. A0's in.tok share passes the probe rule by itself (learned where-share CI lower >= .70, prefix share below RAA-sL's, gate T lower > 0): 4%.  Reasoning: the base data never make the token necessary (the plan's diagnosis), and RAA-sL's in.tok share is -.007; plan prediction 4 gave A0 5% when it was conditional on A passing.\n2. A0's in.tok share (point estimate) is below .30: 93%.  Point about .05 (range -.02 to .35).\nReading rule (plan correction item 3): if prediction 1 comes true, removing the servo, not the data or the crop, moved the share, and A / B passing does not count as evidence for the data principle.\n",
+  "seen": "Written 2026-11-21.  Known when written: the 20-step A0 smoke (plumbing only; step-0 loss in the smoke log of the A0 launch record); Route A and B are training, no probe or rollout of any route checkpoint exists.",
+  "status": "PRE-REGISTERED RAA-F A0",
+  "written_before": "any main A0 training job (exp main / tl), probe and rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__raaf0__s0__2a1293aa",
+ "schema": 1,
+ "script": "experiments/prereg/raaf0.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-21T03:32:11+00:00",
+ "stream": null,
+ "tag": "raaf0"
+}
