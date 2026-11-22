@@ -129,3 +129,75 @@ a - b +.358, M - b +.258, M - d -.125.**
 - x-direction statements are in the world frame; the plate-to-trained-spot axis is almost constant across states (dx -.09, dy -.19 median), so
   "toward the trained spot" and "-x" are not separable here; the y component of the release does not move toward the trained spot (-0.6 vs -0.7 cm).
 - The mapping of d/a failures to classes uses the same rule, n is small (4 and 7).
+
+---
+
+# Addendum: the arms section 6 tests on F6_b (2026-11-21, append-only)
+
+Script experiments/f6_diag2.py (job 4829915; reuses f6_diag.feat), output results/flawed/fig_frames/f6_diag2.json (not committed). Registered
+dirs read only; no rollout. Cells: tid 8 = F6_b (covered after the first query), tid 9 = F6_a (plate visible), 60 states per cell, one trial per state.
+Classes as in the main text: within 3 cm / 3-10 cm / > 10 cm = distance of the bowl at its last held row to the plate centre; "end" = final bowl xy to plate centre.
+
+## Which records have per-step tracks
+
+| arm | files | tracks (ee, bowl, plate, a6 per step) | states |
+|---|---|---|---|
+| RAA-L (full, noM, noR) | results/flawed/wal/{full,noM,noR}_{0..10}_track.npz | yes | development (SR 83-84 sets) |
+| RAA-sL (full, noM, noR) | results/flawed/wasl/... | yes | development |
+| RAA-sL, set 2 / 3 / 4 | raasw5/b_raasl, raasw6/b_raasl, raasw5r/b_raasl | yes | fresh sets 2, 3, 4 |
+| RAA-sL-W5 full / noM / noR | raasw5/b_w5, raasw5r/b_w5 (noM, noR only in sets 2 and 4); raasw6/b_w5 (full only) | yes | fresh sets 2, 3, 4 |
+| W4, I, rgp references | raasw5/b_w4, raasw5{,r}/b_ref | yes | same |
+| RC, slot only (mem) | rg_comp_roll/pi05_{rc,mem}_8 | yes (main text) | rg_comp |
+| RAA-F routes A0, A, B, A+, A+ctrl | raaf/dev_{A0,A,B,Aplus,Actrl}/wa/full_{8,9}_track.npz | yes (F6 cells only under `wa/`; the top-level dev dirs hold N / K json only) | development |
+| A+0 | not run yet (pending training) | none | |
+
+noR is byte-identical to full on F6 in every dir (the resolver does not act on F6), so it is not discussed.
+
+## Results (F6_b unless marked; classes = within 3 cm / 3-10 cm / >10 cm / never grasped / held to timeout; med = median over failures)
+
+| arm (set) | success F6_b | failures | classes | release xy med of failures (cm) | end xy med of failures (cm) | F6_a success |
+|---|---|---|---|---|---|---|
+| frozen I (set 2 / set 4) | .667 / .500 | 20 / 30 | 17,3,0,0,0 / 23,6,1,0,0 | 2.2 / 2.1 | 4.1 / 5.3 | .967 |
+| rgp (set 2 / set 4) | .683 / .667 | 19 / 20 | 7,4,5,3,0 / 5,8,3,4,0 | 3.2 / 4.2 | 4.5 / 5.2 | |
+| RAA-L | .333 | 40 | 23,16,1,0,0 | 2.6 | 8.6 | .967 |
+| RAA-L noM | .217 | 47 | 15,27,4,0,1 | 3.5 | 8.5 | |
+| **RAA-sL, development (wasl)** | **.017** | 59 | **2,44,6,7,0** | **5.4** | 6.9 | .983 |
+| RAA-sL (sets 2 / 3 / 4) | .067 / .100 / .050 | 56 / 54 / 57 | 3,33,15,5,0 / 4,37,6,7,0 / 2,36,7,12,0 | 6.1 / 5.8 / 5.7 | 7.4 / 7.3 / 7.4 | .933 / .967 / .983 |
+| RAA-sL-W5 (sets 2 / 3 / 4) | .650 / .583 / .817 | 21 / 25 / 11 | 5,7,2,7,0 / 1,13,2,9,0 / 0,3,1,7,0 | 4.1 / 5.6 / 7.0 | 6.0 / 5.2 / 4.9 | .900 / .883 / .917 |
+| W5 noM (sets 2 / 4) | .433 / .450 | 34 / 33 | 13,21,0,0,0 / 13,19,1,0,0 | 3.2 / 3.3 | 5.2 / 5.2 | |
+| W4 (set 2) | .750 | 15 | 2,2,2,9,0 | 7.1 | 4.6 | .950 |
+| A0 (dev) | .383 | 37 | 28,8,0,0,1 | 2.1 | 9.7 | 1.000 |
+| A (dev) | .433 | 34 | 17,15,2,0,0 | 3.0 | 4.2 | .933 |
+| B (dev) | .600 | 24 | 15,8,1,0,0 | 2.5 | 6.3 | .950 |
+| A+ (dev) | .033 | 58 | 0,14,29,15,0 | 12.9 | 10.2 | .417 |
+| A+ctrl (dev) | .000 | 60 | 0,0,41,14,5 | 36.5 | 37.7 | .000 |
+| RC / slot (rg_comp, main text) | .800 / .817 | 12 / 11 | 4,3,2,3,0 / 9,2,0,0,0 | 3.4 / 2.5 | 3.4 / 4.4 | |
+
+(RAA-sL development and sets 2-4 agree to within .05 of each other; the sets agree with SR 87/91 and Table 6.4b.)
+
+## Answers
+
+1. **Is RAA-sL's F6_b .017 a lost target or a slide-out? A mislocated release: a location failure.** 44 of 59 failures (75%) release 3-10 cm from the plate
+   centre, 6 farther, 7 never grasp, and only 2 (3%) release inside 3 cm. Median release 5.4 cm; the bowl rests 6.9 cm away. Sets 2, 3, 4 reproduce it
+   (3-10 cm: 33, 37, 36 of about 55; within 3 cm: 3, 4, 2). Frozen I, by contrast, is 77-85% within-3-cm slide-outs (17 of 20, 23 of 30). With the plate visible RAA-sL is
+   .93-.98 (F6_a), so it can place; under the cover it aims about 5-6 cm off. RAA-sL's channel (role offset from the perceived plate) loses the plate
+   under the cover and feeds a stale or wrong position: this is the lost-target pattern, unlike frozen pi0.5.
+2. **What does removing M (D2) change? Both location and precision, location more.** W5 full -> W5 noM (sets 2 / 4): success .650 -> .433, .817 -> .450.
+   The failure classes move from {never grasped 7-9 of 21, 3-10 cm 7-13} to {within 3 cm 13, 3-10 cm 19-21, never grasped 0}: mislocated (3-10 cm)
+   releases rise by 14 (set 2) and 16 (set 4), slide-outs (within 3 cm) by 8 and 13, while never-grasped failures disappear (7 -> 0). Removing M also
+   moves successful releases closer to the centre (1.2 cm vs 3.5 cm) and shortens the slide (failures' 10-step shift 1.3 vs 2.2 cm). The memory slot therefore
+   supplies the plate's position (location); without it W5 falls back to a frozen-pi0.5-like profile (releases near the cover, slide-outs).
+   The same ablation on RAA-L moves .333 -> .217 with 3-10 cm failures 16 -> 27. (On the development RAA-sL "wasl" files noM is .383 vs full .017, i.e. in that arm
+   the memory slot hurts; I did not investigate that family further.)
+3. **Is the servo-free routes' gain over RAA-sL a placement gain or a location gain? A location gain.** A0, A, B go from .017 to .383, .433, .600. Their failures
+   are mostly within-3-cm slide-outs (A0 28/37, A 17/34, B 15/24 = 76%, 50%, 63% within 3 cm; RAA-sL 3%), with 3-10 cm releases falling from 44 to 8, 15, 8. They
+   inherit frozen I's regime, so what is gained is getting the release to the plate; the remaining loss is the same slide-out as pi0.5's (A0's bowl ends 9.7 cm
+   away, probably after post-release motion; not examined). A+ (.033) is worse than RAA-sL on location (29 releases beyond 10 cm, 15 never grasped) and drops F6_a to .417;
+   A+ctrl (.000) releases 37 cm from the plate in 41 episodes and never grasps in 14: both are location failures of a different kind (the planner's targets).
+4. **RC / slot (rg_comp):** their failures are 4 of 12 and 9 of 11 within 3 cm: a placement regime like I and the servo-free routes.
+
+## Caveats of the addendum
+
+- Different arms ran on different state sets (development, fresh sets 2-4, rg_comp); within-arm sets agree, across arms treat differences as indicative.
+- "Never grasped" here means the held test never fired (closed command, bowl lifted > 2 cm, within 10 cm); an arm that grasps and drops the bowl at once can fall in this class.
+- No orientation in the tracks; slide is inferred from xy as before.
