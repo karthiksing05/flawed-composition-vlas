@@ -33,7 +33,8 @@ BASE_PARAMS = f"{CACHE}/pi05_base/params"
 LIBERO_PARAMS = f"{CACHE}/pi05_libero/params"                  # openpi pi05_libero (the frozen "I" / pi05 of SR 45 / 52 / 70): RAA-L (SR 80) initialises from it
 NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
          "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae", "pi05_g8v_plain_ae", "pi05_g8v_rsup_ae", "pi05_g8v_rview_ae",
-         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_l_ae", "pi05_g8v_raac_lb_ae", "pi05_g8v_raas_lp_ae", "pi05_g8v_raac_lp_ae", "pi05_g8v_rview2_lp_ae")
+         "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_l_ae", "pi05_g8v_raac_lb_ae", "pi05_g8v_raas_lp_ae", "pi05_g8v_raac_lp_ae", "pi05_g8v_rview2_lp_ae",
+         "pi05_g8v_raac_lo_ae", "pi0_g8v_raas_l_ae", "pi0_g8v_raac_l_ae", "pi0_g8v_raac_lf_ae")
 # SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
 # the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
 AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
@@ -67,7 +68,10 @@ AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae":
       # RAA-F Route A+ / A+ctrl (docs/notes/raaf_plan.md 3): RAA-c / rview2 norm stats and assets, only the data repos differ
       "pi05_g8v_raas_lp_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
       "pi05_g8v_raac_lp_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),            # RAA-F A+0: A+ exactly; ONLY servo_k = 0
-      "pi05_g8v_rview2_lp_ae": ("pi05_g8v_rview2", "lol/libero_g8v_rview2")}
+      "pi05_g8v_rview2_lp_ae": ("pi05_g8v_rview2", "lol/libero_g8v_rview2"),
+      # docs/notes/plan_oracle_pi0.md: ORC (A+0 + paired planner spots) and the pi0 arms; all keep RAA-c's norm stats / assets (the dir name contains "pi05": harmless, the converter sniffs the checkpoint path only)
+      "pi05_g8v_raac_lo_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"), "pi0_g8v_raas_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
+      "pi0_g8v_raac_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"), "pi0_g8v_raac_lf_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
 ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)
@@ -100,6 +104,20 @@ def _crop_data(C, data):
             assert any(isinstance(t, RI.LiberoInputsB) for t in ins)
             return dataclasses.replace(dc, repack_transforms=repack, data_transforms=T.Group(inputs=ins, outputs=dc.data_transforms.outputs))
     return CropLiberoDataConfig(**{f.name: getattr(data, f.name) for f in dataclasses.fields(data)})
+
+
+PI0_LIBERO_PARAMS = f"{CACHE}/pi0_libero/params"               # openpi pi0_libero (PZ, docs/notes/plan_oracle_pi0.md 3): the native trained state_proj
+RAAFO_REPO = "lol/libero_g8v_raacpo"                             # ORC (plan 2.6): A+0's data + a second planner demo to a different spot per layout (experiments/raafp_rv.py convert --suffix o)
+
+
+def _quantile_data(C, data):
+    """PZ: data (a LeRobotLiberoDataConfig) -> the same config with use_quantile_norm forced True (openpi's pi0 default is z-score; the servo and the probe read quantile)."""
+    @dataclasses.dataclass(frozen=True)
+    class QuantileLiberoDataConfig(C.LeRobotLiberoDataConfig):
+        def create(self, assets_dirs, model_config):
+            dc = super().create(assets_dirs, model_config)
+            return dataclasses.replace(dc, use_quantile_norm=True)
+    return QuantileLiberoDataConfig(**{f.name: getattr(data, f.name) for f in dataclasses.fields(data)})
 
 
 def train_config(name, **over):
@@ -190,6 +208,23 @@ def train_config(name, **over):
             data = dataclasses.replace(data, repo_id=RAAFP_REPO)
             return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
                                        weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
+        if name == "pi05_g8v_raac_lo_ae":                       # ORC (plan 2.3): A+0 (pi05_g8v_raac_lp_ae) exactly; ONLY the data repo differs (RAAFO_REPO)
+            from . import raac_model as RM
+            from . import raas_model as RS
+            m = base.model
+            model = RS.Pi0ConfigS(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False, **RS.servo_fields(k=0.0))
+            data = dataclasses.replace(data, repo_id=RAAFO_REPO)
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
+                                       weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
+        if name in ("pi0_g8v_raas_l_ae", "pi0_g8v_raac_l_ae", "pi0_g8v_raac_lf_ae"):    # PZ (plan 3.3): RAA-sL / A0 / A on openpi pi0 (pi05=False, native trained state_proj), pi0_libero weights, quantile norm forced, raw actions
+            from . import raas0_model as RZ
+            from . import raas_model as RS
+            m = base.model
+            assert not base.data.extra_delta_transform
+            model = RZ.Pi0ConfigZS(pi05=False, action_horizon=m.action_horizon, **RS.servo_fields(k=None if name == "pi0_g8v_raas_l_ae" else 0.0))
+            data = _quantile_data(C, dataclasses.replace(data, repo_id=RAAF_REPO if name.endswith("_lf_ae") else "lol/libero_g8v_raac"))
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
+                                       weight_loader=W.CheckpointWeightLoader(PI0_LIBERO_PARAMS), **over)
         if name == "pi05_g8v_rview2_lp_ae":                     # RAA-F A+ctrl: the rview2 model (no token, no servo) from pi05_libero, rview2 norm stats; data repo = the same frames and prompts in the rview2 format
             data = dataclasses.replace(data, repo_id=RAAFP2_REPO)
             return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data,

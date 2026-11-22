@@ -1,0 +1,16 @@
+PZ (docs/notes/plan_oracle_pi0.md 3): RAA-sL vs A0 on openpi pi0 (Pi0Config pi05=False, the native trained state token of pi0_libero).
+pi0-sL = pi0_g8v_raas_l_ae (servo kept), pi0-A0 = pi0_g8v_raac_l_ae (servo off); the token [dx, dy, dz, role] replaces proprio in dims 0-3 (trained columns);
+data lol/libero_g8v_raac, RAA-c norm stats, quantile norm forced, raw (non-delta) actions, horizon 10, weights pi0_libero, frozen VLM, 6,001 steps, batch 32, lr 5e-5.
+Principle (C-G): a BC expert does not take up an exact where-signal when the prompt and views already determine the target; the pi0.5 nulls (RAA-sL -.007, A0 -.001) are not an artefact of a new random-init layer.
+Measure: pooled N + K in.tok share (a2_probe_f rows full, SR 83 design), B = 2000, rng 0, clustered; gate K capture success >= .70 and T CI lower > 0.
+Rules: R1 both CI upper < .30; R2 S_off CI lower >= .30; R3 (S_off - S_kept) CI lower > 0; R4 S_kept CI lower >= .30.  The prefix half of the old rule is not used.
+Predictions:
+ (z1) gates: pi0-sL passes 85%, pi0-A0 passes 75%.
+ (z2) S_kept point .00 (range -.05 to .20); CI upper < .30: 80%.
+ (z3) S_off point .08 (range -.05 to .45); CI upper < .30: 60%; CI lower >= .30: 20%; CI lower >= .70: 5%.
+ (z4) R1: 50%.   (z5) R3: 30%.   (z6) R4: 10%.
+ (z7) pi0-sL in.servo share >= .70: 75%.
+ (z8) pi0-sL K capture success within +-.10 of RAA-sL's on the same states: 55%; pi0-A0 N capture success below pi0-sL's: 70%.
+ (z9) state_proj relative change from init (live columns, Frobenius) larger in pi0-A0 than in pi0-sL: 55% (descriptive).
+Kill: (k1) the smoke shows no role token in the server log, or the loss is NaN; (k2) pz_check fails (k = 0 not equal to Pi0, or state_proj not loaded from pi0_libero);
+(k3) step-0 loss > 10 x pi0.5 RAA-sL's .0556 (pi0's labels change from delta to raw, so the 2x rule of the pi0.5 rows does not apply).

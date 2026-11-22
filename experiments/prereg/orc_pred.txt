@@ -1,0 +1,16 @@
+ORC (docs/notes/plan_oracle_pi0.md 2): oracle readout of existing checkpoints on held-out table-spot frames, and the conditional oracle arm ORC = pi05_g8v_raac_lo_ae
+(= A+0 exactly; ONLY data lol/libero_g8v_raacp -> lol/libero_g8v_raacpo: each of A+0's 100 layouts gets a second planner demo to a spot >= 15 cm from the first).
+Principle: if the new state_proj can be learned in the shared recipe, a servo-free expert follows the token where the token is the only source of the target.
+Measure: follow share phi (plan 2.4) on 20 held-out layouts x 2 objects x 2 paired spots (BASE 96,000,000), clusters = layouts, B = 2000, rng 0.
+Labels: LEARNED phi CI lower >= .70; NOT LEARNED CI upper < .30; PARTIAL otherwise.  ORC is trained iff A+0 is not LEARNED.
+STATUS: A+0's, A+'s, A's, A0's and RAA-sL's N + K shares were seen (raaf_sel.md); no model has been run on table-spot frames before this row.
+Predictions:
+ (o1) A0 phi CI upper < .30: 90%.     (o2) RAA-sL phi_net CI upper < .30: 90%.     (o3) A+ phi_net CI upper < .30: 70%.
+ (o4) A+0 phi point .50 (plausible range .15-.85); A+0 LEARNED 30%; A+0 NOT LEARNED 25%.
+ (o5) A+0 c_clean > A0 c_clean (CI lower of the difference > 0): 75%.
+ (o6) ORC (if trained) phi point .75; ORC LEARNED 55%; ORC NOT LEARNED 10%.
+ (o7) phi(ORC) - phi(A+0) CI lower > 0: 65%.
+ (o8) ORC N + K in.tok share (probed iff ORC phi point >= .30): point .20; CI upper < .30: 55%; CI lower >= .70: 7%.
+ (o9) Within-model dissociation (the oracle model LEARNED and its N + K share CI upper < .30), for A+0 or ORC: 45%.
+Kill: (k1) orc_obs selection < 120 observations (UNTESTABLE); (k2) ORC training loss NaN or step-0 loss > 2 x RAA-sL's .0556; (k3) orc_gen pairs yield < 70 of 100 new demos per object
+after 6 retries (then ORC is built from the pairs that exist and the deviation is noted, never by relaxing the 15 cm rule after seeing data).
