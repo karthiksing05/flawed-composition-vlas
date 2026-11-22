@@ -24,7 +24,20 @@ CHEESE, BOWLC, PLATEC, BOTTLEC, MUGC = "#f3dc86", "#c9d3df", "#ffffff", "#d9c7a0
 
 
 # ------------------------------------------------------------------ small helpers
+_STATE = {"compact": False}
+# compact labels (1.1 in tile, 6.5 pt): None drops the label
+_COMPACT = {"held:\ncheese": None, "trained\ntarget": "usual", "instructed\ntarget": "named", "instructed": "named",
+            "bottle": None, "as box": None, "high arc": "high", "low arc": "low", "habitual": "habit",
+            "referent": None, "other": None, "model:\nambiguous\nchoice": None, "word\neffect 0": "0",
+            "model decays": "decays", "slot holds": "slot", "trained\nspot": "usual\nspot", "2 cm demo box": None,
+            "put": None, "the": None}
+
+
 def _t(ax, x, y, s, fs=FS, color=S.INK, ha="center", va="center", weight="normal", **kw):
+    if _STATE["compact"]:
+        s = _COMPACT.get(s, s)
+        if s is None:
+            return None
     return ax.text(x, y, s, fontsize=fs, color=color, ha=ha, va=va, fontweight=weight, linespacing=1.05,
                    zorder=9, **kw)
 
@@ -148,7 +161,8 @@ def _f2(ax, compact):
 
 def _f7(ax, compact):
     """Token strip with the cue word; the resolver picks the left bowl; the model's choice ignores the word."""
-    for w, x in (("put", 0.08), ("the", 0.25), ("left", 0.45), ("bowl", 0.67)):
+    for w, x in ((("put", 0.08), ("the", 0.25), ("left", 0.45), ("bowl", 0.67)) if not compact
+                 else (("left", 0.22), ("bowl", 0.62))):
         if w == "left":
             ax.text(x, 0.80, w, fontsize=FS, color="white", ha="center", va="center", fontweight="bold", zorder=9,
                     bbox=dict(boxstyle="round,pad=0.22", fc=S.CUE, ec="none"))
@@ -219,7 +233,11 @@ _DRAW = {"F1": _f1, "F1s2": _f1s2, "F1m": _f1m, "F2": _f2, "F7": _f7, "F6": _f6,
 def draw_cue(key, ax, compact=False):
     assert key in KEYS, key
     _frame(ax, key, compact)
-    _DRAW[key](ax, compact)
+    _STATE["compact"] = compact
+    try:
+        _DRAW[key](ax, compact)
+    finally:
+        _STATE["compact"] = False
     return ax
 
 
@@ -231,6 +249,13 @@ if __name__ == "__main__":
         draw_cue(k, ax)
         ax.add_patch(Rectangle((0, 0), 1, 1, fc="none", ec="#dddddd", lw=0.5, zorder=0))
     S.save(fig, "fig_cues_all", tight=False)
+    # test strip: all eight compact cues at the gallery size (1.1 in each)
+    fig, axes = plt.subplots(1, 8, figsize=(8 * 1.1, 1.1),
+                             gridspec_kw={"wspace": 0.0, "left": 0, "right": 1, "top": 1, "bottom": 0})
+    for k, ax in zip(KEYS, axes):
+        draw_cue(k, ax, compact=True)
+        ax.add_patch(Rectangle((0, 0), 1, 1, fc="none", ec="#cccccc", lw=0.5, zorder=0))
+    S.save(fig, "strip_compact", sub="cues", tight=False)
     for k in KEYS:
         fig, ax = plt.subplots(figsize=(1.6, 1.6))
         draw_cue(k, ax, compact=True)
