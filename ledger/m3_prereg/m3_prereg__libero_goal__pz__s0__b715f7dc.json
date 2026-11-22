@@ -1,0 +1,73 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: PZ (docs/notes/plan_oracle_pi0.md 3): RAA-sL vs A0 on openpi pi0 (native trained state_proj, token in dims 0-3, quantile norm forced, raw actions, horizon 10, pi0_libero weights)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4832088",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "b715f7dcd91e41b0ddac7cea4b53096947f8e4ed",
+  "short": "b715f7dc"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "pi0-sL pi0_g8v_raas_l_ae (servo kept), pi0-A0 pi0_g8v_raac_l_ae (servo off); data lol/libero_g8v_raac, RAA-c norm stats, 6,001 steps, batch 32, lr 5e-5, frozen VLM, exp tl",
+  "deviation_notes": "pi0 labels are raw LIBERO actions (pi0_libero used a - s), horizon 10 (pi0_libero 50), quantile norm forced (pi0 default z-score); stated in the plan",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/a2fx_cap_pzcap_smoke_4832012.out": "c6b2695b2c44c124269ff278f907c0592d7d358762e040ecdee8ee2800d3d477",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_chain.sh": "cc24c2f901a7c9d657116666aaf5442d1b2152afd9edadbc7bc84ea750d34437",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_check.sh": "5bd2f8bf503864abc9cc95be90d19c44d9751593e678c97c5e344a64faf1e8bf",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_check_4831831.out": "01197ec6f875e3adfba73d399dd60aa16387e2faef6e419572f79fc9335a692a",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_check_4832011.out": "98b484d29e0e6605881123e10f49cee79a0108bcf2d906d130286facf7c182ec",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_cpu.sh": "1267503300f0baf2a8ffa0a8fc207a7c8c3f8ed137b374a4ae85ed5058591cd9",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_export.sh": "5679aa923608091eadb7a3f4130d6e6ac51f50b486cadfb09a6db2c381138853",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_train.sh": "98ae779154410528af8924a5af07bc01a36af6b2f78b0b77acec508f994161c0",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_train_pzsmoke_pi0_g8v_raac_l_ae_4831830.out": "b3e20ad97015842d7aae950c12e768e57e075baf7b8626d102f0b7bd6424f47e",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_train_pzsmoke_pi0_g8v_raas_l_ae_4831829.out": "4a87a51881b58eab141e80618447cb86fda23648e81cb8cd518b338187314b61",
+   "/coc/flash10/ksingara3/robot/checkpoints_l90c/assets/pi05_g8v_raac/lol/libero_g8v_raac/norm_stats.json": "3d13a766b388152ec7531dbc6ab0abb175f97b00dcad279e41be320fcd761570",
+   "docs/notes/plan_oracle_pi0.md": "0942ffd0d60a93527c97a1d59b5b14b37ded5af9d49723de597db2bb8e105777",
+   "experiments/a2fx_capture.sh": "85dcf0114cd3c557800e6c5a755f912b1bbaf7f3b169141b9ff5dc31000ce473",
+   "experiments/c_train_x.py": "f33b35ee46eacc857a6d423e53caf83c9d9c63bdf39e5ccd1a61d2118234588c",
+   "experiments/pi0z_export.py": "eb1e944d046ed0e368fde6bf187e71ea5ac24b6d92906401fd16ee0b0917da45",
+   "experiments/prereg/pz_pred.txt": "3f8bb0bf9071842ddb7b1136e2a0bdbbb3d926aa85f0a9a19de896ef632121c6",
+   "experiments/pz_cfgcheck.py": "a31067980b8a72e958e1f0521d465aeae0aa65942f7da567a9515a1a86bcfc29",
+   "experiments/pz_check.py": "0f6b2e88cab87f3c2c44aece6d0695f8e33979528ed97ec1dab58e8b3755d702",
+   "lifelong_ood/policy/l90c_config.py": "4caa278714aa6428e29bcd813e8e9dad02f9610ab0bdff5b6683c3c9f06338db",
+   "lifelong_ood/policy/raas0_model.py": "6351a79f6ca1f8bbb5e52c90b08bc95b9de77111c1ea81d6285a0cf3861d7e84"
+  },
+  "mapping": "docs/notes/plan_oracle_pi0.md sections 3, 4.2, 7",
+  "prediction": "PZ (docs/notes/plan_oracle_pi0.md 3): RAA-sL vs A0 on openpi pi0 (Pi0Config pi05=False, the native trained state token of pi0_libero).\npi0-sL = pi0_g8v_raas_l_ae (servo kept), pi0-A0 = pi0_g8v_raac_l_ae (servo off); the token [dx, dy, dz, role] replaces proprio in dims 0-3 (trained columns);\ndata lol/libero_g8v_raac, RAA-c norm stats, quantile norm forced, raw (non-delta) actions, horizon 10, weights pi0_libero, frozen VLM, 6,001 steps, batch 32, lr 5e-5.\nPrinciple (C-G): a BC expert does not take up an exact where-signal when the prompt and views already determine the target; the pi0.5 nulls (RAA-sL -.007, A0 -.001) are not an artefact of a new random-init layer.\nMeasure: pooled N + K in.tok share (a2_probe_f rows full, SR 83 design), B = 2000, rng 0, clustered; gate K capture success >= .70 and T CI lower > 0.\nRules: R1 both CI upper < .30; R2 S_off CI lower >= .30; R3 (S_off - S_kept) CI lower > 0; R4 S_kept CI lower >= .30.  The prefix half of the old rule is not used.\nPredictions:\n (z1) gates: pi0-sL passes 85%, pi0-A0 passes 75%.\n (z2) S_kept point .00 (range -.05 to .20); CI upper < .30: 80%.\n (z3) S_off point .08 (range -.05 to .45); CI upper < .30: 60%; CI lower >= .30: 20%; CI lower >= .70: 5%.\n (z4) R1: 50%.   (z5) R3: 30%.   (z6) R4: 10%.\n (z7) pi0-sL in.servo share >= .70: 75%.\n (z8) pi0-sL K capture success within +-.10 of RAA-sL's on the same states: 55%; pi0-A0 N capture success below pi0-sL's: 70%.\n (z9) state_proj relative change from init (live columns, Frobenius) larger in pi0-A0 than in pi0-sL: 55% (descriptive).\nKill: (k1) the smoke shows no role token in the server log, or the loss is NaN; (k2) pz_check fails (k = 0 not equal to Pi0, or state_proj not loaded from pi0_libero);\n(k3) step-0 loss > 10 x pi0.5 RAA-sL's .0556 (pi0's labels change from delta to raw, so the 2x rule of the pi0.5 rows does not apply).\n",
+  "seen": "Written 2026-11-22 before any pi0_g8v_* training beyond the 20-step smokes.  Seen before writing: the pi0.5 results (RAA-sL in.tok where-share -.007, A0 -.001, A .274, A+ -.007; raaf_sel.md), the smoke step-0 losses and pz_check.  No pi0_g8v_* checkpoint beyond the smoke, probe or rollout exists.",
+  "status": "PRE-REGISTERED PZ",
+  "written_before": "any pi0_g8v_* main / tl training job, probe and rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__pz__s0__b715f7dc",
+ "schema": 1,
+ "script": "experiments/prereg/pz.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-22T07:53:08+00:00",
+ "stream": null,
+ "tag": "pz"
+}
