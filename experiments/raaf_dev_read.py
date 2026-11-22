@@ -120,7 +120,8 @@ def read(a):
     routes = a.routes.replace("+", ",").split(",")
     arms = ["raasl"] + routes
     pairs = [(r, "raasl") for r in routes] + ([("B", "A0"), ("A", "A0")] if "A0" in routes else [])
-    pairs += [("Aplus", "A"), ("Aplus", "A0"), ("Actrl", "raasl"), ("Actrl", "Aplus")]
+    pairs += [("Aplus", "A"), ("Aplus", "A0"), ("Actrl", "raasl"), ("Actrl", "Aplus"),
+              ("Aplus0", "raasl"), ("Aplus0", "A"), ("Aplus0", "A0"), ("Aplus0", "Aplus")]
     pairs = [p for p in pairs if p[0] in arms and p[1] in arms]
     res = dict(B=RR.B, routes=routes, phaseA=phaseA(arms, pairs), phaseB=phaseB(arms, pairs))
     print("[raaf-dev-read]", json.dumps(res), flush=True)

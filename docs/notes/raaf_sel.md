@@ -165,3 +165,35 @@ Other cells: K1t .933, K2t .975 (K floor .962), unique-name controls .183.  Per 
 F6_a (tid 9, 60 states): RAA-sL .983 (servo, token), A .933 (no servo), A0 1.000 (no servo, base data), B .950 (no servo), A+ .417 (servo kept, planner data), A+ctrl .000 (no servo, planner data).  The servo-free base-data models (A0, A, B) are high, and the servo-kept base-data model (RAA-sL) is high, so neither presence nor absence of the servo explains the drop; the two models trained on the planner table-spot data are the only low ones, and the one without a servo / token is lower still.  Most likely cause: the table-spot demos (a new "target: the table" phrase, 5,306 held frames, 100 demos) degrade F6_a, the cell where the plate is the target and the bowl is the object; the servo / token partly protect it (A+ .417 vs A+ctrl .000).  Caveats: one seed per model, A+ctrl has no matched base-data twin from the same init (the A0 is the servo-free token twin but is not an rview2 model), and the Phase B path for A+ctrl is a new copy (wa_s_ctrl.py).  K1t / K2t are .93 / .98 so the pipeline itself works; unique-name controls (.18) and F7 (.41) are also low, so A+ctrl's Phase B weakness is not confined to F6_a.
 
 Outcome of selection is unchanged: no route passes the probe, no winner, no 5th set, no confirmatory read.
+
+---
+
+# A+0 (appended 2026-11-22; pi05_g8v_raac_lp_ae = A+ with the servo removed; post-hoc addition, prereg tag raafp0, labels in experiments/prereg/raafp0_labels.txt)
+
+Checkpoint: the tail-lab chain, jax/pi05_g8v_raac_lp_ae/tl/6000, exported to pytorch/pi05_g8v_raac_lp_ae_tl6000 (job 4830603; no pre-existing dir; exp main untouched).  Captures (4830642-43, cap_Aplus0) and probes (4830644-45, probe_Aplus0_*) ran on A40 with `--config pi05_g8v_raac_lp_ae --ckpt .../pi05_g8v_raac_lp_ae_tl6000` (checked in the capture and probe logs: PolicyBackbone(pi05_g8v_raac_lp_ae), the tl6000 path).  **Label quirk:** the registry label for the probe and the read is `Aplus` (the label must equal the capture's POLICY and the registry has no A+0 entry), so `raaf_probe_Aplus0.json` carries `"route": "Aplus"`; the directory names (`cap_Aplus0`, `probe_Aplus0_*`) and the config / checkpoint in the logs identify A+0.  The A+ files are `..._Aplus_*` (different dirs), no mix-up.
+
+## Probe (pooled N + K, 96 observations, B = 2000, rng 0, clustered; results/flawed/raaf/a2/raaf_probe_Aplus0.json, read job 4830646)
+| | in.tok pooled [CI] | N | K | in.prefix (RAA-sL .089; servo-matched A0 1.002) | T | verdict |
+|---|---|---|---|---|---|---|
+| A+0 | **.124 [.089, .164]** | .242 [.166, .325] | .026 [.017, .038] | .774 (N .593, K .924) | 3.356 [2.989, 3.733] | **FAILED** (CI upper .164 < .30) |
+top1 .145, PRn .228; abl.tok drop N -.025 [-.150, .099], K -.012 [-.025, -.000].
+Contrasts of the share (clustered, 94-95 common clusters; contrast_Aplus0_{A,A0,Aplus}.json): **A+0 - A -.150 [-.196, -.104]**; **A+0 - A0 +.127 [.092, .165]**; **A+0 - A+ +.133 [.096, .171]**.  in.prefix: A+0 - A +.023 [-.048, +.103]; A+0 - A0 -.230 [-.306, -.154]; A+0 - A+ +.629 [.548, .716].
+Reading: with the large dose and no servo the learned share is above both zero-dose / servo-kept models (A0 -.001, A+ -.007), consistent with the servo suppressing learned use, but it is well below the small-dose servo-free A (.274).  Exploratory only: docs/notes/stateproj_diag.md (fe2ebe5b) found state_proj moved about equally in A+ and A+0 (dx 7.2% vs 8.5%), so the difference between A+ (-.007) and A+0 (.124) is read as a servo effect on how the moved weights are used, not on whether they moved; not a registered test.
+
+## Dev behaviour (raaf_dev_read_v4.json, new file; job 4831419; smokes 4830650-51 showed roles 1 and 2 = k1 not triggered; Phase A 4830679-82, Phase B 4830683-85; descriptive for this post-hoc route)
+| arm | N | K | cheese | bottle | F7 pool | F6_b | F6_a | K floor | unique |
+|---|---|---|---|---|---|---|---|---|---|
+| A+0 | .603 | .814 | .694 | .511 | .625 | .017 | .083 | 1.000 | .367 |
+| RAA-sL | .878 | .936 | .872 | .883 | .744 | .017 | .983 | .962 | .600 |
+A+0 - RAA-sL: N -.275 [-.447, -.119] REVERSED; K -.122 [-.308, +.008] (NOT SHOWN at -.05); cheese -.178 [-.294, -.055]; bottle -.372 [-.600, -.083]; F7 -.119 [-.188, -.044] REVERSED; F6_b 0.000 [-.05, .05]; F6_a -.900 [-.967, -.817] REVERSED.
+A+0 - A: N -.175 [-.356, +.017]; K -.181 [-.461, -.011] (COST); bottle -.200 [-.433, -.022]; F7 -.081 [-.150, -.013]; F6_b -.417 [-.550, -.283]; F6_a -.850 [-.933, -.733].
+A+0 - A0: N -.083 [-.261, +.072]; K -.017 [-.086, +.050]; bottle -.006; F7 -.075 [-.150, .000]; F6_b -.367 [-.483, -.233]; F6_a -.917 [-.983, -.833].
+A+0 - A+: N -.225 [-.386, -.078] REVERSED; K -.133 [-.336, +.006]; bottle -.283 [-.489, -.083]; F7 -.063; F6_b -.017; F6_a -.333 [-.483, -.183].
+F6_a is near zero for both models trained on the table-spot data and lowest for A+0 (A+ .417, A+ctrl .000), supporting the earlier reading that the table-spot data (not the servo) hurts F6_a.
+
+## Prediction labels (raafp0_pred.txt; full text in experiments/prereg/raafp0_labels.txt)
+p1 share point .40 (range .10-.75): .124, inside the range, far below the point.  p2 passes (15%): NO.  p3 share > A's .274 (60%): NO.  p4 A+0 - A0 lower > 0 (85%): YES.  p5 dev N within +-.10 of .878 (45%): NO (.603).  p6 dev K >= .886 (50%): NO (.814).  p7 F6_b > .30 (70%): NO (.017).  p8 F6_a >= .50 (70%): NO (.083).  k1: not triggered.
+
+## Final 6.3 selection over A, B, A0, A+, A+0
+Probe results: A .274 NOT PASSED; B .022, A0 -.001, A+ -.007, A+0 .124 all FAILED.  **No route has PASS, so no route is eligible** (A+0 included; its dev K .814 and K - RAA-sL -.122 would also not meet the K condition).  Rule 5: no winner; the 5th fresh set stays unbuilt; no confirmatory read.  Reportable line unchanged: the shortcut survives the data at these doses; the best learned share is A's .274, below the .70 bar and the .30 failure bound.
+Process notes: edits of experiments/raaf_dev_read.py (new pairs for Aplus0) are mine; earlier outputs are untouched.  Jobs: export 4830603; capture 4830642-43; probes 4830644-45; read 4830646; contrasts 4830647-49; dev read 4831419.

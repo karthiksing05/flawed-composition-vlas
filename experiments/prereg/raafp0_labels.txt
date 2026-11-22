@@ -1,0 +1,11 @@
+RAA-F A+0 prediction labels (predictions in raafp0_pred.txt; outcomes from results/flawed/raaf/a2/raaf_probe_Aplus0.json, contrast_Aplus0_*.json, raaf_dev_read_v4.json; written 2026-11-22 after the results).
+(p1) pooled in.tok share point .40, range .10-.75: observed .124 [.089, .164] (N .242 [.166, .325], K .026 [.017, .038]).  Inside the range, near its low end, far below the point.  LABEL: miss on the point, inside the range.
+(p2) passes the probe (CI lower >= .70) 15%: NO.  Verdict FAILED (CI upper .164 < .30).  LABEL: not realised.
+(p3) share > A's .274 (point) 60%: NO.  A+0 - A = -.150 [-.196, -.104].  LABEL: not realised.
+(p4) A+0 - A0 share CI lower bound > 0, 85%: YES.  +.127 [.092, .165].  LABEL: realised.
+(p5) dev N within +-.10 of RAA-sL .878, 45%: NO.  N .603, -.275 [-.447, -.119] REVERSED.  LABEL: not realised.
+(p6) dev K >= .886, 50%: NO.  K .814, -.122 [-.308, +.008] (NOT SHOWN at -.05).  LABEL: not realised.
+(p7) F6_b > .30, 70%: NO.  F6_b .017 (A .433, B .600, A0 .383).  LABEL: not realised.
+(p8) F6_a >= .50, 70%: NO.  F6_a .083 (A+ .417, A+ctrl .000, RAA-sL .983).  LABEL: not realised.
+(k1) kill: training loss NaN or no role token in the server log in the smoke: NOT triggered.  Smoke 4830650: server log shows state role 1.0 (25 lines) and role 2.0 (13 lines); the training loss was not re-read by me (the checkpoint trained to 6000 and exports).
+Net: of the 2x2 grid, A+0 (large dose, servo off) gives a small learned share (.124) that is above the no-dose servo-free A0 (-.001) and the servo-kept A+ (-.007) but below the small-dose servo-free A (.274).  The explanation "the servo suppresses the learned use at large dose" is only partly supported (A+0 > A+), and "large dose beats small dose" is not (A+0 < A).
