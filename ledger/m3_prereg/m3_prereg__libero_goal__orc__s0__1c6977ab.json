@@ -1,0 +1,62 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: ORC (docs/notes/plan_oracle_pi0.md 2): follow share phi of existing checkpoints on held-out paired table-spot frames; conditional oracle arm pi05_g8v_raac_lo_ae",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4832655",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "1c6977abbf16ccace3be10d96d96670b0c5cb15e",
+  "short": "1c6977ab"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "A+0 pi05_g8v_raac_lp_ae, A+ pi05_g8v_raas_lp_ae, A0 pi05_g8v_raac_l_ae, A pi05_g8v_raac_lf_ae, RAA-sL pi05_g8v_raas_l_ae (readout only)",
+  "deviation_notes": "test set smaller than the 20 pairs per object target (cap 250 attempts); ORC arm data yield per object < 50 (see results note)",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/pz_orc_selftest_4832650.out": "4d42e913da058c4c6644bdf322915721d90a53f41461693610004d08d2975413",
+   "/coc/flash10/ksingara3/.claude_tmp/raaf/gen_orc_test/pairs.json": "0ae34c8e60c7efa6f54b17d2435abe076a784b5e32a03a3ebbfe163a89b2fb27",
+   "docs/notes/plan_oracle_pi0.md": "0942ffd0d60a93527c97a1d59b5b14b37ded5af9d49723de597db2bb8e105777",
+   "experiments/orc_gen.py": "5f8bacbf20f1cd2c0718402aa3d5e3eb222ba87748ac96b63f0a1e5bfb9518ff",
+   "experiments/orc_obs.py": "13dcfca4e2a64a64e4cb495ce4f24447e533f124658905ea76f294bad0e982a5",
+   "experiments/orc_probe.py": "08b312fd19cb9a6b9d35d6c06e172249643ab64f7a9fce123776efb4b9304311",
+   "experiments/orc_read.py": "f5d04f6dd663c10178aea7a589bde411a7df4b0cd8ec1bc64a3fa51dd4c3dff5",
+   "experiments/prereg/orc_pred.txt": "9bc8bd4502de8b5abb5e8e2fa131149105694514a10067b7aa14c595ba2f93df",
+   "results/flawed/orc/obs_test/selection.json": "58e9a9bc4a59782d7fac595a5c28888ebe97a43c1eebed898e3ffb10be80ff2c"
+  },
+  "mapping": "docs/notes/plan_oracle_pi0.md sections 2.4, 2.5, 4.1, 7",
+  "prediction": "ORC (docs/notes/plan_oracle_pi0.md 2): oracle readout of existing checkpoints on held-out table-spot frames, and the conditional oracle arm ORC = pi05_g8v_raac_lo_ae\n(= A+0 exactly; ONLY data lol/libero_g8v_raacp -> lol/libero_g8v_raacpo: each of A+0's 100 layouts gets a second planner demo to a spot >= 15 cm from the first).\nPrinciple: if the new state_proj can be learned in the shared recipe, a servo-free expert follows the token where the token is the only source of the target.\nMeasure: follow share phi (plan 2.4) on 20 held-out layouts x 2 objects x 2 paired spots (BASE 96,000,000), clusters = layouts, B = 2000, rng 0.\nLabels: LEARNED phi CI lower >= .70; NOT LEARNED CI upper < .30; PARTIAL otherwise.  ORC is trained iff A+0 is not LEARNED.\nSTATUS: A+0's, A+'s, A's, A0's and RAA-sL's N + K shares were seen (raaf_sel.md); no model has been run on table-spot frames before this row.\nPredictions:\n (o1) A0 phi CI upper < .30: 90%.     (o2) RAA-sL phi_net CI upper < .30: 90%.     (o3) A+ phi_net CI upper < .30: 70%.\n (o4) A+0 phi point .50 (plausible range .15-.85); A+0 LEARNED 30%; A+0 NOT LEARNED 25%.\n (o5) A+0 c_clean > A0 c_clean (CI lower of the difference > 0): 75%.\n (o6) ORC (if trained) phi point .75; ORC LEARNED 55%; ORC NOT LEARNED 10%.\n (o7) phi(ORC) - phi(A+0) CI lower > 0: 65%.\n (o8) ORC N + K in.tok share (probed iff ORC phi point >= .30): point .20; CI upper < .30: 55%; CI lower >= .70: 7%.\n (o9) Within-model dissociation (the oracle model LEARNED and its N + K share CI upper < .30), for A+0 or ORC: 45%.\nKill: (k1) orc_obs selection < 120 observations (UNTESTABLE); (k2) ORC training loss NaN or step-0 loss > 2 x RAA-sL's .0556; (k3) orc_gen pairs yield < 70 of 100 new demos per object\nafter 6 retries (then ORC is built from the pairs that exist and the deviation is noted, never by relaxing the 15 cm rule after seeing data).\n",
+  "seen": "Written 2026-11-22 before any model was run on table-spot frames.  Seen before writing: the N + K in.tok shares of RAA-sL, A0, A, A+, A+0 (raaf_sel.md), the test-set selection counts (obs_test/selection.json), the orc_read selftest (1 / 0 / .5).  Deviations at this point: test set generation hit the registered cap of 250 attempts per object with fewer than 20 complete pairs (see the results note).",
+  "status": "PRE-REGISTERED ORC readout",
+  "written_before": "orc_probe on any checkpoint; any ORC training"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__orc__s0__1c6977ab",
+ "schema": 1,
+ "script": "experiments/prereg/orc.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-22T09:01:41+00:00",
+ "stream": null,
+ "tag": "orc"
+}
