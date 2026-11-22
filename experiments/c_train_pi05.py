@@ -52,6 +52,8 @@ def config(a):
         from openpi.training import weight_loaders as W
         assert os.path.isdir(a.init), a.init
         cfg = dataclasses.replace(cfg, weight_loader=W.CheckpointWeightLoader(a.init))
+    if getattr(a, "seed", None) is not None:               # additive: a different training seed (openpi TrainConfig.seed, default 42)
+        cfg = dataclasses.replace(cfg, seed=a.seed)
     ck = cfg.checkpoint_dir
     steps = [int(p) for p in os.listdir(ck) if p.isdigit()] if os.path.isdir(ck) else []
     cfg = dataclasses.replace(cfg, resume=bool(steps), overwrite=False)
@@ -155,6 +157,7 @@ if __name__ == "__main__":
                     "re-rendered K1-K8 frames, R0 plain / R1 role phrases / R2 role views (rview: first rule; rview2, rbox: second rule, "
                     "masks / boxes) (experiments/sc_rv.py); implies the _ae recipe")
     ap.add_argument("--init", default=None, help="a NEW run starts from this JAX params dir (default: the config's loader)")
+    ap.add_argument("--seed", type=int, default=None, help="training seed (openpi TrainConfig.seed); default None leaves the config's seed (42) unchanged")
     ap.add_argument("--export", action="store_true")
     ap.add_argument("--step", type=int, default=None)
     ap.add_argument("--tag", default=None)
