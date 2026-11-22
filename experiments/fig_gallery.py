@@ -14,12 +14,12 @@ import fig_style as S                                                           
 import fig_frames as FR                                                                  # noqa: E402
 from fig_cues import draw_cue                                                            # noqa: E402
 
-CROPS = {"F1m_N6": (40, 340, 20, 470)}                                                     # the high arc leaves the default crop at the top
+CROPS = {"F1m_N6": (40, 340, 20, 470), "F6_b": (212, 512, 10, 460)}                                                     # the high arc leaves the default crop at the top
 ROWS = [("F1_N1", "F1", "F1  the place follows a cue"),
         ("F1m_N6", "F1m", "F1m  the outline picks the carry"),
         ("F2_pi0_N1", "F2", "F2  the habitual object is grasped"),
         ("F7_relL", "F7", "F7  'left bowl' is ignored"),
-        ("F6_b", "F6", "F6  a hidden target is lost")]
+        ("F6_b", "F6", "F6  covered plate: the bowl slides out")]
 
 
 def pair(key):
@@ -49,13 +49,15 @@ def gallery():
         axl.text(0.98, 0.1, "\n".join(__import__("textwrap").wrap("%s fails; %s succeeds" % (f[0].replace(" (arm g)", ""), c[0].split(" on ")[0].replace("pi0.5 + ", "") if c else "-"), 17)), ha="right", va="center", fontsize=S.TINY, color=S.MUTED, linespacing=1.1)
         rows = f[2].key_rows()
         rings = FR.rings_for(key, f[2])
-        for j, (ep, r, border) in enumerate([(f[2], rows[0], f[1]), (f[2], rows[2], f[1]), (f[2], rows[5], f[1]),
+        rrow = f[2].T - 1 if key == "F6_b" else rows[5]            # F6: the slide-out shows in the final frame
+        for j, (ep, r, border) in enumerate([(f[2], rows[0], f[1]), (f[2], rows[2], f[1]), (f[2], rrow, f[1]),
                                              (c[2] if c else None, (c[2].key_rows()[5] if c else 0), c[1] if c else None)]):
             ax = fig.add_subplot(gs[i, 1 + j])
             if ep is None:
                 ax.axis("off")
                 continue
-            FR.show(ax, ep, r, crop=CROPS.get(key, FR.CROP), border=border, rings=FR.rings_for(key, ep), step_label=False)
+            FR.show(ax, ep, r, crop=CROPS.get(key, FR.CROP), border=border, rings=FR.rings_for(key, ep), step_label=False,
+                    marks=(FR.f6_marks if (key == "F6_b" and j >= 2) else None))
             if j >= 2:
                 S.stamp(ax, "OK" if ep.success else "FAIL", "upper left")
             if i == 0:
@@ -65,7 +67,7 @@ def gallery():
         if i == 0:
             axc.set_title(heads[4], fontsize=S.TINY, pad=2)
     FR.footer(fig, "Development-state episodes of scene 1 (trials %s), chosen by the fixed rule (paper/figs/frames/selection.json); "
-              "reach dashed, carry solid (red fails, green succeeds); dashed ring = instructed region, dotted purple ring = cue-implied region." % (
+              "reach dashed, carry solid (red fails, green succeeds); dashed ring = instructed region, dotted purple ring = cue-implied region; F6: final frame, thin circle = the 3 cm success disc, cross = final bowl centre (the bowl is hidden under the cover in the render)." % (
                   ", ".join("%s: %s" % (k.split("_")[0], FR.sel()["entries"][k]["chosen"] or "not reproduced") for k, _, _ in ROWS)), 0.0)
     FR.save_exact(fig, "fig_gallery")
 

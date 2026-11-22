@@ -1,5 +1,5 @@
 {
- "rule": "(fixed before any frame was looked at; DEVELOPMENT states only, n2_states + n2_branches_main.json, rg_comp main states, mt states):\n  per entry, over the entry's first 10 trials (branches-file order), a trial QUALIFIES iff the failing arm fails with the failure's own\n  signature AND the comparator arm succeeds on the same trial of the same fresh run.  The shown episode = the lowest-index qualifying trial.\n  A16's extra episodes = the next three qualifying trials.  If none of the first 10 qualifies, 10 more trials (skip 10) are run into\n  <dir>_more and the same rule is applied to those; the record says so.  Signatures (functions below) are fixed here:\n    F1   failed, held, and the held object's last-held xy within 3 cm of the bowl (the trained destination)\n    F1m  failed, held, lift while held (max obj z - first obj z) > .22 m (n46_lift's high carry)\n    F2   failed and the first-held object ('bound') is another object\n    F7   failed after a grasp (the referent is not logged: a bowl was grasped and the episode failed)\n    F6   failed, held, last-held xy farther than 3 cm from the plate (released away)\n    NL   failed (comparator: none; every system fails)\n    MV   release closer to the trained plate position than to the actual plate by > 3 cm (SR 81's rule), failed;  comparator I succeeds\n    A14  RAA-sL fails and RAA-sL-W5 succeeds on the trial",
+ "rule": "(fixed before any frame was looked at; DEVELOPMENT states only, n2_states + n2_branches_main.json, rg_comp main states, mt states):\n  per entry, over the entry's first 10 trials (branches-file order), a trial QUALIFIES iff the failing arm fails with the failure's own\n  signature AND the comparator arm succeeds on the same trial of the same fresh run.  The shown episode = the lowest-index qualifying trial.\n  A16's extra episodes = the next three qualifying trials.  If none of the first 10 qualifies, 10 more trials (skip 10) are run into\n  <dir>_more and the same rule is applied to those; the record says so.  Signatures (functions below) are fixed here:\n    F1   failed, held, and the held object's last-held xy within 3 cm of the bowl (the trained destination)\n    F1m  failed, held, lift while held (max obj z - first obj z) > .22 m (n46_lift's high carry)\n    F2   failed and the first-held object ('bound') is another object\n    F7   failed after a grasp (the referent is not logged: a bowl was grasped and the episode failed)\n    F6   REVISED 2026-11-21 (after docs/notes/f6_diag.md; the first version, \"released > 3 cm away\", flagged 6 of 50 pi0.5 failures and is not the harness predicate):\n         failed and the final bowl xy farther than 3 cm from the plate centre (On(bowl, plate) needs < 3 cm); comparator RC succeeds on the same trial.\n         The original signature is kept as F6away for GR00T (a mislocated release): failed, held, last-held xy > 3 cm from the plate; no comparator.\n    NL   failed (comparator: none; every system fails)\n    MV   release closer to the trained plate position than to the actual plate by > 3 cm (SR 81's rule), failed;  comparator I succeeds\n    A14  RAA-sL fails and RAA-sL-W5 succeeds on the trial",
  "dev_states_only": true,
  "entries": {
   "F1_N1": {
@@ -2256,8 +2256,124 @@
     }
    ]
   },
+  "F6_g": {
+   "status": "ok",
+   "fail": "F6_groot/groot_I_8",
+   "comp": [],
+   "extra": [],
+   "signature": "f6away",
+   "registered": "GR00T F6_b .142 [.083, .208], cost of covering (d minus b) +.60 (SR 45.6); 76% of its failures release 3-10 cm or farther (f6_diag.md)",
+   "n_first10": 10,
+   "n_qualifying_first10": 7,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 4,
+   "further": [
+    5,
+    7,
+    8
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    }
+   ]
+  },
   "F6_b": {
-   "status": "none_qualifies",
+   "status": "ok",
    "fail": "F6/pi05_I_8",
    "comp": [
     "F6/pi05_rc_8"
@@ -2268,13 +2384,25 @@
    "signature": "f6",
    "registered": "cost of covering (d minus b) .38 [.28, .48]; RC with pose memory .800 vs .517 intact (SR 70)",
    "n_first10": 10,
-   "n_qualifying_first10": 0,
+   "n_qualifying_first10": 2,
    "n_more": 10,
-   "n_qualifying_more": 0,
+   "n_qualifying_more": 4,
    "used_more": false,
-   "chosen": null,
-   "further": [],
-   "chosen_outcome": null,
+   "chosen": 11,
+   "further": [
+    12,
+    15,
+    18
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "F6/pi05_I_9": true
+    }
+   },
    "trials": [
     {
      "trial": 4,
@@ -2371,11 +2499,11 @@
      "trial": 11,
      "more": false,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       true
      ],
-     "qualifies": false,
+     "qualifies": true,
      "extra_success": {
       "F6/pi05_I_9": true
      }
@@ -2384,11 +2512,11 @@
      "trial": 12,
      "more": false,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       true
      ],
-     "qualifies": false,
+     "qualifies": true,
      "extra_success": {
       "F6/pi05_I_9": true
      }
@@ -2397,7 +2525,7 @@
      "trial": 13,
      "more": false,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       false
      ],
@@ -2410,7 +2538,7 @@
      "trial": 14,
      "more": true,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       false
      ],
@@ -2423,11 +2551,11 @@
      "trial": 15,
      "more": true,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       true
      ],
-     "qualifies": false,
+     "qualifies": true,
      "extra_success": {
       "F6/pi05_I_9": null
      }
@@ -2462,11 +2590,11 @@
      "trial": 18,
      "more": true,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       true
      ],
-     "qualifies": false,
+     "qualifies": true,
      "extra_success": {
       "F6/pi05_I_9": null
      }
@@ -2488,7 +2616,7 @@
      "trial": 20,
      "more": true,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       false
      ],
@@ -2514,11 +2642,11 @@
      "trial": 22,
      "more": true,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       true
      ],
-     "qualifies": false,
+     "qualifies": true,
      "extra_success": {
       "F6/pi05_I_9": null
      }
@@ -2527,11 +2655,11 @@
      "trial": 23,
      "more": true,
      "fail_success": false,
-     "signature": false,
+     "signature": true,
      "comp_success": [
       true
      ],
-     "qualifies": false,
+     "qualifies": true,
      "extra_success": {
       "F6/pi05_I_9": null
      }
@@ -3661,5 +3789,14 @@
     }
    ]
   }
- }
+ },
+ "revisions": [
+  {
+   "date": "2026-11-21",
+   "entry": "F6_b",
+   "was": "failed, held, last-held xy > 3 cm from the plate (released away)",
+   "now": "failed and final bowl xy > 3 cm from the plate centre (the harness predicate)",
+   "reason": "docs/notes/f6_diag.md: the original flagged 6 of 50 pi0.5 F6_b failures (44 release within 3 cm and slide out); revised after the diagnosis and before the selection was recomputed; selection rule otherwise unchanged (lowest qualifying trial, RC succeeds on the same trial)"
+  }
+ ]
 }

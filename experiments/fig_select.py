@@ -10,7 +10,9 @@ RULE (fixed before any frame was looked at; DEVELOPMENT states only, n2_states +
     F1m  failed, held, lift while held (max obj z - first obj z) > .22 m (n46_lift's high carry)
     F2   failed and the first-held object ('bound') is another object
     F7   failed after a grasp (the referent is not logged: a bowl was grasped and the episode failed)
-    F6   failed, held, last-held xy farther than 3 cm from the plate (released away)
+    F6   REVISED 2026-11-21 (after docs/notes/f6_diag.md; the first version, "released > 3 cm away", flagged 6 of 50 pi0.5 failures and is not the harness predicate):
+         failed and the final bowl xy farther than 3 cm from the plate centre (On(bowl, plate) needs < 3 cm); comparator RC succeeds on the same trial.
+         The original signature is kept as F6away for GR00T (a mislocated release): failed, held, last-held xy > 3 cm from the plate; no comparator.
     NL   failed (comparator: none; every system fails)
     MV   release closer to the trained plate position than to the actual plate by > 3 cm (SR 81's rule), failed;  comparator I succeeds
     A14  RAA-sL fails and RAA-sL-W5 succeeds on the trial
@@ -72,6 +74,13 @@ def sig_f7(e, tk, task):
 
 
 def sig_f6(e, tk, task):
+    """REVISED 2026-11-21 after docs/notes/f6_diag.md: the harness's own failure predicate, On(bowl, plate) needs the bowl's centre within 3 cm
+    (xy) of the plate's; a failed episode whose final bowl xy is farther than 3 cm from the plate centre."""
+    return (not e["success"]) and xy(tk["obj"][-1], tk["tgt"][-1]) > SEAT
+
+
+def sig_f6away(e, tk, task):
+    """The original F6 signature (kept for GR00T, whose F6_b failure is a mislocated release): failed, held, last-held xy > 3 cm from the plate."""
     r = last_held(tk)
     return (not e["success"]) and r is not None and xy(tk["obj"][r], tk["tgt"][r]) > SEAT
 
@@ -88,7 +97,7 @@ def sig_mv(e, tk, task):
     return xy(tk["obj"][r], tk["tgt"][r]) - xy(tk["obj"][r], cen) > SEAT
 
 
-SIG = dict(f1=sig_f1, f1m=sig_f1m, f2=sig_f2, f7=sig_f7, f6=sig_f6, nl=sig_nl, mv=sig_mv, any=lambda e, tk, t: not e["success"])
+SIG = dict(f1=sig_f1, f1m=sig_f1m, f2=sig_f2, f7=sig_f7, f6=sig_f6, f6away=sig_f6away, nl=sig_nl, mv=sig_mv, any=lambda e, tk, t: not e["success"])
 
 
 def E(key, sig, fail, comp, extra=(), reg="", obj="akita_black_bowl_1", tgt=None, model=None, cell=None):
@@ -108,6 +117,7 @@ ENTRIES = [
     E("F7_relL", "f7", "F7/pi05_I_0", ["F7/pi05_rc_0"], ["F7/groot_I_0"], "pi0.5 .40 (SP), resolver 1.00 (SR 45.2)"),
     E("F7_relR", "f7", "F7/pi05_I_1", ["F7/pi05_rc_1"], ["F7/groot_I_1"], "pi0.5 .40 (SP), resolver 1.00 (SR 45.2)"),
     E("F7_neg", "f7", "F7/pi05_I_3", ["F7/pi05_rc_3"], ["F7/groot_I_3"], "pi0.5 .20 (NG), resolver .775 (SR 45.2)"),
+    E("F6_g", "f6away", "F6_groot/groot_I_8", [], [], "GR00T F6_b .142 [.083, .208], cost of covering (d minus b) +.60 (SR 45.6); 76% of its failures release 3-10 cm or farther (f6_diag.md)"),
     E("F6_b", "f6", "F6/pi05_I_8", ["F6/pi05_rc_8"], ["F6/pi05_I_9"], "cost of covering (d minus b) .38 [.28, .48]; RC with pose memory .800 vs .517 intact (SR 70)"),
     E("NL_N1new", "nl", "NL/pi05_I_17", [], [], "all four systems fail on the same new-layout states (new-layout limit, DRAFT 4.6)"),
     E("NL_N6new", "nl", "NL/pi05_I_27", [], [], "all four systems fail on the same new-layout states (new-layout limit, DRAFT 4.6)"),
@@ -129,6 +139,7 @@ def main():
     rgt = json.load(open(os.path.join(REPO, "results", "flawed", "rg_comp", "rg_comp_tasks.json"), encoding="utf-8"))
     cen = np.array(n2["training"]["centre"][3], np.float64)                 # plate (MOVABLE order bowl, cheese, bottle, plate)
     sel = dict(rule=__doc__.split("RULE")[1].split('"""')[0].strip(), dev_states_only=True, entries={})
+    sel["revisions"] = [dict(date="2026-11-21", entry="F6_b", was="failed, held, last-held xy > 3 cm from the plate (released away)", now="failed and final bowl xy > 3 cm from the plate centre (the harness predicate)", reason="docs/notes/f6_diag.md: the original flagged 6 of 50 pi0.5 F6_b failures (44 release within 3 cm and slide out); revised after the diagnosis and before the selection was recomputed; selection rule otherwise unchanged (lowest qualifying trial, RC succeeds on the same trial)")]
 
     def task_of(stem):
         last = stem.split("_")[-1]
@@ -158,7 +169,7 @@ def main():
             continue
         # the task of the failing stem: tid is the last _ field (cells for MV)
         last = en["fail"].split("_")[-1]
-        if en["sig"] in ("f7", "f6"):
+        if en["sig"] in ("f7", "f6", "f6away"):
             task = rgt["tasks"][int(last)]
         elif en["sig"] == "mv":
             task = dict(object="akita_black_bowl_1", target="plate_1", centre=cen)

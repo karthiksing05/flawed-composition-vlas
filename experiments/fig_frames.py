@@ -21,6 +21,7 @@ FF = os.path.join(S.REPO, "results", "flawed", "fig_frames")
 SELJ = os.path.join(S.OUT, "frames", "selection.json")
 DISP = 512
 CROP = (150, 450, 20, 470)          # rows r0:r1, cols c0:c1 of the 512 px upright agentview: the table region (3:2)
+CROP_F6 = (212, 512, 10, 460)          # F6: the displaced plate sits low in the frame
 
 
 # --------------------------------------------------------------------------- episode loading
@@ -150,7 +151,7 @@ def ring(ax, ep, ctr_xy, z, r, style, crop=CROP):
     ax.plot(xy[:, 0], xy[:, 1], zorder=4, **kw)
 
 
-def show(ax, ep, row, crop=CROP, border=None, path=True, rings=(), step_label=True):
+def show(ax, ep, row, crop=CROP, border=None, path=True, rings=(), step_label=True, marks=None):
     """The 512 px frame nearest `row`, cropped, with the EE path to `row` (reach dashed, carry coloured by outcome) and the rings."""
     img, rr = to_tile(ep, row)
     S.frame_tile(ax, img, crop, border)
@@ -161,12 +162,25 @@ def show(ax, ep, row, crop=CROP, border=None, path=True, rings=(), step_label=Tr
     if path:
         n = max(1, min(rr + 1, ep.T))
         S.draw_path(ax, tile_xy(ep.pix[:n], crop), ep.dheld[:n], ep.success)
+    if marks is not None:
+        marks(ax, ep, crop)
     ax.set_xlim(0, w)
     ax.set_ylim(h, 0)
     if step_label:
         ax.text(0.97, 0.04, "t=%d" % rr, transform=ax.transAxes, ha="right", va="bottom", fontsize=S.TINY, color=S.INK,
                 bbox=dict(boxstyle="square,pad=0.12", fc="white", ec="none", alpha=0.8), zorder=11)
     return rr
+
+
+def f6_marks(ax, ep, crop=CROP):
+    """F6: the 3 cm success disc around the plate centre (the predicate On(bowl, plate): bowl centre within 3 cm) and the bowl's FINAL centre
+    (a cross: red outside the disc, green inside)."""
+    pl = ep.tgt[0]
+    ring(ax, ep, pl[:2], float(pl[2]), 0.03, "obj", crop)
+    b = ep.obj[-1]
+    inside = float(np.linalg.norm(b[:2] - ep.tgt[-1][:2])) <= 0.03
+    p = tile_xy(project_np(np.array([[b[0], b[1], float(pl[2])]]), ep.cam), crop)[0]
+    ax.plot(p[0], p[1], "x", ms=6, mew=2, color=(S.OK if inside else S.FAIL), zorder=9)
 
 
 # --------------------------------------------------------------------------- selection, labels, rings
@@ -222,6 +236,8 @@ def label_of(stemkey):
     m, arm = f.split("_")[0], f.split("_")[1]
     base = dict(pi05=("pi0.5", S.GREY), pi0=("pi0", S.MODEL["pi0"]), groot=("GR00T N1", S.MODEL["GR00T N1"]),
                 smolvla=("SmolVLA", S.MODEL["SmolVLA"]))[m]
+    if d.startswith("F6") and f.endswith("_9"):
+        return ("pi0.5, plate visible", S.GREY)
     if arm == "I":
         return base
     if arm == "g":
@@ -318,7 +334,7 @@ def short(lab):
     return "\n".join(textwrap.wrap(lab, 13))
 
 
-def failure_figure(name, key, cue, title, phase_head=True, thr_obj=False, max_rows=4, crop=CROP):
+def failure_figure(name, key, cue, title, phase_head=True, thr_obj=False, max_rows=4, crop=CROP, add=(), marks=None):
     """A full-width appendix figure for one entry: stacked arms (rows) x 7 frames, the cue schematic, the EE trace."""
     import matplotlib.pyplot as plt
     info, arms = entry_eps(key)
@@ -326,6 +342,10 @@ def failure_figure(name, key, cue, title, phase_head=True, thr_obj=False, max_ro
         print("no episodes for", key, info.get("status"), flush=True)
         return False
     arms = arms[:max_rows]
+    nmain = len(arms)
+    for k2 in add:                                                       # rows of further entries (their own chosen trial, labelled)
+        i2, a2 = entry_eps(k2)
+        arms += [(l + "\n(trial %d)" % i2["chosen"], c, e, r2 if r2 == "fail" else "extra") for (l, c, e, r2) in a2[:1]]
     nr = len(arms)
     wr = [1.15] + [1] * 7 + [1.35]
     unit = S.W2 / (sum(wr) + 0.05 * 9)
@@ -349,7 +369,7 @@ def failure_figure(name, key, cue, title, phase_head=True, thr_obj=False, max_ro
         rows = ep.key_rows()
         for j, r in enumerate(rows):
             ax = fig.add_subplot(gs[i, 1 + j])
-            show(ax, ep, r, crop=crop, rings=rings_for(key, ep))
+            show(ax, ep, r, crop=crop, rings=rings_for(key, ep), marks=(marks if j >= 5 else None))
             if i == 0:
                 ax.set_title(HEAD[j] if phase_head else "", fontsize=S.TINY, pad=2)
             if j == 5:
@@ -358,7 +378,7 @@ def failure_figure(name, key, cue, title, phase_head=True, thr_obj=False, max_ro
     from fig_cues import draw_cue
     draw_cue(cue, axc, compact=True)
     thr = (fail.obj[0, 2] + 0.22) if thr_obj else None
-    _trace(fig, gs[nr, 1:9], arms, thr)
+    _trace(fig, gs[nr, 1:9], arms[:nmain], thr)
     footer(fig, reg, 0.0)
     save_exact(fig, name)
     return True
@@ -371,7 +391,7 @@ def main_figs(which):
         "A4": dict(key="F1m_N6", cue="F1m", title="A4  F1m (put the bottle in the bowl).", thr_obj=True, crop=(10, 430, 10, 502)),
         "A5": dict(key="F2_pi0_N1", cue="F2", title="A5  F2 (put the cream cheese on the plate), pi0.", phase_head=False),
         "A6": dict(key="F7_relL", cue="F7", title="A6  F7 (put the left bowl on the plate)."),
-        "A7": dict(key="F6_b", cue="F6", title="A7  F6 (plate covered after the first query)."),
+        "A7": dict(key="F6_b", cue="F6", title="A7  F6 (plate covered after the first query): pi0.5 (precision loss; RC succeeds; pi0.5 on the plate-visible condition) and GR00T (lost target).", add=("F6_g",), marks=f6_marks, max_rows=3, crop=(200, 512, 0, 512)),
         "A8": dict(key="NL_N1new", cue="NL", title="A8  New layout (put the cream cheese on the plate)."),
         "A9": dict(key="MV_Tfar", cue="MV", title="A9  Moved target (put the bowl on the plate, plate displaced).", crop=(165, 512, 0, 512)),
         "A14": dict(key="A14_N1", cue="F1", title="A14  Where-module (RAA-sL against RAA-sL-W5; put the cream cheese on the plate)."),
@@ -379,7 +399,7 @@ def main_figs(which):
     for k in which:
         if k in figs:
             p = figs[k]
-            failure_figure("fig" + k, p["key"], p["cue"], p["title"], p.get("phase_head", True), p.get("thr_obj", False), crop=p.get("crop", CROP))
+            failure_figure("fig" + k, p["key"], p["cue"], p["title"], p.get("phase_head", True), p.get("thr_obj", False), crop=p.get("crop", CROP), add=p.get("add", ()), marks=p.get("marks"), max_rows=p.get("max_rows", 4))
 
 
 def fig_A16():
@@ -387,7 +407,7 @@ def fig_A16():
     release and the comparator's release on each, so the figure shows the rule's picks and not the best-looking episode."""
     import matplotlib.pyplot as plt
     keys = [("F1_N1", "F1  place follows a cue"), ("F1m_N6", "F1m  high carry"), ("F2_pi0_N1", "F2  wrong object (pi0)"),
-            ("F7_relL", "F7  'left bowl'"), ("F6_b", "F6  plate hidden"), ("MV_Tfar", "Moved target (R2)")]
+            ("F7_relL", "F7  'left bowl'"), ("F6_b", "F6  covered plate (pi0.5)"), ("MV_Tfar", "Moved target (R2)")]
     S_ = sel()["entries"]
     rows = []
     for k, lab in keys:
@@ -417,13 +437,14 @@ def fig_A16():
                     ax.axis("off")
                     continue
                 a, b = ep.phases()
-                show(ax, ep, b if b is not None else ep.T - 1, rings=rings_for(k, ep), step_label=False)
+                show(ax, ep, ep.T - 1 if k == "F6_b" else (b if b is not None else ep.T - 1), crop=(CROP_F6 if k == "F6_b" else CROP), rings=rings_for(k, ep), step_label=False,
+                     marks=(f6_marks if k == "F6_b" else None))
                 S.stamp(ax, "OK" if ep.success else "FAIL", "upper left")
                 ax.text(0.97, 0.04, "trial %d" % t, transform=ax.transAxes, ha="right", va="bottom", fontsize=S.TINY,
                         bbox=dict(boxstyle="square,pad=0.12", fc="white", ec="none", alpha=0.8))
                 if i == 0:
                     ax.set_title("failing arm" if m == 0 else "comparator", fontsize=S.TINY, pad=2)
-    footer(fig, "A16  Further development-state episodes per failure (release tiles): the next qualifying trials of the same fixed rule (selection.json), not the best-looking ones.")
+    footer(fig, "A16  Further development-state episodes per failure (release tiles; F6: final frame with the 3 cm disc and the final bowl centre, the bowl hidden under the cover): the next qualifying trials of the same fixed rule (selection.json), not the best-looking ones.")
     save_exact(fig, "figA16")
     return True
 
