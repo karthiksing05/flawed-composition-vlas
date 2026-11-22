@@ -51,11 +51,15 @@ FROZEN, EXPERT = "#e6e6e6", "#c6dbef"
 SMALL, TINY = 7.0, 6.5  # pt
 
 
-def save(fig, name, sub=None):
+def save(fig, name, sub=None, tight=True):
+    """tight=False keeps the exact canvas (fixed 6.75 / 3.25 in widths); default behaviour unchanged."""
     d = OUT if sub is None else os.path.join(OUT, sub)
     os.makedirs(d, exist_ok=True)
     for ext in ("pdf", "png"):
-        fig.savefig(os.path.join(d, name + "." + ext), bbox_inches="tight", pad_inches=0.03)
+        if tight:
+            fig.savefig(os.path.join(d, name + "." + ext), bbox_inches="tight", pad_inches=0.03)
+        else:
+            fig.savefig(os.path.join(d, name + "." + ext))
     plt.close(fig)
     print("wrote", name, flush=True)
 
