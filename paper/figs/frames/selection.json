@@ -1,0 +1,3665 @@
+{
+ "rule": "(fixed before any frame was looked at; DEVELOPMENT states only, n2_states + n2_branches_main.json, rg_comp main states, mt states):\n  per entry, over the entry's first 10 trials (branches-file order), a trial QUALIFIES iff the failing arm fails with the failure's own\n  signature AND the comparator arm succeeds on the same trial of the same fresh run.  The shown episode = the lowest-index qualifying trial.\n  A16's extra episodes = the next three qualifying trials.  If none of the first 10 qualifies, 10 more trials (skip 10) are run into\n  <dir>_more and the same rule is applied to those; the record says so.  Signatures (functions below) are fixed here:\n    F1   failed, held, and the held object's last-held xy within 3 cm of the bowl (the trained destination)\n    F1m  failed, held, lift while held (max obj z - first obj z) > .22 m (n46_lift's high carry)\n    F2   failed and the first-held object ('bound') is another object\n    F7   failed after a grasp (the referent is not logged: a bowl was grasped and the episode failed)\n    F6   failed, held, last-held xy farther than 3 cm from the plate (released away)\n    NL   failed (comparator: none; every system fails)\n    MV   release closer to the trained plate position than to the actual plate by > 3 cm (SR 81's rule), failed;  comparator I succeeds\n    A14  RAA-sL fails and RAA-sL-W5 succeeds on the trial",
+ "dev_states_only": true,
+ "entries": {
+  "F1_N1": {
+   "status": "ok",
+   "fail": "F1/pi05_I_16",
+   "comp": [
+    "F1/pi05_rgp_16"
+   ],
+   "extra": [
+    "F1/pi05_sb_16",
+    "F1/groot_I_16"
+   ],
+   "signature": "f1",
+   "registered": "atlas E +.450 [.28, .61] (Table 1); ReGuide .929, tvpb .938 vs .454",
+   "n_first10": 10,
+   "n_qualifying_first10": 2,
+   "n_more": 10,
+   "n_qualifying_more": 3,
+   "used_more": false,
+   "chosen": 8,
+   "further": [
+    11,
+    15,
+    22
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "F1/pi05_sb_16": true,
+     "F1/groot_I_16": false
+    }
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": false,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": true,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": true,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": true,
+      "F1/groot_I_16": true
+     }
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F1/pi05_sb_16": true,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": true,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": true,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F1/pi05_sb_16": false,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": true,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": true,
+      "F1/groot_I_16": false
+     }
+    },
+    {
+     "trial": 14,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 15,
+     "more": true,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 16,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 17,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 18,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 19,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 20,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 21,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 22,
+     "more": true,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    },
+    {
+     "trial": 23,
+     "more": true,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F1/pi05_sb_16": null,
+      "F1/groot_I_16": null
+     }
+    }
+   ]
+  },
+  "F1_N2": {
+   "status": "ok",
+   "fail": "F1/pi05_I_18",
+   "comp": [
+    "F1/pi05_rgp_18"
+   ],
+   "extra": [
+    "F1/pi05_sb_18",
+    "F1/groot_I_18"
+   ],
+   "signature": "f1",
+   "registered": "atlas E +.450 [.28, .61] (Table 1); ReGuide .929",
+   "n_first10": 10,
+   "n_qualifying_first10": 3,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 4,
+   "further": [
+    7,
+    10
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "F1/pi05_sb_18": true,
+     "F1/groot_I_18": false
+    }
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": false
+     }
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": false
+     }
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": false
+     }
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": true
+     }
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": true
+     }
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": true
+     }
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": false
+     }
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": false
+     }
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": false
+     }
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F1/pi05_sb_18": true,
+      "F1/groot_I_18": false
+     }
+    }
+   ]
+  },
+  "F1m_N4": {
+   "status": "none_qualifies",
+   "fail": "F1m/pi05_g_22",
+   "comp": [
+    "F1m/pi05_sb_22"
+   ],
+   "extra": [],
+   "signature": "f1m",
+   "registered": "high-carry share .225, N4+N6 .625 (arm g); arm sb .062 and .812 (SR 53)",
+   "n_first10": 10,
+   "n_qualifying_first10": 0,
+   "n_more": 10,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": null,
+   "further": [],
+   "chosen_outcome": null,
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 14,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 15,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 16,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 17,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 18,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 19,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 20,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 21,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 22,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 23,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    }
+   ]
+  },
+  "F1m_N6": {
+   "status": "ok",
+   "fail": "F1m/pi05_g_26",
+   "comp": [
+    "F1m/pi05_sb_26"
+   ],
+   "extra": [],
+   "signature": "f1m",
+   "registered": "high-carry share .225, N4+N6 .625 (arm g); arm sb .062 and .812 (SR 53)",
+   "n_first10": 10,
+   "n_qualifying_first10": 2,
+   "n_more": 10,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 7,
+   "further": [
+    11
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 14,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 15,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 16,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 17,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 18,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 19,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 20,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 21,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 22,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 23,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    }
+   ]
+  },
+  "F2_pi0_N1": {
+   "status": "ok",
+   "fail": "F2_pi0/pi0_I_16",
+   "comp": [
+    "F2_pi0/pi0_rgp_16"
+   ],
+   "extra": [],
+   "signature": "f2",
+   "registered": "grasp excess +.650 [.39, .88] (pi0); .679 end at the grasp; ReGuide .608 (SR 65)",
+   "n_first10": 10,
+   "n_qualifying_first10": 5,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 6,
+   "further": [
+    8,
+    9,
+    11
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    }
+   ]
+  },
+  "F2_pi0_N4": {
+   "status": "none_qualifies",
+   "fail": "F2_pi0/pi0_I_22",
+   "comp": [
+    "F2_pi0/pi0_rgp_22"
+   ],
+   "extra": [],
+   "signature": "f2",
+   "registered": "grasp excess +.650 [.39, .88] (pi0); ReGuide .608 (SR 65)",
+   "n_first10": 10,
+   "n_qualifying_first10": 0,
+   "n_more": 10,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": null,
+   "further": [],
+   "chosen_outcome": null,
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 14,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 15,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 16,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 17,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 18,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 19,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 20,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 21,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 22,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 23,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    }
+   ]
+  },
+  "F2_smolvla_N1": {
+   "status": "ok",
+   "fail": "F2_smolvla/smolvla_I_16",
+   "comp": [
+    "F2_smolvla/smolvla_rgp_16"
+   ],
+   "extra": [],
+   "signature": "f2",
+   "registered": "grasp excess +.833 [.67, .96] (SmolVLA); .829 end at the grasp; ReGuide .604 (SR 65)",
+   "n_first10": 10,
+   "n_qualifying_first10": 1,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 13,
+   "further": [],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    }
+   ]
+  },
+  "F2_smolvla_N4": {
+   "status": "ok",
+   "fail": "F2_smolvla/smolvla_I_22",
+   "comp": [
+    "F2_smolvla/smolvla_rgp_22"
+   ],
+   "extra": [],
+   "signature": "f2",
+   "registered": "grasp excess +.833 [.67, .96] (SmolVLA); ReGuide .604 (SR 65)",
+   "n_first10": 10,
+   "n_qualifying_first10": 2,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 7,
+   "further": [
+    12
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    }
+   ]
+  },
+  "F7_relL": {
+   "status": "ok",
+   "fail": "F7/pi05_I_0",
+   "comp": [
+    "F7/pi05_rc_0"
+   ],
+   "extra": [
+    "F7/groot_I_0"
+   ],
+   "signature": "f7",
+   "registered": "pi0.5 .40 (SP), resolver 1.00 (SR 45.2)",
+   "n_first10": 10,
+   "n_qualifying_first10": 2,
+   "n_more": 10,
+   "n_qualifying_more": 1,
+   "used_more": false,
+   "chosen": 7,
+   "further": [
+    8,
+    15
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "F7/groot_I_0": true
+    }
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": false
+     }
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": true
+     }
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": true
+     }
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_0": true
+     }
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_0": true
+     }
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": false
+     }
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": true
+     }
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": false
+     }
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": true
+     }
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": true
+     }
+    },
+    {
+     "trial": 14,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 15,
+     "more": true,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 16,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 17,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 18,
+     "more": true,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 19,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 20,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 21,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 22,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    },
+    {
+     "trial": 23,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_0": null
+     }
+    }
+   ]
+  },
+  "F7_relR": {
+   "status": "ok",
+   "fail": "F7/pi05_I_1",
+   "comp": [
+    "F7/pi05_rc_1"
+   ],
+   "extra": [
+    "F7/groot_I_1"
+   ],
+   "signature": "f7",
+   "registered": "pi0.5 .40 (SP), resolver 1.00 (SR 45.2)",
+   "n_first10": 10,
+   "n_qualifying_first10": 10,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 4,
+   "further": [
+    5,
+    6,
+    7
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "F7/groot_I_1": false
+    }
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_1": false
+     }
+    }
+   ]
+  },
+  "F7_neg": {
+   "status": "ok",
+   "fail": "F7/pi05_I_3",
+   "comp": [
+    "F7/pi05_rc_3"
+   ],
+   "extra": [
+    "F7/groot_I_3"
+   ],
+   "signature": "f7",
+   "registered": "pi0.5 .20 (NG), resolver .775 (SR 45.2)",
+   "n_first10": 10,
+   "n_qualifying_first10": 6,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 4,
+   "further": [
+    5,
+    6,
+    9
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "F7/groot_I_3": true
+    }
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_3": false
+     }
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F7/groot_I_3": true
+     }
+    }
+   ]
+  },
+  "F6_b": {
+   "status": "none_qualifies",
+   "fail": "F6/pi05_I_8",
+   "comp": [
+    "F6/pi05_rc_8"
+   ],
+   "extra": [
+    "F6/pi05_I_9"
+   ],
+   "signature": "f6",
+   "registered": "cost of covering (d minus b) .38 [.28, .48]; RC with pose memory .800 vs .517 intact (SR 70)",
+   "n_first10": 10,
+   "n_qualifying_first10": 0,
+   "n_more": 10,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": null,
+   "further": [],
+   "chosen_outcome": null,
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": true
+     }
+    },
+    {
+     "trial": 14,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 15,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 16,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 17,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 18,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 19,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 20,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 21,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 22,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    },
+    {
+     "trial": 23,
+     "more": true,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "F6/pi05_I_9": null
+     }
+    }
+   ]
+  },
+  "NL_N1new": {
+   "status": "ok",
+   "fail": "NL/pi05_I_17",
+   "comp": [],
+   "extra": [],
+   "signature": "nl",
+   "registered": "all four systems fail on the same new-layout states (new-layout limit, DRAFT 4.6)",
+   "n_first10": 10,
+   "n_qualifying_first10": 7,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 4,
+   "further": [
+    6,
+    9,
+    10
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    }
+   ]
+  },
+  "NL_N6new": {
+   "status": "ok",
+   "fail": "NL/pi05_I_27",
+   "comp": [],
+   "extra": [],
+   "signature": "nl",
+   "registered": "all four systems fail on the same new-layout states (new-layout limit, DRAFT 4.6)",
+   "n_first10": 10,
+   "n_qualifying_first10": 8,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 4,
+   "further": [
+    5,
+    7,
+    8
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [],
+     "qualifies": true,
+     "extra_success": {}
+    }
+   ]
+  },
+  "MV_Tfar": {
+   "status": "ok",
+   "fail": "MV/r2_T_far",
+   "comp": [
+    "MV/I_T_far"
+   ],
+   "extra": [
+    "MV/raa_T_far",
+    "MV/rgp_T_far"
+   ],
+   "signature": "mv",
+   "registered": "I .975, 0 of 40 trained releases; R2 releases at the trained position on 31 of 40 (SR 81)",
+   "n_first10": 10,
+   "n_qualifying_first10": 6,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 92,
+   "further": [
+    93,
+    94,
+    95
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "MV/raa_T_far": false,
+     "MV/rgp_T_far": false
+    }
+   },
+   "trials": [
+    {
+     "trial": 92,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": false
+     }
+    },
+    {
+     "trial": 93,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    },
+    {
+     "trial": 94,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    },
+    {
+     "trial": 95,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    },
+    {
+     "trial": 96,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    },
+    {
+     "trial": 97,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    },
+    {
+     "trial": 98,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    },
+    {
+     "trial": 99,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    },
+    {
+     "trial": 100,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    },
+    {
+     "trial": 101,
+     "more": false,
+     "fail_success": false,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "MV/raa_T_far": false,
+      "MV/rgp_T_far": true
+     }
+    }
+   ]
+  },
+  "S2_N1": {
+   "status": "ok",
+   "fail": "S2/pi05_I_2",
+   "comp": [
+    "S2/pi05_rgp_2"
+   ],
+   "extra": [
+    "S2_pi0/pi0_I_2"
+   ],
+   "signature": "any",
+   "registered": "0 of 720 new-pairing episodes succeed (pi0.5); ReGuide with perceived poses .708 on N1+N2 (SR 68)",
+   "n_first10": 10,
+   "n_qualifying_first10": 6,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 4,
+   "further": [
+    5,
+    6,
+    8
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "S2_pi0/pi0_I_2": false
+    }
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {
+      "S2_pi0/pi0_I_2": false
+     }
+    }
+   ]
+  },
+  "S2_N2": {
+   "status": "ok",
+   "fail": "S2/pi05_I_3",
+   "comp": [
+    "S2/pi05_rgp_3"
+   ],
+   "extra": [
+    "S2_pi0/pi0_I_3"
+   ],
+   "signature": "any",
+   "registered": "0 of 720 new-pairing episodes succeed (pi0.5); ReGuide with perceived poses N2 1.00 (SR 68); pi0 .993 of 145 placements go to the start-side plate",
+   "n_first10": 10,
+   "n_qualifying_first10": 10,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 4,
+   "further": [
+    5,
+    6,
+    7
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {
+     "S2_pi0/pi0_I_3": false
+    }
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {
+      "S2_pi0/pi0_I_3": false
+     }
+    }
+   ]
+  },
+  "A14_N1": {
+   "status": "ok",
+   "fail": "A14_raasl/raac_raac_16",
+   "comp": [
+    "A14_w5/raac_raac_16"
+   ],
+   "extra": [],
+   "signature": "any",
+   "registered": "RAA-sL against RAA-sL-W5 (SR 87/91)",
+   "n_first10": 10,
+   "n_qualifying_first10": 3,
+   "n_more": 0,
+   "n_qualifying_more": 0,
+   "used_more": false,
+   "chosen": 5,
+   "further": [
+    8,
+    13
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    }
+   ]
+  },
+  "A14_N4": {
+   "status": "ok",
+   "fail": "A14_raasl/raac_raac_22",
+   "comp": [
+    "A14_w5/raac_raac_22"
+   ],
+   "extra": [],
+   "signature": "any",
+   "registered": "RAA-sL against RAA-sL-W5 (SR 87/91)",
+   "n_first10": 10,
+   "n_qualifying_first10": 0,
+   "n_more": 10,
+   "n_qualifying_more": 2,
+   "used_more": true,
+   "chosen": 17,
+   "further": [
+    18
+   ],
+   "chosen_outcome": {
+    "fail_arm_success": false,
+    "comp_success": [
+     true
+    ],
+    "extra_success": {}
+   },
+   "trials": [
+    {
+     "trial": 4,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 5,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 6,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 7,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 8,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 9,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 10,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 11,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 12,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 13,
+     "more": false,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 14,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 15,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 16,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 17,
+     "more": true,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 18,
+     "more": true,
+     "fail_success": false,
+     "signature": true,
+     "comp_success": [
+      true
+     ],
+     "qualifies": true,
+     "extra_success": {}
+    },
+    {
+     "trial": 19,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      false
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 20,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 21,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 22,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    },
+    {
+     "trial": 23,
+     "more": true,
+     "fail_success": true,
+     "signature": false,
+     "comp_success": [
+      true
+     ],
+     "qualifies": false,
+     "extra_success": {}
+    }
+   ]
+  }
+ }
+}
