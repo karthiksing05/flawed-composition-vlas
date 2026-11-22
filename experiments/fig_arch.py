@@ -61,7 +61,7 @@ def panel(ax, X0, right):
     txt(ax, X0 + cx, 1.76, "VLM prefix", weight="bold")
     txt(ax, X0 + cx, 1.52, "18 layers, frozen\n+ language tokens" if right else "18 layers\n+ language tokens")
     # action expert
-    bx(NX, 2.24, NW, 0.52, "", "expert")
+    bx(NX, 2.24, NW, 0.52, "", "expert" if right else "released")
     txt(ax, X0 + cx, 2.62, "action expert", weight="bold")
     txt(ax, X0 + cx, 2.42, "18 layers, flow\nmatching" if not right else "18 layers; keeps\nthe motor skill")
     # output chunk

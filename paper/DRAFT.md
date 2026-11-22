@@ -90,7 +90,7 @@ The routing defect has one form. A VLA picks a sub-goal by a cue that covaried w
 | F6, cost of covering the plate after one view, d - b: placement precision in pi0.5, lost target in GR00T (SR §45.6, f6_diag) | .38 [.28, .48] | not testable, gate .017 (SR §70) | .60 [.51, .68] | | |
 | New layout, atlas verdict (AF five-model atlas) | NEITHER | NEITHER | NEITHER | NEITHER | NEITHER |
 
-![Figure 1. The measured break of each failure, by model (caption in figs/captions.md).](figs/fig_atlas.png)
+![Figure 3. The measured break of each failure, by model (caption in figs/captions.md).](figs/fig_atlas.png)
 
 ### 4.1 F1. The place follows a cue
 
@@ -186,7 +186,7 @@ The instruction is unresolved in every run (SR §61). The reference planner meet
 
 **Object moved.** The weakness of frozen pi0.5 sits in the grasp. With the bowl .14-.30 m away, it succeeds on .375 [.225, .525] of K1 states and .400 [.250, .550] of K2 states, against .850 and .925 for ReGuide with perceived poses. The paired differences are +.475 [+.275, +.650] and +.525 [+.375, +.675] (SR §81). The record does not say where the arm goes when the grasp fails.
 
-![Figure 2. A moved target: frozen pi0.5 follows the plate, a narrow retrain releases at the trained position (caption in figs/captions.md).](figs/fig_moved.png)
+![Figure A12. A moved target: frozen pi0.5 follows the plate, a narrow retrain releases at the trained position (caption in figs/captions.md).](figs/fig_moved.png)
 
 **Scope.** In this test, narrow fine-tuning induces the position bias and the broad VLA does not carry it. The test has one scene, two tasks, one seed per state and one checkpoint per retrained system. M1 is weak by construction. The in-range share of trained releases is 0 by the 3 cm rule, so M1 asks only whether the far share exceeds 0. The reach attribution is confounded by the approach path, so we read it as descriptive (SR §81). The result agrees with the nearer-plate routing of §4.1, where the cue is a feature of the scene.
 
@@ -288,7 +288,7 @@ ReGuide (rgp) serves as the external reference. The registered primary contrast 
 **A broad initialisation turns the servo into the best variant.** RAA-s fixes the aim on the bottle pairings, and the LIBERO-fine-tuned initialisation of RAA-L keeps the competence outside the suite (§6.2). RAA-sL joins the two. It trains the RAA-s recipe from openpi's LIBERO-fine-tuned pi0.5, with the same data, frozen VLM and steps, and changes only the initial weights (SR §82, docs/notes/sr82.md). It reaches .878 on N1-N6, against .717 for RAA-s and .575 for RAA-L, with .936 on the trained tasks and a right-grasp rate of .997. The registered primary contrast against RAA-s reads NOT SUPPORTED: +.161 [-.017, +.311], where the lower bound misses 0 by .017. The contrast against RAA-L reads SUPPORTED at +.303 [+.042, +.567]. The gain concentrates on the bottle pairings, where RAA-sL reaches .883 against .589 for RAA-s (+.294 [+.183, +.400]), and the cheese pairings show no difference (+.028 [-.167, +.267]). The trained tasks stay non-inferior to RAA-s at +.092 [+.011, +.200]. RAA-sL sits level with ReGuide on new pairings at -.019 [-.106, +.061] (.897 for ReGuide). The registered non-inferiority test (P3a, margin -.10) reads NOT SHOWN, because its lower bound lies .006 under the margin, and the test for beating ReGuide shows no clear difference. In an exploratory check, RAA-sL succeeds on 18 of 20 N4 states against 13 for RAA-s. The gap to ReGuide shrinks from -.181 to -.019 and we cannot call it closed.
 
 
-![Figure 3. Success of every trained variant, per task (caption in figs/captions.md).](figs/fig_arms.png)
+![Figure A11. Success of every trained variant, per task (caption in figs/captions.md).](figs/fig_arms.png)
 
 ### 6.2 Module removal
 
@@ -310,7 +310,7 @@ The resolver R turns a relational instruction such as "the bowl on the left" int
 
 **Limits of the removal test.** All removals use one seed, one trial per state and 40 to 60 states per cell. The relational "position" template scores 0 for every non-composite arm, so it carries no information on the modules. Comparisons with frozen pi0.5 and ReGuide cross policies and isolate no module.
 
-![Figure 4. Removing one module returns one failure. The figure shows SR 80, SR 82 and the fresh states of SR 87; the replications on SR 90 and SR 91 and the scene-2 read of SR 89 are in Table 2c and the text, and are not drawn (full caption in figs/captions.md).](figs/fig_removal.png)
+![Figure 5. Removing one module returns one failure. The figure shows SR 80, SR 82 and the fresh states of SR 87 and SR 91; the SR 90 replication and the scene-2 read of SR 89 are in Table 2c and the text, and are not drawn (full caption in figs/captions.md).](figs/fig_removal2.png)
 
 ### 6.3 De-distributing where the arm goes
 
@@ -387,7 +387,7 @@ We hypothesise a behaviour-cloning shortcut: in the trained tasks the role phras
 
 **Four routes, a matched comparator and a data-only control.** Route A relabels held-phase demonstration frames with a counterfactual goal offset that stays in the support of the demonstrations (1-9 cm shifts), on a model without the servo, so the labels carry the shift and only the token can supply it. Route B adds a crop of the target as an extra image input and leaves the labels unchanged, so it has no data dose. Route A0 is the servo-free model on the base data with no relabel. We trained A0 as the matched comparator after we found that B was built servo-free as well, so that A minus A0 isolates the relabel and B minus A0 isolates the crop. Route A+ adds planner demonstrations that place the object at table spots with shifts of 19-38 cm, which the prompt and the views do not determine, and keeps the servo. A+ctrl trains on the same planner data with no token and no servo, so it is a data-only control and not a route. Route A+0 is A+ with the servo removed. We added A+0 after we had seen A+'s probe and development read, so it is a post hoc addition (prereg tag raafp0), and its only confirmatory test is the sealed 5th fresh set.
 
-**The learned where-share rises only with a relabel, and only to .274.** The five routes form a grid of data dose by servo, with one cell still empty.
+**The learned where-share rises only with a relabel, and only to .274.** The routes and the reference RAA-sL form a grid of data dose by servo, with one cell still empty.
 
 | dose | servo | route | share |
 |---|---|---|---|
