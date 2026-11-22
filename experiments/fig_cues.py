@@ -184,20 +184,28 @@ def _f7(ax, compact):
 
 def _f6(ax, compact):
     """Timeline: plate seen at t0, covered at t1; the model's estimate decays, a memory slot holds it."""
-    xs = (0.18, 0.50, 0.82)
-    for i, x in enumerate(xs):
-        _plate(ax, x, 0.80, r=0.085)
-        _t(ax, x, 0.665, ("seen", "covered", "release")[i])
-    ax.add_patch(Rectangle((xs[1] - 0.115, 0.755), 0.23, 0.10, fc="#c9c9c9", ec=S.INK, lw=0.8, hatch="////", zorder=6))
-    x = np.linspace(0.10, 0.95, 60)
-    y_est = np.where(x < 0.38, 0.42, 0.42 - 0.20 * (1 - np.exp(-(x - 0.38) / 0.16)))
-    for xv in xs:
-        ax.plot([xv, xv], [0.12, 0.60], color=S.GREYINK, lw=0.5, ls=":", zorder=1)
-    ax.plot([0.10, 0.95], [0.12, 0.12], color=S.GREYINK, lw=0.8)
-    ax.plot(x, np.full_like(x, 0.42), color=S.INK, lw=1.2, ls=(0, (4, 2)), zorder=5)
-    ax.plot(x, y_est, color=S.CUE, lw=1.8, zorder=6)
-    _t(ax, 0.50, 0.51, "slot holds", color=S.INK)
-    _t(ax, 0.72, 0.065, "model decays", color=S.CUE, weight="bold")
+    # Top-down view (docs/notes/f6_diag.md): pi0.5 still releases at the plate under the cover (median 1.8 cm off centre);
+    # the bowl then slides ~2 cm and rests just outside LIBERO's 3 cm On() disc.
+    cy = 0.52
+    for cx, covered in ((0.25, False), (0.75, True)):
+        ax.add_patch(Circle((cx, cy), 0.20, fc="white", ec=S.INK, lw=0.8, zorder=2))           # plate
+        if covered:
+            ax.add_patch(Circle((cx, cy), 0.20, fc="none", ec="#a8a8a8", lw=0.4, hatch="//", zorder=3))
+            ax.add_patch(Circle((cx, cy), 0.20, fc="none", ec=S.INK, lw=1.2, zorder=3))
+        ax.add_patch(Circle((cx, cy), 0.09, fc="none", ec=S.INK, lw=1.0, ls=(0, (2.5, 1.8)), zorder=5))  # 3 cm success disc
+        for dx, dy in ((-0.02, 0.012), (0.012, -0.015), (0.0, 0.02)):                            # release points
+            ax.plot(cx + dx, cy + dy, "s", ms=2.6, mfc="white", mec=S.INK, mew=0.8, zorder=7)
+        if covered:
+            _arr(ax, (cx + 0.015, cy - 0.005), (cx + 0.115, cy - 0.045), color=S.CUE, lw=1.8, head=7)
+            ax.add_patch(Circle((cx + 0.145, cy - 0.058), 0.035, fc=BOWLC, ec=S.CUE, lw=1.4, zorder=8))
+        else:
+            ax.add_patch(Circle((cx + 0.025, cy - 0.015), 0.035, fc=BOWLC, ec=S.INK, lw=0.8, zorder=8))
+        _t(ax, cx, 0.17, "covered" if covered else "visible", weight="bold" if covered else "normal",
+           color=S.CUE if covered else S.INK)
+    _t(ax, 0.25, 0.84, "3 cm")
+    ax.plot([0.25, 0.25], [0.80, cy + 0.09], color=S.GREYINK, lw=0.6, zorder=1)
+    if not compact:
+        _t(ax, 0.50, 0.075, "release at plate,\nbowl slides out", color=S.MUTED)
 
 
 def _nl(ax, compact):
