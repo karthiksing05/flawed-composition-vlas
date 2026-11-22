@@ -1,0 +1,64 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: RAA-sL second training seed (pi05_g8v_raas_l_ae, --seed 43, exp s43 / s43tl), replication of SR 82's N1-N6 / K1-K6, D1 / D2 and probe in.tok / servo shares",
+ "config": {},
+ "env": {
+  "device": "NVIDIA GeForce RTX 2080 Ti",
+  "host": "bmo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4831392",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "ac0b6d8a8e761193a80a6cb101af44adc4b2062e",
+  "short": "ac0b6d8a"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "pi05_g8v_raas_l_ae exactly as SR 82 (6,001 steps, batch 32, lr 5e-5, frozen VLM, pi05_libero init), TrainConfig.seed 43 instead of 42",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/raa_roll.sh": "45e681ef399302b8ef47b404fe15d1f3fe4fa71d981f08703682a134a99455aa",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/raaslS2_chain.sh": "e729d547e453e440515da41cac3fd9aff5fefa0bee6e8164885e799180677001",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/raaslS2_train.sh": "43cceab4301e1931eed302ad66915c3f9e09f3810506e4777838b204a8dad108",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/wasl_roll.sh": "fcf99c0631ee272f585087cf33e4b8439764a7dfaea9325bc941543393cb454b",
+   "docs/notes/sr82.md": "ea5c818398607887a6c2726aeeb710ac61ff22dbf3f004cc0788a5a63c25a6c7",
+   "experiments/c_train_pi05.py": "f8c52ebdaf5c3ab51c7eea4641b4760e8a61ecd39b820920596997b69aabede2",
+   "experiments/prereg/raaslS2_pred.txt": "34c856090e578624a81a47be5bbe65596476f8e1e1a08b15f2ab05e1171d2930",
+   "experiments/raa.py": "a56014bcc30acd390c7bc1efaf5485725b545118e987fc557646512f907c2da4",
+   "experiments/raasl_read.py": "e4d05226395deb8fe7d2ad122278431c67045edd28dfbb06489dcdd3cd33be81",
+   "experiments/wa_s.py": "1269e82afd2cc4387158d65fc8ffc893e2e93b2dd9c47a79f2772c9067251ed1",
+   "lifelong_ood/policy/l90c_config.py": "739d8de6a1e1ee3798ca39d9a657708f535c50090e4c25a34294cd7856e78aa1",
+   "lifelong_ood/policy/raas_model.py": "4990cfd28bd7ea7670866aa97d731074ea54b9db993f941c3f615a03dc40a636"
+  },
+  "mapping": "docs/notes/sr82.md; docs/notes/sr82_s43.md",
+  "prediction": "RAA-sL seed 2 (docs/notes/sr82.md; docs/notes/sr82_s43.md): the SAME recipe as SR 82, pi05_g8v_raas_l_ae (RAA-s servo recipe from the pi05_libero weights), trained again with --seed 43 (openpi TrainConfig.seed; seed 1 = the config default 42), exp s43 (overcap chain) / s43tl (tail-lab chain), 6,001 steps, batch 32, lr 5e-5, frozen VLM.  Nothing else changes: same data, norm stats, servo constants, states, rules, readers (readers are copies with arm / path names only).  Seed also changes the random init of state_proj (absent from pi05_libero) and the data order.\nWritten 2026-11-22 BEFORE any seed-43 training job (smoke included), probe or rollout.  Seed 1's results (SR 82) were seen.  Probabilities are the orchestrator's.\n\nSeed-1 reference numbers (SR 82, same states and rules):\n  Phase A: N1-N6 success .878 (bottle N4-N6 .883, cheese N1-N3 .872); K1-K6 .936.\n  Phase B (wa_s.py, full / noR / noM on the rg_comp rgc states): D1 full - noR on F7 pool +.319 [+.269, +.375] SUPPORTED; D2 full - noM on F6_b -.367 [-.500, -.250] REVERSED; D3a EQUIVALENT (0), D3b EQUIVALENT (-.006), DK NON-INFERIOR (0); gates F6_a .983, controls .600, K floor .9625 all TESTABLE; gated PRIMARY NOT SHOWN.\n  Probe (a2_probe_f.py, pooled N + K, 96 observations, B = 2000, rng 0, clustered): in.tok where-share -.007 [-.008, -.006]; in.servo share .920 [.879, .967], in.chan share .913 [.872, .960] (pooled N + K; the .878 quoted in the task is the lower end of the servo CI); in.prefix .089.\n\nREPLICATION RULE (fixed here, applied to every registered quantity):\n  Phase A N1-N6 and K1-K6 success (60 states per task, tasks and states resampled, B = 2000, rng 0, the raa_read machinery):\n     REPLICATES      if |seed 2 - seed 1| <= .05 (point);\n     CONSISTENT      if the gap is above .05 but the two 95% CIs (each from its own bootstrap) overlap;\n     DOES NOT REPLICATE otherwise.\n  Phase B D1 (full - noR, F7 pool): REPLICATES iff seed 2 has the SAME verdict (SUPPORTED, CI lower bound > 0) and the same sign; its delta is reported next to +.319 (no size claim beyond the CI overlap).  Otherwise DOES NOT REPLICATE.\n  Phase B D2 (full - noM, F6_b): REPORTED ONLY, no replication claim (seed 1 was a reversal on 60 states of one cell with an unexamined cause).  Seed 2's delta, CI and verdict (SUPPORTED / REVERSED / NOT SUPPORTED) are shown beside -.367.  D3a, D3b, DK, the gates and the gated PRIMARY are reported with their labels, no claim.\n  Probe: in.tok where-share REPLICATES iff its 95% CI upper bound is below .30 (the registered FAILED rule) and |point| < .05; servo / channel shares REPLICATE iff the point is within .10 of seed 1's (.920 / .913 pooled N + K, same code on the same captures).\n  A quantity that does not replicate is reported as such; seed 1 is not re-labelled and no seed is dropped.  Two seeds do not make a distribution: a replication here means the seed-1 reading was not a single-seed accident on that quantity; a failure means seed variance is at least that large.\n\nPREDICTIONS (point; plausible range; probability of the stated event):\n (p1) Seed-2 N1-N6 success: point .83, range .70-.93.  |N2 - N1| <= .05 (REPLICATES): 42%; CONSISTENT (gap above .05, CIs overlap): 45%; DOES NOT REPLICATE: 13%.\n (p2) Seed-2 K1-K6 success: point .92, range .85-.97.  |K2 - K1| <= .05: 70%; DOES NOT REPLICATE: 5%.\n (p3) Seed-2 N above RAA-s(78b)'s .717 in the point: 85%.  Seed-2 bottle N4-N6 above RAA-L's .333 in the point: 92%.\n (p4) D1 on seed 2 SUPPORTED: 90%; D1 delta point +.28, range +.15 to +.40; same verdict as seed 1: 90%.\n (p5) D2 on seed 2: REVERSED 30%, NOT SUPPORTED (CI contains 0 or positive but lower bound <= 0) 45%, SUPPORTED 25%.  Seed-2 full F6_b point: .15, range 0-.55 (seed 1 was .017; I expect seed-1's collapse to be partly seed-specific).  Seed 2 repeating the exact seed-1 pattern (REVERSED): 30%.\n (p6) Gates TESTABLE: F6_a 90%, controls 60%, K floor 90%; gated PRIMARY NOT SHOWN 55%, SHOWN 15%, UNTESTABLE 30%.\n (p7) Probe in.tok where-share: point within +-.05 of 0 and CI upper < .30: 90% (the servo supplies the where-correction from outside the network; seed 1 -.007).  In.tok share above .30: 4%.\n (p8) Probe in.servo and in.chan pooled shares each within .10 of seed 1 (.920 / .913): 65%; point range .70-.99.  In.prefix share below .20: 80%.\n (p9) Full replication (N, K, D1 all REPLICATES or CONSISTENT and probe in.tok replicates): 65%.\n (p10) Servo-channel check (state-token role ids, as SR 82 prediction 5): median held-target channel error under 2 cm and no state line outside role ids 0 / 1 / 2: 90%.\nKill (k1): training loss NaN or non-finite, or step-0 loss in the smoke more than 2x seed 1's .0556.  Kill (k2): serving smoke with 0 of 4 episodes succeeding or any server error; then diagnose before any main rollout.\nCounter-evidence: N2 more than .15 below .878 (a recipe whose headline depends on one seed).\n",
+  "seen": "Written 2026-11-22 AFTER seed 1's results (SR 82: N1-N6 .878, K1-K6 .936, D1 +.319, D2 -.367 REVERSED, probe in.tok -.007) were seen; no seed-43 checkpoint, probe or rollout exists.  Only the seed (--seed 43) changes.",
+  "status": "PRE-REGISTERED RAA-sL seed 2",
+  "written_before": "any seed-43 training job (smoke43 / s43 / s43tl), probe and rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__raaslS2__s1__ac0b6d8a",
+ "schema": 1,
+ "script": "experiments/prereg/raaslS2.py",
+ "seconds": null,
+ "seed": 1,
+ "source_commit": null,
+ "started": "2026-11-22T06:35:56+00:00",
+ "stream": null,
+ "tag": "raaslS2"
+}
