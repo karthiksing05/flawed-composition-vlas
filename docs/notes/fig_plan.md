@@ -238,3 +238,11 @@ After both: one agent updates paper/figs/captions.md (new numbering, add appendi
 - The scene-2 F1 row in the main gallery (the first scene is cleaner; scene 2 has the stronger result, 0 of 720).
 - Whether the where-module (W5) panel in Fig 5 counts as part of the main claim or as an appendix item; its confirmatory read (SR 91) did not confirm non-inferiority to ReGuide.
 - The A+0 cell: update when its probe lands.
+
+## 7. Orchestrator decisions on the open points (2026-11-21)
+
+- Fig 3 (atlas): keep it in the main text for now. If the 8-page cap binds at layout, the figure goes to the appendix and Table 1 stays.
+- Scene-2 F1: the main gallery stays scene 1 only (five rows). Scene 2 gets the full appendix figure A3, and the Fig 2 caption points to it (0 of 720).
+- W5 where-module panel: appendix (A14), not Fig 5. SR 91 did not show W5 non-inferior to ReGuide, so Fig 5 shows only the confirmed removals (D1 R, D2 M).
+- A+0 cell: hatched and "pending" until its probe lands; then re-run only fig_probe.py.
+- Wording in all captions and labels: "held-out" / "training" layouts and pairings, never "fresh" / "familiar" (except the established name "fresh set N"). Every shown episode is labelled a development-state episode chosen by the fixed rule, with the cell's registered rate.
