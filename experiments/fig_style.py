@@ -116,6 +116,7 @@ _KINDS = {  # kind: (facecolor, edgecolor, linewidth, linestyle)
     "frozen": (FROZEN, GREYINK, 0.8, "-"),
     "expert": (EXPERT, NAVY, 0.8, "-"),
     "new": ("white", NAVY, 1.4, "-"),
+    "released": ("#efe6d2", GREYINK, 0.8, "-"),
     "plain": ("white", GREYINK, 0.8, "-"),
     "input": ("white", GREYINK, 0.8, "-"),
     "ghost": ("white", GREYINK, 0.8, (0, (2, 2))),

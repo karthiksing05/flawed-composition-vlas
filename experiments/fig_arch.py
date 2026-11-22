@@ -55,11 +55,11 @@ def panel(ax, X0, right):
     ar((RX, 0.43), (NX + NW + 0.05, 0.43), color=S.GREYINK, lw=0.8, ls=(0, (2, 2)), head=5)
     S.cross(ax, (X0 + NX + NW + 0.12, 0.43), size=0.035, lw=1.2, color=S.GREYINK)
     # SigLIP
-    bx(NX + NW - LW, 1.02, LW, 0.18, "SigLIP", "frozen")
+    bx(NX + NW - LW, 1.02, LW, 0.18, "SigLIP", "frozen" if right else "released")
     # VLM prefix
-    bx(NX, 1.30, NW, 0.62, "", "frozen")
+    bx(NX, 1.30, NW, 0.62, "", "frozen" if right else "released")
     txt(ax, X0 + cx, 1.76, "VLM prefix", weight="bold")
-    txt(ax, X0 + cx, 1.52, "18 layers, frozen\n+ language tokens")
+    txt(ax, X0 + cx, 1.52, "18 layers, frozen\n+ language tokens" if right else "18 layers\n+ language tokens")
     # action expert
     bx(NX, 2.24, NW, 0.52, "", "expert")
     txt(ax, X0 + cx, 2.62, "action expert", weight="bold")
@@ -144,11 +144,12 @@ def main():
     rend = fig.canvas.get_renderer()
     ly, x = 0.08, 0.10
 
-    def adv(t, pad=0.14):
+    def adv(t, pad=0.07):
         bb = t.get_window_extent(rend).transformed(ax.transData.inverted())
         return bb.x1 + pad
 
-    for lab, kind in (("frozen weights", "frozen"), ("trained expert", "expert"), ("new module", "new")):
+    for lab, kind in (("frozen weights", "frozen"), ("released weights", "released"), ("trained expert", "expert"),
+                      ("new module", "new")):
         S.box(ax, (x, ly - 0.06), 0.20, 0.13, "", kind)
         x = adv(txt(ax, x + 0.25, ly, lab, ha="left"))
     tag(ax, x + 0.08, ly, "F")
