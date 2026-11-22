@@ -137,3 +137,12 @@ Target **ICML 2027**: abstract registration Jan 14, 2027 and full paper Jan 22, 
 Framing for ML reviewers: a study of how VLAs compute where to act (failure atlas, probes, module removal, training-data routes). The paper has no real-robot claims.
 
 User, 2026-11-21: "I'd like a lot of illustrations for each of the failures as well as architecture and other stuff". Chosen style: sim frames from rollouts (start / grasp / release, gripper path overlaid) plus a small schematic of the cue that drives the choice. Figure plan: docs/notes/fig_plan.md.
+
+## Reframe (2026-11-22)
+
+The user approved the analysis-paper framing proposed in docs/notes/novelty_review_adv.md (Section 3) and the two extra arms: a token-only oracle arm and a pi0 replication (plan to be written as docs/notes/plan_oracle_pi0.md; the file does not exist yet), plus the second training seed of RAA-sL already running.
+
+- New thesis: behaviour-cloned VLA experts do not take up explicit geometry, so where the object goes must be owned outside the learned network. Evidence order: failure atlas, matched-data ladder, dose-by-servo grid (central result), W5 and ReGuide convergence as corroboration, moved plate, separable modular decomposition.
+- paper/DRAFT.md is rewritten (main text about 5,600 words incl. tables; appendix A-I holds every removed result). The predictor moved to Appendix G; the W1-W6 chronology is one table (Table C1); SR pointers and capitalised verdicts are appendix-only.
+- Archived draft: docs/history/DRAFT_2026-11-22_pre_reframe.md (verbatim).
+- Open TODOs in the draft: Grant et al. version check (99.6% vs 0% transfer), read w2VLA in full, RoboMME and LIBERO-Mem citations, ReGuide plus resolver arm, targeted layer-14 patching test, F7 conflict with Wulff and Cangelosi.
