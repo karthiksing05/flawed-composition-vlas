@@ -8,7 +8,8 @@ Data (all read from results/flawed, nothing invented):
   results/flawed/raaf/a2/raaf_probe_{A,A0,B,Aplus}.json          rule.where_share (route), ref_shares ALL.in.tok (RAA-sL)
   results/flawed/raaf/raaf_dev_read_v3.json                      phaseA.success["<arm>|N"], ["<arm>|K"]  (points; the file has no intervals)
 Hard-coded from DRAFT prose (comment citing the section):
-  the A+0 cell is pending (DRAFT 6.4 Table 6.4a), the kept-small cell was not run (DRAFT 6.4 grid), pass bar .70 / fail line .30 (DRAFT 6.4),
+  A+0 probe: results/flawed/raaf/a2/raaf_probe_Aplus0.json (route label "Aplus" is a carried-over string), A+0 dev N/K: raaf_dev_read_v4.json,
+  the kept-small cell was not run (DRAFT 6.4 grid), pass bar .70 / fail line .30 (DRAFT 6.4),
   the layer-14 cliff words (DRAFT 4.8), 72 writes = 2 x 18 layers x (attn, mlp) (DRAFT 4.8).
 Run: sbatch experiments/fig_b.sh fig_probe.py
 """
@@ -52,11 +53,16 @@ def load():
         j = jl("raaf", "a2", "raaf_probe_%s.json" % r)
         w = j["rule"]["where_share"]
         routes[r] = (w["point"], w["ci"][0], w["ci"][1])
+    # A+0 (post hoc, prereg tag raafp0): the file's "route" label says "Aplus" by a carried-over string; it IS A+0.
+    w = jl("raaf", "a2", "raaf_probe_Aplus0.json")["rule"]["where_share"]
+    routes["Aplus0"] = (w["point"], w["ci"][0], w["ci"][1])
     ref = jl("raaf", "a2", "raaf_probe_A.json")["ref_shares"]["ALL.in.tok"]
     routes["raasl"] = (ref["point"], ref["ci"][0], ref["ci"][1])
     D["routes"] = routes
     dev = jl("raaf", "raaf_dev_read_v3.json")["phaseA"]["success"]
     D["dev"] = {a: (dev[a + "|N"], dev[a + "|K"]) for a in ("raasl", "A", "B", "A0", "Aplus", "Actrl")}
+    dev4 = jl("raaf", "raaf_dev_read_v4.json")["phaseA"]["success"]
+    D["dev"]["Aplus0"] = (dev4["Aplus0|N"], dev4["Aplus0|K"])
     return D
 
 
@@ -132,7 +138,8 @@ def fig_probe(D):
     # per-band share of the positive effect (pi0.5) and the channel inputs of RAA-sL
     axb = fig.add_axes([2.70 / W, 0.62 / H, 1.32 / W, 0.62 / H])
     bs = band_shares(d)
-    ch = D["raasl"]["stats"]["ALL.share_chan"]
+    print("pi0.5 band shares:", ", ".join("%s %.3f" % (b[0], b[1]) for b in bs))
+    ch =D["raasl"]["stats"]["ALL.share_chan"]
     labs = [b[0] for b in bs][::-1]
     vals = [b[1] for b in bs][::-1]
     axb.barh(range(len(vals)), vals, color=S.GREY, height=0.7, zorder=3)
@@ -161,7 +168,7 @@ def fig_probe(D):
         txt(ax, cx0 + j * (cw + gap) + cw / 2, 2.22, a + ("\n" + b if b else "\n "))
     # (row, col) -> (label, share tuple or state)
     cells = {(0, 0): ("RAA-sL", R["raasl"]), (0, 1): ("not run", "notrun"), (0, 2): ("A+", R["Aplus"]),
-             (1, 0): ("A0", R["A0"]), (1, 1): ("A", R["A"]), (1, 2): ("A+0", "pending")}
+             (1, 0): ("A0", R["A0"]), (1, 1): ("A", R["A"]), (1, 2): ("A+0", R["Aplus0"])}
     ramp = cm.Blues
     for (r, c), (lab, val) in cells.items():
         x = cx0 + c * (cw + gap)
@@ -281,7 +288,7 @@ def fig_a13(D):
 def fig_a15(D):
     fig, axes = plt.subplots(1, 2, figsize=(S.W1, 2.45), sharey=True, gridspec_kw={"width_ratios": [1.15, 1.0], "wspace": 0.12})
     rows = [("RAA-sL", "raasl", "raasl"), ("A0", "A0", "A0"), ("B", "B", "B"), ("A", "A", "A"), ("A+", "Aplus", "Aplus"),
-            ("A+ctrl", "none", "Actrl"), ("A+0", None, None)]
+            ("A+ctrl", "none", "Actrl"), ("A+0", "Aplus0", "Aplus0")]
     y = {r[0]: len(rows) - 1 - i for i, r in enumerate(rows)}
     ax = axes[0]
     R = D["routes"]
