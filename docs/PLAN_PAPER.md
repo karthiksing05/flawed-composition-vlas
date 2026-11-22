@@ -129,3 +129,11 @@ That is about 15-20 policies, with roughly 5 model families. Fewer servable poli
 - Decision: the predictor stays a reported negative. The paper's claim is that steerability tracks which entities a family can be steered to, not which policies generalise.
 - Planned: one confirmatory test of k×a on new policies (Rrel and RAA, probed in §73 phase 2). Its prereg row must be written before that probe runs.
 - **Result (SR §75, 2026-11-17): k×a confirmed on new policies.** C1 AUC on the 12 Rrel/RAA × N1-N6 cells .944 (PASS, CI [.667, 1.0]); C2 pooled AUC over 102 cells .805, lower bound .603 (PASS); C3 sign test PASS (one pair). Trained-task success alone gives AUC .50 on these cells. Still two policies, six tasks, and one scene.
+
+## Venue (user decision, 2026-11-21)
+
+Target **ICML 2027**: abstract registration Jan 14, 2027 and full paper Jan 22, 2027 (AoE), per icml.cc/Conferences/2027 quotas page and mldeadlines; confirm against the official CFP. Format: 8 pages of main text plus an unlimited appendix, ICML LaTeX style. Fallback is CoRL 2027 (deadline expected late May 2027), which fits after ICML decisions in early May. Not RSS 2027 (stage-1 review overlaps Jan 22, so it would be a dual submission).
+
+Framing for ML reviewers: a study of how VLAs compute where to act (failure atlas, probes, module removal, training-data routes). The paper has no real-robot claims.
+
+User, 2026-11-21: "I'd like a lot of illustrations for each of the failures as well as architecture and other stuff". Chosen style: sim frames from rollouts (start / grasp / release, gripper path overlaid) plus a small schematic of the cue that drives the choice. Figure plan: docs/notes/fig_plan.md.
