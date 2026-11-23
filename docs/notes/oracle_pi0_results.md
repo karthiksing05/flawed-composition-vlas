@@ -109,3 +109,5 @@ Neither experiment refutes the claim and neither supports it cleanly; the plan's
 
 ## 8. Budget
 Approximate A40 hours: pi0 training 2 x ~8 = 16; ORC training ~10; pi0 captures + probes ~5.5; ORC captures + probes ~1.5; renders ~1.5; Stage 1a probes ~0.3; pi0 dev rollouts (14 jobs) ~12.  Total about 47 GPU-h against the approved ~30-33; the overrun is the ORC arm (gate fired, instructed to launch) and the pzdev request.
+
+**Deviation added at review (2026-11-23, orchestrator).** The pzdev pre-registration commit cd17d596 (23:03:02) landed 7 s after the first pzdev rollout job 4839560 was submitted (23:02:55) and before it started (23:03:39). No rollout had run and no read existed when the predictions were committed, so the labels stand; the ordering is recorded here. Total GPU use for this plan was about 47 A40 GPU-h against the approved ~30-33; the overrun is the ORC arm (registered gate fired) and the pzdev rollouts (added at the orchestrator's request for the failure-atlas row).
