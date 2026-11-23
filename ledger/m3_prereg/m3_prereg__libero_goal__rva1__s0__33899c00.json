@@ -1,0 +1,58 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: RVA1: failure-mode split (G / W / O / H / M) of N1-N6 failures from existing development-state rollouts; rules P / R / MIXED; validity gate",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4842604",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "33899c002cf040527fa3b4b3b126d887350faabb",
+  "short": "33899c00"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "pi0-sL, pi0-A0, RAA-sL, A, A0 (free extras RAA-sL s43, A+0, B); Phase A N1-N6 dev states 4-63; Phase B tracks F6_b / F7 pool",
+  "deviation_notes": "none at registration",
+  "files_sha256": {
+   "docs/notes/plan_review_atlas.md": "759abcc7fd768316f538833ec14d7cdf6d912fa027d5771c942c965ac6caab46",
+   "experiments/prereg/rva1_pred.txt": "d971530ec4ebb4ab6f450ea5c50fc81bec2e70f46ade71f96ae774a904302222",
+   "experiments/rva1_geom.py": "905c043f530d46742d77df6a34691b7964afce0677202065f5c89651a41602ea",
+   "experiments/rva1_read.py": "189fdb857b2a72bcec0b91911569a332f5f13ac1905b0675b5af8d3367d71566",
+   "results/flawed/rva1/geom_dev.json": "b47bf1d7470eb18d9e8462da6fd5e7f9b05a4d3c6b7b96a0184ef22ad2444362"
+  },
+  "mapping": "docs/notes/plan_review_atlas.md section 2",
+  "prediction": "RVA1 (docs/notes/plan_review_atlas.md 2): failure-mode split of held-out-pairing (N1-N6) failures from EXISTING development-state rollouts; no GPU.\nArms: pi0-sL, pi0-A0 (raaf/dev_pzsL, dev_pzA0), RAA-sL seed 1 (raa raasl_*), A (raaf/dev_A), A0 (raaf/dev_A0); free extras RAA-sL s43, A+0, B, W5 (held-out).\nClassifier (experiments/rva1_read.py, fixed here): G bound != object; else release query = last query of the last held segment (chan log), d = xy |target - object| there;\nH held at the last query and steps = 300; W d >= 10 cm and object within 8 cm of a known-partner target (rva1_geom.py); O d >= 10 cm not W; M d < 10 cm (bins <3, 3-6, 6-10).\nPhase B (tracks): final rest distance, classes G, L (> 10 cm), M3-10, M<3, on F6_b and the F7 pool.\nGate: chan-log classes agree with raa_instr per-step classes on RAA-sL rx 24-43 of N1, N4, N6 in >= 90% of 60 episodes and median |d_chan - d_instr| <= 2 cm; else E1-opt re-rolls.\nRules (pi0-A0 vs pi0-sL, paired by task and state, B = 2000, rng 0): P \"read but imprecise\" iff dM CI lower > 0, dM >= half the total, dW CI upper < .10;\nR \"routing\" iff dW CI lower > 0 and dW >= half the total; MIXED otherwise.  Same rules reported for A0 and A vs RAA-sL.\nSTATUS: success rates of every arm were seen (pzdev, raaf_sel); no failure class of any trained arm has been computed; RAA's SR 77 split (47 of 51 right object, right target, 3.7-7.9 cm) and raasl_instr categories were seen.\nPredictions:\n (e1) gate passes: 85%.\n (e2) pi0-A0 failure shares: M point .55 (range .30-.80); W point .12 (0-.35); G .10; H + O .23.\n (e3) Rule P: 50%; Rule R: 15%; MIXED: 35%.\n (e4) RAA-sL failure M share >= .60: 75%.  A0 and A: M share >= .50: 65% each.\n (e5) bottle pairings carry most of pi0-A0's W (W share bottle > cheese): 60%.\n (e6) F6_b failures of the servo-kept arms (RAA-sL, pi0-sL) are mostly L (> 10 cm): 70%.\nKill: (k1) the join fails (a query count differs from the episode's calls for > 2% of episodes): fix the join, re-register, no read.\n",
+  "seen": "Written 2026-11-23 after rva1_geom.py ran (geom_dev.json) and rva1_read.py's selftest passed on synthetic sequences; before the classifier (or its validity gate) read any real arm's chan log.  Success rates of every arm were seen earlier (pzdev, raaf_sel); no failure class of a trained arm has been computed.",
+  "status": "PRE-REGISTERED RVA1",
+  "written_before": "any real-arm classification"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__rva1__s0__33899c00",
+ "schema": 1,
+ "script": "experiments/prereg/rva1.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-23T09:47:23+00:00",
+ "stream": null,
+ "tag": "rva1"
+}
