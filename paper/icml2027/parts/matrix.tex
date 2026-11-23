@@ -1,0 +1,21 @@
+\begin{table*}[t]
+\caption{The repair matrix. N is held-out-pairing success on development states unless stated. A new scene-1 layout, which fails the scripted planners too, is a limit of the task and has no row (Appendix~\ref{app:B}).}
+\label{tab:matrix}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.02}
+\begin{tabular}{@{}P{0.75in}P{0.82in}P{0.72in}P{0.6in}P{0.8in}P{0.8in}P{1.2in}P{0.6in}@{}}
+\toprule
+failure & routing cue & models & missing function & more data & target as an input & explicit module & removing the module returns it \\
+\midrule
+F1, the place follows a cue & held object's identity (scene 1); majority of three cues (scene 2) & \pifive, \pizero, GR00T, X-VLA (E +.450, +.225, +.500, +.379) & where the object goes & falls short: A+0 .603; no-token planner data \mi.247 [\mi.483, \mi.030] & falls short: RAA .656, RAA-c .503; \pizero{} N .506 against .761 & repairs: W5 .892, ReGuide .914 & not in the removal test \\
+F1m, the held outline starts the carry & outline of the held object & \pifive, \pizero, GR00T, X-VLA & release control of the held object & not tested & not tested & repairs in part: ReGuide takes GR00T N4 high carry from 1.00 to 0 of 38 (N6 .821); painted outline .625 to .812 & not tested \\
+F2, the habitual object is grasped & habitual object in the scene & \pizero{} (+.650), SmolVLA (+.833) & binding of the named role to the approach & not tested & not tested & repairs: ReGuide lifts \pizero{} .021 to .608, SmolVLA .021 to .604 & not tested \\
+F6, a covered target is lost & the cover over the plate & \pifive{} (cost .38), GR00T (cost .60) & memory of the target across queries & not tested & servo alone loses it: RAA-sL .017, \pizero{} .000 & repairs: W5 .817 against .050 (set 3) & yes: \mi.217, \mi.400, \mi.367 \\
+F7, relational language is ignored & ambiguous choice & all five, at least one family & resolution of a relation to one entity & not tested & not tested & repairs: resolver, \pifive{} .40 to 1.00 and .20 to .775; the resolver alone in ReGuide .356 to .681, the full module set .963 & yes: \mi.483, \mi.504, \mi.408 \\
+Moved plate & trained plate position, after narrow retraining & R2 (31 of 40 at the trained position) & position of the target in the scene & narrow data induce the bias (R2 .000) & RAA .100 & ReGuide .850 and .925 (Appendix~\ref{app:F}) & not tested \\
+Exact target given, still fails & trained tasks never need the target input & \pifive: unread; \pizero: read, not in control & control from the read target & relabel .274, planner .124, oracle .771 [.605, .887] & \pifive{} \mi.007; \pizero{} .542 and N .506 against .761 & the servo takes over: share \mi.150 (\pizero), \mi.007 (\pifive{} A+) & not a removal: \pizero{} servo-off retrain \mi.256 [\mi.386, \mi.128] \\
+\bottomrule
+\end{tabular}
+\end{table*}
