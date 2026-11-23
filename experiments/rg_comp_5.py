@@ -80,9 +80,10 @@ B1, B2 = "akita_black_bowl_1", "akita_black_bowl_2"
 WAIT, HIDE_AT, REPLAN = 10, 5, 5
 F7_K0, F6_K0, N_CAND7, N_CAND6 = 860, 940, 80, 80     # RVW5 (plan_review_atlas 3.1, raaf_plan 7.1): fifth fresh k ranges (SR 91 used F7 600-679, F6 700-779; earlier F7 300-599, F6 400-699; fx / f6o2 0-193)
 _OLD7, _OLD6 = list(range(0, 194)) + list(range(300, 680)), list(range(0, 194)) + list(range(400, 780))     # every k used by an earlier F7 / F6 set (SR 45-91)
-_S7 = lambda ks: {b + k for k in ks for b in (820000, 821000)}                                   # noqa: E731  F7 sampler / layout seeds
-_S6 = lambda ks: {b + k for k in ks for b in (810000, 811000, 830000, 830100)}                   # noqa: E731  F6 sampler / plate / park seeds
-assert not (_S7(range(F7_K0, F7_K0 + N_CAND7)) & _S7(_OLD7)) and not (_S6(range(F6_K0, F6_K0 + N_CAND6)) & _S6(_OLD6)), "a new seed equals an earlier set's"
+_ROLES = {"F7 sampler": 820000, "F7 layout": 821000, "F6 sampler": 810000, "F6 plate": 811000, "F6 park fam": 830000, "F6 park disp": 830100}                  # seed = base + k, per ROLE
+for _r, _b in _ROLES.items():                                                                      # no seed of a role equals the same role's seed in an earlier set (a seed shared across DIFFERENT roles drives a different draw: e.g. F6 sampler 810000 + 1001 = F6 plate seed of k = 1 in fx)
+    _new, _old = (range(F7_K0, F7_K0 + N_CAND7), _OLD7) if _r.startswith("F7") else (range(F6_K0, F6_K0 + N_CAND6), _OLD6)
+    assert not ({_b + k for k in _new} & {_b + k for k in _old}), "a new %s seed equals an earlier set's" % _r
 assert F7_K0 > max(_OLD7) and F6_K0 > max(_OLD6) and F7_K0 + N_CAND7 <= F6_K0
 N_SMOKE, N7_MAIN, N6_MAIN = 4, 60, 60                       # SR 87: 60 main states per F7 cell (SR 70 had 40)
 LATCH = 0.5
