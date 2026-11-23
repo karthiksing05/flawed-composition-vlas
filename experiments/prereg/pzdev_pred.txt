@@ -1,0 +1,20 @@
+PZDEV (coordinator request 2026-11-22, after PZ; docs/notes/plan_oracle_pi0.md 3, docs/notes/oracle_pi0_results.md 4): full development-state rollouts of BOTH pi0 arms,
+pi0-sL = pi0_g8v_raas_l_ae tl6000 (servo kept), pi0-A0 = pi0_g8v_raac_l_ae tl6000 (servo off), on the same states and the same rollout / read pipeline as the RAA-F routes' dev read
+(raaf_dev_read: Phase A N1-N6 and K1-K6 on 60 states each = trials 4-23 + 24-63; Phase B F7 pool, F6_b, F6_a, K1t, K2t).  Reader: experiments/pzdev_read.py (raaf_dev_read imported unchanged).
+Purpose: the failure-atlas row "given the exact target, the policy still fails: read but not in control".  The pi0 N numbers so far (pz) come from the probe capture subset only (4 tasks x 20).
+STATUS: seen before writing: pz probe reads (S_kept -.150, S_off .542 [.478, .609]); capture-subset success: pi0-sL K .950 / N .6875, pi0-A0 K .9625 / N .400; pi0.5 references RAA-sL K .975 / N .800, A0 K .925 / N .525 (same subsets).
+No full dev-state rollout of a pi0 arm exists.  Comparators (existing): RAA-sL results/flawed/raa (raasl_*), A0 results/flawed/raaf/dev_A0.
+Registered contrasts (paired, clustered bootstrap B = 2000, rng 0; raa_read.diff on N1-N6, 60 states each, tasks and states resampled):
+ (d1) pi0-A0 minus pi0-sL on N;  (d2) pi0-A0 minus pi0.5 A0 on N;  (d3) pi0-sL minus pi0.5 RAA-sL on N;  (d4) K non-inferiority at -.05 for pi0-A0 vs pi0-sL (CI lower of the K difference > -.05).
+RULE "read but not in control" (the atlas row): TRUE iff (d1) CI upper < 0 (pi0-A0 below pi0-sL on N) AND the PZ read holds (pi0-A0 in.tok S_off CI lower >= .30, already .478) AND (d4) holds (the deficit is not a K-wide failure).
+ If d1 CI upper >= 0: the row reads "read, and not distinguishably worse than the servo arm".  If d1 CI lower > 0: pi0-A0 beats pi0-sL (REVERSED).  d2 and d3 are the cross-backbone reads and carry no rule.
+Predictions (point; probability):
+ (p1) d1 point -.20; CI upper < 0: 75%; CI lower > 0: 2%.
+ (p2) d2 point -.08; CI upper < 0: 30%; CI lower > 0: 5%.
+ (p3) d3 point -.12; CI upper < 0: 55%.
+ (p4) d4 K non-inferiority holds: 80%.
+ (p5) pi0-sL dev N point .70 (range .55-.85); pi0-A0 dev N point .45 (range .25-.65).
+ (p6) pi0-sL dev K >= .886: 65%; pi0-A0 dev K >= .886: 60%.
+ (p7) Phase B F7 pool pi0-A0 - pi0-sL: point -.10, CI upper < 0: 50%.
+ (p8) "read but not in control" rule TRUE: 65%.
+Kill: (k1) a server smoke (20-state-free, outside results/) shows no role token in the log or non-finite chunks; (k2) a rollout job fails on infrastructure (no result is read until all cells exist).
