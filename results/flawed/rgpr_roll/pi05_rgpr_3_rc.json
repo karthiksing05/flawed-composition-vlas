@@ -1,0 +1,7098 @@
+{
+ "arm": "rc",
+ "tid": 3,
+ "key": "F7_NG_neg",
+ "language": "put the bowl that is not on the plate on the stove",
+ "prompt": "put the bowl that is not on the plate on the stove",
+ "roles": [
+  "akita_black_bowl_1",
+  "flat_stove_1_cook_region"
+ ],
+ "parsed": {
+  "relation": "not_on",
+  "landmark": "plate",
+  "target": "stove",
+  "unique": "put the bowl on the stove"
+ },
+ "eps": [
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1685
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11278310394868929,
+     -0.010141813034183515,
+     0.9287394348810242
+    ],
+    "drop": [
+     0.02417816457216171,
+     -0.024105850842381742,
+     0.9330922536000297
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02340953137638474
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      135.20850622406638,
+      130.2385575589459
+     ],
+     "on_dist": [
+      0.05237655569584631,
+      0.1894467451172222
+     ],
+     "plate_px": 570,
+     "cand_px": [
+      964,
+      721
+     ],
+     "centres": [
+      [
+       0.02417816457216171,
+       -0.024105850842381742,
+       0.9330922536000297
+      ],
+      [
+       -0.11278310394868929,
+       -0.010141813034183515,
+       0.9287394348810242
+      ]
+     ],
+     "xy_err_b1": 0.02340953137638474,
+     "xy_err_b2": 0.021616219708277994,
+     "sim_b1": [
+      -0.08939586744693231,
+      -0.009120378712835478,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.045599264732052634,
+      -0.021208020202667467,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11278310394868929,
+     -0.010141813034183515,
+     0.9287394348810242
+    ],
+    "final_dis": [
+     0.02417816457216171,
+     -0.024105850842381742,
+     0.9330922536000297
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.418,
+     "cream_cheese_1": 0.026,
+     "wine_bottle_1": 0.322,
+     "plate_1": 2.769,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.418,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.763,
+    "other_err_cm": 0.195,
+    "plate_xy_err_end_cm": 2.763
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 49,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 87,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 5,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 24,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 4,
+   "steps": 98,
+   "secs": 7.663533926010132
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     987,
+     741
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11038705974440566,
+     0.012391846472443504,
+     0.9295273148306704
+    ],
+    "drop": [
+     0.03530826140798515,
+     -0.03004521000729561,
+     0.9325275868386906
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02347189066976065
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      137.5987841945289,
+      123.40080971659918
+     ],
+     "on_dist": [
+      0.052468877921326804,
+      0.20150245043419465
+     ],
+     "plate_px": 583,
+     "cand_px": [
+      987,
+      741
+     ],
+     "centres": [
+      [
+       0.03530826140798515,
+       -0.03004521000729561,
+       0.9325275868386906
+      ],
+      [
+       -0.11038705974440566,
+       0.012391846472443504,
+       0.9295273148306704
+      ]
+     ],
+     "xy_err_b1": 0.02347189066976065,
+     "xy_err_b2": 0.021269506611599646,
+     "sim_b1": [
+      -0.08692573167818131,
+      0.013095932392051781,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.056420807454134345,
+      -0.027466002580563288,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11038705974440566,
+     0.012391846472443504,
+     0.9295273148306704
+    ],
+    "final_dis": [
+     0.03530826140798515,
+     -0.03004521000729561,
+     0.9325275868386906
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.097,
+     "cream_cheese_1": 0.101,
+     "wine_bottle_1": 0.198,
+     "plate_1": 2.748,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.097,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.741,
+    "other_err_cm": 0.169,
+    "plate_xy_err_end_cm": 2.741
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 87,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 8,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 24,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 5,
+   "steps": 98,
+   "secs": 7.457386016845703
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1738
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11080970260081247,
+     -1.617750496014345e-07,
+     0.9294058118432696
+    ],
+    "drop": [
+     0.041008696718708326,
+     -0.01191057764938535,
+     0.933064466285252
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023751254370504404
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      131.27164179104477,
+      127.13915416098226
+     ],
+     "on_dist": [
+      0.053052312245228675,
+      0.20493508192308518
+     ],
+     "plate_px": 586,
+     "cand_px": [
+      1005,
+      733
+     ],
+     "centres": [
+      [
+       0.041008696718708326,
+       -0.01191057764938535,
+       0.933064466285252
+      ],
+      [
+       -0.11080970260081247,
+       -1.617750496014345e-07,
+       0.9294058118432696
+      ]
+     ],
+     "xy_err_b1": 0.023751254370504404,
+     "xy_err_b2": 0.020663914257012524,
+     "sim_b1": [
+      -0.08708421627954746,
+      0.0011059046749757717,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.06151267424352006,
+      -0.009344596729117083,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11080970260081247,
+     -1.617750496014345e-07,
+     0.9294058118432696
+    ],
+    "final_dis": [
+     0.041008696718708326,
+     -0.01191057764938535,
+     0.933064466285252
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.177,
+     "cream_cheese_1": 0.021,
+     "wine_bottle_1": 0.327,
+     "plate_1": 2.865,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.177,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.859,
+    "other_err_cm": 0.207,
+    "plate_xy_err_end_cm": 2.859
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 68,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 8,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 26,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 6,
+   "steps": 103,
+   "secs": 7.56488037109375
+  },
+  {
+   "diag": {
+    "n_q": 17,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1683
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.1205563138560688,
+     -0.01013889918369303,
+     0.9294703652378691
+    ],
+    "drop": [
+     0.02382496861384442,
+     -0.03792219827386359,
+     0.9331120290512168
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023687261824573036
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      139.72642487046633,
+      129.89693593314763
+     ],
+     "on_dist": [
+      0.05264967454015378,
+      0.19782713710179434
+     ],
+     "plate_px": 569,
+     "cand_px": [
+      965,
+      718
+     ],
+     "centres": [
+      [
+       0.02382496861384442,
+       -0.03792219827386359,
+       0.9331120290512168
+      ],
+      [
+       -0.1205563138560688,
+       -0.01013889918369303,
+       0.9294703652378691
+      ]
+     ],
+     "xy_err_b1": 0.023687261824573036,
+     "xy_err_b2": 0.0215126622376863,
+     "sim_b1": [
+      -0.09696744751957477,
+      -0.00798210579885201,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.04497774412910495,
+      -0.034003687771929365,
+      0.9062480929561303
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.1205563138560688,
+     -0.01013889918369303,
+     0.9294703652378691
+    ],
+    "final_dis": [
+     0.02382496861384442,
+     -0.03792219827386359,
+     0.9331120290512168
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.234,
+     "cream_cheese_1": 0.035,
+     "wine_bottle_1": 0.208,
+     "plate_1": 2.782,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.234,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.776,
+    "other_err_cm": 0.275,
+    "plate_xy_err_end_cm": 2.776
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 47,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 12,
+     "flat_stove_1_cook_region": 21
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 7,
+   "steps": 91,
+   "secs": 8.264829158782959
+  },
+  {
+   "diag": {
+    "n_q": 17,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     971,
+     732
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11191840039828937,
+     0.013459757028218687,
+     0.9292202021600723
+    ],
+    "drop": [
+     0.028581669674842547,
+     -0.03854243843060462,
+     0.9329884655670632
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023622982997262166
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      139.95056642636456,
+      122.9535519125683
+     ],
+     "on_dist": [
+      0.05233914851815521,
+      0.19756274634205856
+     ],
+     "plate_px": 572,
+     "cand_px": [
+      971,
+      732
+     ],
+     "centres": [
+      [
+       0.028581669674842547,
+       -0.03854243843060462,
+       0.9329884655670632
+      ],
+      [
+       -0.11191840039828937,
+       0.013459757028218687,
+       0.9292202021600723
+      ]
+     ],
+     "xy_err_b1": 0.023622982997262166,
+     "xy_err_b2": 0.021353197018192684,
+     "sim_b1": [
+      -0.08833158318118649,
+      0.014766424260499412,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.04956709405579504,
+      -0.03459642950397033,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11191840039828937,
+     0.013459757028218687,
+     0.9292202021600723
+    ],
+    "final_dis": [
+     0.028581669674842547,
+     -0.03854243843060462,
+     0.9329884655670632
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.127,
+     "cream_cheese_1": 0.028,
+     "wine_bottle_1": 0.036,
+     "plate_1": 2.755,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.127,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.749,
+    "other_err_cm": 0.219,
+    "plate_xy_err_end_cm": 2.749
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 46,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 3,
+     "flat_stove_1_cook_region": 26
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 8,
+   "steps": 91,
+   "secs": 8.246357440948486
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1722
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11155620498329688,
+     -0.013531417412303083,
+     0.9290827631581634
+    ],
+    "drop": [
+     0.03548265565476294,
+     -0.03287652330674476,
+     0.932745936039824
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023884292608304634
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      138.33333333333334,
+      131.49043715846994
+     ],
+     "on_dist": [
+      0.05234324970583412,
+      0.19966981516347407
+     ],
+     "plate_px": 580,
+     "cand_px": [
+      990,
+      732
+     ],
+     "centres": [
+      [
+       0.03548265565476294,
+       -0.03287652330674476,
+       0.932745936039824
+      ],
+      [
+       -0.11155620498329688,
+       -0.013531417412303083,
+       0.9290827631581634
+      ]
+     ],
+     "xy_err_b1": 0.023884292608304634,
+     "xy_err_b2": 0.02133205471716778,
+     "sim_b1": [
+      -0.08767982448567635,
+      -0.012916691675115041,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.056567113653784196,
+      -0.02963581515207412,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11155620498329688,
+     -0.013531417412303083,
+     0.9290827631581634
+    ],
+    "final_dis": [
+     0.03548265565476294,
+     -0.03287652330674476,
+     0.932745936039824
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.316,
+     "cream_cheese_1": 0.053,
+     "wine_bottle_1": 0.224,
+     "plate_1": 2.703,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.316,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.697,
+    "other_err_cm": 0.226,
+    "plate_xy_err_end_cm": 2.697
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 48,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 88,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 6,
+     "plate_1": 4
+    },
+    "clamped": 0,
+    "steps_rg": 25,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 9,
+   "steps": 99,
+   "secs": 7.495922803878784
+  },
+  {
+   "diag": {
+    "n_q": 13,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     999,
+     733
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10907154001983466,
+     -0.013493066318945604,
+     0.9283305605210738
+    ],
+    "drop": [
+     0.04012110799653007,
+     -0.026251495582987193,
+     0.9328675649954782
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023475791447567482
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      135.8008008008008,
+      131.2905866302865
+     ],
+     "on_dist": [
+      0.05277022891313795,
+      0.2018333313654324
+     ],
+     "plate_px": 582,
+     "cand_px": [
+      999,
+      733
+     ],
+     "centres": [
+      [
+       0.04012110799653007,
+       -0.026251495582987193,
+       0.9328675649954782
+      ],
+      [
+       -0.10907154001983466,
+       -0.013493066318945604,
+       0.9283305605210738
+      ]
+     ],
+     "xy_err_b1": 0.023475791447567482,
+     "xy_err_b2": 0.021125862417800373,
+     "sim_b1": [
+      -0.08561501708874739,
+      -0.012542110971382059,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.060872946370724296,
+      -0.02229381103427059,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10907154001983466,
+     -0.013493066318945604,
+     0.9283305605210738
+    ],
+    "final_dis": [
+     0.04012110799653007,
+     -0.026251495582987193,
+     0.9328675649954782
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.234,
+     "cream_cheese_1": 0.051,
+     "wine_bottle_1": 0.291,
+     "plate_1": 2.876,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.234,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.869,
+    "other_err_cm": 0.224,
+    "plate_xy_err_end_cm": 2.869
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 50,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 2,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 24,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 10,
+   "steps": 96,
+   "secs": 7.138446807861328
+  },
+  {
+   "diag": {
+    "n_q": 13,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1666
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.1073161771485831,
+     0.006717024455016962,
+     0.9270895214275761
+    ],
+    "drop": [
+     0.017365130840306775,
+     -0.024242108111348235,
+     0.9347072600360586
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.027772812280153956
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      135.2781124497992,
+      124.81641791044777
+     ],
+     "on_dist": [
+      0.05327577307702597,
+      0.17981103571338974
+     ],
+     "plate_px": 554,
+     "cand_px": [
+      996,
+      670
+     ],
+     "centres": [
+      [
+       0.017365130840306775,
+       -0.024242108111348235,
+       0.9347072600360586
+      ],
+      [
+       -0.1073161771485831,
+       0.006717024455016962,
+       0.9270895214275761
+      ]
+     ],
+     "xy_err_b1": 0.027772812280153956,
+     "xy_err_b2": 0.022161284648559067,
+     "sim_b1": [
+      -0.07954564400641406,
+      0.0070728206724806975,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.03942517692389468,
+      -0.02212623853492402,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.1073161771485831,
+     0.006717024455016962,
+     0.9270895214275761
+    ],
+    "final_dis": [
+     0.017365130840306775,
+     -0.024242108111348235,
+     0.9347072600360586
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.516,
+     "cream_cheese_1": 0.061,
+     "wine_bottle_1": 0.073,
+     "plate_1": 2.728,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.516,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.721,
+    "other_err_cm": 0.262,
+    "plate_xy_err_end_cm": 2.721
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 58,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 84,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 3,
+     "plate_1": 3
+    },
+    "clamped": 1,
+    "steps_rg": 26,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 11,
+   "steps": 96,
+   "secs": 7.125470876693726
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     965,
+     711
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.12754846294754818,
+     -0.010273977592160977,
+     0.9296799987046802
+    ],
+    "drop": [
+     0.02242088406830106,
+     -0.02734641266014116,
+     0.9334939255615913
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023171770528786304
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      136.57720207253885,
+      130.50632911392404
+     ],
+     "on_dist": [
+      0.053219402588616356,
+      0.2033841610485472
+     ],
+     "plate_px": 563,
+     "cand_px": [
+      965,
+      711
+     ],
+     "centres": [
+      [
+       0.02242088406830106,
+       -0.02734641266014116,
+       0.9334939255615913
+      ],
+      [
+       -0.12754846294754818,
+       -0.010273977592160977,
+       0.9296799987046802
+      ]
+     ],
+     "xy_err_b1": 0.023171770528786304,
+     "xy_err_b2": 0.021326806340992745,
+     "sim_b1": [
+      -0.10437796890067987,
+      -0.010030759453919964,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.04359142166733516,
+      -0.024769397628347206,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.12754846294754818,
+     -0.010273977592160977,
+     0.9296799987046802
+    ],
+    "final_dis": [
+     0.02242088406830106,
+     -0.02734641266014116,
+     0.9334939255615913
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.116,
+     "cream_cheese_1": 0.051,
+     "wine_bottle_1": 0.723,
+     "plate_1": 2.782,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.116,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.776,
+    "other_err_cm": 0.167,
+    "plate_xy_err_end_cm": 2.776
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 46,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 66,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 90,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 6,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 24,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 12,
+   "steps": 100,
+   "secs": 7.614345073699951
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1685
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11435008918880069,
+     0.009948732567103963,
+     0.9284244481473356
+    ],
+    "drop": [
+     0.020357619559732587,
+     -0.02350618307514333,
+     0.9334375452195963
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.0261761645364502
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      134.71325796505653,
+      124.95786516853933
+     ],
+     "on_dist": [
+      0.05243596493357484,
+      0.18876401940215295
+     ],
+     "plate_px": 566,
+     "cand_px": [
+      973,
+      712
+     ],
+     "centres": [
+      [
+       0.020357619559732587,
+       -0.02350618307514333,
+       0.9334375452195963
+      ],
+      [
+       -0.11435008918880069,
+       0.009948732567103963,
+       0.9284244481473356
+      ]
+     ],
+     "xy_err_b1": 0.0261761645364502,
+     "xy_err_b2": 0.02154463167135027,
+     "sim_b1": [
+      -0.08825748722627424,
+      0.007858825233159596,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.04159020018349291,
+      -0.01985259936737546,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11435008918880069,
+     0.009948732567103963,
+     0.9284244481473356
+    ],
+    "final_dis": [
+     0.020357619559732587,
+     -0.02350618307514333,
+     0.9334375452195963
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.423,
+     "cream_cheese_1": 0.134,
+     "wine_bottle_1": 0.047,
+     "plate_1": 2.764,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.423,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.759,
+    "other_err_cm": 0.285,
+    "plate_xy_err_end_cm": 2.759
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 48,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 8,
+     "flat_stove_1_cook_region": 27
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 13,
+   "steps": 97,
+   "secs": 8.796329498291016
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1725
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11530215828324364,
+     0.0067406869777185815,
+     0.9297743357530615
+    ],
+    "drop": [
+     0.035369986135783016,
+     -0.01183569383915354,
+     0.933196914961492
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02392699359655271
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      130.9061553985873,
+      124.98092643051771
+     ],
+     "on_dist": [
+      0.05259893852872372,
+      0.20371971498736485
+     ],
+     "plate_px": 575,
+     "cand_px": [
+      991,
+      734
+     ],
+     "centres": [
+      [
+       0.035369986135783016,
+       -0.01183569383915354,
+       0.933196914961492
+      ],
+      [
+       -0.11530215828324364,
+       0.0067406869777185815,
+       0.9297743357530615
+      ]
+     ],
+     "xy_err_b1": 0.02392699359655271,
+     "xy_err_b2": 0.02124196759815013,
+     "sim_b1": [
+      -0.09141880551067581,
+      0.00818515328419692,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.05634803111788436,
+      -0.008497608134772563,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11530215828324364,
+     0.0067406869777185815,
+     0.9297743357530615
+    ],
+    "final_dis": [
+     0.035369986135783016,
+     -0.01183569383915354,
+     0.933196914961492
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.181,
+     "cream_cheese_1": 0.031,
+     "wine_bottle_1": 0.107,
+     "plate_1": 2.856,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.181,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.851,
+    "other_err_cm": 0.226,
+    "plate_xy_err_end_cm": 2.851
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 49,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 15,
+     "flat_stove_1_cook_region": 17
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 14,
+   "steps": 97,
+   "secs": 8.809782981872559
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     963,
+     717
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.12183485893453483,
+     0.0033798519237224025,
+     0.9290934363726536
+    ],
+    "drop": [
+     0.023975335869313774,
+     -0.03526945423336275,
+     0.9329996991679061
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023699676304115486
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      138.7871235721703,
+      126.13249651324965
+     ],
+     "on_dist": [
+      0.052643044163710656,
+      0.20062733168961575
+     ],
+     "plate_px": 567,
+     "cand_px": [
+      963,
+      717
+     ],
+     "centres": [
+      [
+       0.023975335869313774,
+       -0.03526945423336275,
+       0.9329996991679061
+      ],
+      [
+       -0.12183485893453483,
+       0.0033798519237224025,
+       0.9290934363726536
+      ]
+     ],
+     "xy_err_b1": 0.023699676304115486,
+     "xy_err_b2": 0.021419554060840954,
+     "sim_b1": [
+      -0.09814327934815421,
+      0.00399929814580008,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.045032890118085554,
+      -0.03134814001166083,
+      0.9062480929561303
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.12183485893453483,
+     0.0033798519237224025,
+     0.9290934363726536
+    ],
+    "final_dis": [
+     0.023975335869313774,
+     -0.03526945423336275,
+     0.9329996991679061
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.16,
+     "cream_cheese_1": 0.1,
+     "wine_bottle_1": 0.072,
+     "plate_1": 2.779,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.16,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.773,
+    "other_err_cm": 0.248,
+    "plate_xy_err_end_cm": 2.773
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 47,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 12,
+     "flat_stove_1_cook_region": 26
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 15,
+   "steps": 96,
+   "secs": 8.875406265258789
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1760
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.09786078289738276,
+     0.006376930798428451,
+     0.9288109573165371
+    ],
+    "drop": [
+     0.03998492234847284,
+     -0.018922549697465436,
+     0.9330737760889651
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.022638215298625714
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      133.63690476190476,
+      125.32978723404256
+     ],
+     "on_dist": [
+      0.053177893820305765,
+      0.19192512895538005
+     ],
+     "plate_px": 581,
+     "cand_px": [
+      1008,
+      752
+     ],
+     "centres": [
+      [
+       0.03998492234847284,
+       -0.018922549697465436,
+       0.9330737760889651
+      ],
+      [
+       -0.09786078289738276,
+       0.006376930798428451,
+       0.9288109573165371
+      ]
+     ],
+     "xy_err_b1": 0.022638215298625714,
+     "xy_err_b2": 0.02098050232121517,
+     "sim_b1": [
+      -0.07522437514566743,
+      0.0066630007287141945,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.06079419634613683,
+      -0.016247555615105536,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.09786078289738276,
+     0.006376930798428451,
+     0.9288109573165371
+    ],
+    "final_dis": [
+     0.03998492234847284,
+     -0.018922549697465436,
+     0.9330737760889651
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 1.866,
+     "cream_cheese_1": 0.045,
+     "wine_bottle_1": 0.044,
+     "plate_1": 2.891,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 1.866,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.885,
+    "other_err_cm": 0.149,
+    "plate_xy_err_end_cm": 2.885
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 65,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 90,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 3,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 25,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 16,
+   "steps": 101,
+   "secs": 7.646545886993408
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1654
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11101684774592391,
+     0.0033448214556145725,
+     0.9265757077401495
+    ],
+    "drop": [
+     0.016261096488828564,
+     -0.027145051072588595,
+     0.934163847334027
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02763299492420655
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      136.0790273556231,
+      126.45877061469265
+     ],
+     "on_dist": [
+      0.05310506240618105,
+      0.18214492595335274
+     ],
+     "plate_px": 561,
+     "cand_px": [
+      987,
+      667
+     ],
+     "centres": [
+      [
+       0.016261096488828564,
+       -0.027145051072588595,
+       0.934163847334027
+      ],
+      [
+       -0.11101684774592391,
+       0.0033448214556145725,
+       0.9265757077401495
+      ]
+     ],
+     "xy_err_b1": 0.02763299492420655,
+     "xy_err_b2": 0.022683307349364114,
+     "sim_b1": [
+      -0.08340923279985218,
+      0.0021607583362404327,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.03879788292783007,
+      -0.024571009637694048,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11101684774592391,
+     0.0033448214556145725,
+     0.9265757077401495
+    ],
+    "final_dis": [
+     0.016261096488828564,
+     -0.027145051072588595,
+     0.934163847334027
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.504,
+     "cream_cheese_1": 0.035,
+     "wine_bottle_1": 0.131,
+     "plate_1": 2.701,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.504,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.694,
+    "other_err_cm": 0.317,
+    "plate_xy_err_end_cm": 2.694
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 52,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 88,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 7,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 25,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 17,
+   "steps": 102,
+   "secs": 7.697757005691528
+  },
+  {
+   "diag": {
+    "n_q": 17,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1698
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10464225085934364,
+     -0.01003408177872462,
+     0.9270971788592313
+    ],
+    "drop": [
+     0.026413850229639158,
+     -0.035998547671050304,
+     0.9337293320510645
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.027638908682556952
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      139.23046488625124,
+      130.43231441048036
+     ],
+     "on_dist": [
+      0.05358267797285913,
+      0.18561074095421273
+     ],
+     "plate_px": 570,
+     "cand_px": [
+      1011,
+      687
+     ],
+     "centres": [
+      [
+       0.026413850229639158,
+       -0.035998547671050304,
+       0.9337293320510645
+      ],
+      [
+       -0.10464225085934364,
+       -0.01003408177872462,
+       0.9270971788592313
+      ]
+     ],
+     "xy_err_b1": 0.027638908682556952,
+     "xy_err_b2": 0.022326309642490993,
+     "sim_b1": [
+      -0.07700444035058758,
+      -0.010280462469556969,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.04854506693643355,
+      -0.033053492607169305,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10464225085934364,
+     -0.01003408177872462,
+     0.9270971788592313
+    ],
+    "final_dis": [
+     0.026413850229639158,
+     -0.035998547671050304,
+     0.9337293320510645
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.533,
+     "cream_cheese_1": 0.044,
+     "wine_bottle_1": 0.048,
+     "plate_1": 2.733,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.533,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.727,
+    "other_err_cm": 0.305,
+    "plate_xy_err_end_cm": 2.727
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 47,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 11,
+     "flat_stove_1_cook_region": 24
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 18,
+   "steps": 93,
+   "secs": 8.304912567138672
+  },
+  {
+   "diag": {
+    "n_q": 13,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1669
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10372094723314529,
+     0.003337977993577915,
+     0.9268686734997255
+    ],
+    "drop": [
+     0.01798619865304718,
+     -0.029788690967784394,
+     0.9345639525238194
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.028386531584673632
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      136.8893360160966,
+      126.06074074074074
+     ],
+     "on_dist": [
+      0.054559675455781644,
+      0.17785906550184413
+     ],
+     "plate_px": 558,
+     "cand_px": [
+      994,
+      675
+     ],
+     "centres": [
+      [
+       0.01798619865304718,
+       -0.029788690967784394,
+       0.9345639525238194
+      ],
+      [
+       -0.10372094723314529,
+       0.003337977993577915,
+       0.9268686734997255
+      ]
+     ],
+     "xy_err_b1": 0.028386531584673632,
+     "xy_err_b2": 0.022430036682577054,
+     "sim_b1": [
+      -0.07533480549481669,
+      0.0034867483508164267,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.040200178444424105,
+      -0.026682946707538572,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10372094723314529,
+     0.003337977993577915,
+     0.9268686734997255
+    ],
+    "final_dis": [
+     0.01798619865304718,
+     -0.029788690967784394,
+     0.9345639525238194
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.553,
+     "cream_cheese_1": 0.11,
+     "wine_bottle_1": 0.076,
+     "plate_1": 2.816,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.553,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.81,
+    "other_err_cm": 0.21,
+    "plate_xy_err_end_cm": 2.81
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 84,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 6,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 21,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 19,
+   "steps": 94,
+   "secs": 7.1592183113098145
+  },
+  {
+   "diag": {
+    "n_q": 19,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1713
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10882546302519103,
+     -1.5952421387297275e-07,
+     0.9286140959954415
+    ],
+    "drop": [
+     0.02818527708380958,
+     -0.024098666166909637,
+     0.9330875398447025
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023313024316697496
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      135.32208588957056,
+      126.8
+     ],
+     "on_dist": [
+      0.05217892647574533,
+      0.19010947052860822
+     ],
+     "plate_px": 570,
+     "cand_px": [
+      978,
+      735
+     ],
+     "centres": [
+      [
+       0.02818527708380958,
+       -0.024098666166909637,
+       0.9330875398447025
+      ],
+      [
+       -0.10882546302519103,
+       -1.5952421387297275e-07,
+       0.9286140959954415
+      ]
+     ],
+     "xy_err_b1": 0.023313024316697496,
+     "xy_err_b2": 0.021218290758289644,
+     "sim_b1": [
+      -0.08560470200219206,
+      0.0020718830196786364,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.04924548036098976,
+      -0.021513380761549347,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10882546302519103,
+     -1.5952421387297275e-07,
+     0.9286140959954415
+    ],
+    "final_dis": [
+     0.02818527708380958,
+     -0.024098666166909637,
+     0.9330875398447025
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.116,
+     "cream_cheese_1": 0.048,
+     "wine_bottle_1": 0.04,
+     "plate_1": 2.776,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.116,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.769,
+    "other_err_cm": 0.179,
+    "plate_xy_err_end_cm": 2.769
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 50,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 15,
+     "flat_stove_1_cook_region": 21
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 20,
+   "steps": 101,
+   "secs": 9.38668441772461
+  },
+  {
+   "diag": {
+    "n_q": 19,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     1006,
+     747
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10496668737079162,
+     -0.010091473877264714,
+     0.9293713895823446
+    ],
+    "drop": [
+     0.042084570145494604,
+     -0.035576954847483744,
+     0.9327842533337048
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023360491201794654
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      139.21073558648112,
+      130.36278447121822
+     ],
+     "on_dist": [
+      0.05236002525164714,
+      0.20021382574559177
+     ],
+     "plate_px": 588,
+     "cand_px": [
+      1006,
+      747
+     ],
+     "centres": [
+      [
+       0.042084570145494604,
+       -0.035576954847483744,
+       0.9327842533337048
+      ],
+      [
+       -0.10496668737079162,
+       -0.010091473877264714,
+       0.9293713895823446
+      ]
+     ],
+     "xy_err_b1": 0.023360491201794654,
+     "xy_err_b2": 0.021144301983239307,
+     "sim_b1": [
+      -0.08161377388186697,
+      -0.00949651104823551,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.06294068421235867,
+      -0.03209787272882478,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10496668737079162,
+     -0.010091473877264714,
+     0.9293713895823446
+    ],
+    "final_dis": [
+     0.042084570145494604,
+     -0.035576954847483744,
+     0.9327842533337048
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.201,
+     "cream_cheese_1": 0.038,
+     "wine_bottle_1": 0.126,
+     "plate_1": 2.721,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.201,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.715,
+    "other_err_cm": 0.243,
+    "plate_xy_err_end_cm": 2.715
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 49,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 15,
+     "flat_stove_1_cook_region": 25
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 21,
+   "steps": 102,
+   "secs": 9.410041332244873
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     1000,
+     746
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10490338341343386,
+     0.01235140809364194,
+     0.9290580192202778
+    ],
+    "drop": [
+     0.03954267865826999,
+     -0.03208431080701067,
+     0.9328074582710812
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023634823934260325
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      137.854,
+      123.44906166219839
+     ],
+     "on_dist": [
+      0.052431378181399015,
+      0.20010921839545887
+     ],
+     "plate_px": 586,
+     "cand_px": [
+      1000,
+      746
+     ],
+     "centres": [
+      [
+       0.03954267865826999,
+       -0.03208431080701067,
+       0.9328074582710812
+      ],
+      [
+       -0.10490338341343386,
+       0.01235140809364194,
+       0.9290580192202778
+      ]
+     ],
+     "xy_err_b1": 0.023634823934260325,
+     "xy_err_b2": 0.021160767405920867,
+     "sim_b1": [
+      -0.08127956415719152,
+      0.013072564215350977,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.06035189246033793,
+      -0.028243126335092125,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10490338341343386,
+     0.01235140809364194,
+     0.9290580192202778
+    ],
+    "final_dis": [
+     0.03954267865826999,
+     -0.03208431080701067,
+     0.9328074582710812
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.116,
+     "cream_cheese_1": 0.1,
+     "wine_bottle_1": 0.09,
+     "plate_1": 2.762,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.116,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.755,
+    "other_err_cm": 0.234,
+    "plate_xy_err_end_cm": 2.755
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 13,
+     "flat_stove_1_cook_region": 20
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 22,
+   "steps": 97,
+   "secs": 8.82153606414795
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1657
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.12542677357169518,
+     -0.0033934954923061163,
+     0.9294187249118095
+    ],
+    "drop": [
+     0.014312384492602304,
+     -0.009169971894792796,
+     0.9333661346052673
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.024025628653260463
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      130.60253699788584,
+      128.0295358649789
+     ],
+     "on_dist": [
+      0.0525086515223038,
+      0.19215014277793002
+     ],
+     "plate_px": 555,
+     "cand_px": [
+      946,
+      711
+     ],
+     "centres": [
+      [
+       0.014312384492602304,
+       -0.009169971894792796,
+       0.9333661346052673
+      ],
+      [
+       -0.12542677357169518,
+       -0.0033934954923061163,
+       0.9294187249118095
+      ]
+     ],
+     "xy_err_b1": 0.024025628653260463,
+     "xy_err_b2": 0.021585638985842495,
+     "sim_b1": [
+      -0.10145344792511507,
+      -0.0018090430230302155,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.035832664899535356,
+      -0.007491478035972722,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.12542677357169518,
+     -0.0033934954923061163,
+     0.9294187249118095
+    ],
+    "final_dis": [
+     0.014312384492602304,
+     -0.009169971894792796,
+     0.9333661346052673
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.427,
+     "cream_cheese_1": 0.021,
+     "wine_bottle_1": 0.106,
+     "plate_1": 2.689,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.427,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.683,
+    "other_err_cm": 0.265,
+    "plate_xy_err_end_cm": 2.683
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 50,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 9,
+     "flat_stove_1_cook_region": 26
+    },
+    "clamped": 4,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 23,
+   "steps": 96,
+   "secs": 8.672791242599487
+  },
+  {
+   "diag": {
+    "n_q": 20,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     985,
+     733
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11133328686519905,
+     -0.00616561042645777,
+     0.9292361233306371
+    ],
+    "drop": [
+     0.03485710175076223,
+     -0.008863191530278054,
+     0.9325941291265532
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02355420599997864
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      129.91472081218274,
+      128.5675306957708
+     ],
+     "on_dist": [
+      0.052521074238533284,
+      0.19861267593886228
+     ],
+     "plate_px": 582,
+     "cand_px": [
+      985,
+      733
+     ],
+     "centres": [
+      [
+       0.03485710175076223,
+       -0.008863191530278054,
+       0.9325941291265532
+      ],
+      [
+       -0.11133328686519905,
+       -0.00616561042645777,
+       0.9292361233306371
+      ]
+     ],
+     "xy_err_b1": 0.02355420599997864,
+     "xy_err_b2": 0.021247726262767854,
+     "sim_b1": [
+      -0.08791326954628682,
+      -0.003654951335445834,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.055904061016243616,
+      -0.005949194787884177,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11133328686519905,
+     -0.00616561042645777,
+     0.9292361233306371
+    ],
+    "final_dis": [
+     0.03485710175076223,
+     -0.008863191530278054,
+     0.9325941291265532
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.547,
+     "cream_cheese_1": 0.065,
+     "wine_bottle_1": 0.136,
+     "plate_1": 2.838,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.547,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.833,
+    "other_err_cm": 0.147,
+    "plate_xy_err_end_cm": 2.833
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 50,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 19,
+     "flat_stove_1_cook_region": 22
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 24,
+   "steps": 107,
+   "secs": 9.826398134231567
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1695
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10549737710984886,
+     0.013428652635455781,
+     0.9275411891224798
+    ],
+    "drop": [
+     0.023431251519261398,
+     -0.027302443539246178,
+     0.9335259028698639
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02692217848507624
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      136.4173387096774,
+      123.50924608819345
+     ],
+     "on_dist": [
+      0.05271320083484454,
+      0.18511167177971166
+     ],
+     "plate_px": 572,
+     "cand_px": [
+      992,
+      703
+     ],
+     "centres": [
+      [
+       0.023431251519261398,
+       -0.027302443539246178,
+       0.9335259028698639
+      ],
+      [
+       -0.10549737710984886,
+       0.013428652635455781,
+       0.9275411891224798
+      ]
+     ],
+     "xy_err_b1": 0.02692217848507624,
+     "xy_err_b2": 0.02149417815578414,
+     "sim_b1": [
+      -0.07863024973094686,
+      0.011707850267908411,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.044800547925194646,
+      -0.02498881744413993,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10549737710984886,
+     0.013428652635455781,
+     0.9275411891224798
+    ],
+    "final_dis": [
+     0.023431251519261398,
+     -0.027302443539246178,
+     0.9335259028698639
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.442,
+     "cream_cheese_1": 0.059,
+     "wine_bottle_1": 0.144,
+     "plate_1": 2.791,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.442,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.785,
+    "other_err_cm": 0.302,
+    "plate_xy_err_end_cm": 2.785
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 50,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 85,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 9,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 22,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 25,
+   "steps": 96,
+   "secs": 7.484772443771362
+  },
+  {
+   "diag": {
+    "n_q": 17,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     969,
+     716
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.1273119510401528,
+     -0.011392621835312302,
+     0.9296753138711451
+    ],
+    "drop": [
+     0.02504358259171946,
+     -0.009067489380555632,
+     0.9333386835418337
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02323261771109661
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      130.37151702786377,
+      130.5754189944134
+     ],
+     "on_dist": [
+      0.05161005606049403,
+      0.20398316295852478
+     ],
+     "plate_px": 570,
+     "cand_px": [
+      969,
+      716
+     ],
+     "centres": [
+      [
+       0.02504358259171946,
+       -0.009067489380555632,
+       0.9333386835418337
+      ],
+      [
+       -0.1273119510401528,
+       -0.011392621835312302,
+       0.9296753138711451
+      ]
+     ],
+     "xy_err_b1": 0.02323261771109661,
+     "xy_err_b2": 0.0211685929121023,
+     "sim_b1": [
+      -0.1041174054239703,
+      -0.01006311840591138,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.046136230650322206,
+      -0.007275975006002777,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.1273119510401528,
+     -0.011392621835312302,
+     0.9296753138711451
+    ],
+    "final_dis": [
+     0.02504358259171946,
+     -0.009067489380555632,
+     0.9333386835418337
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.062,
+     "cream_cheese_1": 0.035,
+     "wine_bottle_1": 0.415,
+     "plate_1": 2.738,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.062,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.732,
+    "other_err_cm": 0.143,
+    "plate_xy_err_end_cm": 2.732
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 7,
+     "flat_stove_1_cook_region": 25
+    },
+    "clamped": 4,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 26,
+   "steps": 95,
+   "secs": 8.345484733581543
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     988,
+     718
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11759894970510504,
+     -1.6218483793981695e-07,
+     0.928961851439188
+    ],
+    "drop": [
+     0.0292908717872305,
+     -0.03597578749957259,
+     0.9334461593039728
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023140052773791872
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      139.25,
+      127.1142061281337
+     ],
+     "on_dist": [
+      0.053461221042304274,
+      0.20246649417531645
+     ],
+     "plate_px": 570,
+     "cand_px": [
+      988,
+      718
+     ],
+     "centres": [
+      [
+       0.0292908717872305,
+       -0.03597578749957259,
+       0.9334461593039728
+      ],
+      [
+       -0.11759894970510504,
+       -1.6218483793981695e-07,
+       0.928961851439188
+      ]
+     ],
+     "xy_err_b1": 0.023140052773791872,
+     "xy_err_b2": 0.021393747572550196,
+     "sim_b1": [
+      -0.09447800085385874,
+      0.000939926423712041,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.05037968218936454,
+      -0.03237654993852712,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11759894970510504,
+     -1.6218483793981695e-07,
+     0.928961851439188
+    ],
+    "final_dis": [
+     0.0292908717872305,
+     -0.03597578749957259,
+     0.9334461593039728
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.111,
+     "cream_cheese_1": 0.119,
+     "wine_bottle_1": 0.153,
+     "plate_1": 2.772,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.111,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.765,
+    "other_err_cm": 0.234,
+    "plate_xy_err_end_cm": 2.765
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 50,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 10,
+     "flat_stove_1_cook_region": 23
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 27,
+   "steps": 98,
+   "secs": 8.791711568832397
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     1004,
+     732
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11045292134732743,
+     -0.006721285659681763,
+     0.9295061343235123
+    ],
+    "drop": [
+     0.04222721672235896,
+     -0.025242478585693465,
+     0.9326139703619872
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023655851783205457
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      135.68027888446215,
+      129.06830601092895
+     ],
+     "on_dist": [
+      0.05233380499141472,
+      0.2054877357999411
+     ],
+     "plate_px": 586,
+     "cand_px": [
+      1004,
+      732
+     ],
+     "centres": [
+      [
+       0.04222721672235896,
+       -0.025242478585693465,
+       0.9326139703619872
+      ],
+      [
+       -0.11045292134732743,
+       -0.006721285659681763,
+       0.9295061343235123
+      ]
+     ],
+     "xy_err_b1": 0.023655851783205457,
+     "xy_err_b2": 0.020977178559546665,
+     "sim_b1": [
+      -0.0868538138159132,
+      -0.005083773122406624,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.06299896907605383,
+      -0.022313942351347708,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11045292134732743,
+     -0.006721285659681763,
+     0.9295061343235123
+    ],
+    "final_dis": [
+     0.04222721672235896,
+     -0.025242478585693465,
+     0.9326139703619872
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.1,
+     "cream_cheese_1": 0.03,
+     "wine_bottle_1": 0.212,
+     "plate_1": 2.788,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.1,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.782,
+    "other_err_cm": 0.122,
+    "plate_xy_err_end_cm": 2.782
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 52,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 89,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 6,
+     "plate_1": 4
+    },
+    "clamped": 5,
+    "steps_rg": 26,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 28,
+   "steps": 101,
+   "secs": 7.518953084945679
+  },
+  {
+   "diag": {
+    "n_q": 34,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1658
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10533105303659718,
+     -0.00671378584126273,
+     0.9267010426978174
+    ],
+    "drop": [
+     0.019963658644507998,
+     -0.027794995998476686,
+     0.9343678648605895
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02821635169667629
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      136.69587109768378,
+      129.4751879699248
+     ],
+     "on_dist": [
+      0.052870047282870494,
+      0.17906577025504836
+     ],
+     "plate_px": 571,
+     "cand_px": [
+      993,
+      665
+     ],
+     "centres": [
+      [
+       0.019963658644507998,
+       -0.027794995998476686,
+       0.9343678648605895
+      ],
+      [
+       -0.10533105303659718,
+       -0.00671378584126273,
+       0.9267010426978174
+      ]
+     ],
+     "xy_err_b1": 0.02821635169667629,
+     "xy_err_b2": 0.022257054047074724,
+     "sim_b1": [
+      -0.0771244444215641,
+      -0.007455225999919495,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.042149221068320274,
+      -0.026012504822191584,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10533105303659718,
+     -0.00671378584126273,
+     0.9267010426978174
+    ],
+    "final_dis": [
+     0.019963658644507998,
+     -0.027794995998476686,
+     0.9343678648605895
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.561,
+     "cream_cheese_1": 0.076,
+     "wine_bottle_1": 0.076,
+     "plate_1": 2.715,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.561,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.708,
+    "other_err_cm": 0.268,
+    "plate_xy_err_end_cm": 2.708
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 49,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 58,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 67,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "premise changed: drop"
+     },
+     {
+      "t": 67,
+      "kind": "detached",
+      "stage": 2,
+      "inside": false
+     },
+     {
+      "t": 81,
+      "kind": "start",
+      "stage": 1,
+      "what": "approach",
+      "why": "re-arm: released outside Omega_d"
+     },
+     {
+      "t": 108,
+      "kind": "end",
+      "stage": 1,
+      "what": "approach",
+      "why": "entered K_e"
+     },
+     {
+      "t": 168,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 1,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 5,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 36,
+    "stage": 2,
+    "done": false,
+    "transports": 2,
+    "releases": 0
+   },
+   "trial": 29,
+   "steps": 212,
+   "secs": 17.268877506256104
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1663
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11261109223743476,
+     0.010131886991981386,
+     0.927144299819397
+    ],
+    "drop": [
+     0.014284762866446088,
+     -0.02749035623747989,
+     0.9346663220450846
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.026992981391442124
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      136.46271705822267,
+      124.07456140350877
+     ],
+     "on_dist": [
+      0.0530691473320611,
+      0.18287525354546164
+     ],
+     "plate_px": 561,
+     "cand_px": [
+      979,
+      684
+     ],
+     "centres": [
+      [
+       0.014284762866446088,
+       -0.02749035623747989,
+       0.9346663220450846
+      ],
+      [
+       -0.11261109223743476,
+       0.010131886991981386,
+       0.927144299819397
+      ]
+     ],
+     "xy_err_b1": 0.026992981391442124,
+     "xy_err_b2": 0.02209192205490028,
+     "sim_b1": [
+      -0.08562074666015733,
+      0.00975467350086355,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.03630165444831413,
+      -0.025671151699211178,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11261109223743476,
+     0.010131886991981386,
+     0.927144299819397
+    ],
+    "final_dis": [
+     0.014284762866446088,
+     -0.02749035623747989,
+     0.9346663220450846
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.462,
+     "cream_cheese_1": 0.045,
+     "wine_bottle_1": 0.293,
+     "plate_1": 2.693,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.462,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.687,
+    "other_err_cm": 0.309,
+    "plate_xy_err_end_cm": 2.687
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 49,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 10,
+     "flat_stove_1_cook_region": 24
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 30,
+   "steps": 96,
+   "secs": 8.806936740875244
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1708
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11227326029710083,
+     -0.013534914827803503,
+     0.9288899729491296
+    ],
+    "drop": [
+     0.029223981148762124,
+     -0.02051184908778497,
+     0.9331401720797188
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02312784052168481
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      133.7766393442623,
+      131.35928961748633
+     ],
+     "on_dist": [
+      0.05289992791941525,
+      0.19430553316067453
+     ],
+     "plate_px": 575,
+     "cand_px": [
+      976,
+      732
+     ],
+     "centres": [
+      [
+       0.029223981148762124,
+       -0.02051184908778497,
+       0.9331401720797188
+      ],
+      [
+       -0.11227326029710083,
+       -0.013534914827803503,
+       0.9288899729491296
+      ]
+     ],
+     "xy_err_b1": 0.02312784052168481,
+     "xy_err_b2": 0.021557646568970728,
+     "sim_b1": [
+      -0.0891653737606896,
+      -0.01257440089410416,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.050489883936819066,
+      -0.016977233945854035,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11227326029710083,
+     -0.013534914827803503,
+     0.9288899729491296
+    ],
+    "final_dis": [
+     0.029223981148762124,
+     -0.02051184908778497,
+     0.9331401720797188
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.42,
+     "cream_cheese_1": 3.761,
+     "wine_bottle_1": 8.995,
+     "plate_1": 2.018,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.42,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.017,
+    "other_err_cm": 2.525,
+    "plate_xy_err_end_cm": 2.017
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 53,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 87,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 6,
+     "plate_1": 3
+    },
+    "clamped": 2,
+    "steps_rg": 24,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 31,
+   "steps": 99,
+   "secs": 7.453908681869507
+  },
+  {
+   "diag": {
+    "n_q": 17,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     984,
+     725
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11682404211166353,
+     0.010038917387083245,
+     0.9290860748463949
+    ],
+    "drop": [
+     0.03472056002545931,
+     -0.030048500220593577,
+     0.9326215676568607
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023888976703073495
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      137.52337398373984,
+      124.16413793103449
+     ],
+     "on_dist": [
+      0.052625450540182396,
+      0.20705981914520286
+     ],
+     "plate_px": 581,
+     "cand_px": [
+      984,
+      725
+     ],
+     "centres": [
+      [
+       0.03472056002545931,
+       -0.030048500220593577,
+       0.9326215676568607
+      ],
+      [
+       -0.11682404211166353,
+       0.010038917387083245,
+       0.9290860748463949
+      ]
+     ],
+     "xy_err_b1": 0.023888976703073495,
+     "xy_err_b2": 0.021495087895818873,
+     "sim_b1": [
+      -0.09294494872209062,
+      0.010726017679648836,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.056055007335824886,
+      -0.027425494004395423,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11682404211166353,
+     0.010038917387083245,
+     0.9290860748463949
+    ],
+    "final_dis": [
+     0.03472056002545931,
+     -0.030048500220593577,
+     0.9326215676568607
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.041,
+     "cream_cheese_1": 0.036,
+     "wine_bottle_1": 0.116,
+     "plate_1": 2.741,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.041,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.735,
+    "other_err_cm": 0.167,
+    "plate_xy_err_end_cm": 2.735
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 48,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 11,
+     "flat_stove_1_cook_region": 23
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 32,
+   "steps": 94,
+   "secs": 8.480076789855957
+  },
+  {
+   "diag": {
+    "n_q": 12,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1713
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10368570959445561,
+     -1.6109119425758215e-07,
+     0.9266142917919659
+    ],
+    "drop": [
+     0.030935377406146713,
+     -0.023928611432491906,
+     0.933417855153632
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02680749212502717
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      135.03876739562625,
+      127.6096181046676
+     ],
+     "on_dist": [
+      0.05278574896966387,
+      0.188253458355095
+     ],
+     "plate_px": 577,
+     "cand_px": [
+      1006,
+      707
+     ],
+     "centres": [
+      [
+       0.030935377406146713,
+       -0.023928611432491906,
+       0.933417855153632
+      ],
+      [
+       -0.10368570959445561,
+       -1.6109119425758215e-07,
+       0.9266142917919659
+      ]
+     ],
+     "xy_err_b1": 0.02680749212502717,
+     "xy_err_b2": 0.021671323735150756,
+     "sim_b1": [
+      -0.07689503963702886,
+      -0.0009497069119029311,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.052351949842377433,
+      -0.020615501486023008,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10368570959445561,
+     -1.6109119425758215e-07,
+     0.9266142917919659
+    ],
+    "final_dis": [
+     0.030935377406146713,
+     -0.023928611432491906,
+     0.933417855153632
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.523,
+     "cream_cheese_1": 0.114,
+     "wine_bottle_1": 0.127,
+     "plate_1": 2.768,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.523,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.762,
+    "other_err_cm": 0.298,
+    "plate_xy_err_end_cm": 2.762
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 50,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 58,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 84,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 3,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 26,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 33,
+   "steps": 94,
+   "secs": 6.653761148452759
+  },
+  {
+   "diag": {
+    "n_q": 13,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1662
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.12265237007537277,
+     -0.003402175237628716,
+     0.9283957660372303
+    ],
+    "drop": [
+     0.0161873781154126,
+     -0.014739386898235842,
+     0.9336024271766159
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.025718843678562635
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      131.72546972860124,
+      128.4318181818182
+     ],
+     "on_dist": [
+      0.05242802840244071,
+      0.19132567881118165
+     ],
+     "plate_px": 567,
+     "cand_px": [
+      958,
+      704
+     ],
+     "centres": [
+      [
+       0.0161873781154126,
+       -0.014739386898235842,
+       0.9336024271766159
+      ],
+      [
+       -0.12265237007537277,
+       -0.003402175237628716,
+       0.9283957660372303
+      ]
+     ],
+     "xy_err_b1": 0.025718843678562635,
+     "xy_err_b2": 0.02158092039128713,
+     "sim_b1": [
+      -0.09693371725805526,
+      -0.0033030923196913043,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.037483845096429755,
+      -0.011247021072392454,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.12265237007537277,
+     -0.003402175237628716,
+     0.9283957660372303
+    ],
+    "final_dis": [
+     0.0161873781154126,
+     -0.014739386898235842,
+     0.9336024271766159
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.316,
+     "cream_cheese_1": 1.0,
+     "wine_bottle_1": 3.599,
+     "plate_1": 4.278,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.316,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 4.192,
+    "other_err_cm": 1.964,
+    "plate_xy_err_end_cm": 4.192
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 8,
+     "plate_1": 3
+    },
+    "clamped": 0,
+    "steps_rg": 23,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 34,
+   "steps": 95,
+   "secs": 7.0846710205078125
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1628
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10893335613089838,
+     -0.013359289095818037,
+     0.9266137890362802
+    ],
+    "drop": [
+     0.01371645572944502,
+     -0.03593074067823705,
+     0.9342868940274764
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02859487136495529
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      138.82939362795477,
+      130.73740458015268
+     ],
+     "on_dist": [
+      0.052794100537326166,
+      0.1761630706863043
+     ],
+     "plate_px": 556,
+     "cand_px": [
+      973,
+      655
+     ],
+     "centres": [
+      [
+       0.01371645572944502,
+       -0.03593074067823705,
+       0.9342868940274764
+      ],
+      [
+       -0.10893335613089838,
+       -0.013359289095818037,
+       0.9266137890362802
+      ]
+     ],
+     "xy_err_b1": 0.02859487136495529,
+     "xy_err_b2": 0.02235729971961469,
+     "sim_b1": [
+      -0.08041100573315338,
+      -0.011324050493934888,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.035837390928237484,
+      -0.03268835318080436,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10893335613089838,
+     -0.013359289095818037,
+     0.9266137890362802
+    ],
+    "final_dis": [
+     0.01371645572944502,
+     -0.03593074067823705,
+     0.9342868940274764
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.54,
+     "cream_cheese_1": 0.044,
+     "wine_bottle_1": 0.43,
+     "plate_1": 2.716,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.54,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.711,
+    "other_err_cm": 0.212,
+    "plate_xy_err_end_cm": 2.711
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 47,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 10,
+     "flat_stove_1_cook_region": 29
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 35,
+   "steps": 99,
+   "secs": 8.931233644485474
+  },
+  {
+   "diag": {
+    "n_q": 15,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     1008,
+     736
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10643974240716336,
+     -1.6071780049608357e-07,
+     0.9288866370894462
+    ],
+    "drop": [
+     0.043867993453344134,
+     -0.03540897559913057,
+     0.932794525381679
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023697078519818754
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      139.08234126984127,
+      127.00407608695652
+     ],
+     "on_dist": [
+      0.05284012844408742,
+      0.20459814700390516
+     ],
+     "plate_px": 594,
+     "cand_px": [
+      1008,
+      736
+     ],
+     "centres": [
+      [
+       0.043867993453344134,
+       -0.03540897559913057,
+       0.932794525381679
+      ],
+      [
+       -0.10643974240716336,
+       -1.6071780049608357e-07,
+       0.9288866370894462
+      ]
+     ],
+     "xy_err_b1": 0.023697078519818754,
+     "xy_err_b2": 0.020927129666295407,
+     "sim_b1": [
+      -0.08278301490354843,
+      0.0013821468435491267,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.06442178476844534,
+      -0.03147369687390521,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10643974240716336,
+     -1.6071780049608357e-07,
+     0.9288866370894462
+    ],
+    "final_dis": [
+     0.043867993453344134,
+     -0.03540897559913057,
+     0.932794525381679
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.084,
+     "cream_cheese_1": 0.066,
+     "wine_bottle_1": 0.293,
+     "plate_1": 2.872,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.084,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.864,
+    "other_err_cm": 0.262,
+    "plate_xy_err_end_cm": 2.864
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 54,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 68,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 93,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 10,
+     "plate_1": 3
+    },
+    "clamped": 5,
+    "steps_rg": 25,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 36,
+   "steps": 106,
+   "secs": 8.174299001693726
+  },
+  {
+   "diag": {
+    "n_q": 14,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1704
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11606749021735152,
+     -0.006766426205856246,
+     0.9293335019557128
+    ],
+    "drop": [
+     0.026913310288565362,
+     -0.009077109421900273,
+     0.9335859167811427
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.02358008698470088
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      130.56307692307692,
+      129.26886145404663
+     ],
+     "on_dist": [
+      0.05272540374372965,
+      0.19570917316205483
+     ],
+     "plate_px": 574,
+     "cand_px": [
+      975,
+      729
+     ],
+     "centres": [
+      [
+       0.026913310288565362,
+       -0.009077109421900273,
+       0.9335859167811427
+      ],
+      [
+       -0.11606749021735152,
+       -0.006766426205856246,
+       0.9293335019557128
+      ]
+     ],
+     "xy_err_b1": 0.02358008698470088,
+     "xy_err_b2": 0.021374446205599834,
+     "sim_b1": [
+      -0.09250914369589235,
+      -0.005754096525904033,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.048247885864558214,
+      -0.007772181995439167,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11606749021735152,
+     -0.006766426205856246,
+     0.9293335019557128
+    ],
+    "final_dis": [
+     0.026913310288565362,
+     -0.009077109421900273,
+     0.9335859167811427
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.044,
+     "cream_cheese_1": 0.051,
+     "wine_bottle_1": 0.315,
+     "plate_1": 2.825,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.044,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.819,
+    "other_err_cm": 0.13,
+    "plate_xy_err_end_cm": 2.819
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 70,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 9,
+     "plate_1": 4
+    },
+    "clamped": 0,
+    "steps_rg": 25,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 37,
+   "steps": 104,
+   "secs": 7.6120007038116455
+  },
+  {
+   "diag": {
+    "n_q": 13,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1703
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11367098361232841,
+     -0.0033736257577092342,
+     0.9297046733893485
+    ],
+    "drop": [
+     0.025361511949726134,
+     -0.02782481370703431,
+     0.9334864972824326
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023226664746243957
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      136.73092783505155,
+      128.14733969986358
+     ],
+     "on_dist": [
+      0.052785918546025004,
+      0.19296329080914923
+     ],
+     "plate_px": 571,
+     "cand_px": [
+      970,
+      733
+     ],
+     "centres": [
+      [
+       0.025361511949726134,
+       -0.02782481370703431,
+       0.9334864972824326
+      ],
+      [
+       -0.11367098361232841,
+       -0.0033736257577092342,
+       0.9297046733893485
+      ]
+     ],
+     "xy_err_b1": 0.023226664746243957,
+     "xy_err_b2": 0.02160048631669293,
+     "sim_b1": [
+      -0.09046842573857736,
+      -0.002315673325108999,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.046837366513085926,
+      -0.025507772513818944,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11367098361232841,
+     -0.0033736257577092342,
+     0.9297046733893485
+    ],
+    "final_dis": [
+     0.025361511949726134,
+     -0.02782481370703431,
+     0.9334864972824326
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.078,
+     "cream_cheese_1": 0.075,
+     "wine_bottle_1": 0.042,
+     "plate_1": 2.739,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.078,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.733,
+    "other_err_cm": 0.246,
+    "plate_xy_err_end_cm": 2.733
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 47,
+      "kind": "attached",
+      "stage": 2
+     },
+     {
+      "t": 63,
+      "kind": "start",
+      "stage": 2,
+      "what": "carry",
+      "why": "wrong destination -> plate_1 (n steps)"
+     },
+     {
+      "t": 87,
+      "kind": "end",
+      "stage": 2,
+      "what": "carry",
+      "why": "one step above release height in Omega_d"
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 1
+    },
+    "dst_referent_counts": {
+     "None": 11,
+     "plate_1": 4
+    },
+    "clamped": 0,
+    "steps_rg": 24,
+    "stage": 2,
+    "done": false,
+    "transports": 1,
+    "releases": 0
+   },
+   "trial": 38,
+   "steps": 97,
+   "secs": 7.227502107620239
+  },
+  {
+   "diag": {
+    "n_q": 17,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     990,
+     735
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.11393553250014288,
+     -0.006772989414048159,
+     0.9296513744216071
+    ],
+    "drop": [
+     0.03689078800305767,
+     -0.03474195037084604,
+     0.9331437182012947
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023019358487423928
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      138.76262626262627,
+      129.2829931972789
+     ],
+     "on_dist": [
+      0.05335629831120508,
+      0.20535275055043392
+     ],
+     "plate_px": 583,
+     "cand_px": [
+      990,
+      735
+     ],
+     "centres": [
+      [
+       0.03689078800305767,
+       -0.03474195037084604,
+       0.9331437182012947
+      ],
+      [
+       -0.11393553250014288,
+       -0.006772989414048159,
+       0.9296513744216071
+      ]
+     ],
+     "xy_err_b1": 0.023019358487423928,
+     "xy_err_b2": 0.021135487685404148,
+     "sim_b1": [
+      -0.09093378982173018,
+      -0.005872601204094202,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.05768003018182089,
+      -0.03093193077344201,
+      0.9062480929561305
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.11393553250014288,
+     -0.006772989414048159,
+     0.9296513744216071
+    ],
+    "final_dis": [
+     0.03689078800305767,
+     -0.03474195037084604,
+     0.9331437182012947
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.09,
+     "cream_cheese_1": 0.048,
+     "wine_bottle_1": 0.344,
+     "plate_1": 2.886,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.09,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.88,
+    "other_err_cm": 0.142,
+    "plate_xy_err_end_cm": 2.88
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 46,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 12,
+     "flat_stove_1_cook_region": 24
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 39,
+   "steps": 94,
+   "secs": 8.366023302078247
+  },
+  {
+   "diag": {
+    "n_q": 19,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     983,
+     713
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.12419789987167573,
+     -0.0062297207560845945,
+     0.9295314443958992
+    ],
+    "drop": [
+     0.03072513031378732,
+     -0.012059878134538756,
+     0.9328325457171367
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.023705935550585346
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      131.4791454730417,
+      128.59326788218794
+     ],
+     "on_dist": [
+      0.0528935526800027,
+      0.20771828404621426
+     ],
+     "plate_px": 571,
+     "cand_px": [
+      983,
+      713
+     ],
+     "centres": [
+      [
+       0.03072513031378732,
+       -0.012059878134538756,
+       0.9328325457171367
+      ],
+      [
+       -0.12419789987167573,
+       -0.0062297207560845945,
+       0.9295314443958992
+      ]
+     ],
+     "xy_err_b1": 0.023705935550585346,
+     "xy_err_b2": 0.021312738021184146,
+     "sim_b1": [
+      -0.10063054585166359,
+      -0.003670188606662828,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.05194712235044163,
+      -0.010095226522723284,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.12419789987167573,
+     -0.0062297207560845945,
+     0.9295314443958992
+    ],
+    "final_dis": [
+     0.03072513031378732,
+     -0.012059878134538756,
+     0.9328325457171367
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.027,
+     "cream_cheese_1": 0.14,
+     "wine_bottle_1": 0.577,
+     "plate_1": 2.859,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.027,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.854,
+    "other_err_cm": 0.151,
+    "plate_xy_err_end_cm": 2.854
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 52,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 11,
+     "flat_stove_1_cook_region": 24
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 40,
+   "steps": 104,
+   "secs": 9.396229982376099
+  },
+  {
+   "diag": {
+    "n_q": 19,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 2,
+    "px": [
+     1012,
+     714
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.1278334495151182,
+     -0.01370493761420871,
+     0.9298822412254001
+    ],
+    "drop": [
+     0.04464478930318261,
+     -0.020778844828149665,
+     0.9328242333317551
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.0229061068881481
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "components",
+     "n_comp": 2,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      134.27667984189722,
+      131.39495798319328
+     ],
+     "on_dist": [
+      0.053020901357354495,
+      0.22536790165819126
+     ],
+     "plate_px": 585,
+     "cand_px": [
+      1012,
+      714
+     ],
+     "centres": [
+      [
+       0.04464478930318261,
+       -0.020778844828149665,
+       0.9328242333317551
+      ],
+      [
+       -0.1278334495151182,
+       -0.01370493761420871,
+       0.9298822412254001
+      ]
+     ],
+     "xy_err_b1": 0.0229061068881481,
+     "xy_err_b2": 0.020358022513069646,
+     "sim_b1": [
+      -0.10493820909572142,
+      -0.012999459826262732,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.06476817647219926,
+      -0.017696902341907177,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.1278334495151182,
+     -0.01370493761420871,
+     0.9298822412254001
+    ],
+    "final_dis": [
+     0.04464478930318261,
+     -0.020778844828149665,
+     0.9328242333317551
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 0.047,
+     "cream_cheese_1": 0.047,
+     "wine_bottle_1": 1.022,
+     "plate_1": 2.897,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 0.047,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.89,
+    "other_err_cm": 0.236,
+    "plate_xy_err_end_cm": 2.89
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 50,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 11,
+     "flat_stove_1_cook_region": 28
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 41,
+   "steps": 103,
+   "secs": 9.446693420410156
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1676
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.10963754767307177,
+     -0.01338587263399654,
+     0.9269673925451177
+    ],
+    "drop": [
+     0.022948922230024427,
+     -0.026726083015392588,
+     0.9343712982280034
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.028337554417653135
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      135.90248756218907,
+      130.99701937406854
+     ],
+     "on_dist": [
+      0.05330039885959816,
+      0.18598531368320492
+     ],
+     "plate_px": 568,
+     "cand_px": [
+      1005,
+      671
+     ],
+     "centres": [
+      [
+       0.022948922230024427,
+       -0.026726083015392588,
+       0.9343712982280034
+      ],
+      [
+       -0.10963754767307177,
+       -0.01338587263399654,
+       0.9269673925451177
+      ]
+     ],
+     "xy_err_b1": 0.028337554417653135,
+     "xy_err_b2": 0.02223014781499134,
+     "sim_b1": [
+      -0.08134782516688467,
+      -0.011740092911073726,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.044933883780765134,
+      -0.02343352512086482,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.10963754767307177,
+     -0.01338587263399654,
+     0.9269673925451177
+    ],
+    "final_dis": [
+     0.022948922230024427,
+     -0.026726083015392588,
+     0.9343712982280034
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 3.121,
+     "cream_cheese_1": 4.038,
+     "wine_bottle_1": 8.594,
+     "plate_1": 2.968,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 3.121,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.96,
+    "other_err_cm": 0.443,
+    "plate_xy_err_end_cm": 2.96
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 49,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 9,
+     "flat_stove_1_cook_region": 28
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 42,
+   "steps": 98,
+   "secs": 8.823666334152222
+  },
+  {
+   "diag": {
+    "n_q": 18,
+    "held_onset": null
+   },
+   "inst": {
+    "n_comp": 1,
+    "px": [
+     1665
+    ],
+    "rule": "resolver",
+    "keep": [
+     -0.1159820933890156,
+     0.0033622473397399285,
+     0.9272158475099594
+    ],
+    "drop": [
+     0.019758617143558865,
+     -0.008981343574255002,
+     0.9336582483010583
+    ],
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_xy_err": 0.026978690846493295
+   },
+   "front": {
+    "arm": "rgpr",
+    "parse": {
+     "relation": "not_on",
+     "landmark": "plate",
+     "target": "stove",
+     "unique": "put the bowl on the stove"
+    },
+    "resolve": {
+     "ok": true,
+     "how": "split",
+     "n_comp": 1,
+     "relation": "not_on",
+     "pick": 1,
+     "truth": 1,
+     "used": 1,
+     "resolver_correct": true,
+     "used_correct": true,
+     "col": [
+      129.8561224489796,
+      126.34598540145986
+     ],
+     "on_dist": [
+      0.052637400218871463,
+      0.18850051397867926
+     ],
+     "plate_px": 557,
+     "cand_px": [
+      980,
+      685
+     ],
+     "centres": [
+      [
+       0.019758617143558865,
+       -0.008981343574255002,
+       0.9336582483010583
+      ],
+      [
+       -0.1159820933890156,
+       0.0033622473397399285,
+       0.9272158475099594
+      ]
+     ],
+     "xy_err_b1": 0.026978690846493295,
+     "xy_err_b2": 0.021497757995645544,
+     "sim_b1": [
+      -0.08900405033670679,
+      0.00354920417548856,
+      0.898404150188853
+     ],
+     "sim_b2": [
+      0.04105018828343953,
+      -0.006011057858243366,
+      0.9062480929561304
+     ],
+     "unambiguous": true
+    },
+    "diag": {
+     "agentview": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     },
+     "robot0_eye_in_hand": {
+      "inter": 0,
+      "union": 0,
+      "b1_painted": 0,
+      "b1_px": 0,
+      "b2_px": 0,
+      "b2_seen": 0,
+      "b2_missed": 0,
+      "queries": 0
+     }
+    },
+    "final_ref": [
+     -0.1159820933890156,
+     0.0033622473397399285,
+     0.9272158475099594
+    ],
+    "final_dis": [
+     0.019758617143558865,
+     -0.008981343574255002,
+     0.9336582483010583
+    ]
+   },
+   "reg": {
+    "src": {
+     "akita_black_bowl_1": "agent",
+     "cream_cheese_1": "agent",
+     "wine_bottle_1": "agent",
+     "plate_1": "agent"
+    },
+    "err_cm": {
+     "akita_black_bowl_1": 2.466,
+     "cream_cheese_1": 0.017,
+     "wine_bottle_1": 0.06,
+     "plate_1": 2.803,
+     "flat_stove_1_cook_region": 0.125,
+     "wooden_cabinet_1_top_side": 0.176,
+     "wine_rack_1_top_region": 0.067,
+     "wooden_cabinet_1_top_region": 0.176,
+     "main_table_stove_front_region": 0.0
+    },
+    "bound_body": "akita_black_bowl_1",
+    "bound_referent": true,
+    "bound_err_cm": 2.466,
+    "oe": "akita_black_bowl_1",
+    "de": "flat_stove_1_cook_region",
+    "de_err_cm": 0.125,
+    "plate_xy_err_cm": 2.797,
+    "other_err_cm": 0.251,
+    "plate_xy_err_end_cm": 2.797
+   },
+   "rg": {
+    "events": [
+     {
+      "t": 51,
+      "kind": "attached",
+      "stage": 2
+     }
+    ],
+    "budget": {
+     "1": 0,
+     "2": 0
+    },
+    "dst_referent_counts": {
+     "None": 9,
+     "flat_stove_1_cook_region": 23
+    },
+    "clamped": 0,
+    "steps_rg": 0,
+    "stage": 2,
+    "done": false,
+    "transports": 0,
+    "releases": 0
+   },
+   "trial": 43,
+   "steps": 98,
+   "secs": 8.800212621688843
+  }
+ ]
+}
