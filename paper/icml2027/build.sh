@@ -27,6 +27,16 @@ for i, p in enumerate(d):
         if k in t:
             print(k, "on page", i + 1)
 EOF
+$PY - <<'EOF'
+import fitz, re
+d = fitz.open("/coc/flash10/ksingara3/flawed-composition-vlas/paper/icml2027/main.pdf")
+print("PDF metadata:", d.metadata)
+bad = re.compile(r"ksingara|karthik|georgia|gatech|/coc|flash10|github|\bSR ?\d|docs/|ledger|prereg|fresh", re.I)
+for i, p in enumerate(d):
+    for m in bad.finditer(p.get_text()):
+        print("ANON HIT page", i + 1, repr(p.get_text()[max(0, m.start() - 30):m.end() + 30]))
+print("pages:", len(d))
+EOF
 $PY $C/fontlist.py $D/icml2027/main.pdf 2>&1 | grep -v deprecated | awk '{print $3}' | sed -E 's/^[A-Z]{6}\+//' | sort -u | tr '\n' ' '
 echo
 grep -E 'Warning.*(undefined|multiply)' main.log | sort -u | head -20 || true

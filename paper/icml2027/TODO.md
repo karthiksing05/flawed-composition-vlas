@@ -7,8 +7,7 @@ Citations
 - Entries in refs_extra.bib (Wulff and Cangelosi, Jiang et al. audit, RoboMME, LIBERO-Mem, de Haan et al.) were taken from the arXiv abstract pages on 2026-11-23. de Haan et al. is cited as the NeurIPS 2019 paper (arXiv 1905.11979).
 
 Figures
-- fig_removal2.pdf carries internal run tags (SR 80, SR 82, SR 87, SR 91) and the label "fresh states" on its x axis. main.tex masks them with white boxes and replaces them by "set 1", "set 3", "development states" and "held-out sets". Regenerate the figure with those labels and drop the overlay.
-- The in-figure caption strips at the bottom of fig_gallery and figA2-A9, figA14 and figA16 (they cite a path and SR numbers) are cropped away with trim/clip in the LaTeX; regenerate the figures without them.
+- Figure A1 has a small in-image caption line ("held object (rows) on target (columns)") whose first letter is clipped at the left edge; cosmetic, not an anonymity issue.
 - Draft TODO(check) items that were stripped from the captions and still need a check: Fig 5 (SR 91 effect sizes +.41 and +.37 are as printed by the figure script; confirm against the logged results), Figure A1 and Figure A13 panel contents against the figure scripts, Figure A10 (salient and nearer rates .974 and .752 against the Section 4 wording).
 - Appendix D: the "targeted registered patching test of instruction-token versus cue-token keys and values at layer 14" was marked TODO(pending: not run) in the draft; the text now says we have not run it.
 

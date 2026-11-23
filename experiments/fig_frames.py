@@ -20,6 +20,7 @@ import fig_style as S                                                           
 FF = os.path.join(S.REPO, "results", "flawed", "fig_frames")
 SELJ = os.path.join(S.OUT, "frames", "selection.json")
 DISP = 512
+PAPER = False   # --paper: anonymous-review variant: no provenance caption strip; files go to paper/figs/paper/ (default behaviour unchanged)
 CROP = (150, 450, 20, 470)          # rows r0:r1, cols c0:c1 of the 512 px upright agentview: the table region (3:2)
 CROP_F6 = (212, 512, 10, 460)          # F6: the displaced plate sits low in the frame
 
@@ -315,9 +316,10 @@ def _trace(fig, gs_cell, arms, thr=None):
 def save_exact(fig, name):
     """Like fig_style.save but without the tight bounding box: the file is exactly the figure's size (6.75 in wide)."""
     import matplotlib.pyplot as plt
-    os.makedirs(S.OUT, exist_ok=True)
+    out = os.path.join(S.OUT, "paper") if PAPER else S.OUT
+    os.makedirs(out, exist_ok=True)
     for ext in ("pdf", "png"):
-        fig.savefig(os.path.join(S.OUT, name + "." + ext))
+        fig.savefig(os.path.join(out, name + "." + ext))
     print("wrote", name, "%.2f x %.2f in" % tuple(fig.get_size_inches()), flush=True)
     plt.close(fig)
 
@@ -325,6 +327,8 @@ def save_exact(fig, name):
 def footer(fig, text, y=0.0, width=118):
     """Footer text, hand-wrapped to the figure width (6.5 pt), anchored at the bottom left."""
     import textwrap
+    if PAPER:
+        return 0
     fig.text(0.0, y, "\n".join(textwrap.wrap(text, width)), fontsize=S.TINY, color=S.MUTED, va="bottom", ha="left", linespacing=1.15)
     return len(textwrap.wrap(text, width))
 
@@ -353,7 +357,7 @@ def failure_figure(name, key, cue, title, phase_head=True, thr_obj=False, max_ro
     reg = "%s  Development-state episode, trial %d, chosen by the fixed rule (selection.json)%s. Registered: %s." % (
         title, info["chosen"], " from the 10 further trials" if info.get("used_more") else "", info["registered"])
     nfoot = len(__import__("textwrap").wrap(reg, 118))
-    foot = 0.12 * nfoot + 0.06
+    foot = 0.0 if PAPER else 0.12 * nfoot + 0.06
     top, trh = 0.22, 1.0
     H = top + nr * (th + 0.06) + trh + 0.34 + foot
     fig = plt.figure(figsize=(S.W2, H))
@@ -423,9 +427,10 @@ def fig_A16():
                 eps.append((t, f, c))
         rows.append((k, lab, eps))
     nr = len(rows)
-    fig = plt.figure(figsize=(S.W2, 0.3 + nr * 0.72 + 0.42))
+    bot = 0.02 if PAPER else 0.42
+    fig = plt.figure(figsize=(S.W2, 0.3 + nr * 0.72 + bot))
     gs = fig.add_gridspec(nr, 7, width_ratios=[1.0] + [1] * 6, hspace=0.12, wspace=0.04, left=0, right=1,
-                          top=1 - 0.3 / fig.get_figheight(), bottom=0.42 / fig.get_figheight())
+                          top=1 - 0.3 / fig.get_figheight(), bottom=bot / fig.get_figheight())
     for i, (k, lab, eps) in enumerate(rows):
         axl = fig.add_subplot(gs[i, 0])
         axl.axis("off")
@@ -483,7 +488,8 @@ def smoke(d):
 
 
 if __name__ == "__main__":
-    a = sys.argv[1:]
+    PAPER = "--paper" in sys.argv[1:]
+    a = [x for x in sys.argv[1:] if x != "--paper"]
     if a[0] == "smoke":
         smoke(a[1])
     else:

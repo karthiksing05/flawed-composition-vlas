@@ -22,6 +22,9 @@ from matplotlib.lines import Line2D  # noqa: E402
 import fig_style as S  # noqa: E402
 
 
+PAPER = False   # --paper: anonymous-review variant (set 1 / set 3 labels, "held-out"), written to paper/figs/paper/
+
+
 def jl(name):
     with open(os.path.join(S.RES, name)) as f:
         return json.load(f)
@@ -34,6 +37,9 @@ def main():
         ("W5\nSR 87", "raasw5_wa_read_w5.json", S.ARM["RAA-sL"], "SUPPORTED", "SUPPORTED"),
         ("W5\nSR 91", "raasw5r_wa_read_w5.json", S.ARM["RAA-sL"], "SUPPORTED", "SUPPORTED"),
     ]
+    if PAPER:
+        groups = [("RAA-L", ) + groups[0][1:], ("RAA-sL", ) + groups[1][1:],
+                  ("W5\nset 1", ) + groups[2][1:], ("W5\nset 3", ) + groups[3][1:]]
     data = [jl(g[1]) for g in groups]
     for fn in ("raasw5_wa_gated.json", "raasw5r_wa_gated.json"):
         assert jl(fn)["W5"]["primary_gated"] == "DISSOCIATION SHOWN", fn
@@ -63,7 +69,7 @@ def main():
         ax.set_xlim(-0.6, len(groups) - 0.4)
         ax.set_ylim(0, 1.0)
         ax.set_title(title, loc="left", fontsize=8, pad=22)
-        for xc, lab in ((0.5, "development states"), (2.5, "fresh states")):
+        for xc, lab in ((0.5, "development states"), (2.5, "held-out sets" if PAPER else "fresh states")):
             ax.annotate(lab, (xc, 0), xycoords=("data", "axes fraction"), xytext=(0, -27), textcoords="offset points",
                         ha="center", va="top", fontsize=6.5, color=S.MUTED)
         ax.tick_params(axis="x", length=0)
@@ -73,8 +79,9 @@ def main():
           Line2D([], [], color=S.GREY, lw=1.6, ls="--", label="frozen pi0.5, same states")]
     fig.legend(handles=sw, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, 0.0), fontsize=7)
     fig.subplots_adjust(left=0.065, right=0.995, top=0.80, bottom=0.30)
-    S.save(fig, "fig_removal2", tight=False)
+    S.save(fig, "fig_removal2", sub="paper" if PAPER else None, tight=False)
 
 
 if __name__ == "__main__":
+    PAPER = "--paper" in sys.argv[1:]
     main()

@@ -17,7 +17,7 @@
 \usepackage{placeins}
 
 \definecolor{refnavy}{HTML}{001473}
-\hypersetup{colorlinks=true,linkcolor=refnavy,citecolor=refnavy,urlcolor=refnavy}
+\hypersetup{pdfauthor={Anonymous Authors},pdftitle={Routed by Cues: A Failure Atlas of Vision-Language-Action Models on New Pairings},pdfcreator={},pdfproducer={},colorlinks=true,linkcolor=refnavy,citecolor=refnavy,urlcolor=refnavy}
 \graphicspath{{figures/}}
 \setlist{itemsep=1pt,topsep=3pt,parsep=0pt}
 
@@ -100,7 +100,7 @@ Object-centric architectures \citep{taxpose2211,spot2411,foci2609,oawam2605,potv
 
 \textbf{Learned where-share.} For the repair columns we measure how much a network's behaviour depends on a given input. We replay recorded model inputs open loop and patch the where-input (the state token, or token plus crop) from a counterfactual run, in which the target is shifted, into the original run. The where-share is the fraction of the counterfactual effect on the output chunk that this patch recovers. A route passes when the lower bound of the pooled share is at least .70 and fails when the upper bound is under .30.
 
-\textbf{Statistics.} Each confirmatory test has a pre-registered ledger row that fixes arms, states, predictions and decision rules before any main rollout. We compute every contrast by a paired bootstrap that resamples tasks and states jointly, with 2,000 draws, and report 95\% intervals. Held-out state sets are start states that no earlier experiment used; reads on other states are development reads, marked as such.
+\textbf{Statistics.} Each confirmatory test has a pre-registered record that fixes arms, states, predictions and decision rules before any main rollout. We compute every contrast by a paired bootstrap that resamples tasks and states jointly, with 2,000 draws, and report 95\% intervals. Held-out state sets are start states that no earlier experiment used; reads on other states are development reads, marked as such.
 
 %=====================================================================
 \section{The atlas: failures and their cues}
@@ -110,7 +110,7 @@ This section lists what fails and which cue routes each failure, with each entry
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 31bp 0 0,clip]{fig_gallery.pdf}
+\includegraphics[width=\textwidth]{fig_gallery.pdf}
 \caption{The failures in frames, scene 1: start, grasp and release of the failing arm (FAIL), release of the comparator on the same trial (OK), and the cue schematic. Registered rates: F1 E +.450 [.28, .61]; F1m N4+N6 .625 against .812 with the bottle painted as its box; F2 grasp excess +.650 [.39, .88] on \pizero{} and +.833 [.67, .96] on SmolVLA; F7 .40 (SP) and .20 (NG) for \pifive{} against 1.00 and .775 with the resolver; F6 cost of covering .38 [.28, .48]. Development-state episodes chosen by outcome (Appendix~\ref{app:A}); scene 2 is in Figure~\ref{fig:A3}.}
 \label{fig:gallery}
 \end{figure*}
@@ -152,23 +152,7 @@ If a failure is a missing function, a module that owns the function should repai
 
 \begin{figure*}[t]
 \centering
-% The source figure labels its x axis with internal run tags; the white boxes cover those tags and the labels that follow.
-\setlength{\unitlength}{1bp}%
-\begin{picture}(486,187)(0,0)
-\put(0,0){\includegraphics[width=486bp]{fig_removal2.pdf}}
-\put(50,37){\textcolor{white}{\rule{182bp}{9bp}}}
-\put(283,37){\textcolor{white}{\rule{182bp}{9bp}}}
-\put(50,21){\textcolor{white}{\rule{182bp}{10bp}}}
-\put(283,21){\textcolor{white}{\rule{182bp}{10bp}}}
-\put(56,23){\fontsize{6.5}{7}\selectfont\sffamily development states}
-\put(289,23){\fontsize{6.5}{7}\selectfont\sffamily development states}
-\put(163,39){\fontsize{6.5}{7}\selectfont\sffamily set 1}
-\put(215,39){\fontsize{6.5}{7}\selectfont\sffamily set 3}
-\put(396,39){\fontsize{6.5}{7}\selectfont\sffamily set 1}
-\put(448,39){\fontsize{6.5}{7}\selectfont\sffamily set 3}
-\put(160,23){\fontsize{6.5}{7}\selectfont\sffamily held-out sets}
-\put(393,23){\fontsize{6.5}{7}\selectfont\sffamily held-out sets}
-\end{picture}
+\includegraphics[width=\textwidth]{fig_removal2.pdf}
 \caption{Removing one module returns one failure: success with the module (solid) and without it (hatched) on development states (RAA-L, RAA-sL) and two held-out sets (RAA-sL-W5). Left: pooled relational (F7) cells with and without the resolver R; gain +.263 [+.213, +.313] (RAA-L), +.319 [+.269, +.375] (RAA-sL), +.483 [+.425, +.538] (W5, set 1), +.41 (W5, set 3). Right: covered-plate cell (F6, b) with and without the pose memory M; gain +.117 [\mi.017, +.250] (RAA-L), \mi.367 [\mi.500, \mi.250] (RAA-sL; the sign reverses), +.217 [+.033, +.383] (W5, set 1), +.37 (W5, set 3). Bars are registered 95\% intervals; the dashed line is frozen \pifive{} (.350 F7 pool, .517 F6). On the three held-out sets (60 states per cell, one seed; set 2 runs the module variant W6) removing the resolver costs +.483 [+.425, +.538], +.504 [+.454, +.554] and +.408 [+.350, +.463], and removing the memory +.217 [+.033, +.383], +.400 [+.267, +.550] and +.367 [+.217, +.517] (Table~\ref{tab:removal}, Appendix~\ref{app:C}).}
 \label{fig:removal}
 \end{figure*}

@@ -18,7 +18,7 @@ This part holds every result removed from the main text, with every number uncha
 
 \textbf{Criteria for architecture-rooted failures.} C1: the input holds the needed information and the reference planner reaches .80. C2: the failure persists across models (models, chunk length, prompting; no data ladder). C3: a structural change that adds no information removes the failure. A failure that misses C1 belongs to the task. We phrase C3 as ``adds no task information beyond a calibrated RGB-D sensor''.
 
-\textbf{Registration.} Each confirmatory read has a ledger row written before any main rollout. Verdicts appear in capitals (SUPPORTED, NOT SUPPORTED, NOT SHOWN, REVERSED, PARTIAL, EQUIVALENT, NON-INFERIOR, UNTESTABLE).
+\textbf{Registration.} Each confirmatory read has a pre-registered record written before any main rollout. Verdicts appear in capitals (SUPPORTED, NOT SUPPORTED, NOT SHOWN, REVERSED, PARTIAL, EQUIVALENT, NON-INFERIOR, UNTESTABLE).
 
 \textbf{Frame rule.} Every episode drawn in Figures~\ref{fig:teaser} and~\ref{fig:gallery} and in the frame figures of this appendix (Figures~\ref{fig:A2}--\ref{fig:A9}, \ref{fig:A16} and~\ref{fig:A14}) is a development-state episode, and the rule that picks it was fixed before any frame was looked at. Per entry, over its first 10 trials in a fixed order, a trial qualifies if the failing arm fails with the failure's own signature and the comparator arm succeeds on the same trial of the same fresh run. The shown episode is the lowest-index qualifying trial, and Figure~\ref{fig:A16} shows the next three. If no trial of the first 10 qualifies, 10 more trials run and the same rule applies. The episodes are not a sample: they are chosen by outcome, and the registered rate in each caption is the cell's rate over all its states. The F6 signature was revised once, after the failure-mode classification of Appendix~\ref{app:B} and before the selection was recomputed (from ``released more than 3 cm away'' to ``failed and the final bowl xy more than 3 cm from the plate centre''; the original version flagged 6 of 50 \pifive{} F6\_b failures). Frames come from fresh rollouts that log their own outcome, so a re-run of a registered state can differ from its registered result.
 
@@ -79,56 +79,56 @@ New layout & NEITHER & NEITHER & NEITHER & NEITHER & NEITHER \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 16bp 0 0,clip]{figA2.pdf}
+\includegraphics[width=\textwidth,]{figA2.pdf}
 \caption{F1 in scene 1, three arms. Frozen \pifive{} on N1 (cream cheese on the plate): start, approach, grasp, lift, mid-carry, release, end, with the end-effector path, an outcome stamp, the cue schematic and the (x, y, z) trace against step. Rows: \pifive{} (carries to the bowl and fails), ReGuide with perceived poses (.929), and the front end tvpb (.938 against .454); GR00T N1 breaks too (E +.500). Registered: E +.450 [.28, .61]. Frames follow the frame rule of Appendix~\ref{app:A}.}
 \label{fig:A2}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 24bp 0 0,clip]{figA3.pdf}
+\includegraphics[width=\textwidth,]{figA3.pdf}
 \caption{F1 in scene 2. Frozen \pifive{} on N1 (``put the white mug on the right plate''); 0 of 720 held-out-pairing episodes succeed in scene 2. Rows: (a) the standard layout, (b) the two mugs swapped (287 of 287 placements go to the start-side plate), (c) the plates moved (the nearer plate wins; 0 of 116 and 0 of 125 disagreeing placements go to the start-side plate). The comparator is ReGuide with perceived poses (.708 on N1 and N2; N2 1.00). \pizero{} places on the start side on .993 of 145 placements.}
 \label{fig:A3}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 16bp 0 0,clip]{figA4.pdf}
+\includegraphics[width=\textwidth,]{figA4.pdf}
 \caption{F1m, the held outline picks the carry. Frozen \pifive{} on N6 (bottle in the bowl; the N4 entry had no qualifying trial in the first 10) with the z profile of the carry against the high-carry threshold (lift while held above .22 m). Rows: arm g (high-carry share .225, N4+N6 success .625) and the same weights with the held bottle painted as its box, arm sb (.062 and .812). After a high carry \pifive{} succeeds .04, after a low carry .66.}
 \label{fig:A4}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 16bp 0 0,clip]{figA5.pdf}
+\includegraphics[width=\textwidth,]{figA5.pdf}
 \caption{F2, the habitual object is grasped. \pizero{} and SmolVLA on held-out pairings (N1 cheese on the plate; N4 for SmolVLA; \pizero{} N4 had no qualifying trial in the first 10). The model grasps the scene's habitual object, outlined as the grasped object, and the episode ends at the grasp. Registered: grasp excess +.650 [.39, .88] (\pizero) and +.833 [.67, .96] (SmolVLA); .679 and .829 of held-out-pairing episodes end at the grasp; ReGuide approach transport .608 and .604; frozen \pifive{} grasps the named object at .950--.992.}
 \label{fig:A5}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 16bp 0 0,clip]{figA6.pdf}
+\includegraphics[width=\textwidth,]{figA6.pdf}
 \caption{F7, relational and negated language is ignored. Frozen \pifive{} in scene 1 with two identical bowls, on ``put the left bowl on the plate'', ``put the right bowl on the plate'' and ``put the bowl that is not on the plate on the stove''. The model picks the bowl it picks for the ambiguous instruction on 92.5--100\% of states. Comparator: the resolver composite RC, shown with the simulator render and the painted view. Registered success: \pifive{} .40 (SP) and .20 (NG); with the resolver 1.00 and .775.}
 \label{fig:A6}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 24bp 0 0,clip]{figA7.pdf}
+\includegraphics[width=\textwidth,]{figA7.pdf}
 \caption{F6, a target seen once and then hidden. Scene 1 K1 ``put the bowl on the plate'' with the plate displaced. Columns: the first query with the plate visible, mid-carry with the cover on the plate, release. Rows: frozen \pifive{} (cost of covering, d \mi{} b, .38 [.28, .48]), GR00T (F6\_b .142 [.083, .208], cost +.60; 76\% of its failures release 3--10 cm or farther) and RC with the pose memory (.800 against .517 intact; the ghost plate is a memory overlay drawn in the simulator render only).}
 \label{fig:A7}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 16bp 0 0,clip]{figA8.pdf}
+\includegraphics[width=\textwidth,]{figA8.pdf}
 \caption{The held-out layout limit. Scene 1, N1 and N6 in the held-out layout, frozen \pifive{} and the scripted servo and P\_min run on the same states: all four systems fail on the same states, so the failure belongs to the task and not to the model. The demo's fixed top-down grasp holds on 0 of 10 cheese and 0 of 10 bottle states. The ghost gripper is the demo grasp pose. There is no comparator in this figure.}
 \label{fig:A8}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 23bp 0 0,clip]{figA9.pdf}
+\includegraphics[width=\textwidth,]{figA9.pdf}
 \caption{A moved target, frames. Scene 1 K1 with the plate .141--.296 m from the training centre (40 states). Rows: frozen \pifive{} (follows the plate; .975 success, 0 of 40 release at the trained position), the narrow retrain R2 (releases at the trained plate position on 31 of 40, median 20.2 cm off), RAA (.100) and ReGuide with perceived poses. A ghost ring marks the trained position, and a line joins each release to it. Registered numbers are in Figure~\ref{fig:A12}.}
 \label{fig:A9}
 \end{figure}
@@ -142,7 +142,7 @@ New layout & NEITHER & NEITHER & NEITHER & NEITHER & NEITHER \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 24bp 0 0,clip]{figA16.pdf}
+\includegraphics[width=\textwidth,]{figA16.pdf}
 \caption{Frame gallery, extra episodes. Three further episodes per failure, the next three qualifying trials under the same fixed rule as Figure~\ref{fig:gallery}, shown as a thinner grid to guard against a cherry-picked look. Registered rates are those of Figure~\ref{fig:gallery}. All are development-state episodes chosen by outcome, not by appearance.}
 \label{fig:A16}
 \end{figure}
@@ -223,7 +223,7 @@ On set 1, the contrasts of W5 and its components: K5 .950 against .017 (W4) and 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth,trim=0 16bp 0 0,clip]{figA14.pdf}
+\includegraphics[width=\textwidth,]{figA14.pdf}
 \caption{Where-module trace. End-effector paths with and without the servo (RAA-sL against RAA-sL-W5) and release-error histograms (N4 needed the extra 10 trials, since no trial qualified among the first 10). Registered: W5 .892 against .875 for RAA-sL on N1--N6 (set 1) and .894 against .878 (set 3); K5 .950 against .650 (set 1) and .767 (set 3) for RAA-sL; W5 is not shown non-inferior to ReGuide with perceived poses (\mi.022 [\mi.114, +.047] on set 1, \mi.022 [\mi.147, +.069] on set 3). The repair gap to ReGuide stays open.}
 \label{fig:A14}
 \end{figure}
@@ -245,7 +245,7 @@ The probe replays recorded inputs open loop and patches one write at a time from
 \section{The routes in detail}
 \label{app:E}
 
-The selection rule (fixed before any run): pass when the lower bound of the pooled share on development states is at least .70, the prefix share is below RAA-sL's (.089) and the effect is positive; fail when the upper bound is under .30. A0 was trained after we found B was built servo-free too; A+0 carries prereg tag raafp0 and would have had its only confirmatory test on the sealed fifth set, which stays unbuilt. Contrasts: A minus A0 +.272 [+.238, +.312]; B minus A0 +.030 [\mi.034, +.089]; A+ minus A \mi.282 [\mi.322, \mi.247]; A+ minus A0 \mi.006 [\mi.012, +.001]; A+0 minus A+ +.133 [.096, .171]; A+0 minus A0 +.127 [.092, .165]; A+0 minus A \mi.150 [\mi.196, \mi.104].
+The selection rule (fixed before any run): pass when the lower bound of the pooled share on development states is at least .70, the prefix share is below RAA-sL's (.089) and the effect is positive; fail when the upper bound is under .30. A0 was trained after we found B was built servo-free too; A+0 carries its own pre-registration record and would have had its only confirmatory test on the sealed fifth set, which stays unbuilt. Contrasts: A minus A0 +.272 [+.238, +.312]; B minus A0 +.030 [\mi.034, +.089]; A+ minus A \mi.282 [\mi.322, \mi.247]; A+ minus A0 \mi.006 [\mi.012, +.001]; A+0 minus A+ +.133 [.096, .171]; A+0 minus A0 +.127 [.092, .165]; A+0 minus A \mi.150 [\mi.196, \mi.104].
 
 \begin{table}[h]
 \caption{The learned where-share by data dose and servo on \pifive{} (96 observations per route on development states, clustered bootstrap, 95\% intervals). The pass bar is .70.}

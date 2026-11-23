@@ -34,9 +34,10 @@ def gallery():
     import matplotlib.pyplot as plt
     nr = len(ROWS)
     th = 0.80
-    fig = plt.figure(figsize=(S.W2, 0.25 + nr * th + 0.45))
+    bot = 0.02 if FR.PAPER else 0.45          # --paper: no provenance caption strip below the grid
+    fig = plt.figure(figsize=(S.W2, 0.25 + nr * th + bot))
     gs = fig.add_gridspec(nr, 6, width_ratios=[1.3, 1.15, 1.15, 1.15, 1.15, 1.1], hspace=0.07, wspace=0.04, left=0, right=0.965,
-                          top=1 - 0.25 / fig.get_figheight(), bottom=0.45 / fig.get_figheight())
+                          top=1 - 0.25 / fig.get_figheight(), bottom=bot / fig.get_figheight())
     heads = ["start", "grasp", "release: fails", "release: succeeds", "cue"]
     for i, (key, cue, lab) in enumerate(ROWS):
         info, f, c = pair(key)
@@ -124,7 +125,8 @@ def teaser():
 
 
 if __name__ == "__main__":
-    a = sys.argv[1:] or ["teaser", "gallery"]
+    FR.PAPER = "--paper" in sys.argv[1:]
+    a = [x for x in sys.argv[1:] if x != "--paper"] or ["teaser", "gallery"]
     if "teaser" in a:
         teaser()
     if "gallery" in a:
