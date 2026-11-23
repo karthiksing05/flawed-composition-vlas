@@ -1,0 +1,67 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: RVW5: the 5th fresh state set; contrasts d1' (primary), r1 (primary), h1 (primary), Holm; E2 read-but-not-in-control, E3 where-module removal, E4 learned where-head",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4842744",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "504debe04c9b8ac1717f47a916dc694782e589d7",
+  "short": "504debe0"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "pi0-sL, pi0-A0, RAA-sL, A0, A, W5, noW, H (+ options: pi0 arms F6_b / F6_a cells, RAA-sL seed 2 Phase A)",
+  "deviation_notes": "scope fixed by the orchestrator: core plus the pi0 arms' F6 cells (tids 8, 9) and RAA-sL seed 2 (pi05_g8v_raas_l_ae_s43_6000, arm raasl43) Phase A on the 5th set; NOT run: H seed 2, the H probe; E1-opt only if the E1 gate fails.  The options carry no registered contrast (descriptive).",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rvw5_roll.sh": "06a8a63265fe537fa896795e928ee7201ae1005c6c5ff2d83e3447e2556a058b",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rvw5_wa.sh": "38b670d0edf14ddc6d3e0afa2cf550d0ff03cdb6b24bb832781cc7acbee179ac",
+   "docs/notes/plan_review_atlas.md": "759abcc7fd768316f538833ec14d7cdf6d912fa027d5771c942c965ac6caab46",
+   "experiments/fc_n2_w5.py": "7f6f74438ff21666399d3096d9e98f7b9a3d3eba9c69368e77e7ac28e2154324",
+   "experiments/prereg/rvw5_pred.txt": "a52a6fa4e621e3aa10f387285b0dd5ecf041c305526be0b1b6c0119e5af73158",
+   "experiments/raa_wh.py": "2278bdeb7a6c888786e7226c3973bc7803889df956d6420172ed0bbee61a7c94",
+   "experiments/rg_comp_5.py": "486072d286b22b03e63ce8d54afd217305507305ca9c0512a7d56b987a1f4176",
+   "experiments/rvw5_disjoint.py": "d32eeb132e7e275de10d4998b1ee73ca56e52b3e8d7235951414dde6f44ff0ec",
+   "experiments/rvw5_geom.py": "0f6cf97e11843fecdce1177905d2405b2b17ba39d2def963d2c534142ab3d4e7",
+   "experiments/rvw5_nowcheck.py": "31f641f8f728c8e4ce3ff2c5435e29c34d02e6324aebe787163215aad76ade45",
+   "experiments/rvw5_read.py": "624c3604939c846d2da5836fe523ab4b68ee73ad0bfdea3c39592dcc4330a63f",
+   "experiments/wa_sh5.py": "b3f013cc870ce1fbc761c8d2bdbd254c24efd455b81f3042577afebcd2f7e0e1",
+   "experiments/wa_sw5_5.py": "e1850617ca979c99b53db0960efd9fffa5fd4b1501c349c79c6d204808ec12e4",
+   "lifelong_ood/policy/raah_head.npz": "8975f769eb8fc6eec14c53b3953af65a08b8cc5a35456c08643948601a9f607a"
+  },
+  "mapping": "docs/notes/plan_review_atlas.md sections 3-6",
+  "prediction": "RVW5 (docs/notes/plan_review_atlas.md 3-6): the 5th fresh state set of raaf_plan 7.1 (N/K k 760-819, F7 860-939, F6 940-1019), unbuilt and reserved \"for a later design\"\n(raaf_plan 6.3 rule 5; no RAA-F route passed, raafc is void and will never be written).  This row takes the set over for E2, E3 and E4.\nArms: pi0-sL, pi0-A0, RAA-sL, A0, A, W5 (where_own 5), noW (RAA-sL checkpoint served with config pi05_g8v_raac_l_ae, where_own 0, R and M kept), H (pi05_g8v_raah_l_ae, after training).\nContrasts (Phase A by raa_read.diff, Phase B by wa_read.bootm; B = 2000, rng 0; Holm over the PRIMARY family {d1', r1, h1}, raw and adjusted reported):\n d1' PRIMARY pi0-A0 - pi0-sL, N: SUPPORTED iff upper < 0.  d4' K NI at -.05.  REPLICATES iff d1' SUPPORTED and d4' NI.\n c0 A0 - RAA-sL, N; cA A - RAA-sL, N: SUPPORTED-for-module iff upper < 0.  d2', d3' reported.\n r1 PRIMARY W5 - noW, N: SUPPORTED iff lower > 0.  r2 W5 - noW, F6_b.  r3 noW - A0, N: DEPENDENT iff upper < 0, EQUIVALENT iff inside +-.10.\n h1 PRIMARY H - A0, N, pooled dev + 5th set: SUPPORTED iff lower > 0.  h2 H - RAA-sL, N, 5th set: NI iff lower > -.10, COST iff upper < -.10.  h3 H - A, N.  hK H - RAA-sL, K, NI at -.05.\n H gate: dev K1-K6 >= .70, else UNTESTABLE.  E1 classes on every arm (secondary).\nSTATUS: every arm's dev-state success was seen except H; no arm has been rolled on these states; H's design is fixed by the rvh row.\nPredictions:\n (q1) d1' point -.18; SUPPORTED 70%; REVERSED 2%.  d4' NI 75%.  REPLICATES 55%.  d1' survives Holm: 60%.\n (q2) pi0-sL N .74 (.60-.86); pi0-A0 N .52 (.35-.70); RAA-sL .87; A0 .70; A .79; W5 .89.\n (q3) c0 SUPPORTED 50%; cA SUPPORTED 25%.\n (q4) noW N point .45 (.15-.75); r1 SUPPORTED 92%; r2 SUPPORTED 80% (W5 F6_b .80, noW .35); r3 DEPENDENT 55%, EQUIVALENT 15%; noW K below W5 by > .05: 70%.\n (q5) h1 point +.12; SUPPORTED 45%; REVERSED 3%.  h2 NI 55%, COST 7%.  h3 SUPPORTED 15%.  hK NI 50%.\n (q6) joint \"separation, not form\" (h1 SUPPORTED and h2 NI): 30%.  \"separation does not help\" (h1 point within +-.05 of 0): 20%.\nKill: (k1) the disjointness job finds an equal row; (k2) the noW serving check fails (difference != servo); (k3) any rollout job fails on infrastructure (no read until all cells exist).\n",
+  "seen": "Written 2026-11-23 after the rvh row and before the set is built.  raaf_plan.md 7.1's recipe is used verbatim (N/K k 760-819, F7 860-939, F6 940-1019); the confirmatory raafc row of raaf_plan is VOID and will never be written (no RAA-F route passed, raaf_sel.md); this row takes the 5th set over.  The E1 failure split (rva1) of the development-state arms was seen before this row (pi0-A0 failures mostly class O, rule MIXED); every arm's development-state success was seen except H.  No arm has been rolled on these states.",
+  "status": "PRE-REGISTERED RVW5",
+  "written_before": "building the 5th set / any rollout on it"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__rvw5__s0__504debe0",
+ "schema": 1,
+ "script": "experiments/prereg/rvw5.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-23T10:07:48+00:00",
+ "stream": null,
+ "tag": "rvw5"
+}
