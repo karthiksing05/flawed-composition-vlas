@@ -124,3 +124,41 @@ rvh: h0 (head val R2 exceeds linear by >= .02, 70%): TRUE (+.428; point predicte
 experiments/: rva1_geom.py, rva1_read.py, rva1_phaseb.py, rvw5_geom.py, rvw5_read.py, rvw5_nowcheck.py, rvw5_disjoint.py, fc_n2_w5.py, rg_comp_5.py, wa_sw5_5.py, raa_wh.py, wa_sh.py, wa_sh5.py, raah_fit.py, raah_check.py, raah_cfgcheck.py, c_train_h.py, prereg/{rva1,rvh,rvw5}{.py,_pred.txt}; lifelong_ood/policy/{raah_model.py, backbone_h.py, raah_head.npz}; l90c_config.py (add-only: pi05_g8v_raah_l_ae).
 Job scripts (outside git): .claude_tmp/pp/rvw5_roll.sh, rvw5_wa.sh, rvw5_states.sh, rvw5_submit_a.sh, rvw5_submit_b.sh, rvh_train.sh, rvh_chain.sh, rvh_check.sh, rvh_roll.sh, rvh_wa.sh, rvh_export.sh, rv_gpu.sh.
 Results: results/flawed/rvw5/{rvw5_read_d.json, rvw5_read_r.json, nowcheck*.json, a_*, b_*}; results/flawed/rva1/*.json; results/flawed/raah/fit.json.
+
+## 7. E4 completed (orchestrator decision: finish H as registered; cap 16 GPU-h for E4; appended 2026-11-23, sections 0-6 above are the state at the earlier stop)
+
+Training resumed with rvh_chain.sh from step 2250 (tail-lab), ran to step 6000 (links tl1 to ~4750, tl2 to ~5750, tl3 to 6000; final loss about .010), exported as pytorch/pi05_g8v_raah_l_ae_tl6000, served with PolicyBackboneH (server log "[rvh] PolicyBackboneH").  The serving smoke was folded into the first dev rollout (finite chunks, role-1 queries logged, no failures); no separate smoke job.
+Dev rollouts: results/flawed/raaf/dev_H (Phase A, 60 states per task) and dev_H/wa (Phase B tids 7-10); fresh set: rvw5/a_H, rvw5/b_H.  Reads: results/flawed/rvw5/rvw5_read_h.json, rvw5_hF.json, results/flawed/rva1/rva1_w5_H.json and decomps.
+
+**Gate:** dev K1-K6 of H = .897 (>= .70): PASS, H is testable.  Dev N = .758.  Fresh set: N .806, K .894.  Fresh Phase B: F6_b .583, K2t 1.00, F6_a .917, K1t .95.
+
+| quantity | point | 95% CI | rule outcome |
+|---|---|---|---|
+| h1 PRIMARY H - A0, N, pooled dev + fresh (equal weight) | +.089 (dev +.072, fresh +.106) | [-.208, +.346] | NOT SHOWN (raw one-sided p .262) |
+| h1 dev alone / fresh alone | +.072 / +.106 | [-.339, +.414] / [-.353, +.467] | NOT SHOWN |
+| h2 H - RAA-sL, N, fresh | -.061 | [-.417, +.172] | NOT SHOWN (neither NI, lower > -.10, nor COST) |
+| h3 H - A, N, fresh | +.025 | [-.395, +.347] | NOT SHOWN |
+| hK H - RAA-sL, K, fresh | -.039 | [-.125, +.006] | NOT SHOWN (lower < -.05) |
+| hF H - RAA-sL, F6_b | +.533 | [+.400, +.650] | reported (H .583, RAA-sL .05) |
+| hF H - noW, F6_b | +.183 | [+.017, +.350] | reported |
+| hF W5 - H, F6_b | +.217 | [+.067, +.383] | reported (W5 .80) |
+| hF H - A0, F6_b | | | not available: A0 has no Phase B rollouts on the fresh set |
+
+CIs on N are wide (about +-.25-.30 with six tasks).  Reading by the plan's table 6.9: h1 is NOT SHOWN and the point (+.089) is not within +-.05 of A0, so neither "separation, not form" (needs h1 SUPPORTED) nor "separation does not help" (needs h1 within +-.05) is established; the experiment is underpowered for the +.09 effect.  The head does not hurt (h1 not REVERSED) and does not clearly match the servo (h2 point -.061, CI wide).  The head does recover the covered-plate cell the servo kills (F6_b .583 vs .05).
+E1 on H (fresh): success .806; 70 failures: G 4, W 0, O 5, H (held to the end, step cap) 55, M 6.  79% of H's failures are class H, a different failure shape from every other arm: the learned head leaves the object held at the target without releasing (its output is weaker than the servo near the target, 5 cm: .051 vs .143).  Decomposition A0 vs H: MIXED (d_H -.122, d_M +.114, d_O +.092; total +.106 [-.353, +.467]); RAA-sL vs H total -.061 [-.417, +.172] (the P / R rules are not meaningful for a negative total).
+F6_b track split (fresh): H S 35, L 4, M3-10 21, G 0.
+
+**Holm over the full registered family {d1', r1, h1}** (one-sided p in the registered direction, step-down, survives iff adjusted < .025):
+| primary | raw p | Holm-adjusted p | survives |
+|---|---|---|---|
+| r1 (W5 - noW, N) | .0005 | .0015 | yes |
+| d1' (pi0-A0 - pi0-sL, N) | .0015 | .0030 | yes |
+| h1 (H - A0, N, pooled) | .2624 | .2624 | no |
+(The reader's own `holm` field in rvw5_read_h.json contains only h1 because parts d and r were read in separate runs; the table above combines the three raw p's from rvw5_read_d.json, rvw5_read_r.json and rvw5_read_h.json.)
+
+**Predictions (E4), written vs outcome:** h0 (head val R2 > linear + .02): TRUE (+.428).  h0b dev K >= .70: TRUE (.897); dev N point .82 (.65-.92): .758, inside.  h0c step-0 loss below .0556: FALSE (.0685, seen at registration).  q5: h1 point +.12 / SUPPORTED 45% / REVERSED 3%: point +.089, NOT SHOWN, not reversed; h2 NI 55% / COST 7%: NOT SHOWN; h3 SUPPORTED 15%: NOT SHOWN; hK NI 50%: NOT SHOWN.  q6: joint "separation, not form" 30%: not met; "separation does not help" (h1 within +-.05) 20%: not met.
+Effect of the full outcome on the claim (plan section 9, E4 row): the learned separate head neither confirms nor refutes "separation, not form"; the necessity claim keeps E2 (d1', Holm-surviving) and E3 (r1, with r3 DEPENDENT) and gets no independent support from a learned head at this recipe and power.
+
+**GPU-h for E4 since the resume:** 13.7 (sacct with duplicates: training 6.1 over tl1-tl3, dev Phase A about 2.2 plus a requeued first attempt of the rx K job, dev Phase B .9, fresh Phase A 2.8, fresh Phase B .8, export 0).  Under the 16 GPU-h cap.  Run total about 38.7 + 13.7 = 52.4 GPU-h.
+
+**Deviations added in this part:** (a) the rvh row's SEEN field omits that the smoke step-0 loss (.0685) was seen before registration (also section 5, item 8); (b) the commit and submit of the rva1 row fell in the same second, 04:47:56, commit first (section 5, item 6) - the rvh and rvw5 rows have 3-4 s margins (05:07:16 / 05:07:19 and 05:07:53 / 05:07:56); (c) hF "H - A0" is unavailable; (d) the fresh-set H jobs were submitted once the dev main K results (.89 over 20 states) were in and before the dev rx K files finished (the gate then passed at .897 over 60), a small risk taken to save wall time; (e) no separate serving-smoke job (see above); (f) experiments/rvw5_hF.py is a new small reader written after the registration for the hF cells.
