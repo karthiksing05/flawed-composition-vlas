@@ -1,0 +1,17 @@
+RVA1 (docs/notes/plan_review_atlas.md 2): failure-mode split of held-out-pairing (N1-N6) failures from EXISTING development-state rollouts; no GPU.
+Arms: pi0-sL, pi0-A0 (raaf/dev_pzsL, dev_pzA0), RAA-sL seed 1 (raa raasl_*), A (raaf/dev_A), A0 (raaf/dev_A0); free extras RAA-sL s43, A+0, B, W5 (held-out).
+Classifier (experiments/rva1_read.py, fixed here): G bound != object; else release query = last query of the last held segment (chan log), d = xy |target - object| there;
+H held at the last query and steps = 300; W d >= 10 cm and object within 8 cm of a known-partner target (rva1_geom.py); O d >= 10 cm not W; M d < 10 cm (bins <3, 3-6, 6-10).
+Phase B (tracks): final rest distance, classes G, L (> 10 cm), M3-10, M<3, on F6_b and the F7 pool.
+Gate: chan-log classes agree with raa_instr per-step classes on RAA-sL rx 24-43 of N1, N4, N6 in >= 90% of 60 episodes and median |d_chan - d_instr| <= 2 cm; else E1-opt re-rolls.
+Rules (pi0-A0 vs pi0-sL, paired by task and state, B = 2000, rng 0): P "read but imprecise" iff dM CI lower > 0, dM >= half the total, dW CI upper < .10;
+R "routing" iff dW CI lower > 0 and dW >= half the total; MIXED otherwise.  Same rules reported for A0 and A vs RAA-sL.
+STATUS: success rates of every arm were seen (pzdev, raaf_sel); no failure class of any trained arm has been computed; RAA's SR 77 split (47 of 51 right object, right target, 3.7-7.9 cm) and raasl_instr categories were seen.
+Predictions:
+ (e1) gate passes: 85%.
+ (e2) pi0-A0 failure shares: M point .55 (range .30-.80); W point .12 (0-.35); G .10; H + O .23.
+ (e3) Rule P: 50%; Rule R: 15%; MIXED: 35%.
+ (e4) RAA-sL failure M share >= .60: 75%.  A0 and A: M share >= .50: 65% each.
+ (e5) bottle pairings carry most of pi0-A0's W (W share bottle > cheese): 60%.
+ (e6) F6_b failures of the servo-kept arms (RAA-sL, pi0-sL) are mostly L (> 10 cm): 70%.
+Kill: (k1) the join fails (a query count differs from the episode's calls for > 2% of episodes): fix the join, re-register, no read.
