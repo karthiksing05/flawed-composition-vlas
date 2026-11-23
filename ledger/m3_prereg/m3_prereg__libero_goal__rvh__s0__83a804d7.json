@@ -1,0 +1,103 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: RVH: pi05_g8v_raah_l_ae (RAA-sL with the servo replaced by a frozen learned MLP where-head), one seed, one chain",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4842736",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "83a804d78c63ae933f51a15356e02e28a63b564b",
+  "short": "83a804d7"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "pi05_g8v_raah_l_ae (H); training 6,001 steps batch 32 lr 5e-5 seed 42 on lol/libero_g8v_raac, init pi05_libero",
+  "deviation_notes": "none at registration",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rvh_chain.sh": "3745feb5007905e0477f431de7a412f4e65968de0a11f9fefa77ee8d1e58c195",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rvh_check_4842652.out": "e5fc8f0947ff92bfff4b0919b426b46354d401b198066c75ba85c7f83e759626",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rvh_roll.sh": "4778587e8334de3f49f34698caa20d02434d16e21cd73fa925e39ae3f135dc1d",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rvh_train.sh": "50757c5be555a67359f3e22c880788ddeb13f92990439bdd785cca4eff6a55ea",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rvh_train_4842639.out": "0aef7ee26b8557185ab0a42c908b487e429dd5f19333ba7c4fad95dd33f60e1a",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rvh_wa.sh": "b75f2d5cb3bd916a3367bdd59a4cf0ac6bf90184cabec0efadc2ffe8223504c6",
+   "experiments/c_train_h.py": "c5b4c64b89ea4f064aebea9007cc0ce3ef171d5f55801c3e8d36df1d527e717a",
+   "experiments/prereg/rvh_pred.txt": "8a9bf29e85615332a34ba212fef1ead0cbf9b37682c5bee57afd8e9391471f0d",
+   "experiments/raah_cfgcheck.py": "785fb7b96601d23393adf019fba4be3c9354ac77becfd66f7236d1427de63441",
+   "experiments/raah_check.py": "f48a29294fdb57600bf2d9971bbe523f87b90f88c142a1aa086284c323e9cd25",
+   "experiments/raah_fit.py": "6a8be8a0700a30f5cf8558cd3021af28a889b9c9f46801dd9dead976d3f59b86",
+   "lifelong_ood/policy/backbone_h.py": "cf531c8c66848a4fec6d6039fbd30b2e1e5a1f1ccf14c2e64a3309e99d056f73",
+   "lifelong_ood/policy/l90c_config.py": "33b11676d975b1b0595591c61681816fc28749a861f2b9f91695105d96bf389f",
+   "lifelong_ood/policy/raah_head.npz": "8975f769eb8fc6eec14c53b3953af65a08b8cc5a35456c08643948601a9f607a",
+   "lifelong_ood/policy/raah_model.py": "b7b3533407f8ce2b78379ce30b50571685c0b94b5870bc1bf1f603f61f529236",
+   "results/flawed/raah/fit.json": "aeb10cacc9696cfc59713cddb2619a23b13080509fc0808263a52ac3c2af3c4f"
+  },
+  "head_fit": {
+   "K_refit_train": 2.839671609259874,
+   "best_step": 2900,
+   "magnitude_along_x": {
+    "10cm": {
+     "head_mean_over_rows_x": 0.32088154554367065,
+     "servo_x": 0.28512096405029297
+    },
+    "20cm": {
+     "head_mean_over_rows_x": 0.8895518183708191,
+     "servo_x": 0.5702419281005859
+    },
+    "2cm": {
+     "head_mean_over_rows_x": 0.017192738130688667,
+     "servo_x": 0.057024192065000534
+    },
+    "5cm": {
+     "head_mean_over_rows_x": 0.05105908587574959,
+     "servo_x": 0.14256048202514648
+    }
+   },
+   "npz_sha256": "8975f769eb8fc6eec14c53b3953af65a08b8cc5a35456c08643948601a9f607a",
+   "r2_train": {
+    "head": 0.8351938197259505,
+    "linear_refit": 0.35610628287221824
+   },
+   "r2_val": {
+    "head": 0.829639377083449,
+    "head_minus_linear": 0.42841768705133976,
+    "linear_gate_K": 0.4013668364451054,
+    "linear_refit": 0.4012216900321093
+   },
+   "val_loss": 0.032240379601716995
+  },
+  "mapping": "docs/notes/plan_review_atlas.md section 6",
+  "prediction": "RVH (docs/notes/plan_review_atlas.md 6): a learned separate where-head H in the servo's slot.  pi05_g8v_raah_l_ae = pi05_g8v_raas_l_ae exactly with the servo function\nreplaced by a frozen MLP head (raah_head.npz, sha256 in the row) fit by least squares of demo action xyz(t + j), j = 0..9, on rel(t) over the held rows of K1-K6\n(the supervision that fixed K = 2.851), servo_k = 0, the expert trained on the residual; data lol/libero_g8v_raac, pi05_libero init, 6,001 steps, batch 32, lr 5e-5, seed 42, one chain.\nPrinciple: if what matters is that a SEPARATE module owns the where, a learned head in that slot does as well as the fixed-form servo and better than the expert learning the geometry (A0).\nSTATUS: the head's fit metrics (validation R\u00b2 of head and linear form) were seen at registration; no H checkpoint exists.\nPredictions:\n (h0) head validation R\u00b2 exceeds the linear form's by >= .02: 70% (point .45 vs .36).\n (h0b) dev K1-K6 >= .70: 90%; dev N point .82 (.65-.92).\n (h0c) step-0 loss below RAA-sL's .0556: 70%.\nKill: (k1) raah_check fails; (k2) step-0 loss NaN or > 2 x .0556; (k3) no role-2 token in the serving smoke.\n",
+  "seen": "Written 2026-11-23 after the head fit: validation R2 head 0.8296 vs linear-saturating refit 0.4012 (K 2.840 vs gate 2.851; head - linear +0.4284), npz sha256 8975f769eb8fc6eec14c53b3953af65a08b8cc5a35456c08643948601a9f607a, best step 2900; raah_check (items 1-3) and the 20-step smoke ran (logs hashed); no H checkpoint exists.",
+  "status": "PRE-REGISTERED RVH",
+  "written_before": "H main training / 5th set / any H rollout"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__rvh__s0__83a804d7",
+ "schema": 1,
+ "script": "experiments/prereg/rvh.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-23T10:06:48+00:00",
+ "stream": null,
+ "tag": "rvh"
+}
