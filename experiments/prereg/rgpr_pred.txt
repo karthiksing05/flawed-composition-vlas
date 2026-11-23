@@ -1,0 +1,57 @@
+RGPR predictions (docs/notes/rgpr.md; m3_prereg rgpr).  Written 2026-11-23 before any rollout of the arm rgpr (a smoke on 4 states per task may
+have run; its rollouts are not read for these numbers).  From SR 52, 55, 65, 70 only.
+
+QUESTION.  In SR 70, rc beat rgp on F7 by +.550 (SP) and +.663 (NG) on frozen pi0.5, but ReGuide has no relational resolver, so the pair is
+unfair.  Give ReGuide the same resolver R (fx_r.py: the template parser + learned segmenter + depth turns "the left bowl" / "the bowl that is
+(not) on the plate" into one bowl instance) and measure F7 again.
+
+ARM rgpr = rgp (SR 70's ReGuide RG-perc, code unchanged) whose bowl instance is R's referent.  What changes against rgp: the instance
+rule only (rgp: the largest bowl component; rgpr: R's pick, the other bowl a non-instructed movable, as in rc).  What stays rgp's: the
+VLA gets the task's ORIGINAL instruction and UNMODIFIED images, no memory slot, the same perception, registration, transport, statistics,
+destination noun.  What rgpr lacks against rc: rc's VLA-facing parts, the unique-name prompt, the magenta role view of the other bowl in both
+cameras, and (destination = plate) the memory slot.  So r2 = RC - rgpr measures exactly those VLA-facing parts.
+Frozen pi0.5 only (the SR 70 primary; pi0's NG and F6 gates failed).  Same 40 main F7 states and branches as rgp and rc (paired).  One client
+seed, one trial per state.  No training.
+
+REGISTERED CONTRASTS (paired, clustered by state: the 40 states resampled together across the four F7 tasks; B = 2000, seed 0, percentile 95%).
+F7 pool = mean of relL, relR, pos, neg.
+  r1 = rgpr - rgp on the F7 pool.   Label: RESOLVER HELPS iff lo > 0; RESOLVER HURTS iff hi < 0; else NO CLEAR DIFFERENCE.
+  r2 = rc - rgpr on the F7 pool.    Label (in this order): EQUIVALENT (+-.10) iff lo > -.10 and hi < +.10; else RC LEADS iff lo > 0;
+                                    RGPR LEADS iff hi < 0; else NO CLEAR DIFFERENCE.
+  Secondary (same labels, descriptive): r1, r2 on SP (relL+relR), NG (pos+neg) and on each of the four tasks.
+  Descriptive: the share of (rc - rgp) that rgpr closes, r1 / (rc - rgp), on the F7 pool; binding (the bound instance is the referent),
+  resolver accuracy, bound-bowl registration error, referent-grasp share C, ReGuide transports.
+
+SEEN BEFORE REGISTRATION.  rgp and rc on these states (SR 70): pooled rgp .356 (SP .425, NG .287), rc .963 (SP .975, NG .950).  rgpr is new.
+
+MECHANISM THE PREDICTIONS COME FROM.  In SR 70 rgp's success equals I's within .012 on every F7 family, and tracks which bowl rgp binds
+(bound = referent on 34 / 40 relL, 6 / 40 relR, 16 / 40 pos, 24 / 40 neg).  Under rc the resolver binds the referent on 40 / 40 and the bound
+bowl's registration error is .17-.89 cm (under rgp on pos / neg it is 5.1 cm, because the plate-bowl sits in the table bowl's region).  So
+a correct binding should transfer to rgpr.  The open part is whether ReGuide's transport alone moves a frozen VLA that is told the
+ambiguous instruction and sees both bowls: rc - f7r was +.000 (SP) and +.087 (NG), so the transport adds little over the VLA-facing view
+when the view already works, but nothing in SR 70 tests the transport without the view.  ReGuide steers when the VLA's hold or approach
+departs from the bound entity (SR 65, SR 68: it lifted pi0.5 .450 -> .708 on scene-2 N1+N2 with the instruction ambiguous to the VLA).
+
+PREDICTIONS, frozen pi0.5, F7 pool (point; 80% range)
+  rgpr success:  F7 pool .80 (.55-.95); SP .85 (.55-1.0); NG .72 (.40-.92).  Per task: relL .90, relR .80, pos .65, neg .85.
+  r1:  point +.44 (+.20 to +.60).  RESOLVER HELPS 95%; NO CLEAR DIFFERENCE 4%; RESOLVER HURTS 1%.
+  r2:  point +.16 (+.00 to +.38).  Labels: RC LEADS 50%; EQUIVALENT (+-.10) 25%; NO CLEAR DIFFERENCE 23%; RGPR LEADS 2%.
+  Share of the rc - rgp gap closed by rgpr: .75 (.45-1.0); >= .70 with probability 55%; >= .90 with 25%.
+  rgpr binding (bound = referent): >= 38 / 40 on each task, 90%.  Resolver accuracy 40 / 40 on every task, 95%.
+  Bound-bowl registration error under rgpr within 1 cm of rc's on every task, 85%.
+  The larger gap on pos / neg (the destination plate's 2.77 cm registration error in SR 70) keeps rgpr below rc on NG more than on SP:
+  r2 on NG > r2 on SP, 60%.
+
+WHAT EACH OUTCOME MEANS FOR THE PAPER
+  r1 HELPS and r2 EQUIVALENT:  the F7 advantage belongs to the resolver module, not to our policy or to the VLA-side view.  ReGuide with R
+    reaches RC's level, which supports "explicit modules repair F7" with a different packaging (the resolver is the module that matters, the
+    transport carries it).  The Appendix L sentence "we expect that a template parser added to ReGuide would remove the F7 margin; we have not
+    run that arm (TODO(pending))" is confirmed and the main-text F7 line "W5 beats ReGuide because ReGuide has no resolver" is rewritten
+    with the measured rgpr number beside it; SR 70's +.550 / +.663 is then reported as the cost of ReGuide's positional binding rule.
+  r1 HELPS and r2 RC LEADS:  the resolver accounts for most of the repair (the share closed, reported), and the VLA-facing view (prompt,
+    magenta paint, memory slot) adds the rest, so the advantage is split between the resolver and a second explicit module that talks to the
+    VLA in its own channel.  Report the split; "explicit modules repair it" still holds.
+  r1 NO CLEAR DIFFERENCE or small:  ReGuide's transport cannot use a correct referent when the frozen VLA still reads the ambiguous
+    instruction; the resolver needs a VLA-facing channel, and F7 is repaired by the view (rc - f7r ~ 0 on SP in SR 70 already points that way).
+  r2 RGPR LEADS:  the VLA-facing view costs on F7 under ReGuide's transport (not expected).
+  None of these outcomes is a proof of necessity; one simulator, one VLA, one client seed, one trial per state.
