@@ -1,0 +1,97 @@
+{
+ "artifacts": {},
+ "backbone": null,
+ "backfilled": false,
+ "bench": "libero_goal",
+ "bytes": {
+  "codes": 0,
+  "experts": 0,
+  "samples": 0,
+  "teacher_copies": 0,
+  "total": 0,
+  "tree": 0
+ },
+ "command": "pre-registration: RGPR, ReGuide (rgp) given the F7R referent resolver, F7 states of SR 70, frozen pi0.5, evaluation only (docs/notes/rgpr.md)",
+ "config": {},
+ "env": {
+  "device": "cpu",
+  "host": "asimo.cc.gatech.edu",
+  "python": "3.11.16",
+  "slurm_job": "4841193",
+  "torch": "2.7.1+cu126"
+ },
+ "experiment": "m3_prereg",
+ "git": {
+  "branch": "main",
+  "dirty": true,
+  "hash": "6810460ba1021ef327b97b8dd6896a03bf99c013",
+  "short": "6810460b"
+ },
+ "keys": {},
+ "metrics": {
+  "arm": "rgp is SR 70's ReGuide RG-perc (rg_comp.py docstring).  RGPR = rgp with the bowl instance from the F7R resolver (R's pick; the other bowl a non-instructed movable, as in rc); the VLA gets the task's original instruction and unmodified images (no unique-name prompt, no role-view paint, no memory slot).  Everything else is rgp's.",
+  "contrasts": "r1 = rgpr - rgp and r2 = rc - rgpr on the F7 pool, paired, clustered by state, B=2000 (pred file)",
+  "design": {
+   "B": 2000,
+   "eq_margin": 0.1,
+   "keys": [
+    "F7_SP_relL",
+    "F7_SP_relR",
+    "F7_NG_pos",
+    "F7_NG_neg"
+   ],
+   "model": "pi05 (frozen, pp_serve_purify intact, server seed 13), client seed 7",
+   "seed": 0,
+   "states": "rg_comp main F7 rows (40 per task), same branches br7_main.json as rgp and rc",
+   "tasks": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  "deviations_planned": "none at registration.  rg_comp.py is not edited; experiments/rgpr.py patches rg_comp.Ctx and fx_r.Front in-process (the resolver without paint; the original prompt; no slot).  rgpr runs under the rc cell of rg_comp's client with those patches, so its _rc.json side files carry arm 'rc'.",
+  "files_sha256": {
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rgpr_job.sh": "e50f400d6a715fa5933d59366fafe0778f1492781444d973b0c70324a4df9995",
+   "/coc/flash10/ksingara3/.claude_tmp/pp/rgpr_read.sh": "ab3f5f7585df28de5f0491d39f676b0060b602addb1ee7d9801a5330fc38d258",
+   "experiments/fa1_common.py": "feb02e34211db7f7ef497c6244a2886ea55d1c1e8759a1a5672291d963595543",
+   "experiments/fx_r.py": "05fb2ff114a3c9a9dd70d86d1755a77337173539cbe8b27544cd39175271f978",
+   "experiments/libero_client.py": "11e27f7cbe3eb0a936eedf8db7843809be4238945df018306bd729dbda713e12",
+   "experiments/pp_serve_purify.py": "914eee2b3b37ffe2a7bf32169a2fcc1a2d0de186426914be1747af8fe13e031b",
+   "experiments/prereg/rgpr.py": "9b4f846643b93c8a9eff7c185901b9e0d80a325868545ffb27becdf14883c921",
+   "experiments/prereg/rgpr_pred.txt": "26cadb47a40d36f3eb20ae889267c15606ee6008b9e03b7928d24432601817f1",
+   "experiments/rg.py": "98138a90bdea69f0c2ebeb5678c75ff31ab319ef770a2b83be5f74e7811d9291",
+   "experiments/rg_comp.py": "ee4caf70d4456b5fc247777e95d436e7606927da9a90a18db7b38fddd510be01",
+   "experiments/rg_comp_roll.sh": "c633cc61389a9eaf56abe1ab2b88124758543b77801e589ea97cf61655da6242",
+   "experiments/rgpr.py": "a122c402deb5b1a23f1bd81a5d67f7ac366b637a2732778d84a147ed50815925",
+   "experiments/rgpr_roll.sh": "a50f6feef2e07456b35b09f15563fd5792c5b90c133757bdce38454609e14c9e",
+   "experiments/sc_pu.py": "0a78fd36d68817ee324f9120e69cc281a7ca11961e3c2a3fa5a75a7192c00964",
+   "experiments/sc_rv.py": "56e63ffb605e0789f786f16bbb51bde6b41ae6b7a98c41767a93fad6a49932f4",
+   "experiments/sc_seg.py": "9b4254a30af2f95fc30d56976ab408256b53415bd096edd8f3115560dc7f0ba4",
+   "lifelong_ood/policy/parts_flow.py": "a8fda7014a9a9b7072bf3c24432e7579005c0bd8339319d213f9f3bef81db626",
+   "results/flawed/rg_comp/br7_main.json": "269b9ad72ca614bfe9272637852e67412c6d8bc4e42d56b614a6966f7a8b4cfb",
+   "results/flawed/rg_comp/br7_smoke.json": "9e0530d3f324b7e4dcb6d2c9b07c32d13a3956a370975037b51be01c6782dc0e",
+   "results/flawed/rg_comp/rg_comp_tasks.json": "500f87a3c59ce705622345617f062090680cb4cf368ee7456ca2845d626cf54f",
+   "results/flawed/rg_comp/states/rgc_0.npy": "3bf4421feb2b4cc84fa30f2f208f8b22178d1c8eb9f0a22745847743e9e38c6d",
+   "results/flawed/rg_comp/states/rgc_1.npy": "a89913a3b450f9b34bc1f368e4e150506244c752b4d72b370e90d57bbc351367",
+   "results/flawed/rg_comp/states/rgc_2.npy": "796c4ae57adc9df6e84619584566fc9152a195a82a09e10ecf1ee4c98f770fbe",
+   "results/flawed/rg_comp/states/rgc_3.npy": "42b169b8ef6dc6fc66675617e4b4b3e73aadad1a13cb93a22131308623ac2d67",
+   "results/flawed/rg_stats.json": "d7dc3c6c3762c7c21b3d4f76c7646dbdbd98b232eee50d50131a79cc438bd39a"
+  },
+  "prediction": "RGPR predictions (docs/notes/rgpr.md; m3_prereg rgpr).  Written 2026-11-23 before any rollout of the arm rgpr (a smoke on 4 states per task may\nhave run; its rollouts are not read for these numbers).  From SR 52, 55, 65, 70 only.\n\nQUESTION.  In SR 70, rc beat rgp on F7 by +.550 (SP) and +.663 (NG) on frozen pi0.5, but ReGuide has no relational resolver, so the pair is\nunfair.  Give ReGuide the same resolver R (fx_r.py: the template parser + learned segmenter + depth turns \"the left bowl\" / \"the bowl that is\n(not) on the plate\" into one bowl instance) and measure F7 again.\n\nARM rgpr = rgp (SR 70's ReGuide RG-perc, code unchanged) whose bowl instance is R's referent.  What changes against rgp: the instance\nrule only (rgp: the largest bowl component; rgpr: R's pick, the other bowl a non-instructed movable, as in rc).  What stays rgp's: the\nVLA gets the task's ORIGINAL instruction and UNMODIFIED images, no memory slot, the same perception, registration, transport, statistics,\ndestination noun.  What rgpr lacks against rc: rc's VLA-facing parts, the unique-name prompt, the magenta role view of the other bowl in both\ncameras, and (destination = plate) the memory slot.  So r2 = RC - rgpr measures exactly those VLA-facing parts.\nFrozen pi0.5 only (the SR 70 primary; pi0's NG and F6 gates failed).  Same 40 main F7 states and branches as rgp and rc (paired).  One client\nseed, one trial per state.  No training.\n\nREGISTERED CONTRASTS (paired, clustered by state: the 40 states resampled together across the four F7 tasks; B = 2000, seed 0, percentile 95%).\nF7 pool = mean of relL, relR, pos, neg.\n  r1 = rgpr - rgp on the F7 pool.   Label: RESOLVER HELPS iff lo > 0; RESOLVER HURTS iff hi < 0; else NO CLEAR DIFFERENCE.\n  r2 = rc - rgpr on the F7 pool.    Label (in this order): EQUIVALENT (+-.10) iff lo > -.10 and hi < +.10; else RC LEADS iff lo > 0;\n                                    RGPR LEADS iff hi < 0; else NO CLEAR DIFFERENCE.\n  Secondary (same labels, descriptive): r1, r2 on SP (relL+relR), NG (pos+neg) and on each of the four tasks.\n  Descriptive: the share of (rc - rgp) that rgpr closes, r1 / (rc - rgp), on the F7 pool; binding (the bound instance is the referent),\n  resolver accuracy, bound-bowl registration error, referent-grasp share C, ReGuide transports.\n\nSEEN BEFORE REGISTRATION.  rgp and rc on these states (SR 70): pooled rgp .356 (SP .425, NG .287), rc .963 (SP .975, NG .950).  rgpr is new.\n\nMECHANISM THE PREDICTIONS COME FROM.  In SR 70 rgp's success equals I's within .012 on every F7 family, and tracks which bowl rgp binds\n(bound = referent on 34 / 40 relL, 6 / 40 relR, 16 / 40 pos, 24 / 40 neg).  Under rc the resolver binds the referent on 40 / 40 and the bound\nbowl's registration error is .17-.89 cm (under rgp on pos / neg it is 5.1 cm, because the plate-bowl sits in the table bowl's region).  So\na correct binding should transfer to rgpr.  The open part is whether ReGuide's transport alone moves a frozen VLA that is told the\nambiguous instruction and sees both bowls: rc - f7r was +.000 (SP) and +.087 (NG), so the transport adds little over the VLA-facing view\nwhen the view already works, but nothing in SR 70 tests the transport without the view.  ReGuide steers when the VLA's hold or approach\ndeparts from the bound entity (SR 65, SR 68: it lifted pi0.5 .450 -> .708 on scene-2 N1+N2 with the instruction ambiguous to the VLA).\n\nPREDICTIONS, frozen pi0.5, F7 pool (point; 80% range)\n  rgpr success:  F7 pool .80 (.55-.95); SP .85 (.55-1.0); NG .72 (.40-.92).  Per task: relL .90, relR .80, pos .65, neg .85.\n  r1:  point +.44 (+.20 to +.60).  RESOLVER HELPS 95%; NO CLEAR DIFFERENCE 4%; RESOLVER HURTS 1%.\n  r2:  point +.16 (+.00 to +.38).  Labels: RC LEADS 50%; EQUIVALENT (+-.10) 25%; NO CLEAR DIFFERENCE 23%; RGPR LEADS 2%.\n  Share of the rc - rgp gap closed by rgpr: .75 (.45-1.0); >= .70 with probability 55%; >= .90 with 25%.\n  rgpr binding (bound = referent): >= 38 / 40 on each task, 90%.  Resolver accuracy 40 / 40 on every task, 95%.\n  Bound-bowl registration error under rgpr within 1 cm of rc's on every task, 85%.\n  The larger gap on pos / neg (the destination plate's 2.77 cm registration error in SR 70) keeps rgpr below rc on NG more than on SP:\n  r2 on NG > r2 on SP, 60%.\n\nWHAT EACH OUTCOME MEANS FOR THE PAPER\n  r1 HELPS and r2 EQUIVALENT:  the F7 advantage belongs to the resolver module, not to our policy or to the VLA-side view.  ReGuide with R\n    reaches RC's level, which supports \"explicit modules repair F7\" with a different packaging (the resolver is the module that matters, the\n    transport carries it).  The Appendix L sentence \"we expect that a template parser added to ReGuide would remove the F7 margin; we have not\n    run that arm (TODO(pending))\" is confirmed and the main-text F7 line \"W5 beats ReGuide because ReGuide has no resolver\" is rewritten\n    with the measured rgpr number beside it; SR 70's +.550 / +.663 is then reported as the cost of ReGuide's positional binding rule.\n  r1 HELPS and r2 RC LEADS:  the resolver accounts for most of the repair (the share closed, reported), and the VLA-facing view (prompt,\n    magenta paint, memory slot) adds the rest, so the advantage is split between the resolver and a second explicit module that talks to the\n    VLA in its own channel.  Report the split; \"explicit modules repair it\" still holds.\n  r1 NO CLEAR DIFFERENCE or small:  ReGuide's transport cannot use a correct referent when the frozen VLA still reads the ambiguous\n    instruction; the resolver needs a VLA-facing channel, and F7 is repaired by the view (rc - f7r ~ 0 on SP in SR 70 already points that way).\n  r2 RGPR LEADS:  the VLA-facing view costs on F7 under ReGuide's transport (not expected).\n  None of these outcomes is a proof of necessity; one simulator, one VLA, one client seed, one trial per state.",
+  "seen": "rgp and rc on these exact states and branches were read in SR 70 (pi0.5 F7 pool rgp .356, rc .963).  The arm rgpr is new: no rgpr rollout has been read.  A smoke of rgpr on the 4 smoke states per task (job 4841110) ran before this row; its logs were read for crashes and resolver / binding only, and no success rate of it informs the predictions (written before the smoke finished).",
+  "status": "PRE-REGISTERED RGPR",
+  "written_before": "any main-state rollout of the arm rgpr"
+ },
+ "notes": null,
+ "retired": null,
+ "run_id": "m3_prereg__libero_goal__rgpr__s0__6810460b",
+ "schema": 1,
+ "script": "experiments/prereg/rgpr.py",
+ "seconds": null,
+ "seed": 0,
+ "source_commit": null,
+ "started": "2026-11-23T07:28:07+00:00",
+ "stream": null,
+ "tag": "rgpr"
+}
