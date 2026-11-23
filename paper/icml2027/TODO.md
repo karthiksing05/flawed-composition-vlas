@@ -16,3 +16,6 @@ Layout
 - Table 4 of the draft (repair matrix) lost its "New layout" row (it said "not applicable" in every cell); the caption states that the new layout is a limit of the task.
 
 Dropped from the appendix as internal process notes (no numbers lost): the "Deviations recorded by the agent" paragraph of the ReGuide-with-resolver subsection (scratch wrapper scripts), commit hashes, job ids and file paths of the pre-registration rows.
+
+Status
+- 2026-11-23: main.tex and parts/*.tex are now the canonical paper (revised after docs/notes/review_atlas_adv.md). paper/DRAFT.md is no longer kept in sync.

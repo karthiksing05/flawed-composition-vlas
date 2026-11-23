@@ -33,6 +33,13 @@ This part holds every result removed from the main text, with every number uncha
 \section{The failure atlas in detail}
 \label{app:B}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_gallery.pdf}
+\caption{The failures in frames, scene 1: start, grasp and release of the failing arm (FAIL), release of the comparator on the same trial (OK), and the cue schematic. Registered rates: F1 E +.450 [.28, .61]; F1m N4+N6 .625 against .812 with the bottle painted as its box; F2 grasp excess +.650 [.39, .88] on \pizero{} and +.833 [.67, .96] on SmolVLA; F7 .40 (SP) and .20 (NG) for \pifive{} against 1.00 and .775 with the resolver; F6 cost of covering .38 [.28, .48]. Development-state episodes chosen by outcome (Appendix~\ref{app:A}); scene 2 is in Figure~\ref{fig:A3}.}
+\label{fig:gallery}
+\end{figure}
+
 \begin{table}[h]
 \caption{Measured break by failure and model. E is the excess failure over known partners.}
 \label{tab:B1}
@@ -170,6 +177,13 @@ W6 & release envelope plus target latch & held-out set 2: N1--N6 .764 against .9
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_removal2.pdf}
+\caption{Removing one module returns one failure: success with the module (solid) and without it (hatched) on development states (RAA-L, RAA-sL) and on held-out sets 1 and 3 (RAA-sL-W5, the RAA-sL checkpoint served with the W5 where-module). Left: pooled relational (F7) cells with and without the resolver R; gain +.263 [+.213, +.313] (RAA-L), +.319 [+.269, +.375] (RAA-sL), +.483 [+.425, +.538] (W5, set 1), +.408 [+.350, +.463] (W5, set 3). Right: covered-plate cell (F6, b) with and without the pose memory M; gain +.117 [\mi.017, +.250] (RAA-L), \mi.367 [\mi.500, \mi.250] (RAA-sL, first seed; the sign reverses, and a second training seed does not reproduce it: \mi.067 [\mi.200, +.083]), +.217 [+.033, +.383] (W5, set 1), +.367 [+.217, +.517] (W5, set 3). Bars are registered 95\% intervals; the dashed line is frozen \pifive{} (.350 F7 pool, .517 F6). Held-out cells have 60 states and one seed; held-out set 2, which runs the module variant W6 (resolver +.504 [+.454, +.554], memory +.400 [+.267, +.550]), is in Table~\ref{tab:removal}.}
+\label{fig:removal}
+\end{figure}
 
 \begin{table}[h]
 \caption{Drop in success from removing one module (95\% intervals, 60 states per cell, one seed) on three held-out state sets: the resolver on the relational cells, the memory on the covered-plate cell. Set 2 runs the module variant W6. Every gate is testable on all three sets.}
@@ -657,7 +671,7 @@ Where the agreement ends. Against ReGuide without a resolver, W5 leads on relati
 \subsection{The repair-matrix reading, in full (Section~\ref{sec:matrix})}
 \label{app:L6}
 
-The columns separate cleanly. More data and the target as an input fall short in every cell we tested, including the cells where the network reads the target. Explicit modules repair the failures we tested them on, in full for F1, F6 and F7 and in part for F1m, and for the two functions with a removal test (F6, F7) removal returns the failure. The matrix supports a statement about the tests we ran. Our claim that a function that a standard VLA spreads through one learned network resists repair from inside it is an empirical claim over these rows and carries no proof. The \pizero{} servo-off retrain scores \mi.256 [\mi.386, \mi.128] below its servo-kept twin on held-out pairings, and this contrast is a separate retrain, not a module removal.
+The columns do not separate cleanly. Training-only routes (more data, the target as a learned input) fall short of the servo-kept policy in the cells we tested, though the best servo-free route A is not significantly below it, and an input edit (tvpb) repairs F1 on frozen \pifive. Explicit components repair the failures we tested them on, in full for F1, F6 and F7 and in part for F1m, and for the two functions with a removal test (F6, F7) removal returns the failure in the system we built. The matrix supports a statement about the tests we ran, under one recipe (frozen VLM, 6k-step action-expert fine-tune, LIBERO). That a function resists repair through training alone is an empirical claim over these rows and carries no proof; published in-network fixes that retrain on pairing-covering data (CRAFT, ACT-VLA) are outside it. The \pizero{} servo-off retrain scores \mi.256 [\mi.386, \mi.128] below its servo-kept twin on held-out pairings, and this contrast is a separate retrain, not a module removal.
 
 Other numbers shortened in the main text and kept here or in the appendices named there: the relabel share is .426 [.352, .512] on the held-out set and .170 [.141, .203] on the trained set; the state-projection layer moved 7.2\% in A+ against 8.5\% in A+0 on dx (exploratory, Appendix~\ref{app:E}); the expert reads the prefix at a narrow site, the layer-14 keys and values (Appendix~\ref{app:D}); the estimator that locates entities uses learned masks, rendered depth and calibration (Appendix~\ref{app:A}); \pizero{} in.tok share, held-out and trained success are in Table~\ref{tab:L2}; the oracle total effect with token and servo together is .830 for A+ and .957 for RAA-sL (Appendix~\ref{app:L4}); in the F6 row, \pizero{} is not testable and RC scores .800 against .517; the front end tvpb reaches .938 against .454 on F1 (Appendix~\ref{app:B}); we ran no development rollouts for ORC (Appendix~\ref{app:K}).
 
