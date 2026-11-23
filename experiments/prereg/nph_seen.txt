@@ -1,0 +1,12 @@
+Written 2026-11-23 after the head fit and its gates, the model checks and the 20-step smoke, and before any pi0-H* training, before the 6th set is built and before any rollout on it.
+SEEN at registration (exactly):
+(1) Head gate on the validation demos' held rows (29 demos, 1,320 rows; raah0_fit.py, job 4847511): H* G1 mean cos(h_row0, Delta) = .9709 (n 1093; threshold >= .80), G2 median |h_row0| / min(K|Delta|, M) = .8888 (n 144; >= .60),
+G3 median |h_row0| = .0330 (n 165; <= .05): ALL PASS (prediction p0 first half: true).  The registered head H on the same rows: G1 .6777, G2 4.611, G3 .3890: G1 fails (prediction p0 second half: true; H also fails G2 and G3).
+Best validation step 2900, validation MSE .00174, validation R2 of the chunk target .9613, npz sha256 ee217430c8ba3fcd85384d99cc76524ac1ff357000eafe87cfd9e1593a29fabe.
+(2) Checks (raah0_check.py, job 4847548 after two failed attempts): linear-form head == servo_norm under pi0's quantile normalisation (np 2.7e-7, jax 0, torch 6e-8); H* np / jax / torch agree (4.8e-7 / 7.4e-7); zero on 669 of 1000 non-target rows and in dims >= 3;
+parameter tree = pi0-A0's (50 tensors, 32 frozen, state_proj trainable); Pi0ZH(linear head) == Pi0ZS exactly; Pi0ZH(H*) = Pi0ZS(k = 0) + head exactly (sample and loss).  Attempt 1 (job 4847522) hit a GPU out-of-memory at the first model creation; attempt 2 (4847535)
+failed its 2b loss assertion (a float64-numpy head shift differs by 1e-7 and bf16 rounding amplified it to .016); the shift was changed to the jax head and attempt 3 passed.  cfgcheck passed (job 4847520).
+(3) 20-step smoke (job 4847523, tail-lab): step-0 loss .1743 (finite; pi0-sL's step-0 loss was .1718; limit 2x = .3436).  The smoke created jax/pi0_g8v_raah_l_ae/smoke (the main chain dir tl does not exist).
+(4) Existing results seen: pi0-A0 and pi0-sL on the development states and the 5th set (success, E1 splits, d1' etc.), H and the pi0.5 arms on both sets (review_atlas_results.md), and the power job's tables (plan section 1).
+nph_read.py was self-tested on the existing 5th-set grids (arm map pzH=H, pzA0=A0, pzsL=raasl and pzH=H only; jobs 4847529, 4847533): code check only, not a read of the 6th set; it reproduced H - A0 = +.106 (FLAGGED on N2) and the registered task+state interval.
+No pi0-H* checkpoint exists; no 6th-set state exists; no rollout of any arm on the 6th set.

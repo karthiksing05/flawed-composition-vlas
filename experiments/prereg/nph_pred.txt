@@ -1,0 +1,23 @@
+NPH (docs/notes/plan_necessity_power.md 3): a learned, goal-directed separate where-head on pi0 vs the network that reads the target.
+pi0_g8v_raah_l_ae = pi0_g8v_raac_l_ae exactly (pi0_libero init, token in state dims 0-3, quantile norm, raw actions, data lol/libero_g8v_raac, 6,001 steps,
+batch 32, lr 5e-5, seed 42, one chain) with a frozen head H* (raah0_head.npz, sha256 in the row) in the servo slot, servo_k = 0, expert trained on the residual.
+H* = MLP 3-64-64-30 fit (raah_fit protocol) to y_j = clip(2.851 * (rel(min(t+j, t_r)) - rel(t_r)), +-.9375) on the 13,327 held rows of K1-K6 (t_r = the demo's last held row);
+not centred.  Principle: the owner of the where points to the release point and vanishes only there; the expert owns the how.  Head gate (validation demos):
+G1 mean cos(h_row0, Delta) >= .80 (|Delta| >= 2 cm); G2 median |h_row0| / min(K|Delta|, M) >= .60 (2-6 cm); G3 median |h_row0| <= .05 (|Delta| < 1 cm).
+States: 6th fresh set n2_states_w6, k = 820-879 (fc_n2_w6.py, raaf_plan 7.1 recipe, N/K only), built after this row.  Arms: pi0-H*, pi0-A0, pi0-sL, Phase A.
+Gate: pi0-H* K1-K6 >= .70 on the 6th set, read before any N job is submitted; else UNTESTABLE.
+n1 PRIMARY pi0-H* - pi0-A0, N1-N6: Delta +- 1.96 sqrt(var_B + 2 * .033^2) (states-only bootstrap, tasks fixed, B = 2000, rng 0); flag = some task with
+d_t + 1.96 sqrt(v_t + 2 * .033^2 + 2 * .070^2) < -.10.  SUPPORTED iff lower > 0 and no flag; FLAGGED iff lower > 0 and a flag; REVERSED iff upper < 0;
+EQUIVALENT iff inside +-.10; else NOT SHOWN.  sigma constants from .claude_tmp/pp/necpow/necpow_4847479.json (RAA-sL vs s43), frozen.
+Secondary: n1r same contrast, registered tasks+states bootstrap (lower > 0).  n2 pi0-H* - pi0-sL N, NI at -.10 / COST.  d1'' pi0-A0 - pi0-sL N (upper < 0, both rules).
+nK pi0-H* - pi0-A0 K, NI at -.05 (sigma_s .049).  Sensitivity sigma_s .05 and FPC 6/8 reported.  E1 classes.  Option n1p pooled 5th + 6th (reported).
+STATUS: pi0-A0 and pi0-sL success on dev and the 5th set seen; H's failures (N2 class H) seen and are the reason for the principle; no pi0-H* checkpoint; no 6th-set state exists.
+Predictions:
+ (p0) head gate G1-G3 all pass: 70%.  The registered head H fails G1: 80%.
+ (p1) pi0-H* 6th-set K >= .70: 85%; K point .88.
+ (p2) 6th-set N: pi0-A0 .52 (.35-.68); pi0-sL .75 (.60-.88); pi0-H* .72 (.50-.88).
+ (p3) n1: SUPPORTED 50%; FLAGGED 7%; NOT SHOWN 30% (point >= .10 in half of these); EQUIVALENT 10%; REVERSED 3%.
+ (p4) n1r SUPPORTED 40%.  (p5) n2 NON-INFERIOR 30%; COST 10%.  (p6) d1'' SUPPORTED 80% (fixed rule), 65% (registered rule).
+ (p7) class-H share of pi0-H*'s failures <= .30: 65%.  (p8) nK NON-INFERIOR 60%.
+Kill: (k1) a head gate fails (no training); (k2) raah0 check fails or step-0 loss NaN / > 2x pi0-sL's; (k3) the disjointness job finds an equal row;
+(k4) any rollout job fails on infrastructure (no read until all cells exist).
