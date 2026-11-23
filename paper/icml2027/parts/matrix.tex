@@ -5,17 +5,17 @@
 \footnotesize
 \setlength{\tabcolsep}{2pt}
 \renewcommand{\arraystretch}{1.0}
-\begin{tabular}{@{}P{0.68in}P{0.72in}P{0.85in}P{0.62in}P{0.95in}P{1.12in}P{1.0in}P{0.6in}@{}}
+\begin{tabular}{@{}P{0.68in}P{0.66in}P{0.8in}P{0.62in}P{0.9in}P{1.0in}P{0.9in}P{0.85in}@{}}
 \toprule
 failure & routing cue & models & missing function & more data & input & explicit module & removal returns it \\
 \midrule
-F1, the place follows a cue & held object (scene 1); majority of three cues (scene 2) & \pifive, \pizero, GR00T, X-VLA (E +.450, +.225, +.500, +.379) & where the object goes & short, not significantly for A: A .778 (\mi.100 [\mi.261, +.050] vs RAA-sL); A+0 .603 & learned: RAA .656, RAA-c .503, \pizero{} .506 vs .761. Edit repairs: tvpb .938 vs .454 (frozen \pifive) & repairs: W5 .892, ReGuide .914 & not in the removal test \\
+F1, the place follows a cue & held object (scene 1); majority of three cues (scene 2) & \pifive, \pizero, GR00T, X-VLA (E +.450, +.225, +.500, +.379) & where the object goes & A .778 (\mi.100 [\mi.261, +.050] vs RAA-sL, not significant; new set \mi.086); A+0 .603 & learned: RAA .656, RAA-c .503, \pizero{} .506 vs .761. Edit repairs: tvpb .938 vs .454 (frozen \pifive) & repairs: W5 .892, ReGuide .914 & dependence, not necessity: servo off \mi.678, \mi.503 below A0 (new set) \\
 F1m, the held outline starts the carry & outline of the held object & \pifive, \pizero, GR00T, X-VLA & release control & not tested & edit repairs in part: painted outline .625 to .812 & repairs in part: ReGuide, GR00T N4 high carry 1.00 to 0 of 38 & not tested \\
 F2, the habitual object is grasped & habitual object in the scene & \pizero{} (+.650), SmolVLA (+.833) & binding of role to approach & not tested & role views +.183 [+.021, +.412] on \pizero, nothing on SmolVLA & repairs: ReGuide \pizero{} .021 to .608 & not tested \\
-F6, a covered target is lost & the cover over the plate & \pifive{} (cost .38; placement precision), GR00T (cost .60; location) & memory (retrained models); precision (frozen \pifive) & not tested & servo-free: A0 .383, \pizero{} .200, frozen .517; servo arms .017, .000 & repairs: W5 .817 vs frozen .500 (set 3; set 1 .650 vs .667) & yes: \mi.217, \mi.400, \mi.367 \\
-F7, relational language is ignored & ambiguous choice & \pifive, GR00T; \pizero, X-VLA, SmolVLA fail the named-bowl control (0 of 20), not testable & resolution of a relation to one entity & not tested & resolver, painted view, name prompt and memory slot (rc) .963; \pifive{} SP .40 to 1.00, NG .20 to .775 & resolver in ReGuide alone (rgpr) .356 to .681 & yes: \mi.483, \mi.504, \mi.408 \\
-Moved plate (induced by retraining) & trained plate position & R2 retrain (31 of 40 at trained position); frozen \pifive{} .975 & position of the target & R2 .000 & RAA .100 & not tested (ReGuide .850, .925 are moved-bowl cells, Appendix~\ref{app:F}) & not tested \\
-Exact target given, still fails & trained tasks never need it & \pifive: unread; \pizero: read, not in control & control from the read target & relabel .274, planner .124, oracle .771 & \pifive{} A0 \mi.001; \pizero{} .542, N .506 vs .761 & servo takes over: share \mi.150 (\pizero), \mi.007 (A+) & \pizero{} servo-off \mi.256 [\mi.386, \mi.128] \\
+F6, a covered target is lost & the cover over the plate & \pifive{} (cost .38), GR00T (cost .60) & memory; precision (frozen \pifive) & not tested & servo-free: A0 .383, \pizero{} .200, frozen .517; servo arms .017, .000 & repairs: W5 .817 vs frozen .500 (set 3; set 1 .650 vs .667) & yes: \mi.217, \mi.400, \mi.367; owner off \mi.750 \\
+F7, relational language is ignored & ambiguous choice & \pifive, GR00T (others fail the named-bowl control) & resolution of a relation to one entity & not tested & rc (resolver, view, prompt, memory slot) .963; \pifive{} SP .40 to 1.00, NG .20 to .775 & resolver in ReGuide alone (rgpr) .356 to .681 & yes: \mi.483, \mi.504, \mi.408 \\
+Moved plate (induced by retraining) & trained plate position & R2 retrain; frozen \pifive{} .975 & position of the target & R2 .000 & RAA .100 & not tested (Appendix~\ref{app:F}) & not tested \\
+Exact target given, still fails & trained tasks never need it & \pifive: unread; \pizero: read, not in control & control from the read target & relabel .274, planner .124, oracle .771 & \pifive{} A0 \mi.001; \pizero{} .542, N .506 vs .761 & servo takes over: share \mi.150 (\pizero), \mi.007 (A+) & \pizero{} servo-off \mi.256 [\mi.386, \mi.128]; new set \mi.222 [\mi.383, \mi.069] \\
 \bottomrule
 \end{tabular}
 \end{table*}

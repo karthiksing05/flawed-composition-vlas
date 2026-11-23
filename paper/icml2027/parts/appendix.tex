@@ -565,7 +565,7 @@ Neither experiment refutes the claim and neither supports it in every form. The 
 \item The pre-registration commit of the \pizero{} development rollouts landed 7 s after the first rollout job was submitted and before it started. No rollout had run and no read existed when the predictions were committed, so the labels stand.
 \end{enumerate}
 
-\textbf{Limits.} One seed per arm; development states only; a test set of 131 observations on 23 layouts; ORC with 39 in place of 100 paired demonstrations; the \pizero{} arms deviate from \pizero{} as shipped (trained state dimensions 0 to 3, quantile normalisation, no delta actions).
+\textbf{Limits.} One seed per arm; development states only here (a new held-out set replicates the \pizero{} contrast, Appendix~\ref{app:M}); a test set of 131 observations on 23 layouts; ORC with 39 in place of 100 paired demonstrations; the \pizero{} arms deviate from \pizero{} as shipped (trained state dimensions 0 to 3, quantile normalisation, no delta actions).
 
 %=====================================================================
 \section{Text moved from the main text}
@@ -671,7 +671,7 @@ Where the agreement ends. Against ReGuide without a resolver, W5 leads on relati
 \subsection{The repair-matrix reading, in full (Section~\ref{sec:matrix})}
 \label{app:L6}
 
-The columns do not separate cleanly. Training-only routes (more data, the target as a learned input) fall short of the servo-kept policy in the cells we tested, though the best servo-free route A is not significantly below it, and an input edit (tvpb) repairs F1 on frozen \pifive. Explicit components repair the failures we tested them on, in full for F1, F6 and F7 and in part for F1m, and for the two functions with a removal test (F6, F7) removal returns the failure in the system we built. The matrix supports a statement about the tests we ran, under one recipe (frozen VLM, 6k-step action-expert fine-tune, LIBERO). That a function resists repair through training alone is an empirical claim over these rows and carries no proof; published in-network fixes that retrain on pairing-covering data (CRAFT, ACT-VLA) are outside it. The \pizero{} servo-off retrain scores \mi.256 [\mi.386, \mi.128] below its servo-kept twin on held-out pairings, and this contrast is a separate retrain, not a module removal.
+The columns do not separate cleanly. Training-only routes (more data, the target as a learned input) fall short of the servo-kept policy in the cells we tested, though the best servo-free route A is not significantly below it, and an input edit (tvpb) repairs F1 on frozen \pifive. Explicit components repair the failures we tested them on, in full for F1, F6 and F7 and in part for F1m, and for the two functions with a removal test (F6, F7) removal returns the failure in the system we built. The matrix supports a statement about the tests we ran, under one recipe (frozen VLM, 6k-step action-expert fine-tune, LIBERO). That a function resists repair through training alone is an empirical claim over these rows and carries no proof; published in-network fixes that retrain on pairing-covering data (CRAFT, ACT-VLA) are outside it. The \pizero{} servo-off retrain scores \mi.256 [\mi.386, \mi.128] below its servo-kept twin on held-out pairings (\mi.222 [\mi.383, \mi.069] on a new held-out set, Appendix~\ref{app:M}), and this contrast is a separate retrain, not a module removal.
 
 Other numbers shortened in the main text and kept here or in the appendices named there: the relabel share is .426 [.352, .512] on the held-out set and .170 [.141, .203] on the trained set; the state-projection layer moved 7.2\% in A+ against 8.5\% in A+0 on dx (exploratory, Appendix~\ref{app:E}); the expert reads the prefix at a narrow site, the layer-14 keys and values (Appendix~\ref{app:D}); the estimator that locates entities uses learned masks, rendered depth and calibration (Appendix~\ref{app:A}); \pizero{} in.tok share, held-out and trained success are in Table~\ref{tab:L2}; the oracle total effect with token and servo together is .830 for A+ and .957 for RAA-sL (Appendix~\ref{app:L4}); in the F6 row, \pizero{} is not testable and RC scores .800 against .517; the front end tvpb reaches .938 against .454 on F1 (Appendix~\ref{app:B}); we ran no development rollouts for ORC (Appendix~\ref{app:K}).
 
@@ -709,3 +709,106 @@ Mechanism (descriptive). rgpr binds the right referent on 40 of 40 states in eve
 Registered predictions. Held: r1 helps (95\%; point +.325 inside the predicted +.20 to +.60), r2 rc leads (50\%; point +.281 inside +.00 to +.38), r2 larger on NG than on SP, binding at least 38 of 40 and R 40 of 40 everywhere, registration within 1 cm of rc, pool within .55 to .95. Missed: ``pos'' predicted .65 and observed .000; share of the gap closed predicted at least .70 (55\%) and at least .90 (25\%) and observed .536.
 
 \textbf{Caveats.} One simulator, one VLA, one client seed and one trial per state. The earlier W5 against ReGuide F7 pool (.750 against .375, different states) was not rerun with rgpr.
+
+%=====================================================================
+\section{Failure shares and the confirmatory new-set read}
+\label{app:M}
+
+\subsection{Failure shares per arm}
+\label{app:M1}
+
+A classifier fixed before it ran sorts each failed held-out episode from the logged queries (joined to the episode file by task text and trial; no join failed). G: the grasped object is not the instructed one. H: the arm still holds the object when the episode ends. Otherwise, at the last held query, d is the distance from the held object to the commanded target. W: d is at least 10 cm and the object lies within 8 cm of a target of a known partner. O: d is at least 10 cm and the object is not at a known partner's target (dropped in transit or released elsewhere). M: d is under 10 cm, a centimetre miss. The 3 cm and 10 cm thresholds are LIBERO's placement tolerance and the gap between centimetre misses and mispairings (20 to 40 cm). Positions are initial positions, queries come every 5 steps, and the plate can move, so the classes are approximate. The validity gate compared the classes with an independent per-step log on 60 RAA-sL episodes: 60 of 60 coarse classes agree, but the median distance check rests on three released failures.
+
+\begin{table}[h]
+\caption{Shares of failures by class on the development states (60 states per task, N1--N6). Rows below the rule are extra arms.}
+\label{tab:M1}
+\centering
+\footnotesize
+\begin{tabular}{@{}lrrccccc@{}}
+\toprule
+arm & success & failures & G & W & O & H & M \\
+\midrule
+\pizero{} servo kept & .761 & 86 & .19 & .00 & .16 & .23 & .42 \\
+\pizero{} servo off & .506 & 178 & .08 & .03 & .47 & .17 & .25 \\
+RAA-sL & .878 & 44 & .02 & .00 & .30 & .20 & .48 \\
+A & .778 & 80 & .01 & .24 & .14 & .08 & .54 \\
+A0 & .686 & 113 & .04 & .12 & .35 & .08 & .42 \\
+\midrule
+A+0 & .603 & 143 & .01 & .15 & .35 & .19 & .29 \\
+B & .644 & 128 & .04 & .45 & .30 & .08 & .13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \pizero{} servo-off arm has 47\% O [.22, .66] and 25\% M [.08, .60]. Route B fails mostly by W (.45): it carries the object to a partner's target. Routes A and A0 differ from the servo-kept RAA-sL mainly in M (+.061 and +.075 of the success gap).
+
+\begin{table}[h]
+\caption{Decomposition of the servo's gain by failure class: rate of the servo-off arm minus rate of the servo-kept arm per episode, summed over classes to the success difference (G and H omitted; the totals include them).}
+\label{tab:M2}
+\centering
+\footnotesize
+\begin{tabular}{@{}llllll@{}}
+\toprule
+pair & set & W & O & M & total \\
+\midrule
+\pizero{} off minus kept & development & +.014 [0, .039] & +.194 [.039, .386] & +.025 [\mi.111, .142] & +.256 [.128, .386] \\
+\pizero{} off minus kept & new & +.008 [0, .031] & +.167 [.028, .353] & \mi.003 [\mi.106, .089] & +.222 [.069, .383] \\
+A0 minus RAA-sL & development & +.036 & +.072 & +.075 [.006, .161] & +.192 \\
+A0 minus RAA-sL & new & +.025 & +.075 & +.061 & +.167 \\
+A minus RAA-sL & development & +.053 & \mi.006 & +.061 & +.100 \\
+A minus RAA-sL & new & +.044 & \mi.008 & +.042 & +.086 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two rules fixed in advance, ``read but imprecise'' (the M share carries at least half the gain) and ``routing'' (the W share carries at least half), both fail for \pizero{} on both sets, so the outcome is mixed. The gain sits in class O. The class records that the object ends far from the read target and at no known partner's target; it does not separate an object lost in transit from one released elsewhere.
+
+On the covered plate (F6\_b) the servo-kept arms miss by 3 to 10 cm: on the new held-out set W5 has 8 of its 12 failures at 3 to 10 cm (4 never lifted) and RAA-sL 44 of its 57 (9 never lifted, 4 lost by more than 10 cm). No arm misses by less than 3 cm.
+
+\subsection{Confirmatory new-set read}
+\label{app:M2}
+
+The fifth set holds 60 new start states for each of N1--N6 and K1--K6, and the covered-plate and relational cells, built and registered before any rollout and checked as disjoint from the 546 stored states of earlier sets (0 equal rows). Success on N / K: \pizero{} servo kept .739 / .833, servo off .517 / .911; RAA-sL .867 / .933; A0 .700 / .839; A .781 / .983; RAA-sL with the W5 module .875 / .956; noW .197 / .272. The covered plate (F6\_b) scores .80 with W5, .40 for noW and .05 for RAA-sL; \pizero{} .083 (servo kept) and .30 (servo off). Contrasts below use the paired clustered bootstrap (2,000 draws).
+
+\begin{table}[h]
+\caption{Registered contrasts on the new held-out set. N is held-out pairings, K trained tasks.}
+\label{tab:M3}
+\centering
+\footnotesize
+\begin{tabular}{@{}P{2.4in}P{2.2in}P{1.3in}@{}}
+\toprule
+contrast & estimate [95\% interval] & outcome \\
+\midrule
+d1$'$: \pizero{} servo off minus kept, N (primary) & \mi.222 [\mi.383, \mi.069] & supported; raw one-sided $p$ .0015 \\
+\quad by pairing & cheese \mi.061 [\mi.172, +.045]; bottle \mi.383 [\mi.533, \mi.233] & \\
+d4$'$: same, K & +.078 [\mi.019, +.228] & non-inferior ($>\mi.05$) \\
+read but not in control replicates & d1$'$ supported and d4$'$ non-inferior & true \\
+\pizero{} servo off minus \pifive{} A0, N & \mi.183 [\mi.358, +.019] & reported \\
+\pizero{} servo kept minus RAA-sL, N & \mi.128 [\mi.292, +.022] & reported \\
+c0: A0 minus RAA-sL, N & \mi.167 [\mi.356, +.017] & not shown \\
+cA: A minus RAA-sL, N & \mi.086 [\mi.244, +.056] & not shown \\
+r1: W5 minus noW, N (primary) & +.678 [+.492, +.864] & supported; raw $p$ .0005 \\
+r2: W5 minus noW, F6\_b & +.400 [+.233, +.567] & supported \\
+r3: noW minus A0, N & \mi.503 [\mi.806, \mi.217] & dependent (upper bound below 0) \\
+noW minus W5, K & \mi.683 [\mi.964, \mi.356] & reported \\
+owner off: W5 minus RAA-sL, N / F6\_b & +.008 [\mi.092, +.086] / +.750 [+.633, +.867] & descriptive \\
+servo off: RAA-sL minus noW, N / F6\_b & +.669 [+.494, +.836] / \mi.350 [\mi.483, \mi.217] & descriptive \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Holm family named three primaries, d1$'$, r1 and a third that we did not run. Counting the third at $p = 1$, the adjusted one-sided $p$ is .003 for d1$'$ and .0015 for r1; both stay under .025. The reading rule for r1 and r3 was fixed in advance: a supported r1 with a dependent r3 means that removing the module returns a failure worse than the native network, which shows engineering dependence of a residual-trained expert and says nothing on whether a network can own the where. The servo-removed arm also falls on the trained tasks (K2t .08 against .98 with W5). Here the servo is worse than none on the covered plate (RAA-sL minus noW \mi.350).
+
+\textbf{Predictions that failed.} The registered shares for the \pizero{} servo-off arm were M .55 (range .30 to .80) and H plus O .23; we observed M .25 and H plus O .64. Rule P (``read but imprecise'') had the highest prior (50\%) and failed. For the servo-kept arms, RAA-sL M $\ge$ .60 (75\%) and A0 M $\ge$ .50 (65\%) failed (.48 and .42), and A's held (.54). Their F6\_b failures were predicted mostly lost by more than 10 cm (70\%); they miss by 3 to 10 cm. The predictions that the servo-kept RAA-sL beats A0 (c0, 50\%) and A (cA, 25\%) beyond noise both failed to reach significance. The noW level on N was predicted .45 (range .15 to .75) and came out .197, below the range. Held: the success levels of all six arms on N, d1$'$ supported with d4$'$ non-inferior (the point was predicted at \mi.18), r1 and r2 supported, r3 dependent, and noW below W5 on K.
+
+\textbf{Deviations.}
+\begin{enumerate}
+\item The serving check of noW was redesigned. Two separately loaded backbones of one config give different samples with the same seed and noise (differences up to .44 on position dimensions), so the registered cross-instance comparison cannot discriminate. The final check confirms identical inputs between configs and, inside one instance, that toggling the servo changes the chunk by exactly the servo term, on 8 held and 1 object-role synthetic states. Earlier failed versions are kept. Sampling is not deterministic across serving instances, and we did not investigate it.
+\item The seed-disjointness assertion of the set builder compared seeds across roles and failed as first written; we changed it to compare within each role after the registration row, with the recipe and ranges unchanged. The disjointness job found 0 equal rows.
+\item The covered-plate split lives in a separate script that the first registration row did not hash, and classifies only F6\_b; the relational pool and the stove and rack tasks are not split.
+\item The distance criterion of the validity gate rests on three released failures.
+\item Phase A jobs were submitted before the disjointness job ran, although the states are asserted distinct at build. The registration rows were committed seconds before the corresponding submissions.
+\item Job logs of Phase A carry an inherited name. We ran extra descriptive arms (RAA-sL seed 2 on Phase A, the \pizero{} covered-plate cells on the new held-out set).
+\item Holm covers two of the three primaries, because the third was not run.
+\item The classes use initial positions, 5-step queries, whole-centimetre rounding and a rigid in-hand offset, so they are approximate.
+\end{enumerate}
