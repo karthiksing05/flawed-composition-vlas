@@ -797,7 +797,7 @@ servo off: RAA-sL minus noW, N / F6\_b & +.669 [+.494, +.836] / \mi.350 [\mi.483
 \end{tabular}
 \end{table}
 
-The Holm family named three primaries, d1$'$, r1 and a third that we did not run. Counting the third at $p = 1$, the adjusted one-sided $p$ is .003 for d1$'$ and .0015 for r1; both stay under .025. The reading rule for r1 and r3 was fixed in advance: a supported r1 with a dependent r3 means that removing the module returns a failure worse than the native network, which shows engineering dependence of a residual-trained expert and says nothing on whether a network can own the where. The servo-removed arm also falls on the trained tasks (K2t .08 against .98 with W5). Here the servo is worse than none on the covered plate (RAA-sL minus noW \mi.350).
+The Holm family named three primaries, d1$'$, r1 and h1 (the learned head, Appendix~\ref{app:M3}); the adjusted one-sided $p$ is .003 for d1$'$ and .0015 for r1, and both stay under .025, while h1 (.262) does not. The reading rule for r1 and r3 was fixed in advance: a supported r1 with a dependent r3 means that removing the module returns a failure worse than the native network, which shows engineering dependence of a residual-trained expert and says nothing on whether a network can own the where. The servo-removed arm also falls on the trained tasks (K2t .08 against .98 with W5). Here the servo is worse than none on the covered plate (RAA-sL minus noW \mi.350).
 
 \textbf{Predictions that failed.} The registered shares for the \pizero{} servo-off arm were M .55 (range .30 to .80) and H plus O .23; we observed M .25 and H plus O .64. Rule P (``read but imprecise'') had the highest prior (50\%) and failed. For the servo-kept arms, RAA-sL M $\ge$ .60 (75\%) and A0 M $\ge$ .50 (65\%) failed (.48 and .42), and A's held (.54). Their F6\_b failures were predicted mostly lost by more than 10 cm (70\%); they miss by 3 to 10 cm. The predictions that the servo-kept RAA-sL beats A0 (c0, 50\%) and A (cA, 25\%) beyond noise both failed to reach significance. The noW level on N was predicted .45 (range .15 to .75) and came out .197, below the range. Held: the success levels of all six arms on N, d1$'$ supported with d4$'$ non-inferior (the point was predicted at \mi.18), r1 and r2 supported, r3 dependent, and noW below W5 on K.
 
@@ -809,6 +809,73 @@ The Holm family named three primaries, d1$'$, r1 and a third that we did not run
 \item The distance criterion of the validity gate rests on three released failures.
 \item Phase A jobs were submitted before the disjointness job ran, although the states are asserted distinct at build. The registration rows were committed seconds before the corresponding submissions.
 \item Job logs of Phase A carry an inherited name. We ran extra descriptive arms (RAA-sL seed 2 on Phase A, the \pizero{} covered-plate cells on the new held-out set).
-\item Holm covers two of the three primaries, because the third was not run.
+\item The Holm family was read in three separate runs (d, r, h); the table in Appendix~\ref{app:M3} combines their raw $p$ values, and the reader's own Holm field for the head covers h1 alone.
 \item The classes use initial positions, 5-step queries, whole-centimetre rounding and a rigid in-hand offset, so they are approximate.
+\end{enumerate}
+
+
+\subsection{Text moved from Section~\ref{sec:modules}}
+\label{app:M4}
+
+\textbf{A removal ladder on a new held-out set.} On the fifth set we serve the RAA-sL checkpoint in three ways: with the W5 module, with its own servo only (RAA-sL), and without the servo (noW). Removing the servo from the W5 policy lowers held-out success by .678 [.492, .864] (F6\_b by .400), but noW also falls \mi.503 [\mi.806, \mi.217] below a network trained without a servo (A0) and collapses on the trained tasks (.272 against .956). This removal shows that the retrained expert depends on the module and leaves open whether a network can own the where. Removing only the W5 module costs nothing on held-out pairings (+.008 [\mi.092, +.086]) and +.750 [+.633, +.867] on the covered plate, which the servo-kept arms miss by 3 to 10 cm, never by less than 3 cm (Appendix~\ref{app:M}).
+
+\textbf{Where the agreement ends.} On relational language, ReGuide with our resolver (rgpr) closes about half the gap (F7 pool .356 to .681 against .963 for our module set rc; rc leads by +.281 [+.238, +.325], Appendix~\ref{app:L7}). The lead comes from the parts of rc that act through the frozen VLA's input, so the F7 repair that works tells the network which entity and lets the network do the where. The servo has a fixed form (only its gain is fitted to the demonstrations), and a target class absent from the demonstrations cannot be aimed (Appendix~\ref{app:L5}).
+
+\textbf{The servo takes over the function.} Keeping the servo drives the token's share to zero on \pifive{} (A+ \mi.007 against A+0 .124; oracle frames \mi.068 against .771) and cuts it on \pizero{} from .542 to \mi.150: once a servo supplies the correction, the network stops using the token.
+
+\subsection{The learned separate head (E4)}
+\label{app:M3}
+
+\textbf{Design.} The head H is an MLP of 6.4k parameters ($3\to64\to64\to30$, SiLU) on the exact target token, fit once by least squares to the demonstrations' actions over the 13,327 rows of K1--K6 (12,007 for training, 1,320 for validation; 271 and 29 demonstrations), centred so that it vanishes at the target, frozen, and placed in the servo's slot. The expert retrains on the residual with the RAA-sL recipe (6,001 steps, one seed). On validation rows H reaches $R^2$ .830 against .401 for the servo's linear-saturating form refit on the same rows (+.428); the head is not a copy of the servo. Its output along the approach is weaker than the servo's near the target and stronger far away (.017, .051, .321 and .890 against .057, .143, .285 and .570 at 2, 5, 10 and 20 cm). Checks before registration: a linear-form head equals the servo (difference $<10^{-6}$ on 1,000 states), the three implementations agree ($<10^{-5}$), and the parameter tree equals RAA-c's. The validity gate (trained tasks $\ge$ .70 on development states) passed at .897; H scores .758 on development held-out pairings and .806 (N) and .894 (K) on the new set.
+
+\begin{table}[h]
+\caption{Registered contrasts for the learned head H. N is held-out pairings, K trained tasks; h1 pools development and new states with equal weight.}
+\label{tab:M4}
+\centering
+\footnotesize
+\begin{tabular}{@{}P{2.6in}P{1.6in}P{1.8in}@{}}
+\toprule
+contrast & estimate [95\% interval] & outcome \\
+\midrule
+h1 (primary): H minus A0, N, pooled & +.089 [\mi.208, +.346] & not shown; raw $p$ .262 \\
+\quad development / new set alone & +.072 [\mi.339, +.414] / +.106 [\mi.353, +.467] & not shown \\
+h2: H minus RAA-sL, N, new set & \mi.061 [\mi.417, +.172] & not shown (neither non-inferior nor a cost) \\
+h3: H minus A, N, new set & +.025 [\mi.395, +.347] & not shown \\
+hK: H minus RAA-sL, K, new set & \mi.039 [\mi.125, +.006] & not shown (lower bound below \mi.05) \\
+hF: H minus RAA-sL, F6\_b & +.533 [+.400, +.650] & reported (H .583, RAA-sL .05) \\
+hF: H minus noW, F6\_b & +.183 [+.017, +.350] & reported \\
+hF: W5 minus H, F6\_b & +.217 [+.067, +.383] & reported (W5 .80) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+H minus A0 on F6\_b is not available, because A0 has no covered-plate rollouts on the new set. The decomposition of H against A0 is mixed (H class $-.122$, M class $+.114$, O class $+.092$). Of H's 70 failures on the new set, 4 are G, 0 W, 5 O, 55 H (the object is held to the step cap) and 6 M, so 79\% of its failures leave the object held at the target without release, a shape that no other arm shows. On F6\_b the 60 episodes split into 35 successes, 4 lost by more than 10 cm, 21 misses of 3 to 10 cm and none of the G class.
+
+\begin{table}[h]
+\caption{Holm correction over the three registered primaries (one-sided $p$ in the registered direction, step-down; a primary survives when its adjusted $p$ is below .025).}
+\label{tab:M5}
+\centering
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+primary & raw $p$ & Holm-adjusted $p$ & survives \\
+\midrule
+r1: W5 minus noW, N & .0005 & .0015 & yes \\
+d1$'$: \pizero{} servo off minus kept, N & .0015 & .0030 & yes \\
+h1: H minus A0, N, pooled & .2624 & .2624 & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Predictions as written and outcome.} Registered before H trained: the head's validation $R^2$ exceeds the linear form's by at least .02 (70\%; true, +.428); the development trained-task score reaches .70 (true, .897) with a development N point of .82 (range .65 to .92; observed .758, inside); the step-0 loss falls below .0556 (70\%; false, .0685, and the smoke run showed this before registration, so it is not a clean prediction). On the new set, h1 was predicted at +.12 with 45\% for ``supported'' and 3\% for ``reversed'' (observed +.089, not shown, not reversed); h2 non-inferior 55\% and a cost 7\% (not shown); h3 supported 15\% (not shown); hK non-inferior 50\% (not shown). The joint reading ``separation, not form'' (30\%) and the reading ``separation does not help'' (h1 within $\pm.05$ of A0; 20\%) were both not met. The result neither confirms nor refutes ``separation, not form''; the necessity claim keeps the \pizero{} contrast (d1$'$) and the removal ladder (r1 with a dependent r3) and gains no independent support from a learned head at this recipe and power.
+
+\textbf{Deviations from the plan.}
+\begin{enumerate}
+\item The rvh registration row omits that the smoke run's step-0 loss (.0685) was seen before registration.
+\item The commit and submission of the first registration row fell in the same second (commit first), and those of the head and new-set rows 3 to 4 s apart.
+\item The contrast H minus A0 on F6\_b is unavailable, and the reader for the F6\_b cells is a new script written after registration.
+\item The new-set head rollouts were submitted once the first 20 development trained-task states (.89) were in, before the remaining development files finished; the gate then passed over 60 states (.897).
+\item A separate serving smoke job was not run; the first development rollout served as the smoke (finite chunks, no failures).
+\item Training ran in four links on one queue (6,000 steps, not 6,001; final loss about .010), and one development job was requeued once. E4 used 13.7 GPU-h after the resume and about 4 before, within the cap.
+\item A class-conditioned head, an end-to-end trained head and a second seed of H were not run.
 \end{enumerate}
