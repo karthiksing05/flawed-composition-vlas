@@ -1,0 +1,18 @@
+RVW5 (docs/notes/plan_review_atlas.md 3-6): the 5th fresh state set of raaf_plan 7.1 (N/K k 760-819, F7 860-939, F6 940-1019), unbuilt and reserved "for a later design"
+(raaf_plan 6.3 rule 5; no RAA-F route passed, raafc is void and will never be written).  This row takes the set over for E2, E3 and E4.
+Arms: pi0-sL, pi0-A0, RAA-sL, A0, A, W5 (where_own 5), noW (RAA-sL checkpoint served with config pi05_g8v_raac_l_ae, where_own 0, R and M kept), H (pi05_g8v_raah_l_ae, after training).
+Contrasts (Phase A by raa_read.diff, Phase B by wa_read.bootm; B = 2000, rng 0; Holm over the PRIMARY family {d1', r1, h1}, raw and adjusted reported):
+ d1' PRIMARY pi0-A0 - pi0-sL, N: SUPPORTED iff upper < 0.  d4' K NI at -.05.  REPLICATES iff d1' SUPPORTED and d4' NI.
+ c0 A0 - RAA-sL, N; cA A - RAA-sL, N: SUPPORTED-for-module iff upper < 0.  d2', d3' reported.
+ r1 PRIMARY W5 - noW, N: SUPPORTED iff lower > 0.  r2 W5 - noW, F6_b.  r3 noW - A0, N: DEPENDENT iff upper < 0, EQUIVALENT iff inside +-.10.
+ h1 PRIMARY H - A0, N, pooled dev + 5th set: SUPPORTED iff lower > 0.  h2 H - RAA-sL, N, 5th set: NI iff lower > -.10, COST iff upper < -.10.  h3 H - A, N.  hK H - RAA-sL, K, NI at -.05.
+ H gate: dev K1-K6 >= .70, else UNTESTABLE.  E1 classes on every arm (secondary).
+STATUS: every arm's dev-state success was seen except H; no arm has been rolled on these states; H's design is fixed by the rvh row.
+Predictions:
+ (q1) d1' point -.18; SUPPORTED 70%; REVERSED 2%.  d4' NI 75%.  REPLICATES 55%.  d1' survives Holm: 60%.
+ (q2) pi0-sL N .74 (.60-.86); pi0-A0 N .52 (.35-.70); RAA-sL .87; A0 .70; A .79; W5 .89.
+ (q3) c0 SUPPORTED 50%; cA SUPPORTED 25%.
+ (q4) noW N point .45 (.15-.75); r1 SUPPORTED 92%; r2 SUPPORTED 80% (W5 F6_b .80, noW .35); r3 DEPENDENT 55%, EQUIVALENT 15%; noW K below W5 by > .05: 70%.
+ (q5) h1 point +.12; SUPPORTED 45%; REVERSED 3%.  h2 NI 55%, COST 7%.  h3 SUPPORTED 15%.  hK NI 50%.
+ (q6) joint "separation, not form" (h1 SUPPORTED and h2 NI): 30%.  "separation does not help" (h1 point within +-.05 of 0): 20%.
+Kill: (k1) the disjointness job finds an equal row; (k2) the noW serving check fails (difference != servo); (k3) any rollout job fails on infrastructure (no read until all cells exist).

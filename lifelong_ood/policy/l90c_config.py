@@ -34,7 +34,7 @@ LIBERO_PARAMS = f"{CACHE}/pi05_libero/params"                  # openpi pi05_lib
 NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
          "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae", "pi05_g8v_plain_ae", "pi05_g8v_rsup_ae", "pi05_g8v_rview_ae",
          "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_l_ae", "pi05_g8v_raac_lb_ae", "pi05_g8v_raas_lp_ae", "pi05_g8v_raac_lp_ae", "pi05_g8v_rview2_lp_ae",
-         "pi05_g8v_raac_lo_ae", "pi0_g8v_raas_l_ae", "pi0_g8v_raac_l_ae", "pi0_g8v_raac_lf_ae")
+         "pi05_g8v_raac_lo_ae", "pi0_g8v_raas_l_ae", "pi0_g8v_raac_l_ae", "pi0_g8v_raac_lf_ae", "pi05_g8v_raah_l_ae")
 # SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
 # the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
 AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
@@ -71,7 +71,9 @@ AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae":
       "pi05_g8v_rview2_lp_ae": ("pi05_g8v_rview2", "lol/libero_g8v_rview2"),
       # docs/notes/plan_oracle_pi0.md: ORC (A+0 + paired planner spots) and the pi0 arms; all keep RAA-c's norm stats / assets (the dir name contains "pi05": harmless, the converter sniffs the checkpoint path only)
       "pi05_g8v_raac_lo_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"), "pi0_g8v_raas_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
-      "pi0_g8v_raac_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"), "pi0_g8v_raac_lf_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
+      "pi0_g8v_raac_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"), "pi0_g8v_raac_lf_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
+      # docs/notes/plan_review_atlas.md 6 (tag rvh): RAA-sL exactly with the servo function replaced by the frozen learned where-head (raah_model.py); same data / norm stats / assets
+      "pi05_g8v_raah_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
 ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)
@@ -158,6 +160,14 @@ def train_config(name, **over):
             from . import raas_model as RS
             m = base.model
             model = RS.Pi0ConfigS(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False, **RS.servo_fields())
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
+                                       weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
+        if name == "pi05_g8v_raah_l_ae":                        # RVH (plan_review_atlas 6.4): pi05_g8v_raas_l_ae exactly (data, norm stats, state token, weights from pi05_libero) with the servo replaced by the frozen learned head (servo_k = 0)
+            from . import raac_model as RM
+            from . import raas_model as RS
+            from . import raah_model as RH
+            m = base.model
+            model = RH.Pi0ConfigH(pi05=True, action_horizon=m.action_horizon, discrete_state_input=False, head_npz=RH.NPZ, **RS.servo_fields(k=0.0))
             return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
                                        weight_loader=RM.RaacLoader(LIBERO_PARAMS), **over)
         if name == "pi05_g8v_raas_ls2_ae":                      # SR 89: pi05_g8v_raas_l_ae exactly (model, servo constants, RAA-c norm stats / assets, weights from pi05_libero); ONLY the data repo differs

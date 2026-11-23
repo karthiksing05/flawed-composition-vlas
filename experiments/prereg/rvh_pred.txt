@@ -1,0 +1,10 @@
+RVH (docs/notes/plan_review_atlas.md 6): a learned separate where-head H in the servo's slot.  pi05_g8v_raah_l_ae = pi05_g8v_raas_l_ae exactly with the servo function
+replaced by a frozen MLP head (raah_head.npz, sha256 in the row) fit by least squares of demo action xyz(t + j), j = 0..9, on rel(t) over the held rows of K1-K6
+(the supervision that fixed K = 2.851), servo_k = 0, the expert trained on the residual; data lol/libero_g8v_raac, pi05_libero init, 6,001 steps, batch 32, lr 5e-5, seed 42, one chain.
+Principle: if what matters is that a SEPARATE module owns the where, a learned head in that slot does as well as the fixed-form servo and better than the expert learning the geometry (A0).
+STATUS: the head's fit metrics (validation R² of head and linear form) were seen at registration; no H checkpoint exists.
+Predictions:
+ (h0) head validation R² exceeds the linear form's by >= .02: 70% (point .45 vs .36).
+ (h0b) dev K1-K6 >= .70: 90%; dev N point .82 (.65-.92).
+ (h0c) step-0 loss below RAA-sL's .0556: 70%.
+Kill: (k1) raah_check fails; (k2) step-0 loss NaN or > 2 x .0556; (k3) no role-2 token in the serving smoke.
