@@ -823,6 +823,10 @@ The Holm family named three primaries, d1$'$, r1 and h1 (the learned head, Appen
 
 \textbf{The servo takes over the function.} Keeping the servo drives the token's share to zero on \pifive{} (A+ \mi.007 against A+0 .124; oracle frames \mi.068 against .771) and cuts it on \pizero{} from .542 to \mi.150: once a servo supplies the correction, the network stops using the token.
 
+\textbf{W5 and ReGuide land within a few points of each other.} On held-out pairings W5 scores .892, .931 and .894 on three sets and ReGuide with perceived poses .914, .883 and .917; the pooled difference is +.001 [\mi.053, +.049], and neither registered lower bound clears the non-inferiority margin of \mi.10, so non-inferiority is not shown (Appendix~\ref{app:L5}).
+
+\textbf{The servo alone loses the covered target, and the pose memory supplies it.} A servo aims at the entity's last estimate and cannot follow a plate that a cover hides. The covered-plate cell (F6\_b) scores .000 for \pizero{} with the servo against .200 with it off, and .017 for RAA-sL against .383 for A0 on \pifive. W5 with the pose memory scores .817 on the third held-out set against .500 for frozen \pifive{} (+.317 [+.150, +.467]) and .050 for RAA-sL; removing the memory costs .217, .400 and .367 on the three sets (Table~\ref{tab:removal}).
+
 \subsection{The learned separate head (E4)}
 \label{app:M3}
 
@@ -878,4 +882,63 @@ h1: H minus A0, N, pooled & .2624 & .2624 & no \\
 \item A separate serving smoke job was not run; the first development rollout served as the smoke (finite chunks, no failures).
 \item Training ran in four links on one queue (6,000 steps, not 6,001; final loss about .010), and one development job was requeued once. E4 used 13.7 GPU-h after the resume and about 4 before, within the cap.
 \item A class-conditioned head, an end-to-end trained head and a second seed of H were not run.
+\end{enumerate}
+
+\subsection{A learned separate head on \pizero{} (H*) and a sixth held-out set}
+\label{app:M5}
+
+\textbf{Design.} E4's head H vanishes at the target and fails its validation gate on the release (G1 .678). The head H* gets a target built from the servo law aimed at the learned release point: the owner of the where points to the release point and vanishes only there, and the expert owns how to move. H* is an MLP ($3\to64\to64\to30$) fit by the E4 protocol to $y_j=\mathrm{clip}(2.851\,(\mathrm{rel}(\min(t+j,t_r))-\mathrm{rel}(t_r)),\pm.9375)$ on the 13,327 held rows of K1--K6, where $t_r$ is the demonstration's last held row, and it is not centred. It is frozen, placed in the servo slot of \pizero{} with the servo gain set to zero, and the expert trains on the residual with the \pizero{} recipe (6,001 steps, batch 32, one seed). Three gates on the 29 validation demonstrations were fixed before training: G1, mean cosine between the head's first action and the displacement to the release point at least .80 (displacement 2 cm or more); G2, median head norm over $\min(K|\Delta|, M)$ at least .60 (2 to 6 cm); G3, median head norm at most .05 (displacement under 1 cm). H* gives .971, .889 and .033 (all pass; H gives .678, 4.61 and .389). The comparison arms are the \pizero{} servo-off arm A0 and the servo-kept arm sL, both on a sixth set of 60 start states per task (a set no earlier experiment used, built after the registration row and disjoint from earlier sets: 0 equal rows). The gate for reading N was K at least .70 for H* on that set; K was .925.
+
+\begin{table}[h]
+\caption{Registered contrasts of the H* study (sixth set; N is held-out pairings, K trained tasks). Intervals are seed-widened with tasks fixed unless marked ``registered'' (tasks and states bootstrap).}
+\label{tab:M6}
+\centering
+\footnotesize
+\begin{tabular}{@{}P{2.5in}P{1.9in}P{1.7in}@{}}
+\toprule
+contrast & estimate [95\% interval] & outcome \\
+\midrule
+n1 (primary): H* minus A0, N & +.094 [\mi.010, +.199] & not shown; $p$ .039, no flagged task \\
+n1r: same, registered & +.094 [\mi.017, +.222] & not shown \\
+n1 at $\sigma_s$ .05 & +.094 [\mi.053, +.242] & not shown \\
+n1 cheese / bottle pairings & +.111 [\mi.061, +.333] / +.078 [\mi.017, +.183] & reported \\
+nK: H* minus A0, K & +.019 [\mi.122, +.161] & not shown (non-inferiority at \mi.05) \\
+n2: H* minus sL, N & \mi.114 [\mi.222, \mi.006]; registered [\mi.247, +.003] & non-inferiority at \mi.10 not shown \\
+d1$''$: A0 minus sL, N & \mi.208 [\mi.317, \mi.100]; registered [\mi.347, \mi.069] & supported (task N4 flagged) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Success on N: H* .600, A0 .506, sL .714; on K: .925, .906, .839. H* recovers .094 of the servo's .208 gain, about 45\%. By task the H* minus A0 difference is positive on N2 (+.333) and small elsewhere; N4 and N6 (bottle pairings) stay near the floor (H* .167 and .083).
+
+\begin{table}[h]
+\caption{Holm correction over the four registered primaries (one-sided $p$; a primary survives when its adjusted $p$ is below .025).}
+\label{tab:M7}
+\centering
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+primary & raw $p$ & Holm-adjusted $p$ & survives \\
+\midrule
+r1: W5 minus noW, N & .0005 & .0020 & yes \\
+d1$'$: \pizero{} servo off minus kept, N & .0015 & .0045 & yes \\
+n1: H* minus A0, N & .0386 & .0771 & no \\
+h1: H minus A0, N, pooled & .2624 & .2624 & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Failure classes.} Of H*'s 144 failures, 2 are G, 0 W, 3 O, 97 H (the object is held at the target to the step cap) and 42 M; the class-H share is .674 (cheese .05, bottle .77), against .786 for H on the \pifive{} set and .242 for A0 (178 failures: 7 G, 3 W, 81 O, 43 H, 44 M) and .340 for sL (103 failures). The decomposition of A0 against H* is mixed: class O $+.217$ [+.036, +.442], class H $-.150$ [$-.408$, +.058], class M +.006. H* removes A0's class-O failures and replaces most of them with class-H failures. The servo-kept policy fails less than H* mainly in class H ($-.172$ [$-.378$, .000]).
+
+\textbf{Predictions as written and outcome.} Registered before H* trained: the gates pass (70\%; true) and H fails G1 (80\%; true); K on the sixth set at least .70 (85\%; true, .925); N for A0 .52 (.35 to .68), sL .75 (.60 to .88) and H* .72 (.50 to .88) (observed .506, .714 and .600, all inside the ranges); n1 supported 50\%, not shown 30\% (outcome: not shown, point +.094); n1r supported 40\% (false); n2 non-inferior 30\% (false); d1$''$ supported 80\% under the fixed rule and 65\% under the registered rule (true under both); class-H share of H*'s failures at most .30 at 65\% (false, .674); nK non-inferior 60\% (false).
+
+\textbf{Reading.} Two independent learned separate owners (H on \pifive, H* on \pizero) land about +.09 above their in-network comparators, and neither is significant. The fixed-form servo beats the in-network network on \pizero{} on three state sets (development \mi.256, fifth set \mi.222, sixth set \mi.208). H* recovers about 45\% of the servo's gain and sits significantly below the servo on the seed-widened interval (the registered bootstrap touches zero). The data support that a separate owner with a fitted fixed form beats the in-network route on \pizero{}; that a separate owner with a learned form suffices is not shown. Any pooling of H and H* is exploratory and was not registered.
+
+\textbf{Deviations from the plan.}
+\begin{enumerate}
+\item Two model-check attempts failed (a GPU memory error at model creation and a loss assertion that bf16 rounding broke) and the third passed; the registration asserts that the training directory is absent, and the wording changed from the experiment root to its training subdirectory after the 20-step smoke created the former.
+\item The reader imports the earlier reader instead of copying it, and the training script is a copy of the earlier one with a free run name.
+\item The unattended job wrappers carry gates and a 21.5 wall-hour cap only and were written after registration; they are not hashed in the registration row.
+\item Training ran in six links on one queue (two ended at the 4 h wall time); the step count is 6,000 as for H. The experiment used 18.3 GPU-h against a cap of 23 (training 8.4, rollouts 9.4).
+\item The registered option of pooling the fifth and sixth sets was not computed. A class-conditioned head and a second seed of H* were not run.
 \end{enumerate}
