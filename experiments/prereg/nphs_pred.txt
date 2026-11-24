@@ -1,0 +1,20 @@
+NPHS (multi-seed version of NPH, tag nphs; docs/notes/plan_necessity_power.md 3; docs/notes/nph_results.md): does the pi0-H* - pi0-A0 gap on held-out pairings (N) survive training-seed variance?
+Arms: pi0-H* (pi0_g8v_raah_l_ae), pi0-A0 (pi0_g8v_raac_l_ae), pi0-sL (pi0_g8v_raas_l_ae); recipe, configs and data exactly as nph / pzdev (6,001 steps, batch 32, lr 5e-5);
+only the training seed changes.  Seeds: the existing seed-42 checkpoint of each arm (exp tl, exported tl6000) plus new seeds 43, 44, 45 (exp tl_s<seed>, c_train_nphs.py --seed; tag s<seed>_6000).  9 new trainings.
+States: a new 7th state set n2_states_w7, k = 880-939 (fc_n2_w7.py, same rule as w6, N/K only), built after this row; disjointness job against every earlier set must find 0 equal rows.
+Rollouts: Phase A N1-N6 + K1-K6 on the 7th set for all 12 checkpoints (60 states per task).
+Gate per pi0-H* seed: K1-K6 mean < .70 -> that seed is UNTESTABLE and its pair (H*_s, A0_s) is dropped from n1s, n2s, nKs.  Fewer than 3 valid pairs -> n1s UNTESTABLE.
+Hierarchical bootstrap (every interval below): resample seeds with replacement within each arm (independently per arm, among that contrast's valid seeds), then resample states within each task
+(one resample per task, shared by the arms, tasks fixed); B = 2000, np.random.default_rng(0); 95% percentile interval; the point estimate is the mean over valid seed pairs of the task-mean difference.
+Primary n1s: pi0-H* - pi0-A0 on N1-N6, averaged over the valid seed pairs.  SUPPORTED iff lower > 0; REVERSED iff upper < 0; EQUIVALENT iff the interval lies inside +-.10; else NOT SHOWN.
+Secondaries: n2s pi0-H* - pi0-sL on N over valid pairs, NON-INFERIOR iff lower > -.10.  d1s pi0-A0 - pi0-sL on N, all seeds, SUPPORTED iff upper < 0.
+nKs pi0-H* - pi0-A0 on K over valid pairs, NON-INFERIOR iff lower > -.05.  Observed seed SD per arm (N and K; replaces the assumed sigma_s .033).  E1 failure classes per arm (nphs_e1.py, rva1_read.py classifier unchanged), pooled over seeds.
+Holm over {n1s, d1s} (one-sided bootstrap p; survives iff adjusted < .025).
+Budget: hard cap 130 GPU-h for all nphs_* jobs, enforced by job time limits and a wall-hour guard in the wrappers.
+Predictions:
+ n1s point +.09; SUPPORTED 55%; EQUIVALENT 10%.
+ n2s point -.11; NON-INFERIOR 25%.
+ d1s SUPPORTED 95%.
+ Seed SD on N .03-.07 per arm (70%).
+ H* class-H share >= .50 (70%).
+Kill: (k1) any pi0-H* seed fails the K gate: reported as UNTESTABLE, pair dropped; (k3) the disjointness job finds an equal row; (k4) any rollout job fails on infrastructure (no read until all expected cells exist).
