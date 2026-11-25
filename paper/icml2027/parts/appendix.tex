@@ -5,6 +5,35 @@
 This part holds every result removed from the main text, with every number unchanged. Verdict words are the registered ones. Appendix~\ref{app:K} holds the oracle arm and the \pizero{} replication, which Sections~\ref{sec:grid} and~\ref{sec:pi0} summarise, and Appendix~\ref{app:L} holds the paragraphs and tables that the trim of the main text removed.
 
 %=====================================================================
+\section{Glossary of arm and set names}
+\label{app:glossary}
+
+\begin{table}[h]
+\caption{Abbreviations used in the text and tables.}
+\centering
+\footnotesize
+\begin{tabular}{@{}lp{5.6in}@{}}
+\toprule
+name & meaning \\
+\midrule
+RAA & R2 (retrain on the active role's entity with role phrases and painted views) plus the role channel, the target position relative to the gripper \\
+RAA-sL & RAA with a fixed servo term (s) from the broader LIBERO-fine-tuned initialisation (L); the servo-kept comparator on \pifive \\
+A, A0, A+, A+0, B & servo-free \pifive{} routes of Section~\ref{sec:grid}: relabelled offsets (A), no relabel (A0), planner shifts with servo (A+) and without (A+0), target crop (B) \\
+tvpb & input-only front end: role views, role phrases and the held object painted as its box \\
+W5, noW & the where-module that aims at the class's release point and hands the last 3 cm back; noW serves the same checkpoint without the servo \\
+rgp, rgpr, rc & ReGuide with perceived poses (rgp), with our resolver (rgpr), and with a painted view, unique-name prompt and memory slot added (rc) \\
+H, H* & learned heads: H is fit to demonstration actions (E4; fails gate G1); H* is a servo-distilled head, trained on the clipped servo law aimed at a learned release point \\
+Hold & failure class: the arm still holds the object when the episode ends (renamed from H to avoid the head H) \\
+Phase A, Phase B & Phase A: K1--K6 and N1--N6 on development states; Phase B: the F7 pool and the covered-plate cells F6\_b and F6\_a \\
+sets 1--3 & held-out sets of the W5 and ReGuide comparison (set 2 runs the W6 variant) \\
+set 4 & an intermediate set that supports no contrast in the main text \\
+set 5 & new pre-registered set (60 states per task): \pizero{} servo contrast, removal ladder, Holm over three primaries \\
+set 6 & new set for the H* study, Holm over four primaries \\
+set 7 & new set for the four-seed study (NPHS), Holm over n1s and d1s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Setting details}
 \label{app:A}
 
@@ -101,7 +130,7 @@ New layout & NEITHER & NEITHER & NEITHER & NEITHER & NEITHER \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth,]{figA4.pdf}
-\caption{F1m, the held outline picks the carry. Frozen \pifive{} on N6 (bottle in the bowl; the N4 entry had no qualifying trial in the first 10) with the z profile of the carry against the high-carry threshold (lift while held above .22 m). Rows: arm g (high-carry share .225, N4+N6 success .625) and the same weights with the held bottle painted as its box, arm sb (.062 and .812). After a high carry \pifive{} succeeds .04, after a low carry .66.}
+\caption{F1m, the held outline starts the carry. Frozen \pifive{} on N6 (bottle in the bowl; the N4 entry had no qualifying trial in the first 10) with the z profile of the carry against the high-carry threshold (lift while held above .22 m). Rows: arm g (high-carry share .225, N4+N6 success .625) and the same weights with the held bottle painted as its box, arm sb (.062 and .812). After a high carry \pifive{} succeeds .04, after a low carry .66.}
 \label{fig:A4}
 \end{figure}
 
@@ -259,7 +288,7 @@ The probe replays recorded inputs open loop and patches one write at a time from
 \section{The routes in detail}
 \label{app:E}
 
-The selection rule (fixed before any run): pass when the lower bound of the pooled share on development states is at least .70, the prefix share is below RAA-sL's (.089) and the effect is positive; fail when the upper bound is under .30. A0 was trained after we found B was built servo-free too; A+0 carries its own pre-registration record and would have had its only confirmatory test on the sealed fifth set, which stays unbuilt. Contrasts: A minus A0 +.272 [+.238, +.312]; B minus A0 +.030 [\mi.034, +.089]; A+ minus A \mi.282 [\mi.322, \mi.247]; A+ minus A0 \mi.006 [\mi.012, +.001]; A+0 minus A+ +.133 [.096, .171]; A+0 minus A0 +.127 [.092, .165]; A+0 minus A \mi.150 [\mi.196, \mi.104].
+The selection rule (fixed before any run): pass when the lower bound of the pooled share on development states is at least .70, the prefix share is below RAA-sL's (.089) and the effect is positive; fail when the upper bound is under .30. A0 was trained after we found B was built servo-free too; A+0 carries its own pre-registration record and had no confirmatory test of its own; the fifth set was built later and registered for the \pizero{} and removal studies (Appendix~\ref{app:M}). Contrasts: A minus A0 +.272 [+.238, +.312]; B minus A0 +.030 [\mi.034, +.089]; A+ minus A \mi.282 [\mi.322, \mi.247]; A+ minus A0 \mi.006 [\mi.012, +.001]; A+0 minus A+ +.133 [.096, .171]; A+0 minus A0 +.127 [.092, .165]; A+0 minus A \mi.150 [\mi.196, \mi.104].
 
 \begin{table}[h]
 \caption{The learned where-share by data dose and servo on \pifive{} (96 observations per route on development states, clustered bootstrap, 95\% intervals). The pass bar is .70.}
@@ -717,7 +746,7 @@ Registered predictions. Held: r1 helps (95\%; point +.325 inside the predicted +
 \subsection{Failure shares per arm}
 \label{app:M1}
 
-A classifier fixed before it ran sorts each failed held-out episode from the logged queries (joined to the episode file by task text and trial; no join failed). G: the grasped object is not the instructed one. H: the arm still holds the object when the episode ends. Otherwise, at the last held query, d is the distance from the held object to the commanded target. W: d is at least 10 cm and the object lies within 8 cm of a target of a known partner. O: d is at least 10 cm and the object is not at a known partner's target (dropped in transit or released elsewhere). M: d is under 10 cm, a centimetre miss. The 3 cm and 10 cm thresholds are LIBERO's placement tolerance and the gap between centimetre misses and mispairings (20 to 40 cm). Positions are initial positions, queries come every 5 steps, and the plate can move, so the classes are approximate. The validity gate compared the classes with an independent per-step log on 60 RAA-sL episodes: 60 of 60 coarse classes agree, but the median distance check rests on three released failures.
+A classifier fixed before it ran sorts each failed held-out episode from the logged queries (joined to the episode file by task text and trial; no join failed). G: the grasped object is not the instructed one. Hold: the arm still holds the object when the episode ends. Otherwise, at the last held query, d is the distance from the held object to the commanded target. W: d is at least 10 cm and the object lies within 8 cm of a target of a known partner. O: d is at least 10 cm and the object is not at a known partner's target (dropped in transit or released elsewhere). M: d is under 10 cm, a centimetre miss. The 3 cm and 10 cm thresholds are LIBERO's placement tolerance and the gap between centimetre misses and mispairings (20 to 40 cm). Positions are initial positions, queries come every 5 steps, and the plate can move, so the classes are approximate. The validity gate compared the classes with an independent per-step log on 60 RAA-sL episodes: 60 of 60 coarse classes agree, but the median distance check rests on three released failures.
 
 \begin{table}[h]
 \caption{Shares of failures by class on the development states (60 states per task, N1--N6). Rows below the rule are extra arms.}
@@ -726,7 +755,7 @@ A classifier fixed before it ran sorts each failed held-out episode from the log
 \footnotesize
 \begin{tabular}{@{}lrrccccc@{}}
 \toprule
-arm & success & failures & G & W & O & H & M \\
+arm & success & failures & G & W & O & Hold & M \\
 \midrule
 \pizero{} servo kept & .761 & 86 & .19 & .00 & .16 & .23 & .42 \\
 \pizero{} servo off & .506 & 178 & .08 & .03 & .47 & .17 & .25 \\
@@ -743,7 +772,7 @@ B & .644 & 128 & .04 & .45 & .30 & .08 & .13 \\
 The \pizero{} servo-off arm has 47\% O [.22, .66] and 25\% M [.08, .60]. Route B fails mostly by W (.45): it carries the object to a partner's target. Routes A and A0 differ from the servo-kept RAA-sL mainly in M (+.061 and +.075 of the success gap).
 
 \begin{table}[h]
-\caption{Decomposition of the servo's gain by failure class: rate of the servo-off arm minus rate of the servo-kept arm per episode, summed over classes to the success difference (G and H omitted; the totals include them).}
+\caption{Decomposition of the servo's gain by failure class: rate of the servo-off arm minus rate of the servo-kept arm per episode, summed over classes to the success difference (G and Hold omitted; the totals include them).}
 \label{tab:M2}
 \centering
 \footnotesize
@@ -928,11 +957,11 @@ h1: H minus A0, N, pooled & .2624 & .2624 & no \\
 \end{tabular}
 \end{table}
 
-\textbf{Failure classes.} Of H*'s 144 failures, 2 are G, 0 W, 3 O, 97 H (the object is held at the target to the step cap) and 42 M; the class-H share is .674 (cheese .05, bottle .77), against .786 for H on the \pifive{} set and .242 for A0 (178 failures: 7 G, 3 W, 81 O, 43 H, 44 M) and .340 for sL (103 failures). The decomposition of A0 against H* is mixed: class O $+.217$ [+.036, +.442], class H $-.150$ [$-.408$, +.058], class M +.006. H* removes A0's class-O failures and replaces most of them with class-H failures. The servo-kept policy fails less than H* mainly in class H ($-.172$ [$-.378$, .000]).
+\textbf{Failure classes.} Of H*'s 144 failures, 2 are G, 0 W, 3 O, 97 Hold (the object is held at the target to the step cap) and 42 M; the Hold share is .674 (cheese .05, bottle .77), against .786 for H on the \pifive{} set and .242 for A0 (178 failures: 7 G, 3 W, 81 O, 43 Hold, 44 M) and .340 for sL (103 failures). The decomposition of A0 against H* is mixed: class O $+.217$ [+.036, +.442], Hold $-.150$ [$-.408$, +.058], class M +.006. H* removes A0's class-O failures and replaces most of them with Hold failures. The servo-kept policy fails less than H* mainly in Hold ($-.172$ [$-.378$, .000]).
 
 \textbf{Predictions as written and outcome.} Registered before H* trained: the gates pass (70\%; true) and H fails G1 (80\%; true); K on the sixth set at least .70 (85\%; true, .925); N for A0 .52 (.35 to .68), sL .75 (.60 to .88) and H* .72 (.50 to .88) (observed .506, .714 and .600, all inside the ranges); n1 supported 50\%, not shown 30\% (outcome: not shown, point +.094); n1r supported 40\% (false); n2 non-inferior 30\% (false); d1$''$ supported 80\% under the fixed rule and 65\% under the registered rule (true under both); class-H share of H*'s failures at most .30 at 65\% (false, .674); nK non-inferior 60\% (false).
 
-\textbf{Reading.} Two independent learned separate owners (H on \pifive, H* on \pizero) land about +.09 above their in-network comparators, and neither is significant. The fixed-form servo beats the in-network network on \pizero{} on three state sets (development \mi.256, fifth set \mi.222, sixth set \mi.208). H* recovers about 45\% of the servo's gain and sits significantly below the servo on the seed-widened interval (the registered bootstrap touches zero). The data support that a separate owner with a fitted fixed form beats the in-network route on \pizero{}; that a separate owner with a learned form suffices is not shown. Any pooling of H and H* is exploratory and was not registered.
+\textbf{Reading.} Two independent learned separate owners (H on \pifive, H* on \pizero) land about +.09 above their in-network comparators, and neither is significant. The fixed-form servo beats the in-network network on \pizero{} on three state sets (development \mi.256, fifth set \mi.222, sixth set \mi.208). H* recovers about 45\% of the servo's gain and sits significantly below the servo on the seed-widened interval (the registered bootstrap touches zero). The data support that a separate owner with the servo's form and a learned release point beats the in-network route on \pizero{}; whether a form learned from the demonstrations suffices is not shown. Any pooling of H and H* is exploratory and was not registered.
 
 \textbf{Deviations from the plan.}
 \begin{enumerate}
@@ -971,6 +1000,6 @@ Mean success on N is .674 for H*, .483 for A0 and .710 for sL; on K .889, .908 a
 
 \textbf{Deviations.} (1) The first training link of the H* seed-44 arm (job 4852000) and (2) of the A0 seed-43 arm (job 4852016) failed at startup within two minutes; later links resumed from the chain and completed. (3) The H* model checks ran on the overcap queue and not on the lab queue. Of 139 jobs, 126 completed and 11 ended at the 4 h wall time (normal chain links). No kill condition fired. The study used 108.4 GPU-h against a cap of 130.
 
-\textbf{Reading.} Across four seeds a learned separate owner beats the same network learning the same token from the same data, on every seed, and lands within about .04 of the fitted-form servo (non-inferiority not shown). The earlier single-seed read (+.094) was underpowered, and its seed-42 pair is the smallest of the four. On \pizero{} this favours separation over form. On \pifive{} the head H stays not shown and single-seed.
+\textbf{Reading.} Across four seeds a learned separate owner beats the same network learning the same token from the same data, on every seed, and lands within about .04 of the fitted-form servo (non-inferiority not shown). The earlier single-seed read (+.094) was underpowered, and its seed-42 pair is the smallest of the four. This confirms the separate-owner contrast across seeds and states; it does not settle separation versus form, because H* is trained on the clipped servo law and shares its form. On \pifive{} the head H stays not shown and single-seed.
 
 \textbf{Text moved from Section~\ref{sec:pi0}.} \textbf{The servo-off arm fails to bring the object to the read target.} A classifier fixed before it ran sorts each failure from the logged queries (gate: 60 of 60 classes agree). Most of the servo's gain is in failures where the held object ends 10 cm or more from the target and not at a known partner's target (+.194 [+.039, +.386] on development states, +.167 [+.028, +.353] on the new held-out set); near misses under 10 cm give +.025 [\mi.111, +.142] and the known-partner target +.014. The servo-off arm therefore fails to bring the object to the target it reads (Appendix~\ref{app:M}).
