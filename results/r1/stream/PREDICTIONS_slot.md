@@ -24,3 +24,8 @@ Spec: compositional-architecture/docs/PLAN_PARTWISE_POLICY.md (sections 4, 7 P0,
 - P0b: routing exact-set agreement >= 95% of scored t = 0 states (pooled over seeds; per seed and per cell reported).
 - Falsifier: fewer than 8 of 9 draws correct, or routing < 90%. Between (8/9 correct counts as the lower bound; 90-95% routing) = marginal, reported as such. On falsification: the 8-step fallback (not run in Gate 0), then idea B.
 - Not run here: B-lite (P4), rollouts, Gate 1.
+
+## Errata (2026-11-24, before the final run; no statistic, threshold or criterion changed)
+- The base bank has 23 train cells (27 base cells minus 4 panel), not 18.
+- The layout check covers dims 14-21 only (obstacle world pose, exactly zero on None cells). Dims 21-28 (obstacle_to_eef) are non-zero on None cells and were never used.
+- Job 4856600 stopped on a layout assertion (made a logged check), 4856633 was cancelled (slow null; replaced by an exact-sum null, same statistic), 4856741 is the reported run.
