@@ -942,3 +942,35 @@ h1: H minus A0, N, pooled & .2624 & .2624 & no \\
 \item Training ran in six links on one queue (two ended at the 4 h wall time); the step count is 6,000 as for H. The experiment used 18.3 GPU-h against a cap of 23 (training 8.4, rollouts 9.4).
 \item The registered option of pooling the fifth and sixth sets was not computed. A class-conditioned head and a second seed of H* were not run.
 \end{enumerate}
+
+\subsection{A four-seed test of the learned separate owner on \pizero{} (NPHS)}
+\label{app:M6}
+
+\textbf{Design.} The study (tag nphs) repeats the H* comparison over training seeds 42 (the existing checkpoints) to 45 for the three \pizero{} arms (H*, A0, sL), with the recipe, configs and data of Appendix~\ref{app:M5} (6,001 steps, batch 32, learning rate $5\cdot10^{-5}$); only the seed changes. Rollouts run N1 to N6 and K1 to K6 on a seventh held-out state set (60 states per task, disjoint from every earlier set). A seed whose H* arm scores below .70 on K is untestable and its pair is dropped; all four passed (K .908, .878, .883, .886). Intervals resample seeds within each arm, then states within each task ($B$ = 2000, 95\% percentile). Holm runs over n1s and d1s.
+
+\begin{table}[h]
+\caption{Registered contrasts of the four-seed study (seventh set). Per-seed differences are for seeds 42, 43, 44, 45.}
+\label{tab:M8}
+\centering
+\footnotesize
+\begin{tabular}{@{}P{1.75in}P{1.35in}P{1.7in}P{1.2in}@{}}
+\toprule
+contrast & estimate [95\% interval] & per seed & outcome \\
+\midrule
+n1s (primary): H* minus A0, N & +.191 [+.107, +.267] & +.086, +.247, +.175, +.256 & supported; Holm $p$ .001 \\
+n2s: H* minus sL, N & \mi.036 [\mi.103, +.028] & \mi.117, \mi.078, +.056, \mi.006 & non-inferiority at \mi.10 not shown \\
+d1s: A0 minus sL, N & \mi.227 [\mi.287, \mi.164] & \mi.203, \mi.325, \mi.119, \mi.261 & supported; Holm $p$ .001 \\
+nKs: H* minus A0, K & \mi.019 [\mi.060, +.020] & \mi.011, \mi.075, +.011, .000 & non-inferiority at \mi.05 not shown \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Mean success on N is .674 for H*, .483 for A0 and .710 for sL; on K .889, .908 and .875. The seed SD on N is .061 (H*), .061 (A0) and .028 (sL), and on K .013, .036 and .045. A paired $t$ test over the four n1s differences, run after the registered analysis and not part of it, gives $t$ = 4.8 on 3 degrees of freedom (one-sided $p$ about .01). Pooled over seeds, the class-H share of failures is .429 for H* (469 failures), .376 for A0 (744) and .504 for sL (417); A0's object (O) failures (.343) fall to .117 under H*.
+
+\textbf{Predictions as written and outcome.} n1s point +.09, supported 55\%: observed +.191, supported. n2s point \mi.11, non-inferior 25\%: observed \mi.036, not shown (lower bound \mi.103 against \mi.10). d1s supported 95\%: supported. Seed SD on N between .03 and .07 per arm (70\%): true for all three. H* class-H share at least .50 (70\%): false (.429).
+
+\textbf{Deviations.} (1) The first training link of the H* seed-44 arm (job 4852000) and (2) of the A0 seed-43 arm (job 4852016) failed at startup within two minutes; later links resumed from the chain and completed. (3) The H* model checks ran on the overcap queue and not on the lab queue. Of 139 jobs, 126 completed and 11 ended at the 4 h wall time (normal chain links). No kill condition fired. The study used 108.4 GPU-h against a cap of 130.
+
+\textbf{Reading.} Across four seeds a learned separate owner beats the same network learning the same token from the same data, on every seed, and lands within about .04 of the fitted-form servo (non-inferiority not shown). The earlier single-seed read (+.094) was underpowered, and its seed-42 pair is the smallest of the four. On \pizero{} this favours separation over form. On \pifive{} the head H stays not shown and single-seed.
+
+\textbf{Text moved from Section~\ref{sec:pi0}.} \textbf{The servo-off arm fails to bring the object to the read target.} A classifier fixed before it ran sorts each failure from the logged queries (gate: 60 of 60 classes agree). Most of the servo's gain is in failures where the held object ends 10 cm or more from the target and not at a known partner's target (+.194 [+.039, +.386] on development states, +.167 [+.028, +.353] on the new held-out set); near misses under 10 cm give +.025 [\mi.111, +.142] and the known-partner target +.014. The servo-off arm therefore fails to bring the object to the target it reads (Appendix~\ref{app:M}).
