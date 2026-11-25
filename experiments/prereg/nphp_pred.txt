@@ -1,0 +1,20 @@
+NPHP (pi0.5 version of NPHS, tag nphp; docs/notes/nphs_results.md; docs/notes/plan_necessity_power.md 3; docs/notes/review_atlas_results.md): does a frozen learned separate owner of the where (H*) beat the same pi0.5 network learning the same token (A0) on held-out pairings (N), over training seeds?
+Arms (pi0.5, pi05_libero init, 6,001 steps, batch 32, lr 5e-5, data lol/libero_g8v_raac; only the training seed changes): H* = pi05_g8v_raah0_l_ae (pi05_g8v_raac_l_ae exactly, the frozen goal-directed head H* of raah0_head.npz in the servo slot, servo_k = 0;
+the head file is the one fit for pi0 (nph; gates G1-G3 passed there): it is a function of the object-to-target offset in metres and raw action units, un-normalised with the same RAA-c norm stats pi0.5 uses, so no refit); A0 = pi05_g8v_raac_l_ae; RAA-sL = pi05_g8v_raas_l_ae.
+Seeds 42-45 for every arm.  Existing checkpoints reused: A0 seed 42 (tl6000), RAA-sL seeds 42 (main6000) and 43 (s43_6000).  New trainings (exp tl_s<seed>, tag s<seed>_6000): H* 42-45, A0 43-45, RAA-sL 44-45 (9).
+States: a new 8th state set n2_states_w8, k = 940-999 (fc_n2_w8.py, same rule as w7, N/K only), built after this row; disjointness job against every earlier set (incl. w7) must find 0 equal rows.
+Rollouts: Phase A N1-N6 + K1-K6 on the 8th set for all 12 checkpoints (60 states per task).
+Gate per H* seed: K1-K6 mean < .70 -> that seed is UNTESTABLE and its pair (H*_s, A0_s) is dropped from p1, p2, pK.  Fewer than 3 valid pairs -> p1 UNTESTABLE.
+Hierarchical bootstrap (every interval below): resample seeds with replacement within each arm (independently per arm, among that contrast's valid seeds), then resample states within each task
+(one resample per task, shared by the arms, tasks fixed); B = 2000, np.random.default_rng(0); 95% percentile interval; the point estimate is the mean over valid seed pairs of the task-mean difference.
+Primary p1: H* - A0 on N1-N6, averaged over the valid seed pairs.  SUPPORTED iff lower > 0; REVERSED iff upper < 0; EQUIVALENT iff the interval lies inside +-.10; else NOT SHOWN.
+Secondaries: p2 H* - RAA-sL on N over valid pairs, NON-INFERIOR iff lower > -.10.  pd A0 - RAA-sL on N, all seeds, SUPPORTED iff upper < 0.
+pK H* - A0 on K over valid pairs, NON-INFERIOR iff lower > -.05.  Observed seed SD per arm (N and K).  E1 failure classes per arm (nphp_e1.py, rva1_read.py classifier unchanged), pooled over seeds.
+Holm over {p1, pd} (one-sided bootstrap p; survives iff adjusted < .025).  A paired t over the per-seed differences is reported as a descriptive check only.
+Budget: hard cap 150 GPU-h for all nphp_* jobs, enforced by job time limits and a wall-hour guard in the wrappers.
+Predictions:
+ p1 point +.12; SUPPORTED 50%.
+ p2 point -.06; NON-INFERIOR 40%.
+ pd point -.15; SUPPORTED 60%.
+ H* class-H share on N2 >= .30 (50%).
+Kill: (k1) any H* seed fails the K gate: reported as UNTESTABLE, pair dropped; (k3) the disjointness job finds an equal row; (k4) any rollout job fails on infrastructure (no read until all expected cells exist).
