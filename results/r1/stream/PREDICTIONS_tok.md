@@ -19,3 +19,15 @@ and same null (16 demos from 3 of the 4 panel cells, 4 triples x 3 seeds = 12 dr
 - BC-P4: base flow loss on the task demos > null 95th percentile on >= 8/9 draws (previous base: 6/9, OW inside null).
 - BC-P2 (create call, reported only): max gain over base > null 95th percentile on 9/9.
 Compute: base and parts and B fits on one GPU each (A40 if it starts within a few hours, else any >= 24GB GPU; choice stated in the results); eval on CPU as for the FD jobs.
+
+## Results (2026-11-24): TK-P1 FALSIFIED, B not run (stop rule)
+Compute: base trained on an A40 (job 4857096, 60k steps, final loss ~.282; started within 1 minute), parts on A40 (4857104/4857105/4857106 chain; 3 x 3000 steps, ~4 min), eval on CPU (24 jobs, 4857107-4857130 range), report 4858528; smoke chain 4857084-86 on CPU.
+Slot-token base, labelled routed smax parts (r1s eval counts):
+| seed | pairs | HBOW | HBTC | OWTC | singles | panel | triple |
+|---|---|---|---|---|---|---|---|
+| 0 | .233 | .300 | .200 | .200 | .533 | .70 | .20 |
+| 1 | .311 | .233 | .433 | .267 | .504 | .70 | .00 |
+| 2 | .289 | .167 | .300 | .400 | .570 | .70 | .00 |
+| mean | .278 | | | | .536 | .70 | .067 |
+Reference (single-token base): pairs .489, singles .615, panel .867. TK-P1 needed pairs >= .45 and panel >= .80; pairs < .40 falsifies it.
+The panel is served by the base alone (no part on), so panel .70 vs .867 says the slot-token base itself is worse on held-out base combinations; the routed parts then add less on singles (.536 vs .615) and pairs. Per the registered rule: the base is worse, not B's fault; the BC-P0/P1/P4 rerun on this base was not launched (code for it is in r1tok.py, commands bc and bcreport, smoke-tested).
