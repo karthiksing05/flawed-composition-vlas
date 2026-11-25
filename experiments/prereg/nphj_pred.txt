@@ -1,0 +1,26 @@
+NPHJ (tag nphj; docs/notes/review_atlas_adv2.md items 2 and 3): two pi0 experiments.  Comparators = the EXISTING four-seed pi0-A0 (6k steps) and pi0-sL rollouts on the 7th set (results/flawed/nphs7, seeds 42-45, k 880-939).
+New arms, evaluated on the same 7th set (k 880-939; no new set): Phase A N1-N6 + K1-K6, 60 states per task.
+Arm 1, A0-24k: pi0-A0's recipe (pi0_g8v_raac_l_ae, data, norm, init, batch 32, lr 5e-5 with warmup 1,000; the config's cosine schedule has decay_steps 1,000,000 and decay_lr = peak, so it is constant after warmup and is not changed) trained 24,001 steps instead of 6,001.  Seeds 42, 43 (exp t24k_s<seed>).  Tests under-training.
+Arm 2, J: a jointly trained where-branch on pi0 (pi0_g8v_raaj_l_ae, lifelong_ood/policy/raaj_model.py).  MLP 3 -> 64 -> 64 -> 30 (SiLU) reads the same token input as H* (object-to-target offset = un-normalised state[:3], role gate m = 1 iff role id > 1.5,
+input / H*'s scale .2), output x H*'s bound M (.9375), 10 rows x 3 dims, added in the servo slot exactly as H*.  Parameters are trainable nnx parameters trained end to end by the flow loss with the expert (loss on action - J(state)); no servo target,
+no distillation, no fixed form (no tanh, no clip).  Last layer zero-initialised, so J = 0 at step 0.  6,001 steps, recipe otherwise identical to pi0-A0.  Seeds 42-45 (exp tj_s<seed>).
+Pre-training checks (nphj_check.sh; the J training links exit 0 unless results/flawed/nphj7/checks_ok.marker exists): step-0 J = pi0-A0 (sample and loss equal < 1e-6, J output exactly 0); 30-step smoke training; export parity jax vs torch < 1e-4 on 100 states; exported tensors equal the JAX checkpoint.
+Gates: K1-K6 mean < .70 for a (arm, seed): that seed is UNTESTABLE and dropped.  Fewer than 3 valid J seeds: j1, j2, jK UNTESTABLE.
+Hierarchical bootstrap (every interval below): resample seeds with replacement within each arm (independently per arm, among the arm's valid seeds; the comparators use all four seeds), then states within each task (one resample per task, shared by the two arms, tasks fixed);
+B = 2000, np.random.default_rng(0); 95% percentile interval; point = mean over the arm's valid seeds of the task-mean success difference.
+Registered contrasts (all on N1-N6 unless K is stated):
+ u1: A0-24k - pi0-sL, N.  "Under-training ruled out" iff upper < 0.
+ u2: A0-24k - pi0-A0 (6k), N.  Reported.
+ j1 PRIMARY: J - pi0-A0, N.  SUPPORTED iff lower > 0 (tests a separate pathway with a learned form).  REVERSED iff upper < 0; EQUIVALENT iff the interval lies inside +-.10; else NOT SHOWN.
+ j2: J - pi0-sL, N.  NON-INFERIOR iff lower > -.10.
+ jK: J - pi0-A0, K.  NON-INFERIOR iff lower > -.05.
+Also reported: seed SD per arm (N and K), E1 failure classes (nphj_e1.py, rva1_read.py classifier unchanged) pooled over seeds, paired t over matched seeds (descriptive only), the J branch's output magnitude at 5 cm vs the servo's (raaj_export.py, row 0).
+Holm over {u1, j1} (one-sided bootstrap p; survives iff adjusted < .025).
+Budget: hard cap 110 GPU-h for all nphj_* jobs, enforced by job time limits and a wall-hour guard in the wrappers (starts skip above 110).
+Predictions:
+ u1 point -.15, ruled out 70%.
+ u2 point +.07.
+ j1 point +.08, SUPPORTED 40%.
+ j2 NI 20%.
+ J's branch output magnitude at 5 cm is at least half the servo's (40%).
+Kill: (k1) a (arm, seed) fails the K gate: reported as UNTESTABLE, seed dropped; (k4) any rollout job fails on infrastructure (no read until all expected cells exist).

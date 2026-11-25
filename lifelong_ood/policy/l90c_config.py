@@ -34,7 +34,7 @@ LIBERO_PARAMS = f"{CACHE}/pi05_libero/params"                  # openpi pi05_lib
 NAMES = ("pi05_l90c", "pi05_l90c_lora", "pi05_base_libero", "pi05_l90c_fac", "pi05_goal8", "pi05_goal8_roles", "pi05_goal8_rsup",
          "pi05_goal8_ae", "pi05_goal8_rsup_ae", "pi05_goal8_roles_ae", "pi05_g8v_plain_ae", "pi05_g8v_rsup_ae", "pi05_g8v_rview_ae",
          "pi05_g8v_rview2_ae", "pi05_g8v_rbox_ae", "pi05_g8v_rrel_ae", "pi05_g8v_raa_ae", "pi05_g8v_raao_ae", "pi05_g8v_raac_ae", "pi05_g8v_raas_ae", "pi05_g8v_raa_l_ae", "pi05_g8v_raas_l_ae", "pi05_g8v_raas_ls2_ae", "pi05_g8v_raac_lf_ae", "pi05_g8v_raac_l_ae", "pi05_g8v_raac_lb_ae", "pi05_g8v_raas_lp_ae", "pi05_g8v_raac_lp_ae", "pi05_g8v_rview2_lp_ae",
-         "pi05_g8v_raac_lo_ae", "pi0_g8v_raas_l_ae", "pi0_g8v_raac_l_ae", "pi0_g8v_raac_lf_ae", "pi05_g8v_raah_l_ae", "pi0_g8v_raah_l_ae", "pi05_g8v_raah0_l_ae")
+         "pi05_g8v_raac_lo_ae", "pi0_g8v_raas_l_ae", "pi0_g8v_raac_l_ae", "pi0_g8v_raac_lf_ae", "pi05_g8v_raah_l_ae", "pi0_g8v_raah_l_ae", "pi05_g8v_raah0_l_ae", "pi0_g8v_raaj_l_ae")
 # SCAFFOLD_RESULTS 34: the single-GPU ladder.  "_ae" = the same data and norm stats as its parent, with the VLM (SigLIP and
 # the PaliGemma LLM) frozen and only the action expert and its projections trained; no EMA, as openpi's frozen-param recipes.
 AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae": ("pi05_goal8_rsup", "lol/libero_goal8_rsup"),
@@ -77,7 +77,9 @@ AE = {"pi05_goal8_ae": ("pi05_goal8", "lol/libero_goal8"), "pi05_goal8_rsup_ae":
       # docs/notes/plan_necessity_power.md (tag nph): pi0-A0 exactly (pi0_g8v_raac_l_ae) with the frozen goal-directed head H* in the servo slot (raah0_model.py)
       "pi0_g8v_raah_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
       # docs/notes/nphp_results.md (tag nphp): pi05_g8v_raac_l_ae (A0) exactly with the frozen goal-directed head H* (raah0_head.npz) in the servo slot (raah0p_model.py)
-      "pi05_g8v_raah0_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
+      "pi05_g8v_raah0_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac"),
+      # docs/notes/nphj_results.md (tag nphj): pi0-A0 exactly (pi0_g8v_raac_l_ae) with a jointly trained where-branch in the servo slot (raaj_model.py)
+      "pi0_g8v_raaj_l_ae": ("pi05_g8v_raac", "lol/libero_g8v_raac")}
 RSUP_REPO = "lol/libero_goal8_rsup"                             # SCAFFOLD_RESULTS 33.1: the supervised stage, role phrases given by the task definitions
 GOAL8_REPO = "lol/libero_goal8"                                 # SCAFFOLD_RESULTS 30: the eight known LIBERO-Goal tasks only (experiments/sc_t8v.py)
 ROLES_REPO = "lol/libero_goal8_roles"                           # SCAFFOLD_RESULTS 33: the same frames, each with its role's prompt (experiments/sc_t16.py)
@@ -200,6 +202,16 @@ def train_config(name, **over):
             data = _quantile_data(C, dataclasses.replace(data, repo_id="lol/libero_g8v_raac"))
             return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
                                        weight_loader=W.CheckpointWeightLoader(PI0_LIBERO_PARAMS), **over)
+        if name == "pi0_g8v_raaj_l_ae":                        # NPHJ (tag nphj): pi0_g8v_raac_l_ae exactly (pi0_libero init, quantile norm, raw actions, raac data), servo_k = 0, plus the trainable where-branch J in the servo slot (raaj_model.py)
+            from . import raas0_model as RZ
+            from . import raas_model as RS
+            from . import raaj_model as RJ
+            m = base.model
+            assert not base.data.extra_delta_transform
+            model = RJ.Pi0ConfigZJ(pi05=False, action_horizon=m.action_horizon, **RS.servo_fields(k=0.0))
+            data = _quantile_data(C, dataclasses.replace(data, repo_id="lol/libero_g8v_raac"))
+            return dataclasses.replace(base, name=name, ema_decay=None, freeze_filter=frozen, data=data, model=model,
+                                       weight_loader=RJ.RaajLoader(PI0_LIBERO_PARAMS), **over)
         if name == "pi05_g8v_raah0_l_ae":                       # NPHP (tag nphp): pi05_g8v_raac_l_ae (A0) exactly (state token, servo_k = 0, weights from pi05_libero, RAA-c norm stats / assets, data lol/libero_g8v_raac) with the frozen head H* in the servo slot
             from . import raac_model as RM
             from . import raas_model as RS
