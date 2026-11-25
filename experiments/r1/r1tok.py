@@ -13,8 +13,9 @@ import r1, r1s
 from r1s import *  # noqa  (np, torch, load_cell, Data, RES, b1, b1_data, TASKS, H)
 from lifelong_ood.b1_policy import FlowPolicy, time_embed
 
-TOK = RES + "/tok"
-BASEPT = TOK + ("/base_smoke.pt" if "--smoke" in sys.argv else "/base.pt")
+V2 = "--v2" in sys.argv; CTL = "--ctl" in sys.argv
+TOK = RES + ("/tok2" if V2 else "/tokctl" if CTL else "/tok")
+BASEPT = (RES + "/free/base.pt") if CTL else TOK + ("/base_smoke.pt" if "--smoke" in sys.argv else "/base.pt")
 SLICES = [(0, 14), (14, 28), (28, 45), (45, 77)]   # object obstacle goal proprio
 SLOTIDX = {"object": 0, "obstacle": 1, "goal": 2}
 TRUTH = {"HB": "object", "OW": "obstacle", "TC": "goal"}
@@ -39,9 +40,28 @@ class TokPolicy(FlowPolicy):
         return self.out(self.out_n(h[:, c.shape[1]:]))
 
 
+class TokPolicyD(TokPolicy):
+    """TokPolicy + a learned null per slot; during training each slot token is replaced by its null with prob slot_drop (set only in base training)"""
+    def __init__(self, **cfg):
+        super().__init__(**cfg)
+        self.null = nn.Parameter(torch.randn(len(SLICES), cfg.get("d", 256)) * 0.02)
+        self.slot_drop = 0.0
+
+    def velocity(self, x_t, t, state, task=None, z=None):
+        toks = torch.stack([f(state[..., lo:hi]) + self.slot_emb[i] for i, (f, (lo, hi)) in enumerate(zip(self.slot_in, SLICES))], 1)
+        if self.training and self.slot_drop > 0:
+            keep = torch.rand(toks.shape[0], toks.shape[1], 1, device=toks.device) >= self.slot_drop
+            toks = torch.where(keep, toks, self.null[None].expand_as(toks))
+        c = torch.cat([toks, self.task_vec(task, z)[:, None], self.time_in(time_embed(t, self.pos.shape[-1]))[:, None]], 1)
+        h = torch.cat([c, self.act_in(x_t)], 1) + self.pos
+        for b in self.blocks:
+            h = b(h)
+        return self.out(self.out_n(h[:, c.shape[1]:]))
+
+
 def load_tok(path, dev="cpu"):
     ck = torch.load(path, map_location=dev, weights_only=False)
-    m = TokPolicy(**ck["cfg"]).to(dev)
+    m = (TokPolicyD if V2 else FlowPolicy if CTL else TokPolicy)(**ck["cfg"]).to(dev)
     if ck["lora_r"]:
         m.add_lora(ck["lora_r"])
     m.load_state_dict(ck["sd"])
@@ -72,7 +92,8 @@ def cmd_base(a):
     for c in sp["train"]:
         o, ac = load_cell(c); bp.append((c, o, ac, float(len(o))))
     steps = 20 if a.smoke else a.base_steps
-    m = TokPolicy(**ck["cfg"]).to(dev)
+    m = (TokPolicyD if V2 else TokPolicy)(**ck["cfg"]).to(dev)
+    if V2: m.slot_drop = a.slot_drop
     log(f"device {dev} tok base steps {steps} params {sum(p.numel() for p in m.parameters())} episodes {sum(len(p[1]) for p in bp)}")
     r1.train(m, Data(bp, norm, "free", dev), list(m.parameters()), steps, 3e-4, 256, log, "tokbase")
     r1.save(BASEPT, m, norm, 0)
@@ -91,10 +112,10 @@ def cmd_parts(a):
     for k in TASKS:
         torch.manual_seed(a.seed)
         m, _, _ = load_tok(BASEPT, dev)
-        params = m.add_lora(1)
+        params = m.add_lora(a.rank)
         r1.train(m, Data(demos[k], norm, "free", dev), params, steps, a.lora_lr, 256, log, f"part_{k}")
         os.makedirs(d + "/parts", exist_ok=True)
-        r1.save(f"{d}/parts/{k}{'_smoke' if a.smoke else ''}.pt", m, norm, 1)
+        r1.save(f"{d}/parts/{k}{'_smoke' if a.smoke else ''}.pt", m, norm, a.rank)
     log("parts done")
 
 
@@ -111,7 +132,11 @@ def cmd_eval(a):
     d = sdir(a.seed); g = a.group
     cells = r1.make_split(0)["panel"] if g == "panel" else r1s.GROUPS[g]
     dr = r1s.dropped(); cells = [c for c in cells if c not in dr]
-    model = TokRouted("smax", d)
+    if CTL:
+        r1s.S = d
+        model = r1s.Routed("smax")
+    else:
+        model = TokRouted("smax", d)
     res = dict(model="tok_routed_smax", group=g, cells={})
     for c in cells:
         model.set_cell(c)
@@ -138,8 +163,8 @@ def cmd_report(a):
     mean = lambda k: round(sum(out[f"seed{s}"][k] for s in range(3)) / 3, 3)
     out["mean"] = {k: mean(k) for k in ("pairs", "singles", "panel", "triple")}
     m = out["mean"]
-    out["TK_P1"] = dict(pairs=m["pairs"], panel=m["panel"],
-                        verdict="PASS" if m["pairs"] >= .45 and m["panel"] >= .80 else ("FALSIFIED" if m["pairs"] < .40 else "INCONCLUSIVE"))
+    out["TK_D1" if V2 else "CTL_R8" if CTL else "TK_P1"] = dict(pairs=m["pairs"], panel=m["panel"],
+                        verdict="PASS" if m["pairs"] >= .45 and m["panel"] >= .80 else ("FALSIFIED" if (m["panel"] < .75 if V2 else m["pairs"] < .40) else "INCONCLUSIVE"))
     for k, v in out.items(): print(k, json.dumps(v))
     json.dump(out, open(TOK + "/report_tok.json", "w", encoding="utf-8"), indent=1)
 
@@ -243,6 +268,6 @@ if __name__ == "__main__":
     p.add_argument("--seed", type=int, default=0); p.add_argument("--group"); p.add_argument("--smoke", action="store_true")
     p.add_argument("--base_steps", type=int, default=60000); p.add_argument("--adapt_steps", type=int, default=3000)
     p.add_argument("--lora_lr", type=float, default=2e-3); p.add_argument("--steps", type=int, default=1000)
-    p.add_argument("--bc_lr", type=float, default=1e-3)
+    p.add_argument("--bc_lr", type=float, default=1e-3); p.add_argument("--rank", type=int, default=1); p.add_argument("--slot_drop", type=float, default=0.0)
     a = p.parse_args()
     {"base": cmd_base, "parts": cmd_parts, "eval": cmd_eval, "report": cmd_report, "bc": cmd_bc, "bcreport": cmd_bcreport}[a.cmd](a)

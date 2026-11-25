@@ -31,3 +31,13 @@ Slot-token base, labelled routed smax parts (r1s eval counts):
 | mean | .278 | | | | .536 | .70 | .067 |
 Reference (single-token base): pairs .489, singles .615, panel .867. TK-P1 needed pairs >= .45 and panel >= .80; pairs < .40 falsifies it.
 The panel is served by the base alone (no part on), so panel .70 vs .867 says the slot-token base itself is worse on held-out base combinations; the routed parts then add less on singles (.536 vs .615) and pairs. Per the registered rule: the base is worse, not B's fault; the BC-P0/P1/P4 rerun on this base was not launched (code for it is in r1tok.py, commands bc and bcreport, smoke-tested).
+
+## TK-D1 diagnostic (registered 2026-11-24 before any job; user-directed, then stop)
+Question: is the slot-token base's deficit (panel .70, pairs .278) a training/capacity issue or the token split itself?
+Changes, one principle (each slot must be usable on its own, which composition needs):
+- Base: TokPolicyD (null token per slot), 120k steps (2x), slot-token dropout p = .15 per slot token per sample in base training only (token replaced by that slot's learned null); otherwise as TokPolicy (lr 3e-4, bs 256, same data and normaliser). Dropout is off in parts, B fits and eval.
+- Parts: rank 8 instead of 1 (3000 steps, lr 2e-3, same draws), labelled routed smax, r1s eval counts, seeds 0-2.
+- Control (cheap): the existing single-token r1s base (results/r1/free/base.pt) with rank-8 parts, same draws, same eval.
+- TK-D1: panel >= .80 AND labelled routed pairs >= .45 (3-seed means). Falsifier: panel < .75 -> the token split is the problem; stop. Between: inconclusive, B not run.
+- If TK-D1 passes, run B (bc, bcreport) on this base with the earlier registered predictions: BC-P0 >= 8/9 (falsifier <= 6/9), BC-P1 margin > null p95 on >= 8/9, BC-P4 base loss > null p95 on >= 8/9.
+Code: r1tok.py flags --v2 (results/r1/tok2) and --ctl (results/r1/tokctl), --rank, --slot_drop.
