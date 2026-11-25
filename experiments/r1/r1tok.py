@@ -268,6 +268,6 @@ if __name__ == "__main__":
     p.add_argument("--seed", type=int, default=0); p.add_argument("--group"); p.add_argument("--smoke", action="store_true")
     p.add_argument("--base_steps", type=int, default=60000); p.add_argument("--adapt_steps", type=int, default=3000)
     p.add_argument("--lora_lr", type=float, default=2e-3); p.add_argument("--steps", type=int, default=1000)
-    p.add_argument("--bc_lr", type=float, default=1e-3); p.add_argument("--rank", type=int, default=1); p.add_argument("--slot_drop", type=float, default=0.0)
+    p.add_argument("--bc_lr", type=float, default=1e-3); p.add_argument("--rank", type=int, default=1); p.add_argument("--v2", action="store_true"); p.add_argument("--ctl", action="store_true"); p.add_argument("--slot_drop", type=float, default=0.0)
     a = p.parse_args()
     {"base": cmd_base, "parts": cmd_parts, "eval": cmd_eval, "report": cmd_report, "bc": cmd_bc, "bcreport": cmd_bcreport}[a.cmd](a)

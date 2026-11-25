@@ -41,3 +41,19 @@ Changes, one principle (each slot must be usable on its own, which composition n
 - TK-D1: panel >= .80 AND labelled routed pairs >= .45 (3-seed means). Falsifier: panel < .75 -> the token split is the problem; stop. Between: inconclusive, B not run.
 - If TK-D1 passes, run B (bc, bcreport) on this base with the earlier registered predictions: BC-P0 >= 8/9 (falsifier <= 6/9), BC-P1 margin > null p95 on >= 8/9, BC-P4 base loss > null p95 on >= 8/9.
 Code: r1tok.py flags --v2 (results/r1/tok2) and --ctl (results/r1/tokctl), --rank, --slot_drop.
+
+### TK-D1 results (2026-11-24): INCONCLUSIVE (panel .767 in [.75 .80), pairs .396 < .45); B not run (rule: B only on a pass)
+Compute: smoke chain on CPU; base 120k steps on an L40S (job 4859463; the A40 queue estimate was ~1 h and later >1 day, so L40S, 48 GB, started in ~3 min); parts rank 8 on RTX 6000 (24 GB; jobs 4860345-47); eval CPU; reports 4860420 (TK-D1) and 4860421 (control).
+Labelled routed smax, rank-8 parts, r1s eval counts:
+| arm | seed | pairs | singles | panel | triple |
+|---|---|---|---|---|---|
+| slot-token, dropout .15, 120k (TK-D1) | 0 | .467 | .548 | .70 | .40 |
+| | 1 | .478 | .578 | .80 | .80 |
+| | 2 | .244 | .585 | .80 | .00 |
+| | mean | .396 | .570 | .767 | .400 |
+| single-token base, rank 8 (control) | 0 | .656 | .607 | .85 | .20 |
+| | 1 | .578 | .541 | .95 | .50 |
+| | 2 | .478 | .593 | .85 | .20 |
+| | mean | .571 | .580 | .883 | .300 |
+Reference (rank 1): single-token pairs .489 panel .867; slot-token (60k, no dropout) pairs .278 panel .70.
+Reading: 2x steps plus slot dropout lifts the slot-token panel .70 -> .767 and pairs .278 -> .396 (rank 8 included), but it stays below the single-token base on the same parts (panel .883, pairs .571). Rank 8 helps the single-token pairs (.489 -> .571), so part of the earlier gap is rank, and the rest is the token split. Panel is the base alone, so the base remains worse (.767 vs .883); seed spread is large (pairs .244-.478).
