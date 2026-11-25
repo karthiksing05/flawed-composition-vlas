@@ -6,7 +6,7 @@ Section marks: RT = RIVAL_TESTS, SR = SCAFFOLD_RESULTS, PS = PLAN_SCAFFOLD, FC =
 
 ## 1. The theory
 
-A task is a short program: a verb, an object filler and a target filler, run in phases that an event separates (reach and grasp, then carry and place). A policy **composes** when its success on an unseen pair equals the product of its parts' competences, s(o, t) = g(o) · p(t). The repo has used this criterion since FC (3F).
+A task is a short program: a verb, an object filler and a target filler, run in phases that an event separates (reach and grasp, then carry and place). A policy **composes** when its success on a held-out pair equals the product of its parts' competences, s(o, t) = g(o) · p(t). The repo has used this criterion since FC (3F).
 
 **P1. Shortcut.** Training on a set of pairs cannot tell a policy to learn parts. If a filler has one partner in the data, the partner's identity predicts everything the phase needs, and the loss is minimised equally well by a policy that stores the pair. The held object sits in two cameras in every carry frame, so it is the easier cue.
 
@@ -22,7 +22,7 @@ A task is a short program: a verb, an object filler and a target filler, run in 
 
 ## 2. Where prior versions fail, by principle
 
-| system | binds phrases | own-role identity only (P2) | fixed rule (P3) | addressable parts (P5) | new pairings, familiar |
+| system | binds phrases | own-role identity only (P2) | fixed rule (P3) | addressable parts (P5) | held-out pairings of training parts |
 |---|---|---|---|---|---|
 | frozen pi0.5 | implicitly | no | no | no | .50; grasp .97, place .52 (RT §3.1) |
 | frozen GR00T, two systems joined by a latent | implicitly | no | no | no | .167; grasp-right .99 (SR §32.1) |
@@ -125,7 +125,7 @@ The per-dimension weights are the fixed rule of P3 in a more general form. At lo
 | **Q1** | Does a search make it work on a plain VLA? | The same pipeline on the retrained VLA (T8b), searching starts, initialisation, level grid, K, temperature and guidance scale | 1 A40 per setting batch |
 | **Q2** | Does the role channel make it work? | The same search on the role-phrase VLA (T16) and then the role-view VLA (R2). The theory predicts Q1 stays near zero-shot and Q2 rises | after those train |
 
-**Search discipline.** Settings are searched on known tasks and on states disjoint from every read, with the grid and the selection rule registered first. Each read then runs once at the selected setting on fresh states. Without that split a search over about seven settings on 20 states will find a winner by chance.
+**Search discipline.** Settings are searched on known tasks and on states disjoint from every read, with the grid and the selection rule registered first. Each read then runs once at the selected setting on held-out states. Without that split a search over about seven settings on 20 states will find a winner by chance.
 
 **What would refute this.** Q0 fails with pure parts available: then the operator, and not the VLA, is the weak piece. Or Q1 succeeds after the search: then purity was not needed and the earlier failure was a tuning failure.
 
@@ -136,4 +136,4 @@ The per-dimension weights are the fixed rule of P3 in a more general form. At lo
 - A silhouette keeps shape, and the gripper's opening still tells the objects apart. P4 treats both as geometry; if the place fails on them, the exception channel is wider than I assume.
 - New layouts fail at the grasp for every arm, and this edit does not address that.
 - LoRA rungs and full fine-tunes may differ. Each comparison stays inside one recipe.
-- States 4-23 have shaped every rule here. Confirmation needs fresh states.
+- States 4-23 have shaped every rule here. Confirmation needs held-out states.
