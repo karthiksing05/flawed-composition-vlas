@@ -1,5 +1,50 @@
 # NPHS results (multi-seed NPH, tag `nphs`; prereg experiments/prereg/nphs_pred.txt)
 
+## RESULTS (2026-11-24, run finished; source results/flawed/nphs7/nphs_read_main.json, e1_*_pooled.json)
+
+Seeds 42-45, 7th set k 880-939, B = 2000. K gates all passed (K mean .908, .878, .883, .886; threshold .70), so all four H*/A0 pairs are valid.
+
+| contrast (registered) | delta [95% CI] | per seed 42/43/44/45 | label |
+|---|---|---|---|
+| n1s PRIMARY H* - A0, N | +.191 [+.107, +.267] | +.086 / +.247 / +.175 / +.256 | SUPPORTED (Holm adj. p .001) |
+| n2s H* - sL, N (NI -.10) | -.036 [-.103, +.028] | -.117 / -.078 / +.056 / -.006 | NOT SHOWN (misses by .003) |
+| d1s A0 - sL, N | -.227 [-.287, -.164] | -.203 / -.325 / -.119 / -.261 | SUPPORTED (Holm adj. p .001) |
+| nKs H* - A0, K (NI -.05) | -.019 [-.060, +.020] | -.011 / -.075 / +.011 / .000 | NOT SHOWN |
+
+Means (N / K): H* .674 / .889, A0 .483 / .908, sL .710 / .875.  Seed SD on N: H* .061, A0 .061, sL .028 (K: .013, .036, .045).
+Per-cell N: H* .592 .669 .733 .703; A0 .506 .422 .558 .447; sL .708 .747 .678 .708.
+Orchestrator robustness check (descriptive, not registered): paired t over the 4 per-seed n1s differences, mean .191, t ~ 4.8, df 3, one-sided p ~ .01.
+
+**E1 failure classes** (pooled over 4 seeds, 1440 episodes per arm; share of failures):
+| arm | failures | G | W | O | H | M |
+|---|---|---|---|---|---|---|
+| H* | 469 | .043 | .000 | .117 | **.429** | .412 |
+| A0 | 744 | .026 | .026 | .343 | .376 | .230 |
+| sL | 417 | .101 | .005 | .122 | .504 | .269 |
+H* class-H share .429 is below the predicted .50.  H* removes the O (object) failures A0 has (.343 to .117) and keeps H and M.
+
+**Predictions as written vs outcome.**
+- n1s point +.09, SUPPORTED 55%: point +.191, SUPPORTED (point twice the prediction).
+- n2s point -.11, NON-INFERIOR 25%: point -.036, NOT SHOWN (lower -.103 vs -.10).
+- d1s SUPPORTED 95%: SUPPORTED, -.227.
+- Seed SD on N .03-.07 per arm: .061, .061, .028 (all in range).
+- H* class-H share >= .50: .429, MISSED.
+
+**GPU-h.** 108.4 (sacct, nphs_* jobs, GPU count x elapsed), under the 130 cap.  Jobs: 126 COMPLETED, 11 TIMEOUT (normal chain links), 2 FAILED.
+
+**Deviations.**
+1. Training link 1 of pzH44 (job 4852000) FAILED at startup after 1:36; later links resumed and completed.
+2. Training link 1 of pzA0_43 (job 4852016) FAILED at startup after 1:27; later links resumed and completed.
+3. H* pcheck jobs ran on overcap, not tail-lab (already in the resume note).
+No kill condition (k1, k3, k4) fired.
+
+**Reading.**
+- Across seeds, a learned separate owner (H*: the servo law aimed at a release point learned from the demonstrations, in a module outside the network) beats the same network learning the same token from the same data (+.191), and it does so on every seed.
+- H* comes within about .04 of the fitted-form servo (.674 vs .710), though non-inferiority is not formally shown.
+- Single-seed nph (+.094, not shown) was underpowered; its seed-42 pair (+.086 here) is the smallest of the four.
+- This resolves the separation-vs-form question on pi0 in favour of separation.
+- pi0.5 H stays not shown (+.089), and on pi0.5 it is single-seed.
+
 ## RESUME NOTE (written 2026-11-24 10:15; the run is unattended from here)
 
 **State.**  Row committed: ledger/m3_prereg/m3_prereg__libero_goal__nphs__s0__3e4670b2.json, commit 597a5cfe (10:09:22); pipeline submitted ~10:11 (137 jobs, all gated).  Nothing pushed.
