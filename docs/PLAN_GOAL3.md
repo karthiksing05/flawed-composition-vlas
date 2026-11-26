@@ -57,3 +57,11 @@ where a cheap detector exists.
 ## Rules carried over
 Pre-register before reads; never overwrite results; Holm within families; hierarchical
 bootstrap (seeds then states, tasks fixed); compute via sbatch on overcap/tail-lab only.
+
+## Status 2026-11-25
+- Predictor dev fit (docs/notes/fp_dev_results.md): LOMO AUC v1 .885 vs b2 .617, but v1 = b1+b2 (.879);
+  within new pairings nothing beats chance under LOMO; v0 .69 under LOSO (scene-2 cue layouts).
+  LIBERO has 8 new pairings, too few to learn which new pairing fails. Next: LOPO CV and v2 =
+  v1 + a rollout-free language-sensitivity probe (first action chunk under the instructed vs.
+  alternative targets, seed-fixed, noise floor). Confirmatory test needs the new benchmarks'
+  larger pairing sets.
