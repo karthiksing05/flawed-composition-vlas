@@ -1,7 +1,7 @@
 """Gate T1 (temporal composition): segment-gated smax over the existing rank-8 parts (results/r1/tokctl/s{S}/parts), rollouts, no training.
 Registration: compositional-architecture results/tables/compose_stream_prediction.json, last addendum temporal_T1_registered.
   lengths                                  -> results/r1/t1/lengths.json  (empirical L1 S0/S1 lengths of base-train demos, for arm b)
-  run --arm none|grasp|random|oracle --seed S --group G [--cell0] -> results/r1/t1/{arm}/s{S}/{G}.json
+  run --arm none|grasp|random|oracle|perm --seed S --group G [--cell0] [--eps_mult M] -> results/r1/t1/{arm}/s{S}/{G}.json
   report                                   -> results/r1/t1/t1.json
 
 Choices (literal readings):
@@ -97,7 +97,7 @@ def cmd_lengths(a):
     print({k: v for k, v in res.items() if k not in ("L0", "L1")}, flush=True)
 
 
-def rollout(model, norm, cell, n_episodes, arm, tw, lens, rng, seed=0, max_steps=500):
+def rollout(model, norm, cell, n_episodes, arm, tw, lens, rng, seed=0, max_steps=500, donor=None):
     env = b1_eval.make_env(cell)
     cond = dict(task=torch.zeros(1, dtype=torch.long))
     model.eval(); t0 = time.time()
@@ -120,6 +120,9 @@ def rollout(model, norm, cell, n_episodes, arm, tw, lens, rng, seed=0, max_steps
                 model.seg = st.update(raw, t)
             elif arm == "random":
                 model.seg = 0 if t < l0 else (1 if t < l0 + l1 else 2)
+            elif arm == "perm":   # another episode's online grasp onset/release from the same cell (same-node grasp arm)
+                on_, off_ = donor[e]["on_t"], donor[e]["off_t"]
+                model.seg = 0 if (on_ is None or t < on_) else (1 if (off_ is None or t < off_) else 2)
             if not plan:
                 st_ = torch.tensor(norm.state(s), dtype=torch.float32)
                 ch = model.sample(st_, steps=10, gen=gen, **cond)[0].numpy()
@@ -132,7 +135,10 @@ def rollout(model, norm, cell, n_episodes, arm, tw, lens, rng, seed=0, max_steps
             if env.env._check_success():
                 ok = True; break
         succ.append(bool(ok)); steps.append(t)
-        info.append(dict(on_t=st.on_t, off_t=st.off_t, final_seg=int(model.seg)))
+        if arm == "perm":
+            info.append(dict(on_t=donor[e]["on_t"], off_t=donor[e]["off_t"], final_seg=int(model.seg), donor=donor[e]["idx"]))
+        else:
+            info.append(dict(on_t=st.on_t, off_t=st.off_t, final_seg=int(model.seg)))
     return dict(success=succ, steps=steps, info=info, seconds=time.time() - t0)
 
 
@@ -145,11 +151,20 @@ def cmd_run(a):
     if a.cell0:
         cells = cells[:1]
     lens = json.load(open(OUT + "/lengths.json", encoding="utf-8")) if a.arm == "random" else None
+    gsrc = json.load(open(f"{OUT}/grasp/s{a.seed}/{a.group}.json", encoding="utf-8")) if a.arm == "perm" else None
+    prng = np.random.RandomState(20261127 + a.seed)
     rng = np.random.RandomState(20261126 + a.seed)
     tw = tw_value(); res = dict(arm=a.arm, seed=a.seed, group=a.group, assign={k: sorted(v) for k, v in ASSIGN[a.seed].items()}, cells={})
     for c in cells:
         model.set_cell(c)
-        r = rollout(model, model.norm, c, r1s.EPS[a.group], a.arm, tw, lens, rng, seed=0)
+        n_ep = r1s.EPS[a.group] * a.eps_mult
+        donor = None
+        if a.arm == "perm":   # cyclic shift by k in [1, n): a derangement of the grasp arm's own onsets within the cell
+            gi = gsrc["cells"][b1.cell_name(c)]["info"]
+            assert len(gi) == n_ep, (len(gi), n_ep)
+            k = int(prng.randint(1, n_ep))
+            donor = [dict(gi[(e + k) % n_ep], idx=(e + k) % n_ep) for e in range(n_ep)]
+        r = rollout(model, model.norm, c, n_ep, a.arm, tw, lens, rng, seed=0, donor=donor)
         res["cells"][b1.cell_name(c)] = r
         print(b1.cell_name(c), r["success"], [(i["on_t"], i["off_t"]) for i in r["info"]][:4], f"{r['seconds']:.0f}s", flush=True)
     os.makedirs(f"{OUT}/{a.arm}/s{a.seed}", exist_ok=True)
@@ -182,7 +197,7 @@ def cmd_report(a):
             b["mean"][g] = m(v) if None not in v else None
         return b
     out["ref_CTL_R8"] = block(ref)
-    for arm in ("grasp", "random", "oracle", "none"):
+    for arm in ("grasp", "random", "oracle", "none", "perm"):
         out["arms"][arm] = block(lambda s, g, arm=arm: arm_(arm, s, g))
     A, B = out["arms"]["grasp"], out["arms"]["random"]
     ver = {}
@@ -224,5 +239,6 @@ def cmd_report(a):
 if __name__ == "__main__":
     p = argparse.ArgumentParser(); p.add_argument("cmd"); p.add_argument("--arm", default="grasp"); p.add_argument("--seed", type=int, default=0)
     p.add_argument("--group", default="pair_OWTC"); p.add_argument("--cell0", action="store_true")
+    p.add_argument("--eps_mult", type=int, default=1)   # pinned rerun: pair groups at 3x episodes (reset seeds e = 0..3E-1; e < E as before)
     a = p.parse_args()
     {"lengths": cmd_lengths, "run": cmd_run, "report": cmd_report}[a.cmd](a)
