@@ -1,0 +1,982 @@
+{
+ "smoke": false,
+ "calibration": {
+  "p99": {
+   "object": 0.004507978873357023,
+   "obstacle": 0.0,
+   "goal": 0.0
+  },
+  "eps": {
+   "object": 0.01352393662007107,
+   "obstacle": 0.0,
+   "goal": 0.0
+  },
+  "n_demos": 2300,
+  "diag_object_p99_by_object_value": {
+   "Box": 0.00021344423294067383,
+   "Dumbbell": 0.004516704239056828,
+   "Plate": 5.78761100769043e-05
+  }
+ },
+ "l1_fit": {
+  "tw": -0.024077332303859292,
+  "w_min": -0.02459847182035446,
+  "w_close_q01": -0.023556192787364125,
+  "close_frac": 0.7554521739130434
+ },
+ "segmentation": {
+  "PickPlace": {
+   "n": 1600,
+   "ok_frac": 0.0725,
+   "s0_empty": 0.0,
+   "s1_empty": 0.925625,
+   "s2_empty": 0.925625,
+   "multi_run": 0.001875,
+   "other_event_before_object": 0.0,
+   "first_event_not_object": 0.0,
+   "n_events_mean": 0.1525,
+   "seg_len_mean": [
+    474.194375,
+    0.27375,
+    25.531875
+   ],
+   "l1": {
+    "fire_frac": 1.0,
+    "agree_within5": 0.004375,
+    "both": 119,
+    "agree_given_both": 0.058823529411764705,
+    "lag_q10_50_90": [
+     -59.0,
+     -44.0,
+     -7.0
+    ]
+   }
+  },
+  "Push": {
+   "n": 1600,
+   "ok_frac": 0.000625,
+   "s0_empty": 0.0,
+   "s1_empty": 0.999375,
+   "s2_empty": 0.999375,
+   "multi_run": 0.0,
+   "other_event_before_object": 0.0,
+   "first_event_not_object": 0.0,
+   "n_events_mean": 0.00125,
+   "seg_len_mean": [
+    499.938125,
+    0.001875,
+    0.06
+   ],
+   "l1": {
+    "fire_frac": 0.994375,
+    "agree_within5": 0.0,
+    "both": 1,
+    "agree_given_both": 0.0,
+    "lag_q10_50_90": [
+     -261.0,
+     -261.0,
+     -261.0
+    ]
+   }
+  },
+  "Shelf": {
+   "n": 1600,
+   "ok_frac": 0.00875,
+   "s0_empty": 0.0,
+   "s1_empty": 0.99125,
+   "s2_empty": 0.99125,
+   "multi_run": 0.0,
+   "other_event_before_object": 0.0,
+   "first_event_not_object": 0.0,
+   "n_events_mean": 0.0175,
+   "seg_len_mean": [
+    496.87625,
+    0.028125,
+    3.095625
+   ],
+   "l1": {
+    "fire_frac": 1.0,
+    "agree_within5": 0.0,
+    "both": 14,
+    "agree_given_both": 0.0,
+    "lag_q10_50_90": [
+     -52.7,
+     -20.5,
+     -9.599999999999998
+    ]
+   }
+  },
+  "Trashcan": {
+   "n": 1600,
+   "ok_frac": 0.976875,
+   "s0_empty": 0.0,
+   "s1_empty": 0.011875,
+   "s2_empty": 0.011875,
+   "multi_run": 0.01125,
+   "other_event_before_object": 0.0,
+   "first_event_not_object": 0.0,
+   "n_events_mean": 1.99875,
+   "seg_len_mean": [
+    187.59375,
+    5.33625,
+    307.07
+   ],
+   "l1": {
+    "fire_frac": 1.0,
+    "agree_within5": 0.0,
+    "both": 1581,
+    "agree_given_both": 0.0,
+    "lag_q10_50_90": [
+     -85.0,
+     -71.0,
+     -58.0
+    ]
+   }
+  }
+ },
+ "l1_grasping": {
+  "grasping_objectives": [
+   "PickPlace",
+   "Shelf",
+   "Trashcan"
+  ],
+  "n": 4800,
+  "agree_within5": 0.0014583333333333334,
+  "agree_given_both": 0.004084014002333722
+ },
+ "null": {
+  "loss": [
+   [
+    0.31523536211039754,
+    NaN,
+    NaN
+   ],
+   [
+    0.3102094057101931,
+    NaN,
+    NaN
+   ],
+   [
+    0.31370978585866394,
+    NaN,
+    NaN
+   ],
+   [
+    0.3062427184459976,
+    0.3511580531485379,
+    0.2943205450466203
+   ],
+   [
+    0.3130609926160832,
+    NaN,
+    NaN
+   ],
+   [
+    0.308139845831174,
+    0.30667847534641623,
+    0.2827321443850031
+   ],
+   [
+    0.3123518312845462,
+    0.13707217294722795,
+    0.3191302105680936
+   ],
+   [
+    0.3055764286337203,
+    0.2743884581141174,
+    0.29314325660975143
+   ],
+   [
+    0.31536317404883446,
+    NaN,
+    NaN
+   ],
+   [
+    0.3101650495848258,
+    0.34137281822040677,
+    0.284741589403134
+   ],
+   [
+    0.31217710174591046,
+    NaN,
+    NaN
+   ],
+   [
+    0.3040046156088647,
+    NaN,
+    NaN
+   ]
+  ],
+  "whole": [
+   0.31523536211039754,
+   0.3102094057101931,
+   0.31370978585866394,
+   0.3058088063109608,
+   0.3130609926160832,
+   0.30710674460337034,
+   0.312547308565845,
+   0.30504406780615684,
+   0.31536317404883446,
+   0.3082814101193799,
+   0.31217710174591046,
+   0.3040046156088647
+  ],
+  "p95": [
+   0.31529287748269413,
+   0.34920100616291166,
+   0.31416827746379894
+  ],
+  "whole_p95": 0.31529287748269413,
+  "loo_exceed": [
+   [
+    true,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    true,
+    false
+   ],
+   [
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    true
+   ],
+   [
+    false,
+    false,
+    false
+   ],
+   [
+    true,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    false
+   ],
+   [
+    false,
+    false,
+    false
+   ]
+  ],
+  "loo_counts": [
+   2,
+   1,
+   1
+  ],
+  "draws": [
+   {
+    "whole": 0.31523536211039754,
+    "loss": [
+     0.31523536211039754,
+     NaN,
+     NaN
+    ],
+    "chunks": [
+     1600,
+     0,
+     0
+    ],
+    "steps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "ok_frac": 0.0,
+    "seed": 0,
+    "idx": 0,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Dumbbell_GoalWall_Push"
+    ]
+   },
+   {
+    "whole": 0.3102094057101931,
+    "loss": [
+     0.3102094057101931,
+     NaN,
+     NaN
+    ],
+    "chunks": [
+     1600,
+     0,
+     0
+    ],
+    "steps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "ok_frac": 0.0,
+    "seed": 0,
+    "idx": 1,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   },
+   {
+    "whole": 0.31370978585866394,
+    "loss": [
+     0.31370978585866394,
+     NaN,
+     NaN
+    ],
+    "chunks": [
+     1600,
+     0,
+     0
+    ],
+    "steps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "ok_frac": 0.0,
+    "seed": 0,
+    "idx": 2,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_Push",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   },
+   {
+    "whole": 0.3058088063109608,
+    "loss": [
+     0.3062427184459976,
+     0.3511580531485379,
+     0.2943205450466203
+    ],
+    "chunks": [
+     1537,
+     1,
+     62
+    ],
+    "steps": [
+     0.960625,
+     0.000375,
+     0.039
+    ],
+    "ok_frac": 0.0625,
+    "seed": 0,
+    "idx": 3,
+    "cells": [
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Dumbbell_GoalWall_Push",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   },
+   {
+    "whole": 0.3130609926160832,
+    "loss": [
+     0.3130609926160832,
+     NaN,
+     NaN
+    ],
+    "chunks": [
+     1600,
+     0,
+     0
+    ],
+    "steps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "ok_frac": 0.0,
+    "seed": 1,
+    "idx": 0,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Dumbbell_GoalWall_Push"
+    ]
+   },
+   {
+    "whole": 0.30710674460337034,
+    "loss": [
+     0.308139845831174,
+     0.30667847534641623,
+     0.2827321443850031
+    ],
+    "chunks": [
+     1534,
+     1,
+     65
+    ],
+    "steps": [
+     0.958625,
+     0.000375,
+     0.041
+    ],
+    "ok_frac": 0.0625,
+    "seed": 1,
+    "idx": 1,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   },
+   {
+    "whole": 0.312547308565845,
+    "loss": [
+     0.3123518312845462,
+     0.13707217294722795,
+     0.3191302105680936
+    ],
+    "chunks": [
+     1527,
+     1,
+     72
+    ],
+    "steps": [
+     0.954,
+     0.0005,
+     0.0455
+    ],
+    "ok_frac": 0.0625,
+    "seed": 1,
+    "idx": 2,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_Push",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   },
+   {
+    "whole": 0.30504406780615684,
+    "loss": [
+     0.3055764286337203,
+     0.2743884581141174,
+     0.29314325660975143
+    ],
+    "chunks": [
+     1533,
+     1,
+     66
+    ],
+    "steps": [
+     0.958,
+     0.000375,
+     0.041625
+    ],
+    "ok_frac": 0.0625,
+    "seed": 1,
+    "idx": 3,
+    "cells": [
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Dumbbell_GoalWall_Push",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   },
+   {
+    "whole": 0.31536317404883446,
+    "loss": [
+     0.31536317404883446,
+     NaN,
+     NaN
+    ],
+    "chunks": [
+     1600,
+     0,
+     0
+    ],
+    "steps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "ok_frac": 0.0,
+    "seed": 2,
+    "idx": 0,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Dumbbell_GoalWall_Push"
+    ]
+   },
+   {
+    "whole": 0.3082814101193799,
+    "loss": [
+     0.3101650495848258,
+     0.34137281822040677,
+     0.284741589403134
+    ],
+    "chunks": [
+     1477,
+     2,
+     121
+    ],
+    "steps": [
+     0.92275,
+     0.00075,
+     0.0765
+    ],
+    "ok_frac": 0.125,
+    "seed": 2,
+    "idx": 1,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   },
+   {
+    "whole": 0.31217710174591046,
+    "loss": [
+     0.31217710174591046,
+     NaN,
+     NaN
+    ],
+    "chunks": [
+     1600,
+     0,
+     0
+    ],
+    "steps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "ok_frac": 0.0,
+    "seed": 2,
+    "idx": 2,
+    "cells": [
+     "IIWA_Box_None_Push",
+     "IIWA_Dumbbell_GoalWall_Push",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   },
+   {
+    "whole": 0.3040046156088647,
+    "loss": [
+     0.3040046156088647,
+     NaN,
+     NaN
+    ],
+    "chunks": [
+     1600,
+     0,
+     0
+    ],
+    "steps": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "ok_frac": 0.0,
+    "seed": 2,
+    "idx": 3,
+    "cells": [
+     "IIWA_Dumbbell_GoalWall_PickPlace",
+     "IIWA_Dumbbell_GoalWall_Push",
+     "IIWA_Plate_ObjectDoor_PickPlace"
+    ]
+   }
+  ]
+ },
+ "tasks": [
+  {
+   "seed": 0,
+   "task": "HB",
+   "new_factor": "object",
+   "loss": [
+    0.3576084682234796,
+    NaN,
+    NaN
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    true,
+    false,
+    false
+   ],
+   "top_raw": "S0",
+   "top_excess": "S0",
+   "p2_hit": false,
+   "whole": 0.3576084682234796,
+   "whole_exceeds": true,
+   "chunks": [
+    1600,
+    0,
+    0
+   ],
+   "seg_step_frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "ok_frac": 0.0
+  },
+  {
+   "seed": 0,
+   "task": "OW",
+   "new_factor": "obstacle",
+   "loss": [
+    0.3105853134658105,
+    0.34039688389748335,
+    0.28598427562974393
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    false,
+    false,
+    false
+   ],
+   "top_raw": "S1",
+   "top_excess": "S0",
+   "p2_hit": false,
+   "whole": 0.30952765029200235,
+   "whole_exceeds": false,
+   "chunks": [
+    1529,
+    1,
+    70
+   ],
+   "seg_step_frac": [
+    0.95525,
+    0.0005,
+    0.04425
+   ],
+   "ok_frac": 0.0625
+  },
+  {
+   "seed": 0,
+   "task": "TC",
+   "new_factor": "goal",
+   "loss": [
+    0.32985615186158596,
+    0.4483299416179458,
+    0.3530250768035062
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    true,
+    true,
+    true
+   ],
+   "top_raw": "S1",
+   "top_excess": "S1",
+   "p2_hit": true,
+   "whole": 0.344723392824817,
+   "whole_exceeds": true,
+   "chunks": [
+    635,
+    15,
+    950
+   ],
+   "seg_step_frac": [
+    0.39275,
+    0.010625,
+    0.596625
+   ],
+   "ok_frac": 1.0
+  },
+  {
+   "seed": 1,
+   "task": "HB",
+   "new_factor": "object",
+   "loss": [
+    0.3607784712084782,
+    0.1888812417164445,
+    0.35229831565679476
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    true,
+    false,
+    true
+   ],
+   "top_raw": "S0",
+   "top_excess": "S0",
+   "p2_hit": false,
+   "whole": 0.36032122902353875,
+   "whole_exceeds": true,
+   "chunks": [
+    1533,
+    1,
+    66
+   ],
+   "seg_step_frac": [
+    0.957625,
+    0.000625,
+    0.04175
+   ],
+   "ok_frac": 0.0625
+  },
+  {
+   "seed": 1,
+   "task": "OW",
+   "new_factor": "obstacle",
+   "loss": [
+    0.3137283400657142,
+    0.26312961569055915,
+    0.29710958698221174
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    false,
+    false,
+    false
+   ],
+   "top_raw": "S0",
+   "top_excess": "S0",
+   "p2_hit": true,
+   "whole": 0.3129488719742221,
+   "whole_exceeds": false,
+   "chunks": [
+    1527,
+    1,
+    72
+   ],
+   "seg_step_frac": [
+    0.954125,
+    0.00075,
+    0.045125
+   ],
+   "ok_frac": 0.0
+  },
+  {
+   "seed": 1,
+   "task": "TC",
+   "new_factor": "goal",
+   "loss": [
+    0.3372102945827117,
+    0.43325076085131836,
+    0.34598838441012586
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    true,
+    true,
+    true
+   ],
+   "top_raw": "S1",
+   "top_excess": "S1",
+   "p2_hit": true,
+   "whole": 0.3438980787816399,
+   "whole_exceeds": true,
+   "chunks": [
+    550,
+    17,
+    1033
+   ],
+   "seg_step_frac": [
+    0.340375,
+    0.01,
+    0.649625
+   ],
+   "ok_frac": 1.0
+  },
+  {
+   "seed": 2,
+   "task": "HB",
+   "new_factor": "object",
+   "loss": [
+    0.35090248147200326,
+    NaN,
+    NaN
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    true,
+    false,
+    false
+   ],
+   "top_raw": "S0",
+   "top_excess": "S0",
+   "p2_hit": false,
+   "whole": 0.35090248147200326,
+   "whole_exceeds": true,
+   "chunks": [
+    1600,
+    0,
+    0
+   ],
+   "seg_step_frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "ok_frac": 0.0
+  },
+  {
+   "seed": 2,
+   "task": "OW",
+   "new_factor": "obstacle",
+   "loss": [
+    0.31274724079790756,
+    NaN,
+    NaN
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    false,
+    false,
+    false
+   ],
+   "top_raw": "S0",
+   "top_excess": "S0",
+   "p2_hit": true,
+   "whole": 0.31274724079790756,
+   "whole_exceeds": false,
+   "chunks": [
+    1600,
+    0,
+    0
+   ],
+   "seg_step_frac": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "ok_frac": 0.0
+  },
+  {
+   "seed": 2,
+   "task": "TC",
+   "new_factor": "goal",
+   "loss": [
+    0.333494019942277,
+    0.40132326758466663,
+    0.3429427325779085
+   ],
+   "null_p95": [
+    0.31529287748269413,
+    0.34920100616291166,
+    0.31416827746379894
+   ],
+   "exceeds": [
+    true,
+    true,
+    true
+   ],
+   "top_raw": "S1",
+   "top_excess": "S1",
+   "p2_hit": true,
+   "whole": 0.340146938363323,
+   "whole_exceeds": true,
+   "chunks": [
+    597,
+    20,
+    983
+   ],
+   "seg_step_frac": [
+    0.369625,
+    0.01025,
+    0.620125
+   ],
+   "ok_frac": 1.0
+  }
+ ],
+ "verdict": {
+  "T0-P1": {
+   "holds": false,
+   "segmentation_ok_frac": {
+    "PickPlace": 0.0725,
+    "Push": 0.000625,
+    "Shelf": 0.00875,
+    "Trashcan": 0.976875
+   },
+   "segmentation_all_ge_90": false,
+   "l1_agree": 0.0014583333333333334,
+   "l1_ge_85": false
+  },
+  "T0-P2": {
+   "holds": false,
+   "hits": 5,
+   "of": 9
+  },
+  "T0-P3": {
+   "holds": false,
+   "ow_s0_exceeds": 0,
+   "ow_whole_exceeds": 0,
+   "of": 3,
+   "whole_null_p95_own": 0.31529287748269413,
+   "whole_null_p95_registered_bc": 0.318
+  },
+  "T0-P4": {
+   "holds": true,
+   "loo_exceed_per_segment": {
+    "S0": 2,
+    "S1": 1,
+    "S2": 1
+   },
+   "of": 12
+  },
+  "falsifier": {
+   "p2_le_6": true,
+   "ow_inside_null_every_segment_on_ge2_seeds": true,
+   "ow_seeds_inside": 3,
+   "triggered": true
+  }
+ },
+ "choices": "Gate T0 (temporal composition): label-free event segmenter + per-segment base flow loss on the R1 stream draws.\nRegistration: compositional-architecture results/tables/compose_stream_prediction.json, last addendum temporal_T0_registered;\nspec docs/PLAN_TEMPORAL_COMPOSITION.md section 5.  Offline, CPU, no training, no rollouts.\n  stats | loss --seed S | report  [--smoke]  -> results/r1/seg/t0_stats.json, t0_loss{S}.json, t0.json (t0_smoke*.json with --smoke)\n\nFIXED by the registration (do not change): eps_s = 3 x p99 of a slot's step displacement over the first 5 steps of base-train demos;\nevent = change of M_t lasting 3 steps; S0 before the first event, S1 while the object is in M_t, S2 after; null rule = p95 over the 12\npanel null draws of PREDICTIONS_bc.md (leave-one-out for the null control).  Labels (HB/OW/TC, objective) only score.\n\nLiteral-reading choices (also written to the JSON under \"choices\"):\n C1 slots = world positions: object obs[0:3], obstacle obs[14:17], goal obs[28:31] (77-dim stripped state; robot = proprio 45:77).\n C2 step displacement at t = ||pos[t]-pos[t-1]||, t >= 1 (displacement at t = 0 is 0); \"first 5 steps\" = displacements t = 1..5.\n    p99 pooled per slot over those 5 displacements of every episode of every base-train cell (r1.make_split(0)[\"train\"], not dropped).\n    \"exceeds\" is strict (>).  A slot with p99 = 0 has eps = 0, so any motion exceeds it.\n C3 raw M_t[t] = {slots with displacement > eps}.  The committed set starts empty.  A different raw set that persists for 3 consecutive\n    steps is an event, dated at its first step, and the committed set switches to it from that step on.\n C4 S1 = steps where the object is in the committed set.  S0 = steps before the first S1 step (so S0 ends at the first event that puts\n    the object in M; events of other slots before it stay in S0 and are counted).  S2 = steps after the first S1 step that are not S1.\n    If the object never enters M the episode is all S0.\n C5 episode \"ok\" (T0-P1) = S0, S1, S2 all non-empty and the object's committed membership is exactly one contiguous run.  Push is\n    segmented by the same rule (S1 = the object moving = pushing contact).\n C6 per-chunk loss = r1s.val_loss's own computation (same seeded generator, same order, 8 reps, chunk starts 0,5,...,495), kept per\n    chunk and averaged over chunk starts t whose step t is in the segment.  Whole-episode value = mean over all chunk starts (equals\n    r1s.val_loss; asserted on the first draw).\n C7 null p95 = np.percentile(.., 95) (linear) over the 12 null draws per segment (NaN-aware); leave-one-out = same over the other 11.\n C8 T0-P2 \"top-loss segment\" = highest raw mean loss among S0, S1, S2 (not the excess over null).  The excess-ranked top is logged.\n C9 L1: ProprioHeld (copied from lifelong_ood/policy/parts_flow.py) on grip = obs[73:75] (finger qpos), cmd = act[:, 7] > 0 closes,\n    z = obs[68] (eef z; proprio 21:24 = eef pos), tw by pgate_fit on all base-train rows.  \"Grasping episodes\" = objective != Push.\n    Agreement = L1 fires and S1 exists and |L1 onset - S1 onset| <= 5; an episode where either is missing counts as disagreement.\n C10 whole-episode null for T0-P3 = p95 of the 12 null draws' own whole-episode loss under C6 (the registered .318 is logged beside it).\n",
+ "seconds": 0.007445812225341797
+}
