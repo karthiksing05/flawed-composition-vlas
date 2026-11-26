@@ -262,5 +262,178 @@ def main():
     print("sha256", sha); print("coef", {k: round(v, 3) for k, v in res["v1_coef"].items()})
 
 
+
+
+# ======================================================================== leave-one-pairing-out (and v2)
+def pairing_groups(meta):
+    key = np.array(["%d/%s" % (s, t) for s, t in zip(meta["scene"], meta["task"])])
+    names = sorted(set(key))
+    return names, [(np.nonzero(key != nm)[0], np.nonzero(key == nm)[0]) for nm in names]
+
+
+def eval_scheme(X, y, cls, v0s, v0c, meta, groups, labels, which, pairs, extra_sets=None):
+    n = len(y)
+    allidx = np.arange(n)
+    out, fold = cv_oof(X, y, cls, v0s, v0c, groups, which=which)
+    newm = np.array([t.startswith("N") for t in meta["task"]])
+    subs = {"all": allidx, "new_only": allidx[newm], "scene1": allidx[meta["scene"] == 1], "scene2": allidx[meta["scene"] == 2]}
+    r = dict(subsets={}, per_fold={})
+    for nm, idx in subs.items():
+        m = metrics(out, y, cls, idx, fold)
+        m["n"] = int(len(idx)); m["fail_rate"] = float(y[idx].mean())
+        m["boot"] = boot(out, y, cls, idx, meta["cluster"], pairs, fold) if nm in ("all", "new_only") else None
+        r["subsets"][nm] = m
+    for gi, (tr, te) in enumerate(groups):
+        pf = metrics(out, y, cls, te)
+        pf["n"] = int(len(te)); pf["fail_rate"] = float(y[te].mean())
+        r["per_fold"][labels[gi]] = pf
+    return r, out, fold
+
+
+def show(name, r):
+    for nm in ("all", "new_only", "scene1", "scene2"):
+        m = r["subsets"][nm]
+        ks = [k for k in ("v0", "v1", "v2", "b1", "b2", "b12") if k in m]
+        print(name, nm, "n=%d fail=%.3f" % (m["n"], m["fail_rate"]), {k: (round(m[k]["auc"], 3), round(m[k]["macro_auc"], 3), round(m[k]["top1"], 3)) for k in ks}, flush=True)
+        if m["boot"]:
+            print("    auc CI", {k: [round(x, 3) for x in v] for k, v in m["boot"]["auc_ci"].items()}, flush=True)
+            print("    macro CI", {k: [round(x, 3) for x in v] for k, v in m["boot"]["macro_auc_ci"].items()}, flush=True)
+            print("    diff CI", {k: [round(x, 3) for x in v] for k, v in m["boot"]["auc_diff_ci"].items()}, flush=True)
+            print("    macro diff CI", {k: [round(x, 3) for x in v] for k, v in m["boot"]["macro_auc_diff_ci"].items()}, flush=True)
+
+
+def main_lopo():
+    rows, X, y, cls, v0s, v0c, meta, miss = load()
+    names, groups = pairing_groups(meta)
+    pairs = [("v1", "b2"), ("v1", "b1"), ("v1", "v0"), ("v1", "b12"), ("v0", "b2"), ("v0", "b1")]
+    r, out, fold = eval_scheme(X, y, cls, v0s, v0c, meta, groups, names, ("v1", "b1", "b2", "b12"), pairs)
+    res = dict(scheme="leave-one-pairing-out: all rows of one (scene, task) pairing, all models, held out per fold", folds=names, lam=LAM, bootstrap_B=B, cv=r)
+    with open(os.path.join(D, "fit_lopo.json"), "x", encoding="utf-8") as fh:
+        json.dump(res, fh, indent=1, default=lambda o: None if o != o else str(o))
+    show("LOPO", r)
+
+
+def main_v2():
+    """v2 = v1 + language-sensitivity probe (results/flawed/fp_dev/probe_lang.csv).  Writes fit_v2.json, v2_frozen.json, v2_frozen.sha256."""
+    global FEATS
+    rows, X, y, cls, v0s, v0c, meta, miss = load()
+    pr = {}
+    for r in csv.DictReader(open(os.path.join(D, "probe_lang.csv"), encoding="utf-8")):
+        pr[(r["model"], int(r["scene"]), r["set"], r["task"], int(r["trial"]))] = r
+    n = len(y)
+    P = np.full((n, 4), np.nan)           # log ratio (full chunk), d_full, log ratio xyz5, floor_full
+    for i, r in enumerate(rows):
+        q = pr.get((r["model"], int(r["scene"]), r["set"], r["task"], int(r["trial"])))
+        if q is not None and q["d_full"] != "":
+            P[i] = [np.log(float(q["ratio_full"]) + 1e-3), float(q["d_full"]), np.log(float(q["ratio_xyz5"]) + 1e-3), float(q["floor_full"])]
+    have = ~np.isnan(P[:, 0])
+    pcols = ["p_logratio", "p_d", "p_logratio_xyz", "p_floor", "p_missing"]
+    X2 = np.hstack([X, P, (~have).astype(float)[:, None]])
+    FEATS = FEATS + pcols
+    SETS["v2"] = list(FEATS)
+    SETS["v1p"] = SETS["v1"] if False else [f for f in FEATS if f not in ("p_floor",)]       # v2 without the noise-floor column as an input
+    SETS["v2"] = [f for f in FEATS if f != "p_floor"]
+    SETS["b1p"] = ["f_novel", "p_logratio", "p_missing"]                                    # novelty + probe only
+    models = sorted(set(meta["model"]))
+    pairs = [("v2", "v1"), ("v2", "b12"), ("v2", "v0"), ("v1", "b12"), ("b1p", "b1")]
+    which = ("v1", "v2", "b1", "b2", "b12", "b1p")
+    res = dict(n_rows=n, probe_rows=int(have.sum()), probe_available_by=dict(sorted(
+        {"%s/s%d/%s" % (m, s, st): int(have[(meta["model"] == m) & (meta["scene"] == s) & (meta["set"] == st)].sum()) for m in models for s in (1, 2) for st in sorted(set(meta["set"]))
+         if ((meta["model"] == m) & (meta["scene"] == s) & (meta["set"] == st)).any()}.items())), cv={})
+    lab_m = models
+    pn, pg = pairing_groups(meta)
+    schemes = {"LOMO": ([(np.nonzero(meta["model"] != m)[0], np.nonzero(meta["model"] == m)[0]) for m in models], lab_m),
+               "LOSO": ([(np.nonzero(meta["scene"] != s)[0], np.nonzero(meta["scene"] == s)[0]) for s in (1, 2)], ["test_s1", "test_s2"]),
+               "LOPO": (pg, pn)}
+    for nm, (g, lab) in schemes.items():
+        r, out, fold = eval_scheme(X2, y, cls, v0s, v0c, meta, g, lab, which, pairs)
+        # same comparison on the rows where the probe exists
+        idx = np.nonzero(have)[0]
+        m = metrics(out, y, cls, idx, fold)
+        m["n"] = int(len(idx))
+        m["boot"] = boot(out, y, cls, idx, meta["cluster"], pairs, fold)
+        r["subsets"]["probe_rows"] = m
+        newm = np.array([t.startswith("N") for t in meta["task"]])
+        idx2 = np.nonzero(have & newm)[0]
+        m2 = metrics(out, y, cls, idx2, fold)
+        m2["n"] = int(len(idx2)); m2["fail_rate"] = float(y[idx2].mean())
+        m2["boot"] = boot(out, y, cls, idx2, meta["cluster"], pairs, fold)
+        r["subsets"]["probe_new_only"] = m2
+        res["cv"][nm] = r
+        show(nm, r)
+        print(nm, "probe_rows", {k: (round(m[k]["auc"], 3), round(m[k]["macro_auc"], 3)) for k in ("v1", "v2", "b1", "b2", "b12", "b1p")}, flush=True)
+        print(nm, "probe_new_only", {k: (round(m2[k]["auc"], 3), round(m2[k]["macro_auc"], 3)) for k in ("v1", "v2", "b1", "b2", "b12", "b1p")}, flush=True)
+        print("    probe_new diff CI", {k: [round(x, 3) for x in v] for k, v in m2["boot"]["macro_auc_diff_ci"].items()}, flush=True)
+    # ---- does the probe separate failing from succeeding NEW pairings within a model, and is it more than noise?
+    newm = np.array([t.startswith("N") for t in meta["task"]])
+    an = {}
+    feats = dict(ratio=P[:, 0], d=P[:, 1], ratio_xyz=P[:, 2], floor=P[:, 3], d_minus_floor=np.log(np.exp(P[:, 1]) * 0 + 1) * 0 + (P[:, 1] - P[:, 3]))
+    for m in models + ["ALL"]:
+        sel = have & newm & ((meta["model"] == m) if m != "ALL" else True)
+        if sel.sum() < 10:
+            continue
+        idx = np.nonzero(sel)[0]
+        a = dict(n=int(len(idx)), fail_rate=float(y[idx].mean()), per_feature={})
+        for fn, v in feats.items():
+            vv = v[idx]
+            # within-pairing AUC: mean over (task) of AUC(fail vs success) for tasks with both outcomes; cluster-free point estimate + task-stratified bootstrap over states
+            per = {}
+            for t in sorted(set(meta["task"][idx])):
+                ii = idx[meta["task"][idx] == t]
+                per[t] = auc(y[ii], v[ii])
+            good = [(t, a_) for t, a_ in per.items() if a_ == a_]
+            a["per_feature"][fn] = dict(pooled_auc=auc(y[idx], vv), within_pairing_mean_auc=float(np.mean([g[1] for g in good])) if good else None,
+                                        within_pairing_n_tasks=len(good), per_task=per,
+                                        median_fail=float(np.nanmedian(vv[y[idx] == 1])) if (y[idx] == 1).any() else None,
+                                        median_success=float(np.nanmedian(vv[y[idx] == 0])) if (y[idx] == 0).any() else None)
+        # bootstrap CI (over states clusters) of within-pairing mean AUC for ratio and floor
+        cl = meta["cluster"][idx]
+        uc = np.unique(cl)
+        mem = [np.nonzero(cl == c)[0] for c in uc]
+        bs = {fn: [] for fn in ("ratio", "d", "floor")}
+        for _ in range(1000):
+            d_ = rng.integers(0, len(uc), len(uc))
+            sub = idx[np.concatenate([mem[i] for i in d_])]
+            for fn in bs:
+                per = [auc(y[sub[meta["task"][sub] == t]], feats[fn][sub[meta["task"][sub] == t]]) for t in sorted(set(meta["task"][sub]))]
+                per = [p for p in per if p == p]
+                bs[fn].append(np.mean(per) if per else np.nan)
+        a["within_pairing_boot_ci"] = {fn: [float(np.nanpercentile(v, 2.5)), float(np.nanpercentile(v, 97.5))] for fn, v in bs.items()}
+        an[m] = a
+        print("PROBE", m, a["n"], {fn: (round(v["pooled_auc"], 3), None if v["within_pairing_mean_auc"] is None else round(v["within_pairing_mean_auc"], 3)) for fn, v in a["per_feature"].items()},
+              {k: [round(x, 3) for x in v] for k, v in a["within_pairing_boot_ci"].items()}, flush=True)
+    res["probe_analysis_new_pairings"] = an
+    # known vs new probe level and floor ratio
+    kn = {}
+    for m in models:
+        for grp, mk in (("K", ~newm), ("N", newm)):
+            s = have & (meta["model"] == m) & mk
+            if s.any():
+                kn["%s/%s" % (m, grp)] = dict(n=int(s.sum()), median_ratio=float(np.exp(np.nanmedian(P[s, 0]))), median_d=float(np.nanmedian(P[s, 1])), median_floor=float(np.nanmedian(P[s, 3])))
+    res["probe_levels"] = kn
+    print("LEVELS", kn, flush=True)
+    # freeze v2
+    p, c, st = predict_set("v2", X2, y, cls, X2, LAM)
+    res["v2_in_sample_auc"] = auc(y, p)
+    cols = [f for f in SETS["v2"]]
+    frozen = dict(spec="predictor v2 = v1 features + probe (log mean normalised chunk distance to alternative-instruction chunks over same-seed noise-floor chunk distance; log ratio for xyz; raw distance; missing flag); L2 logistic, sum-scale lambda=%g, intercept unpenalised, standardized" % LAM,
+                  features=cols, impute=st["st"]["impute"], mean=st["st"]["mean"], std=st["st"]["std"], coef=dict(zip(cols, map(float, st["w"][:-1]))), intercept=float(st["w"][-1]),
+                  feature_transform={"f_obj_targets": "log", "f_tgt_holders": "log", "p_logratio": "log(d_full/floor_full+1e-3)", "p_d": "d_full", "p_logratio_xyz": "log(d_xyz5/floor_xyz5+1e-3)"},
+                  n_rows=n, table_sha256=hashlib.sha256(open(os.path.join(D, "table.csv"), "rb").read()).hexdigest(),
+                  probe_sha256=hashlib.sha256(open(os.path.join(D, "probe_lang.csv"), "rb").read()).hexdigest())
+    fp = os.path.join(D, "v2_frozen.json")
+    with open(fp, "x", encoding="utf-8") as fh:
+        json.dump(frozen, fh, indent=1)
+    sha = hashlib.sha256(open(fp, "rb").read()).hexdigest()
+    with open(os.path.join(D, "v2_frozen.sha256"), "x", encoding="utf-8") as fh:
+        fh.write("%s  v2_frozen.json\n" % sha)
+    res["v2_frozen_sha256"] = sha
+    res["v2_coef"] = frozen["coef"]
+    with open(os.path.join(D, "fit_v2.json"), "x", encoding="utf-8") as fh:
+        json.dump(res, fh, indent=1, default=lambda o: None if o != o else str(o))
+    print("v2 sha256", sha, {k: round(v, 3) for k, v in frozen["coef"].items()})
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    {"lopo": main_lopo, "v2": main_v2}.get(sys.argv[1] if len(sys.argv) > 1 else "", main)()

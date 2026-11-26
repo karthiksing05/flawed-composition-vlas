@@ -1,0 +1,57 @@
+Loading  HuggingFaceTB/SmolVLM2-500M-Video-Instruct weights ...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Reducing the number of VLM layers to 16 ...
+Loading weights from local directory
+2026-11-25 23:27:02,867 SmolVLABackbone(/coc/flash10/ksingara3/robot/data/hf/home/hub/models--lerobot--smolvla_libero/snapshots/31d453f7edd78c839a8bbc39744a292686daf0de: H=50, A=32, real=7, dim=350, steps=10, n_params=450,046,176, load 12.4s)
+2026-11-25 23:27:04,497 [serve] warm-up 2 calls in 1.6s
+2026-11-25 23:27:04,537 Creating server (host: 0.0.0.0, port: 9298)
+2026-11-25 23:27:04,538 server listening on 0.0.0.0:9298
+2026-11-25 23:27:12,846 connection open
+2026-11-25 23:27:12,847 Connection from ('127.0.0.1', 45428) opened
+/coc/flash10/ksingara3/flawed-composition-vlas/lifelong_ood/policy/backbone_smolvla.py:90: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  img = lambda k: torch.from_numpy(np.ascontiguousarray(obs_dict[k])).permute(2, 0, 1)[None].float() / 255.0   # noqa: E731
+2026-11-25 23:27:51,848 [serve] 50 calls, 304 ms each
+2026-11-25 23:28:27,824 [serve] 100 calls, 289 ms each
+2026-11-25 23:29:04,323 [serve] 150 calls, 285 ms each
+2026-11-25 23:29:40,904 [serve] 200 calls, 282 ms each
+2026-11-25 23:30:18,011 [serve] 250 calls, 282 ms each
+2026-11-25 23:30:54,281 [serve] 300 calls, 281 ms each
+2026-11-25 23:31:36,042 [serve] 350 calls, 281 ms each
+2026-11-25 23:32:22,347 [serve] 400 calls, 280 ms each
+2026-11-25 23:33:15,366 [serve] 450 calls, 279 ms each
+2026-11-25 23:33:58,011 [serve] 500 calls, 279 ms each
+2026-11-25 23:34:40,619 [serve] 550 calls, 279 ms each
+2026-11-25 23:35:23,832 [serve] 600 calls, 278 ms each
+2026-11-25 23:36:04,421 [serve] 650 calls, 278 ms each
+2026-11-25 23:36:46,496 [serve] 700 calls, 278 ms each
+2026-11-25 23:37:21,781 [serve] 750 calls, 278 ms each
+2026-11-25 23:37:58,081 [serve] 800 calls, 278 ms each
+2026-11-25 23:38:34,109 [serve] 850 calls, 278 ms each
+2026-11-25 23:39:11,598 [serve] 900 calls, 278 ms each
+2026-11-25 23:39:48,276 [serve] 950 calls, 277 ms each
+2026-11-25 23:40:11,302 connection closed
+2026-11-25 23:40:11,302 Connection from ('127.0.0.1', 45428) closed
+2026-11-25 23:40:13,407 connection open
+2026-11-25 23:40:13,407 Connection from ('127.0.0.1', 54256) opened
+2026-11-25 23:40:30,049 [serve] 1000 calls, 277 ms each
+2026-11-25 23:41:05,606 [serve] 1050 calls, 277 ms each
+2026-11-25 23:41:42,178 [serve] 1100 calls, 277 ms each
+2026-11-25 23:42:17,572 [serve] 1150 calls, 277 ms each
+2026-11-25 23:42:53,975 [serve] 1200 calls, 277 ms each
+2026-11-25 23:43:29,900 [serve] 1250 calls, 277 ms each
+2026-11-25 23:44:09,537 [serve] 1300 calls, 277 ms each
+2026-11-25 23:44:50,861 [serve] 1350 calls, 277 ms each
+2026-11-25 23:45:41,426 [serve] 1400 calls, 277 ms each
+2026-11-25 23:46:27,695 [serve] 1450 calls, 278 ms each
+2026-11-25 23:47:10,704 [serve] 1500 calls, 278 ms each
+2026-11-25 23:47:51,543 [serve] 1550 calls, 277 ms each
+2026-11-25 23:48:35,435 [serve] 1600 calls, 277 ms each
+2026-11-25 23:49:17,078 [serve] 1650 calls, 277 ms each
+2026-11-25 23:49:56,597 [serve] 1700 calls, 277 ms each
+2026-11-25 23:50:31,731 [serve] 1750 calls, 277 ms each
+2026-11-25 23:51:08,125 [serve] 1800 calls, 277 ms each
+2026-11-25 23:51:42,967 [serve] 1850 calls, 277 ms each
+2026-11-25 23:52:18,953 [serve] 1900 calls, 277 ms each
+2026-11-25 23:52:55,028 [serve] 1950 calls, 277 ms each
+2026-11-25 23:53:03,485 connection closed
+2026-11-25 23:53:03,486 Connection from ('127.0.0.1', 54256) closed
