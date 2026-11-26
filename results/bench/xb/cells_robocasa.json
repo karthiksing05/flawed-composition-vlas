@@ -1,0 +1,1884 @@
+{
+ "bench": "robocasa",
+ "datafile": "/coc/flash10/ksingara3/flawed-composition-vlas/results/bench/robocasa/audit/pepijn223__robocasa_pretrain_human300_v4.json",
+ "rule": "see module docstring",
+ "episodes_per_cell": 20,
+ "seeds": "0-19",
+ "families": {
+  "counter->microwave": {
+   "task": "PickPlaceCounterToMicrowave",
+   "n_zero_candidates": 40,
+   "n_partner_candidates": 22,
+   "heldout_draw": [
+    "canned food",
+    "peach",
+    "banana",
+    "milk",
+    "measuring cup",
+    "avocado",
+    "baguette",
+    "tongs",
+    "ladle",
+    "apple",
+    "can",
+    "mango",
+    "lemon wedge",
+    "pan",
+    "pear",
+    "pizza cutter",
+    "whisk",
+    "wooden spoon",
+    "kiwi",
+    "aluminum foil",
+    "lime",
+    "tupperware",
+    "bread",
+    "bottled drink",
+    "salt and pepper shaker",
+    "orange",
+    "lemon",
+    "water bottle",
+    "boxed drink",
+    "juice",
+    "cream cheese stick",
+    "cookie dough ball",
+    "bottled water",
+    "yogurt",
+    "beer",
+    "cucumber",
+    "peeler",
+    "tangerine",
+    "dish brush",
+    "rolling pin"
+   ],
+   "partner_draw": [
+    "broccoli",
+    "hotdog bun",
+    "sweet potato",
+    "mushroom",
+    "eggplant",
+    "kebab skewer",
+    "tomato",
+    "potato",
+    "onion",
+    "carrot",
+    "hot dog",
+    "cheese",
+    "chicken drumstick",
+    "corn",
+    "fish",
+    "bell pepper",
+    "garlic",
+    "mug",
+    "squash",
+    "marshmallow",
+    "egg",
+    "steak"
+   ],
+   "heldout_first10": [
+    "canned food",
+    "peach",
+    "banana",
+    "milk",
+    "measuring cup",
+    "avocado",
+    "baguette",
+    "tongs",
+    "ladle",
+    "apple"
+   ],
+   "partner_first10": [
+    "broccoli",
+    "hotdog bun",
+    "sweet potato",
+    "mushroom",
+    "eggplant",
+    "kebab skewer",
+    "tomato",
+    "potato",
+    "onion",
+    "carrot"
+   ],
+   "partner_counts": {
+    "bell pepper": 7,
+    "broccoli": 10,
+    "carrot": 13,
+    "cheese": 20,
+    "chicken drumstick": 14,
+    "corn": 18,
+    "egg": 10,
+    "eggplant": 9,
+    "fish": 3,
+    "garlic": 10,
+    "hot dog": 5,
+    "hotdog bun": 10,
+    "kebab skewer": 6,
+    "marshmallow": 16,
+    "mug": 102,
+    "mushroom": 10,
+    "onion": 4,
+    "potato": 11,
+    "squash": 12,
+    "steak": 7,
+    "sweet potato": 12,
+    "tomato": 3
+   },
+   "heldout_object_partners": {
+    "aluminum foil": [
+     [
+      "counter->drawer",
+      7
+     ],
+     [
+      "counter->cabinet",
+      2
+     ]
+    ],
+    "apple": [
+     [
+      "counter->blender",
+      13
+     ],
+     [
+      "counter->cabinet",
+      6
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      5
+     ],
+     [
+      "pan->bowl",
+      4
+     ],
+     [
+      "sink->sink",
+      4
+     ],
+     [
+      "cabinet->sink",
+      3
+     ],
+     [
+      "counter->sink",
+      3
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      3
+     ],
+     [
+      "sink->counter",
+      3
+     ],
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "plate->pan",
+      2
+     ],
+     [
+      "pan->plate",
+      1
+     ]
+    ],
+    "avocado": [
+     [
+      "sink->microwave",
+      8
+     ],
+     [
+      "counter->cabinet",
+      5
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      5
+     ],
+     [
+      "sink->counter",
+      5
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      4
+     ],
+     [
+      "cabinet->sink",
+      3
+     ],
+     [
+      "counter->sink",
+      2
+     ]
+    ],
+    "baguette": [
+     [
+      "rack->counter",
+      22
+     ],
+     [
+      "counter->cabinet",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "banana": [
+     [
+      "counter->blender",
+      9
+     ],
+     [
+      "sink->sink",
+      6
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      4
+     ],
+     [
+      "cabinet->sink",
+      3
+     ],
+     [
+      "counter->sink",
+      3
+     ],
+     [
+      "sink->counter",
+      3
+     ],
+     [
+      "counter->cabinet",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "beer": [
+     [
+      "counter->cabinet",
+      6
+     ],
+     [
+      "cabinet->counter",
+      1
+     ],
+     [
+      "counter->sink",
+      1
+     ]
+    ],
+    "bottled drink": [
+     [
+      "counter->cabinet",
+      13
+     ],
+     [
+      "counter->sink",
+      4
+     ]
+    ],
+    "bottled water": [
+     [
+      "counter->cabinet",
+      6
+     ],
+     [
+      "counter->sink",
+      3
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "boxed drink": [
+     [
+      "counter->sink",
+      5
+     ],
+     [
+      "counter->cabinet",
+      2
+     ],
+     [
+      "cabinet->counter",
+      2
+     ]
+    ],
+    "bread": [
+     [
+      "rack->counter",
+      53
+     ],
+     [
+      "tray->counter",
+      4
+     ],
+     [
+      "cabinet->counter",
+      3
+     ]
+    ],
+    "can": [
+     [
+      "counter->cabinet",
+      12
+     ],
+     [
+      "counter->sink",
+      3
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "canned food": [
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ],
+    "cookie dough ball": [
+     [
+      "counter->cabinet",
+      6
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "cream cheese stick": [
+     [
+      "plate->pan",
+      5
+     ],
+     [
+      "counter->sink",
+      4
+     ],
+     [
+      "counter->cabinet",
+      3
+     ],
+     [
+      "sink->counter",
+      3
+     ],
+     [
+      "pan->plate",
+      2
+     ],
+     [
+      "pan->bowl",
+      2
+     ]
+    ],
+    "cucumber": [
+     [
+      "sink->microwave",
+      9
+     ],
+     [
+      "counter->sink",
+      3
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      3
+     ],
+     [
+      "sink->counter",
+      3
+     ],
+     [
+      "cabinet->sink",
+      2
+     ]
+    ],
+    "dish brush": [
+     [
+      "drawer->counter",
+      18
+     ],
+     [
+      "counter->drawer",
+      11
+     ],
+     [
+      "counter->sink",
+      4
+     ],
+     [
+      "cabinet->counter",
+      3
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ],
+    "juice": [
+     [
+      "counter->cabinet",
+      12
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "kiwi": [
+     [
+      "counter->blender",
+      12
+     ],
+     [
+      "sink->sink",
+      10
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      8
+     ],
+     [
+      "cabinet->sink",
+      4
+     ],
+     [
+      "cabinet->counter",
+      3
+     ],
+     [
+      "counter->cabinet",
+      3
+     ],
+     [
+      "sink->counter",
+      3
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      1
+     ]
+    ],
+    "ladle": [
+     [
+      "counter->drawer",
+      12
+     ],
+     [
+      "drawer->counter",
+      7
+     ],
+     [
+      "counter->sink",
+      4
+     ],
+     [
+      "counter->cabinet",
+      2
+     ]
+    ],
+    "lemon": [
+     [
+      "cabinet->sink",
+      7
+     ],
+     [
+      "counter->sink",
+      6
+     ],
+     [
+      "sink->counter",
+      6
+     ],
+     [
+      "counter->cabinet",
+      4
+     ],
+     [
+      "pan->bowl",
+      4
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      3
+     ],
+     [
+      "sink->microwave",
+      3
+     ],
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      2
+     ],
+     [
+      "plate->pan",
+      1
+     ],
+     [
+      "pan->plate",
+      1
+     ]
+    ],
+    "lemon wedge": [
+     [
+      "fridge shelf->fridge drawer",
+      5
+     ],
+     [
+      "sink->counter",
+      5
+     ],
+     [
+      "cabinet->sink",
+      4
+     ],
+     [
+      "cabinet->counter",
+      4
+     ],
+     [
+      "counter->cabinet",
+      3
+     ],
+     [
+      "plate->pan",
+      3
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      3
+     ],
+     [
+      "pan->plate",
+      2
+     ],
+     [
+      "sink->microwave",
+      2
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "pan->bowl",
+      1
+     ]
+    ],
+    "lime": [
+     [
+      "fridge shelf->fridge drawer",
+      12
+     ],
+     [
+      "counter->sink",
+      7
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      7
+     ],
+     [
+      "sink->counter",
+      7
+     ],
+     [
+      "cabinet->sink",
+      4
+     ],
+     [
+      "sink->microwave",
+      4
+     ],
+     [
+      "counter->cabinet",
+      3
+     ],
+     [
+      "pan->plate",
+      2
+     ],
+     [
+      "plate->pan",
+      1
+     ],
+     [
+      "pan->bowl",
+      1
+     ]
+    ],
+    "mango": [
+     [
+      "counter->blender",
+      13
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      9
+     ],
+     [
+      "sink->sink",
+      6
+     ],
+     [
+      "pan->plate",
+      5
+     ],
+     [
+      "cabinet->sink",
+      4
+     ],
+     [
+      "plate->pan",
+      3
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      3
+     ],
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "counter->cabinet",
+      2
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "sink->counter",
+      1
+     ],
+     [
+      "pan->bowl",
+      1
+     ]
+    ],
+    "measuring cup": [
+     [
+      "drawer->counter",
+      12
+     ],
+     [
+      "counter->drawer",
+      11
+     ],
+     [
+      "counter->sink",
+      1
+     ]
+    ],
+    "milk": [
+     [
+      "counter->cabinet",
+      13
+     ],
+     [
+      "counter->sink",
+      4
+     ],
+     [
+      "sink->counter",
+      3
+     ],
+     [
+      "cabinet->counter",
+      2
+     ]
+    ],
+    "orange": [
+     [
+      "counter->blender",
+      17
+     ],
+     [
+      "sink->sink",
+      10
+     ],
+     [
+      "counter->sink",
+      8
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      6
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      4
+     ],
+     [
+      "sink->counter",
+      4
+     ],
+     [
+      "cabinet->sink",
+      3
+     ],
+     [
+      "cabinet->counter",
+      3
+     ],
+     [
+      "counter->cabinet",
+      2
+     ]
+    ],
+    "pan": [
+     [
+      "cabinet->stove",
+      102
+     ]
+    ],
+    "peach": [
+     [
+      "counter->blender",
+      17
+     ],
+     [
+      "sink->sink",
+      12
+     ],
+     [
+      "cabinet->sink",
+      8
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      7
+     ],
+     [
+      "counter->sink",
+      6
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      6
+     ],
+     [
+      "sink->counter",
+      5
+     ],
+     [
+      "cabinet->counter",
+      3
+     ],
+     [
+      "counter->cabinet",
+      3
+     ]
+    ],
+    "pear": [
+     [
+      "sink->sink",
+      12
+     ],
+     [
+      "counter->blender",
+      11
+     ],
+     [
+      "counter->cabinet",
+      10
+     ],
+     [
+      "counter->sink",
+      6
+     ],
+     [
+      "cabinet->counter",
+      4
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      4
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      2
+     ],
+     [
+      "sink->counter",
+      2
+     ],
+     [
+      "cabinet->sink",
+      1
+     ]
+    ],
+    "peeler": [
+     [
+      "drawer->counter",
+      10
+     ],
+     [
+      "counter->drawer",
+      6
+     ],
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "counter->cabinet",
+      2
+     ],
+     [
+      "counter->sink",
+      2
+     ]
+    ],
+    "pizza cutter": [
+     [
+      "counter->drawer",
+      17
+     ],
+     [
+      "drawer->counter",
+      13
+     ],
+     [
+      "counter->sink",
+      3
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "rolling pin": [
+     [
+      "drawer->counter",
+      11
+     ],
+     [
+      "counter->drawer",
+      5
+     ],
+     [
+      "counter->cabinet",
+      2
+     ]
+    ],
+    "salt and pepper shaker": [
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "counter->cabinet",
+      2
+     ],
+     [
+      "counter->sink",
+      1
+     ]
+    ],
+    "tangerine": [
+     [
+      "counter->blender",
+      14
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      8
+     ],
+     [
+      "sink->sink",
+      8
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      7
+     ],
+     [
+      "counter->cabinet",
+      5
+     ],
+     [
+      "cabinet->sink",
+      4
+     ],
+     [
+      "sink->counter",
+      4
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "tongs": [
+     [
+      "counter->drawer",
+      15
+     ],
+     [
+      "drawer->counter",
+      14
+     ],
+     [
+      "counter->cabinet",
+      3
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "tupperware": [
+     [
+      "counter->sink",
+      4
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ],
+    "water bottle": [
+     [
+      "counter->cabinet",
+      11
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "whisk": [
+     [
+      "counter->drawer",
+      10
+     ],
+     [
+      "drawer->counter",
+      9
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ],
+    "wooden spoon": [
+     [
+      "counter->drawer",
+      13
+     ],
+     [
+      "drawer->counter",
+      9
+     ],
+     [
+      "counter->sink",
+      2
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ],
+    "yogurt": [
+     [
+      "counter->sink",
+      5
+     ],
+     [
+      "sink->counter",
+      3
+     ],
+     [
+      "cabinet->counter",
+      1
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ]
+   },
+   "object_episodes": {
+    "rolling pin": 18,
+    "apple": 49,
+    "cookie dough ball": 7,
+    "dish brush": 37,
+    "potato": 62,
+    "banana": 31,
+    "mug": 213,
+    "juice": 15,
+    "yogurt": 10,
+    "marshmallow": 31,
+    "boxed drink": 9,
+    "lemon wedge": 34,
+    "lemon": 39,
+    "cucumber": 20,
+    "tongs": 35,
+    "eggplant": 63,
+    "corn": 63,
+    "lime": 48,
+    "beer": 8,
+    "chicken drumstick": 62,
+    "whisk": 20,
+    "carrot": 62,
+    "bell pepper": 55,
+    "kebab skewer": 15,
+    "broccoli": 52,
+    "squash": 62,
+    "bread": 60,
+    "orange": 57,
+    "hot dog": 11,
+    "egg": 37,
+    "hotdog bun": 51,
+    "steak": 52,
+    "cream cheese stick": 19,
+    "avocado": 32,
+    "pizza cutter": 34,
+    "bottled water": 10,
+    "salt and pepper shaker": 5,
+    "peach": 67,
+    "garlic": 53,
+    "measuring cup": 24,
+    "milk": 22,
+    "water bottle": 14,
+    "sweet potato": 59,
+    "mango": 51,
+    "onion": 48,
+    "tomato": 45,
+    "kiwi": 46,
+    "mushroom": 48,
+    "can": 16,
+    "fish": 60,
+    "pan": 102,
+    "baguette": 25,
+    "canned food": 5,
+    "pear": 52,
+    "peeler": 22,
+    "wooden spoon": 25,
+    "tupperware": 5,
+    "cheese": 43,
+    "tangerine": 53,
+    "bottled drink": 17,
+    "aluminum foil": 9,
+    "ladle": 25
+   },
+   "family_n_objects": 23
+  },
+  "counter->sink": {
+   "task": "PickPlaceCounterToSink",
+   "n_zero_candidates": 13,
+   "n_partner_candidates": 33,
+   "heldout_draw": [
+    "rolling pin",
+    "bread",
+    "marshmallow",
+    "hot dog",
+    "hotdog bun",
+    "whisk",
+    "aluminum foil",
+    "cookie dough ball",
+    "kebab skewer",
+    "pan",
+    "tomato",
+    "mug",
+    "baguette"
+   ],
+   "partner_draw": [
+    "bottled drink",
+    "corn",
+    "sweet potato",
+    "shrimp",
+    "squash",
+    "broccoli",
+    "can",
+    "mushroom",
+    "banana",
+    "fish",
+    "pizza cutter",
+    "ladle",
+    "yogurt",
+    "eggplant",
+    "potato",
+    "milk",
+    "pear",
+    "steak",
+    "peach",
+    "bar soap",
+    "tupperware",
+    "cream cheese stick",
+    "chicken drumstick",
+    "lime",
+    "bottled water",
+    "boxed drink",
+    "carrot",
+    "apple",
+    "cheese",
+    "dish brush",
+    "lemon",
+    "orange",
+    "cucumber"
+   ],
+   "heldout_first10": [
+    "rolling pin",
+    "bread",
+    "marshmallow",
+    "hot dog",
+    "hotdog bun",
+    "whisk",
+    "aluminum foil",
+    "cookie dough ball",
+    "kebab skewer",
+    "pan"
+   ],
+   "partner_first10": [
+    "bottled drink",
+    "corn",
+    "sweet potato",
+    "shrimp",
+    "squash",
+    "broccoli",
+    "can",
+    "mushroom",
+    "banana",
+    "fish"
+   ],
+   "partner_counts": {
+    "apple": 3,
+    "banana": 3,
+    "bar soap": 3,
+    "bottled drink": 4,
+    "bottled water": 3,
+    "boxed drink": 5,
+    "broccoli": 8,
+    "can": 3,
+    "carrot": 7,
+    "cheese": 7,
+    "chicken drumstick": 4,
+    "corn": 8,
+    "cream cheese stick": 4,
+    "cucumber": 3,
+    "dish brush": 4,
+    "eggplant": 9,
+    "fish": 8,
+    "ladle": 4,
+    "lemon": 6,
+    "lime": 7,
+    "milk": 4,
+    "mushroom": 4,
+    "orange": 8,
+    "peach": 6,
+    "pear": 6,
+    "pizza cutter": 3,
+    "potato": 7,
+    "shrimp": 8,
+    "squash": 4,
+    "steak": 5,
+    "sweet potato": 9,
+    "tupperware": 4,
+    "yogurt": 5
+   },
+   "heldout_object_partners": {
+    "aluminum foil": [
+     [
+      "counter->drawer",
+      7
+     ],
+     [
+      "counter->cabinet",
+      2
+     ]
+    ],
+    "baguette": [
+     [
+      "rack->counter",
+      22
+     ],
+     [
+      "counter->cabinet",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "bread": [
+     [
+      "rack->counter",
+      53
+     ],
+     [
+      "tray->counter",
+      4
+     ],
+     [
+      "cabinet->counter",
+      3
+     ]
+    ],
+    "cookie dough ball": [
+     [
+      "counter->cabinet",
+      6
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "hot dog": [
+     [
+      "counter->microwave",
+      5
+     ],
+     [
+      "microwave->counter",
+      3
+     ],
+     [
+      "cabinet->counter",
+      1
+     ],
+     [
+      "plate->pan",
+      1
+     ],
+     [
+      "pan->bowl",
+      1
+     ]
+    ],
+    "hotdog bun": [
+     [
+      "rack->counter",
+      24
+     ],
+     [
+      "counter->microwave",
+      10
+     ],
+     [
+      "microwave->counter",
+      6
+     ],
+     [
+      "plate->pan",
+      5
+     ],
+     [
+      "tray->counter",
+      3
+     ],
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ],
+    "kebab skewer": [
+     [
+      "counter->microwave",
+      6
+     ],
+     [
+      "plate->pan",
+      4
+     ],
+     [
+      "microwave->counter",
+      4
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "marshmallow": [
+     [
+      "counter->microwave",
+      16
+     ],
+     [
+      "microwave->counter",
+      6
+     ],
+     [
+      "plate->pan",
+      4
+     ],
+     [
+      "pan->plate",
+      2
+     ],
+     [
+      "pan->bowl",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "mug": [
+     [
+      "dispenser->counter",
+      108
+     ],
+     [
+      "counter->microwave",
+      102
+     ],
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ],
+    "pan": [
+     [
+      "cabinet->stove",
+      102
+     ]
+    ],
+    "rolling pin": [
+     [
+      "drawer->counter",
+      11
+     ],
+     [
+      "counter->drawer",
+      5
+     ],
+     [
+      "counter->cabinet",
+      2
+     ]
+    ],
+    "tomato": [
+     [
+      "sink->microwave",
+      11
+     ],
+     [
+      "cabinet->sink",
+      5
+     ],
+     [
+      "counter->cabinet",
+      4
+     ],
+     [
+      "plate->pan",
+      4
+     ],
+     [
+      "counter->microwave",
+      3
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      3
+     ],
+     [
+      "fridge shelf->fridge drawer",
+      3
+     ],
+     [
+      "microwave->counter",
+      3
+     ],
+     [
+      "pan->plate",
+      3
+     ],
+     [
+      "pan->bowl",
+      3
+     ],
+     [
+      "cabinet->counter",
+      2
+     ],
+     [
+      "sink->counter",
+      1
+     ]
+    ],
+    "whisk": [
+     [
+      "counter->drawer",
+      10
+     ],
+     [
+      "drawer->counter",
+      9
+     ],
+     [
+      "counter->cabinet",
+      1
+     ]
+    ]
+   },
+   "object_episodes": {
+    "rolling pin": 18,
+    "apple": 49,
+    "cookie dough ball": 7,
+    "dish brush": 37,
+    "potato": 62,
+    "banana": 31,
+    "mug": 213,
+    "yogurt": 10,
+    "marshmallow": 31,
+    "boxed drink": 9,
+    "eggplant": 63,
+    "corn": 63,
+    "lemon": 39,
+    "cucumber": 20,
+    "lime": 48,
+    "bar soap": 4,
+    "chicken drumstick": 62,
+    "whisk": 20,
+    "kebab skewer": 15,
+    "carrot": 62,
+    "shrimp": 43,
+    "broccoli": 52,
+    "squash": 62,
+    "bread": 60,
+    "orange": 57,
+    "hot dog": 11,
+    "hotdog bun": 51,
+    "steak": 52,
+    "cream cheese stick": 19,
+    "pizza cutter": 34,
+    "bottled water": 10,
+    "peach": 67,
+    "milk": 22,
+    "sweet potato": 59,
+    "tomato": 45,
+    "mushroom": 48,
+    "can": 16,
+    "fish": 60,
+    "baguette": 25,
+    "cheese": 43,
+    "pear": 52,
+    "ladle": 25,
+    "tupperware": 5,
+    "bottled drink": 17,
+    "aluminum foil": 9,
+    "pan": 102
+   },
+   "family_n_objects": 59
+  },
+  "counter->cabinet": {
+   "task": "PickPlaceCounterToCabinet",
+   "n_zero_candidates": 10,
+   "n_partner_candidates": 30,
+   "heldout_draw": [
+    "kebab skewer",
+    "measuring cup",
+    "cucumber",
+    "pan",
+    "hot dog",
+    "marshmallow",
+    "steak",
+    "bread",
+    "pizza cutter",
+    "chicken drumstick"
+   ],
+   "partner_draw": [
+    "peach",
+    "lemon",
+    "broccoli",
+    "avocado",
+    "bell pepper",
+    "tongs",
+    "kiwi",
+    "corn",
+    "sweet potato",
+    "onion",
+    "squash",
+    "water bottle",
+    "tangerine",
+    "potato",
+    "beer",
+    "lemon wedge",
+    "cream cheese stick",
+    "cookie dough ball",
+    "bottled drink",
+    "bottled water",
+    "can",
+    "apple",
+    "carrot",
+    "juice",
+    "lime",
+    "pear",
+    "eggplant",
+    "tomato",
+    "boxed food",
+    "milk"
+   ],
+   "heldout_first10": [
+    "kebab skewer",
+    "measuring cup",
+    "cucumber",
+    "pan",
+    "hot dog",
+    "marshmallow",
+    "steak",
+    "bread",
+    "pizza cutter",
+    "chicken drumstick"
+   ],
+   "partner_first10": [
+    "peach",
+    "lemon",
+    "broccoli",
+    "avocado",
+    "bell pepper",
+    "tongs",
+    "kiwi",
+    "corn",
+    "sweet potato",
+    "onion"
+   ],
+   "partner_counts": {
+    "apple": 6,
+    "avocado": 5,
+    "beer": 6,
+    "bell pepper": 8,
+    "bottled drink": 13,
+    "bottled water": 6,
+    "boxed food": 3,
+    "broccoli": 4,
+    "can": 12,
+    "carrot": 7,
+    "cookie dough ball": 6,
+    "corn": 3,
+    "cream cheese stick": 3,
+    "eggplant": 3,
+    "juice": 12,
+    "kiwi": 3,
+    "lemon": 4,
+    "lemon wedge": 3,
+    "lime": 3,
+    "milk": 13,
+    "onion": 4,
+    "peach": 3,
+    "pear": 10,
+    "potato": 5,
+    "squash": 4,
+    "sweet potato": 3,
+    "tangerine": 5,
+    "tomato": 4,
+    "tongs": 3,
+    "water bottle": 11
+   },
+   "heldout_object_partners": {
+    "bread": [
+     [
+      "rack->counter",
+      53
+     ],
+     [
+      "tray->counter",
+      4
+     ],
+     [
+      "cabinet->counter",
+      3
+     ]
+    ],
+    "chicken drumstick": [
+     [
+      "plate->cabinet",
+      27
+     ],
+     [
+      "counter->microwave",
+      14
+     ],
+     [
+      "pan->bowl",
+      7
+     ],
+     [
+      "microwave->counter",
+      5
+     ],
+     [
+      "counter->sink",
+      4
+     ],
+     [
+      "plate->pan",
+      2
+     ],
+     [
+      "pan->plate",
+      2
+     ],
+     [
+      "sink->counter",
+      1
+     ]
+    ],
+    "cucumber": [
+     [
+      "sink->microwave",
+      9
+     ],
+     [
+      "counter->sink",
+      3
+     ],
+     [
+      "fridge drawer->fridge shelf",
+      3
+     ],
+     [
+      "sink->counter",
+      3
+     ],
+     [
+      "cabinet->sink",
+      2
+     ]
+    ],
+    "hot dog": [
+     [
+      "counter->microwave",
+      5
+     ],
+     [
+      "microwave->counter",
+      3
+     ],
+     [
+      "cabinet->counter",
+      1
+     ],
+     [
+      "plate->pan",
+      1
+     ],
+     [
+      "pan->bowl",
+      1
+     ]
+    ],
+    "kebab skewer": [
+     [
+      "counter->microwave",
+      6
+     ],
+     [
+      "plate->pan",
+      4
+     ],
+     [
+      "microwave->counter",
+      4
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "marshmallow": [
+     [
+      "counter->microwave",
+      16
+     ],
+     [
+      "microwave->counter",
+      6
+     ],
+     [
+      "plate->pan",
+      4
+     ],
+     [
+      "pan->plate",
+      2
+     ],
+     [
+      "pan->bowl",
+      2
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "measuring cup": [
+     [
+      "drawer->counter",
+      12
+     ],
+     [
+      "counter->drawer",
+      11
+     ],
+     [
+      "counter->sink",
+      1
+     ]
+    ],
+    "pan": [
+     [
+      "cabinet->stove",
+      102
+     ]
+    ],
+    "pizza cutter": [
+     [
+      "counter->drawer",
+      17
+     ],
+     [
+      "drawer->counter",
+      13
+     ],
+     [
+      "counter->sink",
+      3
+     ],
+     [
+      "cabinet->counter",
+      1
+     ]
+    ],
+    "steak": [
+     [
+      "plate->cabinet",
+      21
+     ],
+     [
+      "counter->microwave",
+      7
+     ],
+     [
+      "counter->sink",
+      5
+     ],
+     [
+      "microwave->counter",
+      5
+     ],
+     [
+      "cabinet->counter",
+      4
+     ],
+     [
+      "pan->bowl",
+      4
+     ],
+     [
+      "pan->plate",
+      4
+     ],
+     [
+      "plate->pan",
+      2
+     ]
+    ]
+   },
+   "object_episodes": {
+    "apple": 49,
+    "cookie dough ball": 7,
+    "potato": 62,
+    "juice": 15,
+    "marshmallow": 31,
+    "tongs": 35,
+    "eggplant": 63,
+    "corn": 63,
+    "cucumber": 20,
+    "lemon": 39,
+    "lemon wedge": 34,
+    "lime": 48,
+    "beer": 8,
+    "chicken drumstick": 62,
+    "carrot": 62,
+    "kebab skewer": 15,
+    "bell pepper": 55,
+    "broccoli": 52,
+    "squash": 62,
+    "bread": 60,
+    "hot dog": 11,
+    "steak": 52,
+    "cream cheese stick": 19,
+    "avocado": 32,
+    "pizza cutter": 34,
+    "bottled water": 10,
+    "peach": 67,
+    "measuring cup": 24,
+    "milk": 22,
+    "water bottle": 14,
+    "sweet potato": 59,
+    "onion": 48,
+    "tomato": 45,
+    "boxed food": 3,
+    "kiwi": 46,
+    "can": 16,
+    "pear": 52,
+    "tangerine": 53,
+    "bottled drink": 17,
+    "pan": 102
+   },
+   "family_n_objects": 77
+  }
+ }
+}

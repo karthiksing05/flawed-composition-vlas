@@ -1,0 +1,114 @@
+jobid	name	stage	detail
+4875946	xb_prereg	ledger	4 ledger rows tag xb (mesa, bimesa, robocasa365, robotwin2)
+4875952	xb_cells	cells	cells_{mesa,bimesa,robocasa,robotwin}.json
+4876003	xb_setup_mesa	setup	MESA/BiMESA checkpoints + bimesa assets
+4876004	xb_setup_groot	setup	mesa-GR00T env (groot_venv)
+4876005	xb_smoke_mesa	smoke	mesa pi05 2x2 episodes
+4876014	xb_setup_rc	setup	RoboCasa checkpoints pi0, gr00t n1.5, xvla
+4876016	xb_rc_check	check	RoboCasa placeability (3 resets)
+4876062	xb_mesa_pi05_par_0	partner	mesa pi05 chunk 0/4
+4876063	xb_mesa_pi05_par_1	partner	mesa pi05 chunk 1/4
+4876064	xb_mesa_pi05_par_2	partner	mesa pi05 chunk 2/4
+4876065	xb_mesa_pi05_par_3	partner	mesa pi05 chunk 3/4
+4876066	xb_rt_check_left	check	forced-pair check place_a2b_left
+4876067	xb_rt_check_right	check	forced-pair check place_a2b_right
+4876079	xb_reset_mesa_heldout	reset	policy-free held-out reset states
+4876080	xb_reset_bimesa_heldout	reset	policy-free held-out reset states
+4876091	xb_setup_rt	setup	RoboTwin pi0.5 + smolvla checkpoints
+4876105	xb_rt_prep_left_0	prep	robotwin seed prep (expert filter) place_a2b_left chunk 0/4
+4876106	xb_rt_prep_left_1	prep	robotwin seed prep (expert filter) place_a2b_left chunk 1/4
+4876107	xb_rt_prep_left_2	prep	robotwin seed prep (expert filter) place_a2b_left chunk 2/4
+4876108	xb_rt_prep_left_3	prep	robotwin seed prep (expert filter) place_a2b_left chunk 3/4
+4876109	xb_rt_prep_right_0	prep	robotwin seed prep (expert filter) place_a2b_right chunk 0/4
+4876110	xb_rt_prep_right_1	prep	robotwin seed prep (expert filter) place_a2b_right chunk 1/4
+4876111	xb_rt_prep_right_2	prep	robotwin seed prep (expert filter) place_a2b_right chunk 2/4
+4876112	xb_rt_prep_right_3	prep	robotwin seed prep (expert filter) place_a2b_right chunk 3/4
+4876113	xb_mesa_pi0_par_0	partner	mesa pi0 chunk 0/4
+4876114	xb_mesa_pi0_par_1	partner	mesa pi0 chunk 1/4
+4876115	xb_mesa_pi0_par_2	partner	mesa pi0 chunk 2/4
+4876116	xb_mesa_pi0_par_3	partner	mesa pi0 chunk 3/4
+4876117	xb_mesa_pi0fast_par_0	partner	mesa pi0fast chunk 0/4
+4876118	xb_mesa_pi0fast_par_1	partner	mesa pi0fast chunk 1/4
+4876119	xb_mesa_pi0fast_par_2	partner	mesa pi0fast chunk 2/4
+4876120	xb_mesa_pi0fast_par_3	partner	mesa pi0fast chunk 3/4
+4876121	xb_bimesa_pi05_par_0	partner	bimesa pi05 chunk 0/4
+4876122	xb_bimesa_pi05_par_1	partner	bimesa pi05 chunk 1/4
+4876123	xb_bimesa_pi05_par_2	partner	bimesa pi05 chunk 2/4
+4876124	xb_bimesa_pi05_par_3	partner	bimesa pi05 chunk 3/4
+4876125	xb_smoke_mesa_groot	smoke	mesa groot
+	xb_rt_final	cells	robotwin final cell lists after prep (afterok prep jobs)
+4876194	xb_rt_final	cells	robotwin final cell lists (afterany prep jobs; afterok is rejected on this cluster)
+4876201	xb_setup_groot15	setup	GR00T N1.5 env (robocasa fork)
+4876264	xb_rt_prep_left_1	prep	resubmit robotwin prep place_a2b_left 1/4
+4876265	xb_rt_prep_left_2	prep	resubmit robotwin prep place_a2b_left 2/4
+4876266	xb_rt_prep_left_3	prep	resubmit robotwin prep place_a2b_left 3/4
+4876267	xb_rt_prep_right_0	prep	resubmit robotwin prep place_a2b_right 0/4
+4876268	xb_rt_prep_right_1	prep	resubmit robotwin prep place_a2b_right 1/4
+4876269	xb_rt_prep_right_2	prep	resubmit robotwin prep place_a2b_right 2/4
+4876270	xb_rt_prep_right_3	prep	resubmit robotwin prep place_a2b_right 3/4
+4876271	xb_mesa_pi0_par_0	partner	resubmit mesa pi0 0/4
+4876272	xb_mesa_pi0_par_1	partner	resubmit mesa pi0 1/4
+4876273	xb_mesa_pi0_par_2	partner	resubmit mesa pi0 2/4
+4876274	xb_mesa_pi0_par_3	partner	resubmit mesa pi0 3/4
+4876275	xb_mesa_pi0fast_par_0	partner	resubmit mesa pi0fast 0/4
+4876276	xb_mesa_pi0fast_par_1	partner	resubmit mesa pi0fast 1/4
+4876277	xb_mesa_pi0fast_par_2	partner	resubmit mesa pi0fast 2/4
+4876279	xb_mesa_pi0fast_par_3	partner	resubmit mesa pi0fast 3/4
+4876280	xb_bimesa_pi05_par_0	partner	resubmit bimesa pi05 0/4
+4876281	xb_bimesa_pi05_par_1	partner	resubmit bimesa pi05 1/4
+4876282	xb_bimesa_pi05_par_2	partner	resubmit bimesa pi05 2/4
+4876283	xb_bimesa_pi05_par_3	partner	resubmit bimesa pi05 3/4
+4876284	xb_smoke_mesa_groot	smoke	resubmit
+4876286	xb_fix_groot15	setup	setuptools + import test
+4876318	xb_setup_rcclient	setup	requests json-numpy in venv_sim
+4876512	xb_rt_final2	cells	robotwin final cell lists (after all 8 prep files exist; earlier premature run invalidated)
+4876518	xb_rt_xvla_par_left_0	partner	robotwin xvla place_a2b_left chunk 0/2
+4876519	xb_rt_xvla_par_left_1	partner	robotwin xvla place_a2b_left chunk 1/2
+4876520	xb_rt_xvla_par_right_0	partner	robotwin xvla place_a2b_right chunk 0/2
+4876521	xb_rt_xvla_par_right_1	partner	robotwin xvla place_a2b_right chunk 1/2
+4876522	xb_smoke_rt_pi05	smoke	robotwin pi05 smoke 1 cell x 1 ep
+4876523	xb_smoke_rt_smolvla	smoke	robotwin smolvla smoke 1 cell x 1 ep
+4876535	xb_rc_check2	check	robocasa placeability rerun (first run's snapshot bug: env.env on a gym wrapper)
+4876544	xb_mesa_groot_par_0	partner	mesa groot chunk 0/4
+4876545	xb_mesa_groot_par_1	partner	mesa groot chunk 1/4
+4876546	xb_mesa_groot_par_2	partner	mesa groot chunk 2/4
+4876547	xb_mesa_groot_par_3	partner	mesa groot chunk 3/4
+4876548	xb_bimesa_pi0_par_0	partner	bimesa pi0 chunk 0/4
+4876549	xb_bimesa_pi0_par_1	partner	bimesa pi0 chunk 1/4
+4876550	xb_bimesa_pi0_par_2	partner	bimesa pi0 chunk 2/4
+4876551	xb_bimesa_pi0_par_3	partner	bimesa pi0 chunk 3/4
+4876552	xb_bimesa_pi0fast_par_0	partner	bimesa pi0fast chunk 0/4
+4876553	xb_bimesa_pi0fast_par_1	partner	bimesa pi0fast chunk 1/4
+4876554	xb_bimesa_pi0fast_par_2	partner	bimesa pi0fast chunk 2/4
+4876555	xb_bimesa_pi0fast_par_3	partner	bimesa pi0fast chunk 3/4
+4876871	xb_setup_rtextra	setup	msgpack-numpy/websockets target dir for RT pi05/smolvla servers
+4876872	xb_smoke_rt_pi05b	smoke	pi05 retry
+4876873	xb_smoke_rt_smolvlab	smoke	smolvla retry
+4877018	xb_smoke_bimesa_groot	smoke	bimesa groot
+4877094	xb_setup_rtextra2	setup	h5py etc for smolvla server
+4877095	xb_rc_pi0_par_0	partner	robocasa pi0 partner chunk 0/3
+4877096	xb_rc_pi0_par_1	partner	robocasa pi0 partner chunk 1/3
+4877097	xb_rc_pi0_par_2	partner	robocasa pi0 partner chunk 2/3
+4877098	xb_rc_pi05_par_0	partner	robocasa pi05 partner chunk 0/3
+4877099	xb_rc_pi05_par_1	partner	robocasa pi05 partner chunk 1/3
+4877100	xb_rc_pi05_par_2	partner	robocasa pi05 partner chunk 2/3
+4877101	xb_smoke_rc_groot15	smoke	robocasa groot15
+4877102	xb_rt_pi05_par_left_0	partner	robotwin pi05 place_a2b_left 0/2
+4877103	xb_rt_pi05_par_right_0	partner	robotwin pi05 place_a2b_right 0/2
+4877104	xb_rt_pi05_par_left_1	partner	robotwin pi05 place_a2b_left 1/2
+4877105	xb_rt_pi05_par_right_1	partner	robotwin pi05 place_a2b_right 1/2
+4877106	xb_reset_rc_heldout	reset	robocasa policy-free held-out resets
+4877108	xb_smoke_rt_smolvlac	smoke	smolvla retry2
+4877201	xb_driver	driver	stage driver (self-resubmitting every 25 min until read_main.json)
+4877221	xb_mesa_pi0fast_par_0	partner	driver
+4877222	xb_mesa_pi0fast_par_1	partner	driver
+4877223	xb_mesa_pi0fast_par_2	partner	driver
+4877224	xb_mesa_pi0fast_par_3	partner	driver
+4877225	xb_bimesa_pi0fast_par_0	partner	driver
+4877226	xb_bimesa_pi0fast_par_1	partner	driver
+4877227	xb_bimesa_pi0fast_par_2	partner	driver
+4877228	xb_bimesa_pi0fast_par_3	partner	driver
+4877229	xb_bimesa_groot_par_0	partner	driver
+4877230	xb_bimesa_groot_par_1	partner	driver
+4877231	xb_bimesa_groot_par_2	partner	driver
+4877232	xb_bimesa_groot_par_3	partner	driver

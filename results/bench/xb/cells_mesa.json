@@ -1,0 +1,2254 @@
+{
+ "bench": "mesa",
+ "rule": "held-out = composite tasks with every slot held_out_fine against the training set; partners = training tasks sharing a held-out task's object or fine receptacle",
+ "n_episodes_per_task": 50,
+ "init_states": "0-49 (the suite's fixed)",
+ "eval_set_heldout": "mesa-composite",
+ "eval_set_partner": "mesa-70",
+ "train_dataset": "mesa-70-lerobot",
+ "n_heldout": 17,
+ "heldout_tasks": [
+  "apple_plate_on",
+  "broccoli_mushroom_cutting_board_on",
+  "carrot_pan_on",
+  "cheese_basket_contain_region",
+  "cheese_mug_tray_on",
+  "cup_bowl_drainer_left_region",
+  "lemon_cutting_board_on",
+  "lemon_lime_basket_contain_region",
+  "mushroom_tray_on",
+  "onion_bowl_on",
+  "open_and_apple_cabinet_middle_region",
+  "open_and_apple_sliding_top_box_contain_region_and_close",
+  "open_and_beer_sliding_top_box_contain_region",
+  "open_and_broccoli_cabinet_middle_region",
+  "open_and_jam_slide_cabinet_contain_region",
+  "open_and_mushroom_cabinet_middle_region_and_close",
+  "sponge_bowl_drainer_right_region"
+ ],
+ "heldout_info": {
+  "mushroom_tray_on": {
+   "instruction": "put the mushroom on the tray",
+   "objects": [
+    "mushroom"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "object_partner_count": 2,
+   "receptacle_partner_count": 10,
+   "partners_objects": {
+    "mushroom": [
+     [
+      "bowl",
+      100
+     ],
+     [
+      "cabinet:bottom",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "apple",
+     100
+    ],
+    [
+     "bottled water",
+     100
+    ],
+    [
+     "candle",
+     100
+    ],
+    [
+     "onion",
+     100
+    ],
+    [
+     "peach",
+     100
+    ],
+    [
+     "rolling pin",
+     100
+    ],
+    [
+     "squash",
+     100
+    ],
+    [
+     "tomato",
+     100
+    ],
+    [
+     "water bottle",
+     100
+    ],
+    [
+     "wine",
+     100
+    ]
+   ]
+  },
+  "apple_plate_on": {
+   "instruction": "put the apple on the plate",
+   "objects": [
+    "apple"
+   ],
+   "receptacle": "plate",
+   "variant": "plain",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 4,
+   "partners_objects": {
+    "apple": [
+     [
+      "tray",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "cheese",
+     100
+    ],
+    [
+     "fish",
+     100
+    ],
+    [
+     "lemon",
+     100
+    ],
+    [
+     "orange",
+     100
+    ]
+   ]
+  },
+  "onion_bowl_on": {
+   "instruction": "put the onion in the bowl",
+   "objects": [
+    "onion"
+   ],
+   "receptacle": "bowl",
+   "variant": "plain",
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4,
+   "partners_objects": {
+    "onion": [
+     [
+      "cabinet:middle",
+      100
+     ],
+     [
+      "tray",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "carrot",
+     100
+    ],
+    [
+     "egg",
+     100
+    ],
+    [
+     "lime",
+     100
+    ],
+    [
+     "mushroom",
+     100
+    ]
+   ]
+  },
+  "carrot_pan_on": {
+   "instruction": "put the carrot in the pan",
+   "objects": [
+    "carrot"
+   ],
+   "receptacle": "pan",
+   "variant": "plain",
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6,
+   "partners_objects": {
+    "carrot": [
+     [
+      "bowl",
+      100
+     ],
+     [
+      "cabinet:top",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "broccoli",
+     100
+    ],
+    [
+     "fish",
+     100
+    ],
+    [
+     "garlic",
+     100
+    ],
+    [
+     "rolling pin",
+     100
+    ],
+    [
+     "squash",
+     100
+    ],
+    [
+     "tomato",
+     100
+    ]
+   ]
+  },
+  "cheese_basket_contain_region": {
+   "instruction": "put the cheese in the basket",
+   "objects": [
+    "cheese"
+   ],
+   "receptacle": "basket",
+   "variant": "plain",
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6,
+   "partners_objects": {
+    "cheese": [
+     [
+      "box",
+      100
+     ],
+     [
+      "plate",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "avocado",
+     100
+    ],
+    [
+     "jam",
+     100
+    ],
+    [
+     "jug",
+     100
+    ],
+    [
+     "peach",
+     100
+    ],
+    [
+     "water bottle",
+     100
+    ],
+    [
+     "yogurt",
+     100
+    ]
+   ]
+  },
+  "lemon_cutting_board_on": {
+   "instruction": "put the lemon on the cutting board",
+   "objects": [
+    "lemon"
+   ],
+   "receptacle": "cutting board",
+   "variant": "plain",
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6,
+   "partners_objects": {
+    "lemon": [
+     [
+      "cabinet:middle",
+      100
+     ],
+     [
+      "plate",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "bagel",
+     100
+    ],
+    [
+     "corn",
+     100
+    ],
+    [
+     "eggplant",
+     100
+    ],
+    [
+     "orange",
+     100
+    ],
+    [
+     "peach",
+     100
+    ],
+    [
+     "tomato",
+     100
+    ]
+   ]
+  },
+  "sponge_bowl_drainer_right_region": {
+   "instruction": "put the sponge in the right side of the dish drainer",
+   "objects": [
+    "sponge"
+   ],
+   "receptacle": "dish drainer:right",
+   "variant": "plain",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 3,
+   "partners_objects": {
+    "sponge": [
+     [
+      "cabinet:middle",
+      99
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "cup",
+     100
+    ],
+    [
+     "plate",
+     15
+    ],
+    [
+     "rolling pin",
+     100
+    ]
+   ]
+  },
+  "cup_bowl_drainer_left_region": {
+   "instruction": "put the cup in the left side of the dish drainer",
+   "objects": [
+    "cup"
+   ],
+   "receptacle": "dish drainer:left",
+   "variant": "plain",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 2,
+   "partners_objects": {
+    "cup": [
+     [
+      "dish drainer:right",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "mug",
+     100
+    ],
+    [
+     "plate",
+     85
+    ]
+   ]
+  },
+  "open_and_broccoli_cabinet_middle_region": {
+   "instruction": "open the middle drawer of the cabinet and put the broccoli in it",
+   "objects": [
+    "broccoli"
+   ],
+   "receptacle": "cabinet:middle",
+   "variant": "open_place",
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4,
+   "partners_objects": {
+    "broccoli": [
+     [
+      "cabinet:bottom",
+      100
+     ],
+     [
+      "pan",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "garlic",
+     100
+    ],
+    [
+     "lemon",
+     100
+    ],
+    [
+     "onion",
+     100
+    ],
+    [
+     "sponge",
+     99
+    ]
+   ]
+  },
+  "open_and_apple_cabinet_middle_region": {
+   "instruction": "open the middle drawer of the cabinet and put the apple in it",
+   "objects": [
+    "apple"
+   ],
+   "receptacle": "cabinet:middle",
+   "variant": "open_place",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 4,
+   "partners_objects": {
+    "apple": [
+     [
+      "tray",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "garlic",
+     100
+    ],
+    [
+     "lemon",
+     100
+    ],
+    [
+     "onion",
+     100
+    ],
+    [
+     "sponge",
+     99
+    ]
+   ]
+  },
+  "open_and_beer_sliding_top_box_contain_region": {
+   "instruction": "open the box and put the beer in it",
+   "objects": [
+    "beer"
+   ],
+   "receptacle": "box",
+   "variant": "open_place",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 5,
+   "partners_objects": {
+    "beer": [
+     [
+      "slide cabinet",
+      93
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "bell pepper",
+     100
+    ],
+    [
+     "can",
+     100
+    ],
+    [
+     "cheese",
+     100
+    ],
+    [
+     "mango",
+     100
+    ],
+    [
+     "wine",
+     100
+    ]
+   ]
+  },
+  "open_and_jam_slide_cabinet_contain_region": {
+   "instruction": "open the slide cabinet and put the jam in it",
+   "objects": [
+    "jam"
+   ],
+   "receptacle": "slide cabinet",
+   "variant": "open_place",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 7,
+   "partners_objects": {
+    "jam": [
+     [
+      "basket",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "beer",
+     93
+    ],
+    [
+     "book",
+     100
+    ],
+    [
+     "candle",
+     100
+    ],
+    [
+     "croissant",
+     95
+    ],
+    [
+     "tomato",
+     100
+    ],
+    [
+     "water bottle",
+     100
+    ],
+    [
+     "wine",
+     100
+    ]
+   ]
+  },
+  "open_and_apple_sliding_top_box_contain_region_and_close": {
+   "instruction": "open the box and put the apple in it and close it",
+   "objects": [
+    "apple"
+   ],
+   "receptacle": "box",
+   "variant": "open_place_close",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 5,
+   "partners_objects": {
+    "apple": [
+     [
+      "tray",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "bell pepper",
+     100
+    ],
+    [
+     "can",
+     100
+    ],
+    [
+     "cheese",
+     100
+    ],
+    [
+     "mango",
+     100
+    ],
+    [
+     "wine",
+     100
+    ]
+   ]
+  },
+  "open_and_mushroom_cabinet_middle_region_and_close": {
+   "instruction": "open the middle drawer of the cabinet and put the mushroom in it and close it",
+   "objects": [
+    "mushroom"
+   ],
+   "receptacle": "cabinet:middle",
+   "variant": "open_place_close",
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4,
+   "partners_objects": {
+    "mushroom": [
+     [
+      "bowl",
+      100
+     ],
+     [
+      "cabinet:bottom",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "garlic",
+     100
+    ],
+    [
+     "lemon",
+     100
+    ],
+    [
+     "onion",
+     100
+    ],
+    [
+     "sponge",
+     99
+    ]
+   ]
+  },
+  "lemon_lime_basket_contain_region": {
+   "instruction": "put the lemon and lime in the basket",
+   "objects": [
+    "lemon",
+    "lime"
+   ],
+   "receptacle": "basket",
+   "variant": "plain",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 6,
+   "partners_objects": {
+    "lemon": [
+     [
+      "cabinet:middle",
+      100
+     ],
+     [
+      "plate",
+      100
+     ]
+    ],
+    "lime": [
+     [
+      "bowl",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "avocado",
+     100
+    ],
+    [
+     "jam",
+     100
+    ],
+    [
+     "jug",
+     100
+    ],
+    [
+     "peach",
+     100
+    ],
+    [
+     "water bottle",
+     100
+    ],
+    [
+     "yogurt",
+     100
+    ]
+   ]
+  },
+  "broccoli_mushroom_cutting_board_on": {
+   "instruction": "put the broccoli and mushroom on the cutting board",
+   "objects": [
+    "broccoli",
+    "mushroom"
+   ],
+   "receptacle": "cutting board",
+   "variant": "plain",
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6,
+   "partners_objects": {
+    "broccoli": [
+     [
+      "cabinet:bottom",
+      100
+     ],
+     [
+      "pan",
+      100
+     ]
+    ],
+    "mushroom": [
+     [
+      "bowl",
+      100
+     ],
+     [
+      "cabinet:bottom",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "bagel",
+     100
+    ],
+    [
+     "corn",
+     100
+    ],
+    [
+     "eggplant",
+     100
+    ],
+    [
+     "orange",
+     100
+    ],
+    [
+     "peach",
+     100
+    ],
+    [
+     "tomato",
+     100
+    ]
+   ]
+  },
+  "cheese_mug_tray_on": {
+   "instruction": "put the cheese and mug on the tray",
+   "objects": [
+    "cheese",
+    "mug"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "object_partner_count": 1,
+   "receptacle_partner_count": 10,
+   "partners_objects": {
+    "cheese": [
+     [
+      "box",
+      100
+     ],
+     [
+      "plate",
+      100
+     ]
+    ],
+    "mug": [
+     [
+      "dish drainer:left",
+      100
+     ]
+    ]
+   },
+   "partners_receptacle": [
+    [
+     "apple",
+     100
+    ],
+    [
+     "bottled water",
+     100
+    ],
+    [
+     "candle",
+     100
+    ],
+    [
+     "onion",
+     100
+    ],
+    [
+     "peach",
+     100
+    ],
+    [
+     "rolling pin",
+     100
+    ],
+    [
+     "squash",
+     100
+    ],
+    [
+     "tomato",
+     100
+    ],
+    [
+     "water bottle",
+     100
+    ],
+    [
+     "wine",
+     100
+    ]
+   ]
+  }
+ },
+ "n_partner": 59,
+ "partner_tasks": [
+  "apple_tray_on",
+  "avocado_basket_contain_region",
+  "bagel_cutting_board_on",
+  "beer_slide_cabinet_contain_region_and_close",
+  "bell_pepper_sliding_top_box_contain_region_and_close",
+  "bottled_water_tray_on",
+  "broccoli_pan_on",
+  "candle_tray_on",
+  "carrot_bowl_on",
+  "cheese_plate_on",
+  "corn_cutting_board_on",
+  "croissant_slide_cabinet_contain_region_and_close",
+  "cup_bowl_drainer_right_region",
+  "egg_bowl_on",
+  "eggplant_cutting_board_on",
+  "fish_pan_on",
+  "fish_plate_on",
+  "garlic_cabinet_middle_region_and_close",
+  "garlic_pan_on",
+  "jam_basket_contain_region",
+  "jug_basket_contain_region",
+  "lemon_plate_on",
+  "lime_bowl_on",
+  "mango_sliding_top_box_contain_region_and_close",
+  "mug_bowl_drainer_left_region",
+  "mushroom_bowl_on",
+  "onion_tray_on",
+  "open_and_book_slide_cabinet_contain_region",
+  "open_and_broccoli_cabinet_bottom_region",
+  "open_and_can_sliding_top_box_contain_region",
+  "open_and_candle_slide_cabinet_contain_region",
+  "open_and_carrot_cabinet_top_region",
+  "open_and_cheese_sliding_top_box_contain_region",
+  "open_and_lemon_cabinet_middle_region",
+  "open_and_mushroom_cabinet_bottom_region",
+  "open_and_onion_cabinet_middle_region",
+  "open_and_tomato_left_slide_cabinet_contain_region",
+  "open_and_water_bottle_left_slide_cabinet_contain_region",
+  "open_and_wine_slide_cabinet_contain_region",
+  "orange_cutting_board_on",
+  "orange_plate_on",
+  "peach_basket_contain_region",
+  "peach_cutting_board_on",
+  "peach_tray_on",
+  "plate_bowl_drainer_left_region",
+  "rolling_pin_left_bowl_drainer_right_region",
+  "rolling_pin_left_pan_on",
+  "rolling_pin_left_tray_on",
+  "sponge_cabinet_middle_region_and_close",
+  "squash_pan_on",
+  "squash_tray_on",
+  "tomato_left_cutting_board_on",
+  "tomato_left_pan_on",
+  "tomato_left_tray_on",
+  "water_bottle_left_basket_contain_region",
+  "water_bottle_left_tray_on",
+  "wine_sliding_top_box_contain_region",
+  "wine_tray_on",
+  "yogurt_basket_contain_region"
+ ],
+ "partner_info": {
+  "open_and_carrot_cabinet_top_region": {
+   "instruction": "open the top drawer of the cabinet and put the carrot in it",
+   "objects": [
+    "carrot"
+   ],
+   "receptacle": "cabinet:top",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "carrot_pan_on",
+     "shares_object": [
+      "carrot"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 5
+  },
+  "open_and_lemon_cabinet_middle_region": {
+   "instruction": "open the middle drawer of the cabinet and put the lemon in it",
+   "objects": [
+    "lemon"
+   ],
+   "receptacle": "cabinet:middle",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "lemon_cutting_board_on",
+     "shares_object": [
+      "lemon"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "open_and_broccoli_cabinet_middle_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_cabinet_middle_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_mushroom_cabinet_middle_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [
+      "lemon"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "open_and_onion_cabinet_middle_region": {
+   "instruction": "open the middle drawer of the cabinet and put the onion in it",
+   "objects": [
+    "onion"
+   ],
+   "receptacle": "cabinet:middle",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "onion_bowl_on",
+     "shares_object": [
+      "onion"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "open_and_broccoli_cabinet_middle_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_cabinet_middle_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_mushroom_cabinet_middle_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "open_and_mushroom_cabinet_bottom_region": {
+   "instruction": "open the bottom drawer of the cabinet and put the mushroom in it",
+   "objects": [
+    "mushroom"
+   ],
+   "receptacle": "cabinet:bottom",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [
+      "mushroom"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "open_and_mushroom_cabinet_middle_region_and_close",
+     "shares_object": [
+      "mushroom"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [
+      "mushroom"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "open_and_broccoli_cabinet_bottom_region": {
+   "instruction": "open the bottom drawer of the cabinet and put the broccoli in it",
+   "objects": [
+    "broccoli"
+   ],
+   "receptacle": "cabinet:bottom",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "open_and_broccoli_cabinet_middle_region",
+     "shares_object": [
+      "broccoli"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [
+      "broccoli"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "open_and_candle_slide_cabinet_contain_region": {
+   "instruction": "open the slide cabinet and put the candle in it",
+   "objects": [
+    "candle"
+   ],
+   "receptacle": "slide cabinet",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "open_and_jam_slide_cabinet_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 7
+  },
+  "open_and_book_slide_cabinet_contain_region": {
+   "instruction": "open the slide cabinet and put the book in it",
+   "objects": [
+    "book"
+   ],
+   "receptacle": "slide cabinet",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "open_and_jam_slide_cabinet_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 7
+  },
+  "open_and_can_sliding_top_box_contain_region": {
+   "instruction": "open the box and put the can in it",
+   "objects": [
+    "can"
+   ],
+   "receptacle": "box",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "open_and_beer_sliding_top_box_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_sliding_top_box_contain_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 5
+  },
+  "open_and_cheese_sliding_top_box_contain_region": {
+   "instruction": "open the box and put the cheese in it",
+   "objects": [
+    "cheese"
+   ],
+   "receptacle": "box",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "cheese_basket_contain_region",
+     "shares_object": [
+      "cheese"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "open_and_beer_sliding_top_box_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_sliding_top_box_contain_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [
+      "cheese"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 5
+  },
+  "garlic_cabinet_middle_region_and_close": {
+   "instruction": "put the garlic in the middle drawer of the cabinet and close it",
+   "objects": [
+    "garlic"
+   ],
+   "receptacle": "cabinet:middle",
+   "variant": "place_close",
+   "for_heldout": [
+    {
+     "task": "open_and_broccoli_cabinet_middle_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_cabinet_middle_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_mushroom_cabinet_middle_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "sponge_cabinet_middle_region_and_close": {
+   "instruction": "put the sponge in the middle drawer of the cabinet and close it",
+   "objects": [
+    "sponge"
+   ],
+   "receptacle": "cabinet:middle",
+   "variant": "place_close",
+   "for_heldout": [
+    {
+     "task": "sponge_bowl_drainer_right_region",
+     "shares_object": [
+      "sponge"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "open_and_broccoli_cabinet_middle_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_cabinet_middle_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_mushroom_cabinet_middle_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 4
+  },
+  "croissant_slide_cabinet_contain_region_and_close": {
+   "instruction": "put the croissant in the slide cabinet and close it",
+   "objects": [
+    "croissant"
+   ],
+   "receptacle": "slide cabinet",
+   "variant": "place_close",
+   "for_heldout": [
+    {
+     "task": "open_and_jam_slide_cabinet_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 7
+  },
+  "beer_slide_cabinet_contain_region_and_close": {
+   "instruction": "put the beer in the slide cabinet and close it",
+   "objects": [
+    "beer"
+   ],
+   "receptacle": "slide cabinet",
+   "variant": "place_close",
+   "for_heldout": [
+    {
+     "task": "open_and_beer_sliding_top_box_contain_region",
+     "shares_object": [
+      "beer"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "open_and_jam_slide_cabinet_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 7
+  },
+  "bell_pepper_sliding_top_box_contain_region_and_close": {
+   "instruction": "put the bell pepper in the box and close it",
+   "objects": [
+    "bell pepper"
+   ],
+   "receptacle": "box",
+   "variant": "place_close",
+   "for_heldout": [
+    {
+     "task": "open_and_beer_sliding_top_box_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_sliding_top_box_contain_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 5
+  },
+  "mango_sliding_top_box_contain_region_and_close": {
+   "instruction": "put the mango in the box and close it",
+   "objects": [
+    "mango"
+   ],
+   "receptacle": "box",
+   "variant": "place_close",
+   "for_heldout": [
+    {
+     "task": "open_and_beer_sliding_top_box_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_sliding_top_box_contain_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 5
+  },
+  "bottled_water_tray_on": {
+   "instruction": "put the bottled water on the tray",
+   "objects": [
+    "bottled water"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 10
+  },
+  "apple_tray_on": {
+   "instruction": "put the apple on the tray",
+   "objects": [
+    "apple"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "apple_plate_on",
+     "shares_object": [
+      "apple"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "open_and_apple_cabinet_middle_region",
+     "shares_object": [
+      "apple"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "open_and_apple_sliding_top_box_contain_region_and_close",
+     "shares_object": [
+      "apple"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 10
+  },
+  "onion_tray_on": {
+   "instruction": "put the onion on the tray",
+   "objects": [
+    "onion"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "onion_bowl_on",
+     "shares_object": [
+      "onion"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 10
+  },
+  "candle_tray_on": {
+   "instruction": "put the candle on the tray",
+   "objects": [
+    "candle"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 10
+  },
+  "lemon_plate_on": {
+   "instruction": "put the lemon on the plate",
+   "objects": [
+    "lemon"
+   ],
+   "receptacle": "plate",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "apple_plate_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "lemon_cutting_board_on",
+     "shares_object": [
+      "lemon"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [
+      "lemon"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "cheese_plate_on": {
+   "instruction": "put the cheese on the plate",
+   "objects": [
+    "cheese"
+   ],
+   "receptacle": "plate",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "apple_plate_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_basket_contain_region",
+     "shares_object": [
+      "cheese"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [
+      "cheese"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "orange_plate_on": {
+   "instruction": "put the orange on the plate",
+   "objects": [
+    "orange"
+   ],
+   "receptacle": "plate",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "apple_plate_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "fish_plate_on": {
+   "instruction": "put the fish on the plate",
+   "objects": [
+    "fish"
+   ],
+   "receptacle": "plate",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "apple_plate_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "egg_bowl_on": {
+   "instruction": "put the egg in the bowl",
+   "objects": [
+    "egg"
+   ],
+   "receptacle": "bowl",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "onion_bowl_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 4
+  },
+  "lime_bowl_on": {
+   "instruction": "put the lime in the bowl",
+   "objects": [
+    "lime"
+   ],
+   "receptacle": "bowl",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "onion_bowl_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [
+      "lime"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 4
+  },
+  "mushroom_bowl_on": {
+   "instruction": "put the mushroom in the bowl",
+   "objects": [
+    "mushroom"
+   ],
+   "receptacle": "bowl",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [
+      "mushroom"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "onion_bowl_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_mushroom_cabinet_middle_region_and_close",
+     "shares_object": [
+      "mushroom"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [
+      "mushroom"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "carrot_bowl_on": {
+   "instruction": "put the carrot in the bowl",
+   "objects": [
+    "carrot"
+   ],
+   "receptacle": "bowl",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "onion_bowl_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "carrot_pan_on",
+     "shares_object": [
+      "carrot"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 4
+  },
+  "jam_basket_contain_region": {
+   "instruction": "put the jam in the basket",
+   "objects": [
+    "jam"
+   ],
+   "receptacle": "basket",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "cheese_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_jam_slide_cabinet_contain_region",
+     "shares_object": [
+      "jam"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 6
+  },
+  "avocado_basket_contain_region": {
+   "instruction": "put the avocado in the basket",
+   "objects": [
+    "avocado"
+   ],
+   "receptacle": "basket",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "cheese_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6
+  },
+  "jug_basket_contain_region": {
+   "instruction": "put the jug in the basket",
+   "objects": [
+    "jug"
+   ],
+   "receptacle": "basket",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "cheese_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 6
+  },
+  "yogurt_basket_contain_region": {
+   "instruction": "put the yogurt in the basket",
+   "objects": [
+    "yogurt"
+   ],
+   "receptacle": "basket",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "cheese_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 6
+  },
+  "corn_cutting_board_on": {
+   "instruction": "put the corn on the cutting board",
+   "objects": [
+    "corn"
+   ],
+   "receptacle": "cutting board",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "lemon_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 6
+  },
+  "orange_cutting_board_on": {
+   "instruction": "put the orange on the cutting board",
+   "objects": [
+    "orange"
+   ],
+   "receptacle": "cutting board",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "lemon_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6
+  },
+  "bagel_cutting_board_on": {
+   "instruction": "put the bagel on the cutting board",
+   "objects": [
+    "bagel"
+   ],
+   "receptacle": "cutting board",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "lemon_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 6
+  },
+  "eggplant_cutting_board_on": {
+   "instruction": "put the eggplant on the cutting board",
+   "objects": [
+    "eggplant"
+   ],
+   "receptacle": "cutting board",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "lemon_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6
+  },
+  "garlic_pan_on": {
+   "instruction": "put the garlic in the pan",
+   "objects": [
+    "garlic"
+   ],
+   "receptacle": "pan",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "carrot_pan_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6
+  },
+  "fish_pan_on": {
+   "instruction": "put the fish in the pan",
+   "objects": [
+    "fish"
+   ],
+   "receptacle": "pan",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "carrot_pan_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6
+  },
+  "broccoli_pan_on": {
+   "instruction": "put the broccoli in the pan",
+   "objects": [
+    "broccoli"
+   ],
+   "receptacle": "pan",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "carrot_pan_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_broccoli_cabinet_middle_region",
+     "shares_object": [
+      "broccoli"
+     ],
+     "shares_receptacle": false
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [
+      "broccoli"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 6
+  },
+  "plate_bowl_drainer_left_region": {
+   "instruction": "put the plate in the left side of the dish drainer",
+   "objects": [
+    "plate"
+   ],
+   "receptacle": "dish drainer:left",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "cup_bowl_drainer_left_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 2,
+   "receptacle_partner_count": 2
+  },
+  "cup_bowl_drainer_right_region": {
+   "instruction": "put the cup in the right side of the dish drainer",
+   "objects": [
+    "cup"
+   ],
+   "receptacle": "dish drainer:right",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "sponge_bowl_drainer_right_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cup_bowl_drainer_left_region",
+     "shares_object": [
+      "cup"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 3
+  },
+  "mug_bowl_drainer_left_region": {
+   "instruction": "put the mug in the left side of the dish drainer",
+   "objects": [
+    "mug"
+   ],
+   "receptacle": "dish drainer:left",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "cup_bowl_drainer_left_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [
+      "mug"
+     ],
+     "shares_receptacle": false
+    }
+   ],
+   "object_partner_count": 1,
+   "receptacle_partner_count": 2
+  },
+  "peach_tray_on": {
+   "instruction": "put the peach on the tray",
+   "objects": [
+    "peach"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 4,
+   "receptacle_partner_count": 10
+  },
+  "peach_cutting_board_on": {
+   "instruction": "put the peach on the cutting board",
+   "objects": [
+    "peach"
+   ],
+   "receptacle": "cutting board",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "lemon_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 4,
+   "receptacle_partner_count": 6
+  },
+  "peach_basket_contain_region": {
+   "instruction": "put the peach in the basket",
+   "objects": [
+    "peach"
+   ],
+   "receptacle": "basket",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "cheese_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 4,
+   "receptacle_partner_count": 6
+  },
+  "squash_tray_on": {
+   "instruction": "put the squash on the tray",
+   "objects": [
+    "squash"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 10
+  },
+  "squash_pan_on": {
+   "instruction": "put the squash in the pan",
+   "objects": [
+    "squash"
+   ],
+   "receptacle": "pan",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "carrot_pan_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 6
+  },
+  "wine_tray_on": {
+   "instruction": "put the wine on the tray",
+   "objects": [
+    "wine"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 10
+  },
+  "wine_sliding_top_box_contain_region": {
+   "instruction": "put the wine in the box",
+   "objects": [
+    "wine"
+   ],
+   "receptacle": "box",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "open_and_beer_sliding_top_box_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "open_and_apple_sliding_top_box_contain_region_and_close",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 5
+  },
+  "open_and_wine_slide_cabinet_contain_region": {
+   "instruction": "open the slide cabinet and put the wine in it",
+   "objects": [
+    "wine"
+   ],
+   "receptacle": "slide cabinet",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "open_and_jam_slide_cabinet_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 7
+  },
+  "tomato_left_pan_on": {
+   "instruction": "put the tomato in the pan",
+   "objects": [
+    "tomato"
+   ],
+   "receptacle": "pan",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "carrot_pan_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 4,
+   "receptacle_partner_count": 6
+  },
+  "tomato_left_tray_on": {
+   "instruction": "put the tomato on the tray",
+   "objects": [
+    "tomato"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 4,
+   "receptacle_partner_count": 10
+  },
+  "tomato_left_cutting_board_on": {
+   "instruction": "put the tomato on the cutting board",
+   "objects": [
+    "tomato"
+   ],
+   "receptacle": "cutting board",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "lemon_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "broccoli_mushroom_cutting_board_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 4,
+   "receptacle_partner_count": 6
+  },
+  "open_and_tomato_left_slide_cabinet_contain_region": {
+   "instruction": "open the slide cabinet and put the tomato in it",
+   "objects": [
+    "tomato"
+   ],
+   "receptacle": "slide cabinet",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "open_and_jam_slide_cabinet_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 4,
+   "receptacle_partner_count": 7
+  },
+  "rolling_pin_left_pan_on": {
+   "instruction": "put the rolling pin in the pan",
+   "objects": [
+    "rolling pin"
+   ],
+   "receptacle": "pan",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "carrot_pan_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 6
+  },
+  "rolling_pin_left_tray_on": {
+   "instruction": "put the rolling pin on the tray",
+   "objects": [
+    "rolling pin"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 10
+  },
+  "rolling_pin_left_bowl_drainer_right_region": {
+   "instruction": "put the rolling pin in the right side of the dish drainer",
+   "objects": [
+    "rolling pin"
+   ],
+   "receptacle": "dish drainer:right",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "sponge_bowl_drainer_right_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 3
+  },
+  "water_bottle_left_tray_on": {
+   "instruction": "put the water bottle on the tray",
+   "objects": [
+    "water bottle"
+   ],
+   "receptacle": "tray",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "mushroom_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "cheese_mug_tray_on",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 10
+  },
+  "water_bottle_left_basket_contain_region": {
+   "instruction": "put the water bottle in the basket",
+   "objects": [
+    "water bottle"
+   ],
+   "receptacle": "basket",
+   "variant": "plain",
+   "for_heldout": [
+    {
+     "task": "cheese_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    },
+    {
+     "task": "lemon_lime_basket_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 6
+  },
+  "open_and_water_bottle_left_slide_cabinet_contain_region": {
+   "instruction": "open the slide cabinet and put the water bottle in it",
+   "objects": [
+    "water bottle"
+   ],
+   "receptacle": "slide cabinet",
+   "variant": "open_place",
+   "for_heldout": [
+    {
+     "task": "open_and_jam_slide_cabinet_contain_region",
+     "shares_object": [],
+     "shares_receptacle": true
+    }
+   ],
+   "object_partner_count": 3,
+   "receptacle_partner_count": 7
+  }
+ },
+ "training_tasks_unparsed": [],
+ "excluded_composite": [
+  "fish_garlic_pan_on",
+  "open_and_carrot_cabinet_top_region_and_close",
+  "open_and_potato_microwave_heating_region_and_close"
+ ]
+}
