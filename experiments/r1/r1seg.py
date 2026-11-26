@@ -52,12 +52,12 @@ def disp(obs):
     return d
 
 
-def calibrate(cells):
+def calibrate(cells, lo=1, hi=5):
     pool = [[], [], []]
     n = 0; byobj = {}
     for c in cells:
         o, _ = load_cell(c)
-        d = disp(o)[:, 1:6]
+        d = disp(o)[:, lo:hi + 1]
         for k in range(3):
             pool[k].append(d[..., k].ravel())
         byobj.setdefault(c[1], []).append(d[..., 0].ravel())
@@ -201,7 +201,7 @@ def cmd_stats(a):
     allc = [c for c in r1s.all_cells() if c not in dr]
     if a.smoke:
         train = train[:4]; allc = allc[:2]
-    cal = calibrate(train); eps = cal["eps"]
+    lo_, hi_ = map(int, a.calib.split(":")); cal = calibrate(train, lo_, hi_); cal["window"] = [lo_, hi_]; eps = cal["eps"]
     print("calibration", json.dumps(cal), flush=True)
     l1 = l1_fit(train); print("L1 fit", json.dumps(l1), flush=True)
 
@@ -219,7 +219,7 @@ def cmd_stats(a):
             s["n_events"].append(x["n_events"])
             for k in range(3):
                 s["seglen"][k].append(x["n"][k])
-            s["l1_n"] += 1; s["l1_fire"] += on[i] is not None
+            s["l1_n"] += 1; s["l1_fire"] += on[i] is not None; s["l1_fire30"] = s.get("l1_fire30", 0) + (on[i] is not None and on[i] < 30)
             if on[i] is not None and x["s_on"] is not None:
                 s["l1_both"] += 1; s["lag"].append(on[i] - x["s_on"])
             s["l1_agree"] += bool(on[i] is not None and x["s_on"] is not None and abs(on[i] - x["s_on"]) <= NEARLY)
@@ -231,7 +231,7 @@ def cmd_stats(a):
                  multi_run=s["multi_run"] / s["n"], other_event_before_object=s["other_before"] / s["n"],
                  first_event_not_object=s["first_not_object"] / s["n"], n_events_mean=float(np.mean(s["n_events"])),
                  seg_len_mean=[float(np.mean(v)) for v in s["seglen"]],
-                 l1=dict(fire_frac=s["l1_fire"] / s["l1_n"], agree_within5=s["l1_agree"] / s["l1_n"], both=s["l1_both"],
+                 l1=dict(fire_frac=s["l1_fire"] / s["l1_n"], fire_before30=s.get("l1_fire30", 0) / s["l1_n"], agree_within5=s["l1_agree"] / s["l1_n"], both=s["l1_both"],
                          agree_given_both=float(np.mean(np.abs(lag) <= NEARLY)) if s["lag"] else None,
                          lag_q10_50_90=[float(x) for x in np.nanquantile(lag, [.1, .5, .9])]))
         stats[k] = d
@@ -243,7 +243,7 @@ def cmd_stats(a):
         print("STATS", k, json.dumps(d), flush=True)
     print("L1 grasping", json.dumps(l1_all), flush=True)
 
-    json.dump(dict(calibration=cal, l1_fit=l1, segmentation=stats, l1_grasping=l1_all), open(f"{OUT}/t0{'_smoke' if a.smoke else ''}_stats.json", "w", encoding="utf-8"), indent=1)
+    json.dump(dict(calibration=cal, l1_fit=l1, segmentation=stats, l1_grasping=l1_all), open(f"{OUT}/{a.tag}{'_smoke' if a.smoke else ''}_stats.json", "w", encoding="utf-8"), indent=1)
     print("stats done", time.time() - t_start, flush=True)
 
 
@@ -252,7 +252,7 @@ def cmd_loss(a):
     train = [c for c in sp["train"] if c not in dr]
     if a.smoke:
         train = train[:4]
-    cal = calibrate(train); eps = cal["eps"]
+    lo_, hi_ = map(int, a.calib.split(":")); cal = calibrate(train, lo_, hi_); cal["window"] = [lo_, hi_]; eps = cal["eps"]
     # ---- per-segment loss on the 9 stream draws and 12 null draws
     ck = torch.load(RES + "/free/base.pt", map_location="cpu", weights_only=False)
     norm = b1_data.Norm.from_dict(ck["norm"])
@@ -280,13 +280,13 @@ def cmd_loss(a):
             if a.smoke: break
         if a.smoke: break
 
-    json.dump(dict(tasks=tasks, nulls=nulls), open(f"{OUT}/t0{'_smoke' if a.smoke else ''}_loss{a.seed}.json", "w", encoding="utf-8"), indent=1)
+    json.dump(dict(tasks=tasks, nulls=nulls), open(f"{OUT}/{a.tag}{'_smoke' if a.smoke else ''}_loss{a.seed}.json", "w", encoding="utf-8"), indent=1)
     print("loss done", flush=True)
 
 
 def cmd_report(a):
     t_start = time.time()
-    SD = f"{OUT}/t0{'_smoke' if a.smoke else ''}"
+    SD = f"{OUT}/{a.tag}{'_smoke' if a.smoke else ''}"
     st = json.load(open(SD + "_stats.json", encoding="utf-8"))
     cal, l1, stats, l1_all = st["calibration"], st["l1_fit"], st["segmentation"], st["l1_grasping"]
     tasks, nulls = [], []
@@ -329,11 +329,11 @@ def cmd_report(a):
     res = dict(smoke=a.smoke, calibration=cal, l1_fit=l1, segmentation=stats, l1_grasping=l1_all, null=dict(loss=NL.tolist(), whole=NW.tolist(), p95=th,
                whole_p95=thw, loo_exceed=loo, loo_counts=loo_cnt, draws=nulls), tasks=rows, verdict=verdict, choices=__doc__, seconds=time.time() - t_start)
     os.makedirs(OUT, exist_ok=True)
-    json.dump(res, open(f"{OUT}/t0{'_smoke' if a.smoke else ''}.json", "w", encoding="utf-8"), indent=1)
+    json.dump(res, open(f"{OUT}/{a.tag}{'_smoke' if a.smoke else ''}.json", "w", encoding="utf-8"), indent=1)
     print("done", time.time() - t_start, flush=True)
 
 
 if __name__ == "__main__":
-    p = argparse.ArgumentParser(); p.add_argument("cmd"); p.add_argument("--smoke", action="store_true"); p.add_argument("--seed", type=int, default=0)
+    p = argparse.ArgumentParser(); p.add_argument("cmd"); p.add_argument("--smoke", action="store_true"); p.add_argument("--seed", type=int, default=0); p.add_argument("--calib", default="1:5"); p.add_argument("--tag", default="t0")
     a = p.parse_args()
     {"stats": cmd_stats, "loss": cmd_loss, "report": cmd_report}[a.cmd](a)
