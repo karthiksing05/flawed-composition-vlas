@@ -65,3 +65,13 @@ bootstrap (seeds then states, tasks fixed); compute via sbatch on overcap/tail-l
   v1 + a rollout-free language-sensitivity probe (first action chunk under the instructed vs.
   alternative targets, seed-fixed, noise floor). Confirmatory test needs the new benchmarks'
   larger pairing sets.
+- 2026-11-26 feasibility (docs/notes/bench_feasibility.md): all three run headless.
+  DECISION: held-out pairings come from released-training-data co-occurrence, so released
+  checkpoints are evaluated frozen (many models, no fine-tune):
+  MESA Composite (pi0, pi0.5, pi0-FAST, GR00T N1.6; BiMESA versions = 2nd embodiment);
+  RoboCasa365 PickPlace (object category x fixture absent from the released training data;
+  pi0, pi0.5, GR00T N1.5/N1.6, X-VLA community, SmolVLA excluded if trained on eval split);
+  RoboTwin 2.0 place_a2b (A,B pairs absent from cotrain demos; X-VLA, pi0.5, SmolVLA).
+  Protocol per benchmark: (1) coverage audit; (2) known-partner rollouts -> base rates;
+  (3) register frozen predictor (v0, v1 6bd3f414, v2 f00ec7c1) predictions per held-out cell;
+  (4) held-out rollouts; (5) repair = where-module port, MESA first on pi0/pi0.5 (openpi).
