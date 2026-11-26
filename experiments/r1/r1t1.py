@@ -26,7 +26,7 @@ import r1, r1s, r1seg
 from r1s import *  # noqa (np, torch, b1, b1_data, load_cell, TASKS, GROUPS, EPS, RES, newvals, dropped, H)
 from r1seg import ProprioHeld
 
-OUT = RES + "/t1"
+OUT = os.environ.get("T1_OUT", RES + "/t1")   # T1_OUT: pinned-node rerun (temporal_T1_pinned_registered) writes to results/r1/t1p
 ALL = {0, 1, 2}
 ASSIGN = {0: {"HB": ALL, "OW": {0}, "TC": ALL}, 1: {"HB": ALL, "OW": {0}, "TC": ALL}, 2: {"HB": ALL, "OW": {0}, "TC": {1, 2}}}
 DEB = 3
@@ -182,7 +182,7 @@ def cmd_report(a):
             b["mean"][g] = m(v) if None not in v else None
         return b
     out["ref_CTL_R8"] = block(ref)
-    for arm in ("grasp", "random", "oracle"):
+    for arm in ("grasp", "random", "oracle", "none"):
         out["arms"][arm] = block(lambda s, g, arm=arm: arm_(arm, s, g))
     A, B = out["arms"]["grasp"], out["arms"]["random"]
     ver = {}
