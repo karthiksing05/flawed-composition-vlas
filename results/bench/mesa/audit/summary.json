@@ -1,0 +1,80 @@
+{
+ "checkpoint_to_dataset": {
+  "albertwilcox/mesa-pi0": "mesa-70-lerobot",
+  "albertwilcox/mesa-pi05": "mesa-70-lerobot",
+  "albertwilcox/mesa-pi0-fast": "mesa-70-lerobot",
+  "albertwilcox/mesa-gr00t-n1.6": "mesa-70-lerobot",
+  "albertwilcox/bimesa-pi0": "bimesa-57-lerobot",
+  "albertwilcox/bimesa-pi05": "bimesa-57-lerobot",
+  "albertwilcox/bimesa-pi0-fast": "bimesa-57-lerobot",
+  "albertwilcox/bimesa-gr00t-n1.6": "bimesa-57-lerobot"
+ },
+ "datasets": {
+  "mesa-70-lerobot": {
+   "task_strings": 71,
+   "episodes": 6970,
+   "unparsed": []
+  },
+  "mesa-all-train-lerobot": {
+   "task_strings": 806,
+   "episodes": 81091,
+   "unparsed": [
+    "close the bottom drawer of the cabinet",
+    "open the bottom drawer of the cabinet",
+    "close the middle drawer of the cabinet",
+    "open the middle drawer of the cabinet",
+    "close the top drawer of the cabinet",
+    "open the top drawer of the cabinet",
+    "close the microwave",
+    "open the microwave",
+    "close the slide cabinet",
+    "open the slide cabinet",
+    "close the box",
+    "open the box"
+   ]
+  },
+  "bimesa-57-lerobot": {
+   "task_strings": 57,
+   "episodes": 6833,
+   "unparsed": []
+  }
+ },
+ "audits": [
+  {
+   "suite": "mesa-composite",
+   "n_tasks": 20,
+   "n_object_slots": 24,
+   "held_out_fine": 20,
+   "held_out_coarse": 17,
+   "pair_seen_fine": 4,
+   "object_unseen": 0,
+   "recept_unseen_fine": 0,
+   "unparsed": [],
+   "train_dataset": "mesa-70-lerobot"
+  },
+  {
+   "suite": "mesa-composite",
+   "n_tasks": 20,
+   "n_object_slots": 24,
+   "held_out_fine": 8,
+   "held_out_coarse": 6,
+   "pair_seen_fine": 16,
+   "object_unseen": 0,
+   "recept_unseen_fine": 0,
+   "unparsed": [],
+   "train_dataset": "mesa-all-train-lerobot"
+  },
+  {
+   "suite": "bimesa-composite",
+   "n_tasks": 15,
+   "n_object_slots": 18,
+   "held_out_fine": 10,
+   "held_out_coarse": 10,
+   "pair_seen_fine": 5,
+   "object_unseen": 3,
+   "recept_unseen_fine": 0,
+   "unparsed": [],
+   "train_dataset": "bimesa-57-lerobot"
+  }
+ ]
+}
